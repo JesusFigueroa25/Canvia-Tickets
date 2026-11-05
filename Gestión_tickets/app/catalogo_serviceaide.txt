@@ -1,0 +1,4932 @@
+
+Nivel 1: Actividades Genericas:
+Actividades Genericas
+Actividades
+Consulta Tecnica
+ 
+Actividades Genericas
+Actividades
+Cross de Torre
+ 
+Actividades Genericas
+Actividades
+Documentacion
+ 
+Actividades Genericas
+Capacitacion
+Cumplimiento para Propuestas
+ 
+Actividades Genericas
+Capacitacion
+Tecnica para la torre
+ 
+Actividades Genericas
+Capacitacion
+Mandatorias por CANVIA
+ 
+Actividades Genericas
+Reunion Tecnica
+Reunion Tecnica interna Canvia
+ 
+Actividades Genericas
+Reunion Tecnica
+Reunion Tecnica con Cliente
+ 
+Actividades Genericas
+Reunion Tecnica
+Participacion Reunion Comite de Cambios
+ 
+Actividades Genericas
+Reunion Tecnica
+Reunion Tecnica Planificacion de Cambio
+
+
+Nivel 1: APLICACIONES SAP Administración
+
+APLICACIONES SAP Administracion
+Actualizacion
+Descarga de Media
+ 
+APLICACIONES SAP Administracion
+Actualizacion
+Verificar Compatibilidad de Parches
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Base de Datos
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Sistema Operativo
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Ejecucion de Transporte
+ 
+APLICACIONES SAP Administracion
+Reinicios
+Cancelacion de Procesos
+ 
+APLICACIONES SAP Administracion
+Restauracion
+Restore de Configuracion
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Analisis para Optimizac desemp de Sistema Complejo
+ 
+APLICACIONES SAP Administracion
+Actualizacion
+Verificar version de parches de Sistema SAP
+ 
+APLICACIONES SAP Administracion
+Actualizacion
+Soporte a Actualizacion Parche Compleja
+
+
+APLICACIONES SAP Administracion
+Actualizacion
+Soporte a Actualizacion Parche Estandar
+ 
+APLICACIONES SAP Administracion
+Auditoria
+Ejecucion Auditoria Analisis de requerim y Soporte
+ 
+APLICACIONES SAP Administracion
+Auditoria
+Ejecucion de Auditoria Recoleccion de datos
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Aplicar Nota SAP Menor
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Aplicar Nota SAP Estandar
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Aplicar Nota SAP Compleja
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Modificacion de Parametros Servicio
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Solucion/Servicio SAP Estandar
+ 
+APLICACIONES SAP Administracion
+Configuracion
+Solucion/Servicio SAP Complejo
+ 
+APLICACIONES SAP Administracion
+Continuidad
+Planificacion de Prueba de HA y DRP
+
+
+APLICACIONES SAP Administracion
+Continuidad
+Planificacion de Prueba de Restore
+ 
+APLICACIONES SAP Administracion
+Continuidad
+Soporte de Prueba de Continuidad Estandar
+ 
+APLICACIONES SAP Administracion
+Continuidad
+Soporte de Pruebas de Continuidad Compleja
+ 
+APLICACIONES SAP Administracion
+Copias
+Soporte a Ejecucion de Copias
+ 
+APLICACIONES SAP Administracion
+Copias
+Planificacion de Copia de Mandante
+ 
+APLICACIONES SAP Administracion
+Copias
+Planificacion de Copia Heterogenea SAP
+ 
+APLICACIONES SAP Administracion
+Copias
+Planificacion de Copia Homogenea SAP
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Informe Mensual Recoleccion de datos
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Informe Mensual Analis dat y adapt inf
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Informe Mensual Validac aprobac inform
+
+
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Informe Tecnico Recoleccion de datos
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Informe Tecnico Analis dat y adapt inf
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Informe Tecnico Validac aprobac inform
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion de Documentos Tecnicos Menor
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion de Documentos Tecnicos Estandar
+ 
+APLICACIONES SAP Administracion
+Documentos
+Elaboracion de Documentos Tecnicos Complejo
+ 
+APLICACIONES SAP Administracion
+Documentos
+Presentacion de Informe
+
+APLICACIONES SAP Administracion
+Documentos
+Revision de Documentos Tecnicos - Proceso Cliente
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Backups - Revision de Backups
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Backups - Revision Politicas de Backup
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Impresoras
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Jobs ABAP
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Jobs Java
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Log y Archivos
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Monitoreo - Monitoreo SAP a demanda
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Monitoreo - Monitoreo SAP diario
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Monitoreo - Monit SAP PostCamb Estandar
+
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Monitoreo - Monit SAP PostCamb Complejo
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Monitoreo - Revision Politica Monitoreo
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Roles
+ 
+APLICACIONES SAP Administracion
+Gestion Operativa
+Gestion de Usuarios
+ 
+APLICACIONES SAP Administracion
+Incidencia
+Soporte a Incidencias Estandar
+ 
+APLICACIONES SAP Administracion
+Incidencia
+Soporte a Incidencias Complejas
+ 
+APLICACIONES SAP Administracion
+Incidencia
+Soporte a Problemas Estandar
+ 
+APLICACIONES SAP Administracion
+Incidencia
+Soporte a Problemas Complejas
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Analisis de Mantenimiento Tablas Nuevas
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Analisis para Optimizac desemp de Sistema Estandar
+
+APLICACIONES SAP Administracion
+Mantenimiento
+Analisis para Subsanacion Alertas EWA
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Analisis para Subsanacion Vulnerabilidades
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Base de Datos Optimizacion Actualizac estadisticas
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Base de Datos Optimizacion Reorganizac de Indices
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Ejec de Mantenimiento BW PSA-RSAR_PSA_REPARTITION
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Ejecucion de Mantenimientos de Log y Temporales
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Ejecucion de Mantenimientos de Mensajes SAP PI/PO
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Gestion de Subsanacion Alertas EWA
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Optimizacion de desempeño de Sistema
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Revision y Analisis para Optimizac Costos Estandar
+
+APLICACIONES SAP Administracion
+Mantenimiento
+Revision y Analisis para Optimizac Costos Complejo
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Tunning de Parametros SAP y BD
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Soporte en Mantenimiento Estandar
+ 
+APLICACIONES SAP Administracion
+Mantenimiento
+Soporte en Mantenimiento Compleja
+ 
+APLICACIONES SAP Administracion
+Restauracion
+Restore de Base de Datos
+ 
+APLICACIONES SAP Administracion
+Restauracion
+Restore de Sistema
+ 
+APLICACIONES SAP Administracion
+Restauracion
+Soporte en Restauracion Compleja
+ 
+APLICACIONES SAP Administracion
+Restauracion
+Soporte en Restauracion Estandar
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion Estandar
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion Compleja
+
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion de Impresoras
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion de Jobs
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion de otros elementos Sistema SAP
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion de Revision de Backups
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion de Roles
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion de transporte
+ 
+APLICACIONES SAP Administracion
+Soporte
+Soporte a Operacion de Usuarios
+
+
+Nivel 1 APLICACIONES SAP Consultoria:
+APLICACIONES SAP Consultoria
+Documentos
+Elaboracion Informe Tecnico para Consultoria
+ 
+APLICACIONES SAP Consultoria
+Documentos
+Elaboracion Informe Tecnico Consultoria especializ
+ 
+APLICACIONES SAP Consultoria
+Relevamiento
+Levantamiento de Informacion Avanzado
+ 
+APLICACIONES SAP Consultoria
+Relevamiento
+Workload Assessment Intermedio
+
+
+Nivel 2 APLICACIONES SAP Implementación:
+
+APLICACIONES SAP Implementacion
+Configuracion
+Analisis de Configuracion Menor
+ 
+APLICACIONES SAP Implementacion
+Configuracion
+Analisis de Configuracion Estandar
+ 
+APLICACIONES SAP Implementacion
+Configuracion
+Analisis de Configuracion Compleja
+ 
+APLICACIONES SAP Implementacion
+Configuracion
+Solucion/Servicio SAP Estandar
+ 
+APLICACIONES SAP Implementacion
+Configuracion
+Solucion/Servicio SAP Complejo
+ 
+APLICACIONES SAP Implementacion
+Configuracion
+Soporte de Configuracion Estandar
+ 
+APLICACIONES SAP Implementacion
+Configuracion
+Soporte de Configuracion Compleja
+ 
+APLICACIONES SAP Implementacion
+Documentos
+Elaboracion Informe Tecnico para implementacion
+ 
+APLICACIONES SAP Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+APLICACIONES SAP Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+
+APLICACIONES SAP Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+APLICACIONES SAP Implementacion
+Documentos
+Elaboracion Politicas de Backups
+ 
+APLICACIONES SAP Implementacion
+Documentos
+Elaboracion Politicas de Monitoreo
+ 
+APLICACIONES SAP Implementacion
+Documentos
+Revision de Documentos Tecnicos Implementacion
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Consult Sustentacion sobre Implementacion Compleja
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Consult Sustentacion sobre Implementacion Estandar
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Planificacion de Implementacion Compleja
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Planificacion de Implementacion Estandar
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Realizac Prerrequisito de Implementacion Compleja
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Realizac Prerrequisito de Implementacion Estandar
+
+APLICACIONES SAP Implementacion
+Implementacion
+Validacion y Aprobacion de Implementacion
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Implementacion de Politicas de Backups
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Implementacion de Politicas de Monitoreo
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Revision Analis de caso de Implementacion Compleja
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Revision Analis de caso de Implementacion Estandar
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Soporte en Implementacion de Solucion SAP Complejo
+ 
+APLICACIONES SAP Implementacion
+Implementacion
+Soporte en Implementacion de Solucion SAP Estandar
+ 
+APLICACIONES SAP Implementacion
+Relevamiento
+Levantamiento de Informacion Intermedio
+
+
+Nivel 1 APLICACIONES SAP PreVenta:
+APLICACIONES SAP PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+APLICACIONES SAP PreVenta
+Diseño
+Diseño de Arquitectura para Solucion
+ 
+APLICACIONES SAP PreVenta
+Diseño
+Revision y Analisis de Arquitectura para Solucion
+ 
+APLICACIONES SAP PreVenta
+Documentos
+Elaboracion Inform Tecnico complejo para Propuesta
+ 
+APLICACIONES SAP PreVenta
+Documentos
+Elaboracion Plan de Trabaj Avanzado para Propuesta
+ 
+APLICACIONES SAP PreVenta
+Documentos
+Revision de Documentos Tecnicos Complejo
+ 
+APLICACIONES SAP PreVenta
+Documentos
+Revision de Documentos Tecnicos Estandar
+ 
+APLICACIONES SAP PreVenta
+Pilotos
+Analisis para Ejecucion de PoC Avanzada
+ 
+APLICACIONES SAP PreVenta
+Pilotos
+Analisis para Ejecucion de PoC Estandar
+ 
+APLICACIONES SAP PreVenta
+Pilotos
+Ejecucion de PoC - Avanzada
+
+APLICACIONES SAP PreVenta
+Pilotos
+Ejecucion de PoC - Basica
+ 
+APLICACIONES SAP PreVenta
+Pilotos
+Ejecucion de PoC - Intermedia
+ 
+APLICACIONES SAP PreVenta
+Pilotos
+Planificacion para Ejecucion de PoC Avanzada
+ 
+APLICACIONES SAP PreVenta
+Pilotos
+Planificacion Ejecucion de PoC Basica e Intermedia
+ 
+APLICACIONES SAP PreVenta
+Pilotos
+Validacion y Aprobacion de Ejecucion de PoC
+ 
+APLICACIONES SAP PreVenta
+Relevamiento
+Levantamiento de Informacion Basico
+ 
+APLICACIONES SAP PreVenta
+Relevamiento
+Workload Assessment - Avanzado
+
+
+Nivel 1: Arquitectura TI Administración
+
+Arquitectura TI Administracion
+Continuidad
+Liderazgo de HA y DRP
+ 
+Arquitectura TI Administracion
+Documentos
+Elaboracion Plan de Trabajo
+
+
+Nivel 1: Arquitectura TI Consultoria
+
+Arquitectura TI Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+Arquitectura TI Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+Arquitectura TI Consultoria
+Relevamiento
+Workload Assessment
+
+
+Nivel 1: Arquitectura TI Implementación
+
+Arquitectura TI Implementacion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Arquitectura TI Implementacion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Arquitectura TI Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+Arquitectura TI Implementacion
+Relevamiento
+Levantamiento de Información
+
+
+
+Nivel 1 Arquitectura TI PreVenta:
+Arquitectura TI PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Arquitectura TI PreVenta
+Diseño
+Diseño de Arquitectura
+ 
+Arquitectura TI PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Arquitectura TI PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+Arquitectura TI PreVenta
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Arquitectura TI PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Arquitectura TI PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+Arquitectura TI PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+Arquitectura TI PreVenta
+Relevamiento
+Workload Assessment
+
+
+Nivel 1 Backups y Restores Administración:
+
+Backups y Restores Administracion
+Actualizacion
+Actualizacion software respaldo en srvr cliente
+ 
+Backups y Restores Administracion
+Altas
+Creacion de Politica de Backup
+ 
+Backups y Restores Administracion
+Altas
+Instalacion de Agente de Respaldo
+ 
+Backups y Restores Administracion
+Auditoria
+Extraccion de log
+ 
+Backups y Restores Administracion
+Auditoria
+Validacion de Backup
+ 
+Backups y Restores Administracion
+Bajas
+Baja de CI en la Politica de Respaldo
+ 
+Backups y Restores Administracion
+Bajas
+Baja de Politica de Backup
+ 
+Backups y Restores Administracion
+Bajas
+Desinstalacion de Agente de Respaldo
+ 
+Backups y Restores Administracion
+Capacidades
+Depuracion Respaldos Historicos
+ 
+Backups y Restores Administracion
+Configuracion
+Aplicacion de Mejoras
+
+Backups y Restores Administracion
+Configuracion
+Configuracion de Tarea Backup de Base de Datos
+ 
+Backups y Restores Administracion
+Configuracion
+Configuracion de Tarea Backup de Filesystem
+ 
+Backups y Restores Administracion
+Copias
+Copias de Cinta a Cinta
+ 
+Backups y Restores Administracion
+Documentos
+Elaboracion Informe Mensual
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Desactivacion de Tarea de Respaldo
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Elaboracion de Link para copias
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Modificacion de Politica de Respaldo
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Programar Desprogramar Backups
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Reprogramar Ejecucion de Backup
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Restore a Demanda
+
+Backups y Restores Administracion
+Mantenimiento
+Ejecucion de Rutinarias
+ 
+Backups y Restores Administracion
+Restauracion
+Base de Datos
+ 
+Backups y Restores Administracion
+Restauracion
+Registro
+ 
+Backups y Restores Administracion
+Soporte
+Escalamiento a Marca Proveedor
+ 
+Backups y Restores Administracion
+Altas
+Adicion nuevo CI a Politica de Respaldo para BD
+ 
+Backups y Restores Administracion
+Altas
+Adicion nuevo CI a Politica de Respaldo para FS
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Migrar Cliente Backup a Otro srvr respaldo para BD
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Migrar Cliente Backup a Otro srvr respaldo para FS
+ 
+Backups y Restores Administracion
+Copias
+Copia de storage a storage
+ 
+Backups y Restores Administracion
+Actualizacion
+Actualizacion agente de respaldo en srvr cliente
+
+Backups y Restores Administracion
+Actualizacion
+Actualizacion de politica de backup
+ 
+Backups y Restores Administracion
+Altas
+Adicion nuevo CI a Pol Respaldo para srvr virtual
+ 
+Backups y Restores Administracion
+Configuracion
+Configuracion de Malla/planes
+ 
+Backups y Restores Administracion
+Configuracion
+Configuracion de Tarea Backup d maquinas virtuales
+ 
+Backups y Restores Administracion
+Configuracion
+Configuracion y habilitacion de Reportes
+ 
+Backups y Restores Administracion
+Continuidad
+Prueba de restauracion de BD
+ 
+Backups y Restores Administracion
+Continuidad
+Prueba de restauracion de FS
+ 
+Backups y Restores Administracion
+Copias
+Copias de storage a Cinta
+ 
+Backups y Restores Administracion
+Documentos
+Elaboracion Informe Tecnico-N1-Preliminar
+ 
+Backups y Restores Administracion
+Documentos
+Elaboracion Informe Tecnico-N2-Estandar
+
+Backups y Restores Administracion
+Documentos
+Elaboracion Informe Tecnico-N3-Revision
+ 
+Backups y Restores Administracion
+Documentos
+Elaboracion Plan de Trabajo Restore de VMs
+ 
+Backups y Restores Administracion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+Backups y Restores Administracion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+Backups y Restores Administracion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Adicion de Tarea de Respaldo de BD
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Adicion de Tarea de Respaldo de FS
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Adicion de Tarea de Respaldo de servidor virtual
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Backup a demanda de maquinas virtuales
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Backup a demanda para BD
+
+Backups y Restores Administracion
+Gestion de Respaldos
+Backup a demanda para FS
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Copia de Backup a demanda
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Migrar Cliente Backup a Otro srvr respaldo para VM
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Modificacion de Tarea de Respaldo de BD
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Modificacion de Tarea de Respaldo de FS
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Modificacion de Tarea de Respaldo de srvr virtual
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Restauracion a demanda de BD en DEV QAS
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Restauracion a demanda de BD en produccion
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Restauracion a demanda de FS
+ 
+Backups y Restores Administracion
+Gestion de Respaldos
+Revalida de Politica de Respaldo
+
+Backups y Restores Administracion
+Inventario
+Actualizacion inventario backup
+ 
+Backups y Restores Administracion
+Restauracion
+Restauracion BD en DEV QAS
+ 
+Backups y Restores Administracion
+Restauracion
+Restauracion BD en Produccion
+ 
+Backups y Restores Administracion
+Restauracion
+Restauracion de Buzon de Correo
+ 
+Backups y Restores Administracion
+Restauracion
+Restauracion de FileSystem
+ 
+Backups y Restores Administracion
+Restauracion
+Restauracion de FS
+
+
+Nivel 1 Backups y Restores Consultoria:
+
+Backups y Restores Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+Backups y Restores Consultoria
+Relevamiento
+Workload Assessment
+ 
+Backups y Restores Consultoria
+Documentos
+Elaboracion Informe Tecnico para Consultoria
+ 
+Backups y Restores Consultoria
+Documentos
+Elaborac Inform Tecnico para Consult especializado
+
+
+Nivel 1 Backups y Restores Implementación:
+
+Backups y Restores Implementacion
+Altas
+Creacion de Politica de Backup
+ 
+Backups y Restores Implementacion
+Altas
+Instalacion de Agente de Respaldo
+ 
+Backups y Restores Implementacion
+Bajas
+Baja de CI en la Politica de Respaldo
+ 
+Backups y Restores Implementacion
+Bajas
+Baja de Politica de Backup
+ 
+Backups y Restores Implementacion
+Bajas
+Desinstalacion de Agente de Respaldo
+ 
+Backups y Restores Implementacion
+Documentos
+Elaboracion de Diagramas
+ 
+Backups y Restores Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+Backups y Restores Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+Backups y Restores Implementacion
+Altas
+Adicion nuevo CI a la Politica de Respaldo para FS
+ 
+Backups y Restores Implementacion
+Altas
+Adicion nuevo CI a la Politica de Respaldo para BD
+
+Backups y Restores Implementacion
+Altas
+Adicion nuevo CI a Pol Respaldo para srvr virtual
+ 
+Backups y Restores Implementacion
+Documentos
+Elaboracion Informe Tecnico para implementacion
+ 
+Backups y Restores Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+Backups y Restores Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+Backups y Restores Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+
+
+Nivel 1 Backups y Restores PreVenta:
+
+Backups y Restores PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Backups y Restores PreVenta
+Diseño
+Diseño de Solucion de Respaldo
+ 
+Backups y Restores PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Backups y Restores PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Backups y Restores PreVenta
+Pilotos
+PoC
+ 
+Backups y Restores PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+Backups y Restores PreVenta
+Relevamiento
+Workload Assessment
+ 
+Backups y Restores PreVenta
+Documentos
+Elaborac Informe Tecnico complejo para Propuesta
+ 
+Backups y Restores PreVenta
+Documentos
+Elaborac Plan de Trabajo-Intermedio para Propuesta
+ 
+Backups y Restores PreVenta
+Documentos
+Elaborac Plan de Trabajo-Avanzado para Propuesta
+
+
+Nivel 1 BASE DE DATOS Administración:
+
+BASE DE DATOS Administracion
+Accesos
+Alta Baja Accesos de Usuarios en BD
+ 
+BASE DE DATOS Administracion
+Accesos
+Asignacion Modificacion Roles en Aplicacion
+ 
+BASE DE DATOS Administracion
+Accesos
+Bloquear Desbloquear Usuario
+ 
+BASE DE DATOS Administracion
+Accesos
+Consulta de Usuario en BD
+ 
+BASE DE DATOS Administracion
+Accesos
+Modificacion Usuarios Roles Permisos en BD
+ 
+BASE DE DATOS Administracion
+Actualizacion
+Validacion de Compatibilidad de Parche
+ 
+BASE DE DATOS Administracion
+Capacidades
+Aumento de Tamaño de Objetos de Base de Datos
+ 
+BASE DE DATOS Administracion
+Capacidades
+Liberacion de Espacio
+ 
+BASE DE DATOS Administracion
+Capacidades
+Validacion de Consumo de Recursos
+ 
+BASE DE DATOS Administracion
+Clonacion
+Clonacion de Base de Datos
+
+BASE DE DATOS Administracion
+Configuracion
+Configuracion de Jobs
+ 
+BASE DE DATOS Administracion
+Configuracion
+Configuracion del motor de BD
+ 
+BASE DE DATOS Administracion
+Configuracion
+Configuracion Publicaciones Web App
+ 
+BASE DE DATOS Administracion
+Continuidad
+Activar/desactivar Replica
+ 
+BASE DE DATOS Administracion
+Continuidad
+Creacion y Configuracion de Replicas
+ 
+BASE DE DATOS Administracion
+Continuidad
+Revision Diagnostico de Replicas
+ 
+BASE DE DATOS Administracion
+Documentos
+Analisis de Reportes
+ 
+BASE DE DATOS Administracion
+Documentos
+Elaboracion Informe Mensual
+ 
+BASE DE DATOS Administracion
+Documentos
+Elaboracion Informe Tecnico
+ 
+BASE DE DATOS Administracion
+Documentos
+Elaboracion Plan de Trabajo
+
+BASE DE DATOS Administracion
+Documentos
+Generacion de Reportes
+ 
+BASE DE DATOS Administracion
+Gestion de Respaldos
+Backup a Demanda de Base de Datos
+ 
+BASE DE DATOS Administracion
+Gestion de Respaldos
+Backup programado de Base de Datos
+ 
+BASE DE DATOS Administracion
+Gestion de Respaldos
+Restore a demanda de Base de Datos
+ 
+BASE DE DATOS Administracion
+Gestion de Respaldos
+Restore programado de Base de Datos
+ 
+BASE DE DATOS Administracion
+Pases
+Pase en Aplicacion No Productivo
+ 
+BASE DE DATOS Administracion
+Pases
+Pase en Aplicacion Productivo
+ 
+BASE DE DATOS Administracion
+Pases
+Pase en Entorno BD No Productivo
+ 
+BASE DE DATOS Administracion
+Pases
+Pase en Entorno BD Productivo
+ 
+BASE DE DATOS Administracion
+Reinicios
+Reinicio de Servicios de Aplicacion
+
+BASE DE DATOS Administracion
+Reinicios
+Reinicio de Servicios de Web App
+ 
+BASE DE DATOS Administracion
+Soporte
+Escalamiento a Marca Proveedor
+ 
+BASE DE DATOS Administracion
+Soporte
+Monitoreo de Jobs
+ 
+BASE DE DATOS Administracion
+Soporte
+Validacion de Servicios BD
+ 
+BASE DE DATOS Administracion
+Soporte
+Validacion de Servicios de Aplicacion
+ 
+BASE DE DATOS Administracion
+Soporte
+Validacion de Servicios de Web App
+ 
+BASE DE DATOS Administracion
+Accesos
+Otorgar Privilegios y Roles en BD
+ 
+BASE DE DATOS Administracion
+Accesos
+Revocar Privilegios y Roles en BD
+ 
+BASE DE DATOS Administracion
+Accesos
+Modificar Privilegios y Roles en BD
+ 
+BASE DE DATOS Administracion
+Accesos
+Creacion de Roles en BD
+
+BASE DE DATOS Administracion
+Mantenimiento
+Checklist Diario de BD
+ 
+BASE DE DATOS Administracion
+Mantenimiento
+Checklist Diario de Aplicaciones
+ 
+BASE DE DATOS Administracion
+Reinicios
+Reinicio servicio motor BD Standalone Basico
+ 
+BASE DE DATOS Administracion
+Reinicios
+Reinic servicio BD Dataguard StandbyCluster Interm
+ 
+BASE DE DATOS Administracion
+Reinicios
+Reinicio servicio motr BD RAC AlwaysOn HA Avanzado
+ 
+BASE DE DATOS Administracion
+Soporte
+Definicion de Alertas y Umbrales de Monitoreo
+ 
+BASE DE DATOS Administracion
+Seguridad
+Revision de Logs de Seguridad
+ 
+BASE DE DATOS Administracion
+Seguridad
+Activacion de trazas de Auditoria
+ 
+BASE DE DATOS Administracion
+Seguridad
+Desactivacion de trazas de Auditoria
+ 
+BASE DE DATOS Administracion
+Automatizacion
+Creacion de Scripts de Automatizacion
+
+BASE DE DATOS Administracion
+Performance
+Tuning de Consultas SQL
+ 
+BASE DE DATOS Administracion
+Performance
+Analisis y Optimizacion de Indices
+ 
+BASE DE DATOS Administracion
+Performance
+Generar Report AWR/ASH Oracle o Query Store SQL
+ 
+BASE DE DATOS Administracion
+Continuidad
+Validar que BD no este corrupta
+
+
+Nivel 1 BASE DE DATOS Consultoria:
+
+BASE DE DATOS Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+BASE DE DATOS Consultoria
+Relevamiento
+Investigacion
+ 
+BASE DE DATOS Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+BASE DE DATOS Consultoria
+Relevamiento
+Workload Assessment
+
+
+Nivel 1 BASE DE DATOS Implementación:
+
+BASE DE DATOS Implementacion
+Altas
+Creacion de Base de Datos
+ 
+BASE DE DATOS Implementacion
+Altas
+Crear Ambiente App
+ 
+BASE DE DATOS Implementacion
+Bajas
+Eliminacion de Ambiente App
+ 
+BASE DE DATOS Implementacion
+Bajas
+Eliminacion de Base de Datos
+ 
+BASE DE DATOS Implementacion
+Continuidad
+Implementacion Contingencia
+ 
+BASE DE DATOS Implementacion
+Documentos
+Elaboracion Informe Tecnico
+ 
+BASE DE DATOS Implementacion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+BASE DE DATOS Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+BASE DE DATOS Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+BASE DE DATOS Implementacion
+Altas
+Creacion de Esquemas de Base de Datos
+
+
+
+Nivel 1 BASE DE DATOS PreVenta:
+
+BASE DE DATOS PreVenta
+Diseño
+Costeo de Propuesta
+ 
+BASE DE DATOS PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+BASE DE DATOS PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+BASE DE DATOS PreVenta
+Documentos
+Elaboracion Plan de Trabajo
+ 
+BASE DE DATOS PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+BASE DE DATOS PreVenta
+Pilotos
+PoC de Aplicacion
+ 
+BASE DE DATOS PreVenta
+Pilotos
+PoC de Base de Datos
+ 
+BASE DE DATOS PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+BASE DE DATOS PreVenta
+Relevamiento
+Workload Assessment
+
+Nivel 1 CECOM Operación:
+
+CECOM Operacion
+Accesos
+Accesos Cuentas
+ 
+CECOM Operacion
+Accesos
+Accesos Cuentas Masivas
+ 
+CECOM Operacion
+Accesos
+Gestion de Usuarios SAP
+ 
+CECOM Operacion
+Accesos
+Modificacion de Grupo de Seguridad
+ 
+CECOM Operacion
+Accesos
+Modificacion de Perfil de Usuario
+ 
+CECOM Operacion
+Accesos
+Modificacion de Permisos
+ 
+CECOM Operacion
+Accesos
+Permisos de Cuenta de Correo
+ 
+CECOM Operacion
+Accesos
+Permisos Rutas de FileServer
+ 
+CECOM Operacion
+Actualizacion
+Ejecucion de Parchados
+ 
+CECOM Operacion
+Cintas
+Busqueda de Cintas
+
+
+CECOM Operacion
+Cintas
+Catalogo de Cintas
+ 
+CECOM Operacion
+Cintas
+Colocar Cintas en Slots
+ 
+CECOM Operacion
+Cintas
+Inventario de Cintas
+ 
+CECOM Operacion
+Configuracion
+Generar Eliminar Revertir Snapshots
+ 
+CECOM Operacion
+Configuracion
+Puesta en Mantenimiento
+ 
+CECOM Operacion
+Copias
+Copias de Backup a Cinta
+ 
+CECOM Operacion
+Documentos
+Ejecucion de Reportes
+ 
+CECOM Operacion
+Documentos
+Elaboracion de Documentacion
+ 
+CECOM Operacion
+Energia
+Medicion PUE Power Usage Effectiveness
+ 
+CECOM Operacion
+Gestion de Respaldos
+Programar Desprogramar Backups
+
+CECOM Operacion
+Gestion de Respaldos
+Seguimiento de Ejecucion de Backups
+ 
+CECOM Operacion
+Gestion Operativa
+Ejecucion de Transporte
+ 
+CECOM Operacion
+Ingreso DC
+Acceso al Datacenter
+ 
+CECOM Operacion
+Ingreso DC
+Recepcion de Equipos
+ 
+CECOM Operacion
+Inventario
+Ingreso Devolucion de Equipos
+ 
+CECOM Operacion
+Mantenimiento
+Ejecucion de Actividades en Cambios
+ 
+CECOM Operacion
+Mantenimiento
+Ejecucion de Rutinarias
+ 
+CECOM Operacion
+Mantenimiento
+Revisar Rutinarias ShareCheck
+ 
+CECOM Operacion
+Mantenimiento
+Revision Periodica de Snapshots
+ 
+CECOM Operacion
+Mantenimiento
+Validacion de Continuidad del Monitoreo
+
+CECOM Operacion
+Mantenimiento
+Validacion de Equipos del Datacenter
+ 
+CECOM Operacion
+Mantenimiento
+Validacion de Servicios Procesos en Ejecucion
+ 
+CECOM Operacion
+Soporte
+Activacion Linea de Comandos
+ 
+CECOM Operacion
+Soporte
+Descarga de Camaras
+ 
+CECOM Operacion
+Soporte
+Manos Remotas
+ 
+CECOM Operacion
+Soporte
+Revision de Colas
+ 
+CECOM Operacion
+Integracion
+Por Categorizar
+
+Nivel 1: CECOM PreVenta
+
+CECOM PreVenta
+Diseño
+Costeo Dimensionamiento
+ 
+CECOM PreVenta
+Documentos
+Revision de Documentos Tecnicos
+
+
+Nivel 1: Cloud Innovation Administración
+
+Cloud Innovation Administracion
+Accesos
+Accesos Cuentas Alta Modificacion
+ 
+Cloud Innovation Administracion
+Accesos
+Accesos Cuentas Bajas
+ 
+Cloud Innovation Administracion
+Accesos
+Modificacion de Permisos
+ 
+Cloud Innovation Administracion
+Actualizacion
+Actualizacion de componentes librerias
+ 
+Cloud Innovation Administracion
+Actualizacion
+Soporte en Parchado Automatizado
+ 
+Cloud Innovation Administracion
+Datos
+Carga Masiva de Informacion
+ 
+Cloud Innovation Administracion
+Datos
+Modificaciones en Base de Datos
+ 
+Cloud Innovation Administracion
+Desarrollo
+Ajustes de codigo en desarrollo
+ 
+Cloud Innovation Administracion
+Documentos
+Elaboracion de Documentacion
+ 
+Cloud Innovation Administracion
+Soporte
+Soporte Aplicaciones de Terceros
+
+Cloud Innovation Administracion
+Soporte
+Soporte en automatizaciones
+ 
+Cloud Innovation Administracion
+Soporte
+Soporte en desarrollos
+
+
+Nivel 1 Cloud Innovation Consultoria:
+
+Cloud Innovation Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Innovation Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+Cloud Innovation Consultoria
+Relevamiento
+Workload Assessment
+
+
+Nivel 1 Cloud Innovation Implementación:
+
+Cloud Innovation Implementacion
+Configuracion
+Configuracion de Dashboard
+ 
+Cloud Innovation Implementacion
+Configuracion
+Configuracion de Reportes
+ 
+Cloud Innovation Implementacion
+Configuracion
+Configuracion en Aplicaciones de Terceros
+ 
+Cloud Innovation Implementacion
+Datos
+Implementar Base de Datos
+ 
+Cloud Innovation Implementacion
+Desarrollo
+Desarrollo Back End
+ 
+Cloud Innovation Implementacion
+Desarrollo
+Desarrollo de Reportes o Paneles
+ 
+Cloud Innovation Implementacion
+Desarrollo
+Desarrollo Front End UI
+ 
+Cloud Innovation Implementacion
+Desarrollo
+Despliegue de Automatizacion
+ 
+Cloud Innovation Implementacion
+Desarrollo
+Investigacion para nueva funcionalidad
+ 
+Cloud Innovation Implementacion
+Documentos
+Elaboracion de Diseño de Interfaz UI
+
+Cloud Innovation Implementacion
+Documentos
+Elaboracion de Documentación
+
+
+Nivel 1: Cloud Innovation PreVenta
+
+Cloud Innovation PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Cloud Innovation PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Cloud Innovation PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Innovation PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Cloud Innovation PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+Cloud Innovation PreVenta
+Relevamiento
+Levantamiento de Informacion
+
+
+Nivel 1 Cloud Publico Administración
+
+Cloud Publico Administracion
+Accesos
+Accesos Office 365
+ 
+Cloud Publico Administracion
+Accesos
+Accesos Portal de Nube
+ 
+Cloud Publico Administracion
+Alertas
+Configuracion Alertas Monitoreo Nativo
+ 
+Cloud Publico Administracion
+Alertas
+Dashboards Monitoreo Recursos
+ 
+Cloud Publico Administracion
+Apagado
+Apagado Encendido Programado
+ 
+Cloud Publico Administracion
+Auditoria
+Auditoria Trazabilidad Usuarios Uso de Recursos
+ 
+Cloud Publico Administracion
+Billing
+Control de Facturacion de Servicios en Nube
+ 
+Cloud Publico Administracion
+Billing
+Generacion Reportes de Consumos en Nube
+ 
+Cloud Publico Administracion
+Capacidades
+Configuracion de Recursos en Nube
+ 
+Cloud Publico Administracion
+Capacidades
+Consumo Recursos Hardware Virtual
+
+
+Cloud Publico Administracion
+Configuracion
+Acceso a aplicaciones Web
+ 
+Cloud Publico Administracion
+Configuracion
+Acceso a recursos de Almacenamiento
+ 
+Cloud Publico Administracion
+Configuracion
+Configuracion de Enrutamiento en Nube
+ 
+Cloud Publico Administracion
+Configuracion
+Configuracion de VPC en Nube
+ 
+Cloud Publico Administracion
+Configuracion
+Configuracion de VPN en Nube
+ 
+Cloud Publico Administracion
+Configuracion
+Gestion de Snapshots y Backups
+ 
+Cloud Publico Administracion
+Configuracion
+Programacion de automatizaciones
+ 
+Cloud Publico Administracion
+Configuracion
+Seguridad de Correo
+ 
+Cloud Publico Administracion
+Documentos
+Elaboracion de Diagramas
+ 
+Cloud Publico Administracion
+Documentos
+Elaboracion Informe Mensual
+
+Cloud Publico Administracion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Publico Administracion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Cloud Publico Administracion
+Documentos
+Generacion de Reportes
+ 
+Cloud Publico Administracion
+Inventario
+Elaboracion de Inventarios
+ 
+Cloud Publico Administracion
+Inventario
+Reportes de Componentes en Portal
+ 
+Cloud Publico Administracion
+Seguridad
+Autenticacion Acceso de Usuarios
+ 
+Cloud Publico Administracion
+Seguridad
+Configuracion de Seguridad en Nube
+ 
+Cloud Publico Administracion
+Seguridad
+Descubrimiento Vulnerabilidades de Seguridad
+ 
+Cloud Publico Administracion
+Seguridad
+Reglas Proteccion de Correos en Nube
+ 
+Cloud Publico Administracion
+Soporte
+Escalamiento a Marca Proveedor
+
+
+Nivel 1 Cloud Publico Consultoria:
+
+Cloud Publico Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Publico Consultoria
+Relevamiento
+Investigacion
+ 
+Cloud Publico Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+Cloud Publico Consultoria
+Relevamiento
+Workload Assessment
+
+
+
+Nivel 1 Cloud Publico Implementación:
+
+Cloud Publico Implementacion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Publico Implementacion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Cloud Publico Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+Cloud Publico Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+Cloud Publico Implementacion
+Soporte
+Asesoria Tecnica a Clientes
+
+
+
+Nivel 1: Cloud Publico PreVenta
+
+Cloud Publico PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Cloud Publico PreVenta
+Diseño
+Diseño de Arquitectura
+ 
+Cloud Publico PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Cloud Publico PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Publico PreVenta
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Cloud Publico PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Cloud Publico PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+Cloud Publico PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+Cloud Publico PreVenta
+Relevamiento
+Workload Assessment
+
+
+
+Nivel 1 Cloud Workplace Administración:
+
+Cloud Workplace Administracion
+Herramienta ITSM
+Otros parametros
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Consulta Tecnica
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Reglas de asignacion
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Categorias
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Dashboards
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Informacion Cargada
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Licenciamiento
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Notificaciones
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Reportes
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Roles
+
+
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Tareas
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de Usuarios
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Modificacion Configuracion Herramienta
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de activos CMDB
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Modificacion de Formulario
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Gestion de ALPs
+ 
+Cloud Workplace Administracion
+Accesos
+Creacion de usuario
+ 
+Cloud Workplace Administracion
+Accesos
+Modificacion accesos usuario
+ 
+Cloud Workplace Administracion
+Accesos
+Eiminacion de usuarios
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Carga masiva de Cis
+
+Cloud Workplace Administracion
+Soporte Autoservicio
+Modificacion de intencion
+ 
+Cloud Workplace Administracion
+Herramienta ITSM
+Proyecto Especial
+ 
+Cloud Workplace Administracion
+Soporte Analytics/ETL
+Modificacion de accesos ETL
+ 
+Cloud Workplace Administracion
+Soporte BI
+Modificacion de accesos BI
+ 
+Cloud Workplace Administracion
+Soporte Analytics/ETL
+Reprocesos de Informacion
+ 
+Cloud Workplace Administracion
+Soporte Analytics/ETL
+Extraccion de campos
+ 
+Cloud Workplace Administracion
+Soporte Autoservicio
+Solicitud o baja de intencion
+ 
+Cloud Workplace Administracion
+Gestion de centro de contacto
+Alta nueva posicion de agente
+ 
+Cloud Workplace Administracion
+Gestion de centro de contacto
+Baja de posicion de agente
+ 
+Cloud Workplace Administracion
+Gestion de centro de contacto
+Creacion de flujo de conversacion (Voz/Chat)
+
+Cloud Workplace Administracion
+Gestion de centro de contacto
+Actualizacion de flujo de conversacion (Voz/Chat)
+ 
+Cloud Workplace Administracion
+Gestion de accesos
+Dashboard en Linea Telefonia
+ 
+Cloud Workplace Administracion
+Gestion de centro de contacto
+Reasignacion de Agente
+ 
+Cloud Workplace Administracion
+Herramienta ITAM
+Consulta técnica
+
+
+Nivel 1 Cloud WorkPlace Consultoria:
+
+Cloud Workplace Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Workplace Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+Cloud Workplace Consultoria
+Relevamiento
+Workload Assessment
+ 
+Cloud WorkPlace Consultoria
+Diagnostico/Analisis Procesos
+Assesment
+
+Nivel 1 Cloud Workplace Implementación:
+
+Cloud Workplace Implementacion
+Documentos
+Elaboracion de Diagramas
+ 
+Cloud Workplace Implementacion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Workplace Implementacion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Cloud Workplace Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+Cloud Workplace Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+Cloud WorkPlace Implementacion
+Implementaciones Proyectos
+Nuevo Proyecto
+ 
+Cloud WorkPlace Implementacion
+Implementaciones Proyectos
+Baja Proyecto
+ 
+Cloud WorkPlace Implementacion
+Implementaciones Proyectos
+Nuevo Upselling
+ 
+Cloud Workplace Implementacion
+Soporte
+Soporte Post Implementacion
+
+
+Nivel 1 Cloud Workplace PreVenta:
+
+Cloud Workplace PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Cloud Workplace PreVenta
+Diseño
+Diseño de Solucion
+ 
+Cloud Workplace PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Cloud Workplace PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+Cloud Workplace PreVenta
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Cloud Workplace PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Cloud Workplace PreVenta
+Pilotos
+PoC
+ 
+Cloud Workplace PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+Cloud Workplace PreVenta
+Relevamiento
+Workload Assessment
+ 
+Cloud Workplace PreVenta
+Gestion de la estimacion
+Estimación de nueva solicitud
+
+
+Nivel 1 COT Operación:
+
+COT Operacion
+Cintas
+Busqueda de Cintas
+ 
+COT Operacion
+Cintas
+Catalogo de Cintas
+ 
+COT Operacion
+Cintas
+Colocar Cintas en Slots
+ 
+COT Operacion
+Cintas
+Inventario de Cintas
+ 
+COT Operacion
+Copias
+Copias de Backup a Cinta
+ 
+COT Operacion
+Documentos
+Ejecucion de Reportes
+ 
+COT Operacion
+Documentos
+Elaboracion de Documentacion
+ 
+COT Operacion
+Energia
+Medicion PUE Power Usage Effectiveness
+ 
+COT Operacion
+Gestion de Respaldos
+Programar Desprogramar Backups
+ 
+COT Operacion
+Gestion de Respaldos
+Seguimiento de Ejecucion de Backups
+
+
+COT Operacion
+Ingreso DC
+Acceso al Datacenter
+ 
+COT Operacion
+Ingreso DC
+Recepcion de Equipos
+ 
+COT Operacion
+Inventario
+Ingreso Devolucion de Equipos
+ 
+COT Operacion
+Mantenimiento
+Ejecucion de Actividades en Cambios
+ 
+COT Operacion
+Mantenimiento
+Ejecucion de Rutinarias
+ 
+COT Operacion
+Mantenimiento
+Revisar Rutinarias ShareCheck
+ 
+COT Operacion
+Mantenimiento
+Validacion de Equipos del Datacenter
+ 
+COT Operacion
+Soporte
+Activacion Linea de Comandos
+ 
+COT Operacion
+Soporte
+Descarga de Camaras
+ 
+COT Operacion
+Soporte
+Manos Remotas
+
+COT Operacion
+Soporte
+Revision de Colas
+
+
+Nivel 1 COT PreVenta:
+
+COT PreVenta
+Diseño
+Costeo Dimensionamiento
+ 
+COT PreVenta
+Documentos
+Revision de Documentos Tecnicos
+
+
+Nivel 1 CyberSOC Administración:
+
+CyberSOC Administracion
+Configuracion
+SIEM Desarrollo de Alerta
+ 
+CyberSOC Administracion
+Configuracion
+SIEM Desarrollo de Dashboard
+ 
+CyberSOC Administracion
+Rutinaria
+Alertamiento de Eventos de Seguridad
+ 
+CyberSOC Administracion
+Rutinaria
+Bloqueo de IOC
+ 
+CyberSOC Administracion
+Rutinaria
+Deteccion de Reglas Any
+ 
+CyberSOC Administracion
+Rutinaria
+Escaneo de Puertos
+ 
+CyberSOC Administracion
+Rutinaria
+Preparacion de Boletin de Seguridad
+ 
+CyberSOC Administracion
+Rutinaria
+Revision Eventos de Seguridad
+ 
+CyberSOC Administracion
+Rutinaria
+Threat Hunting
+ 
+CyberSOC Administracion
+Soporte
+Investigación
+
+
+Nivel 1 Digital Services Soporte Proy Cloud:
+
+Digital Services Soporte Proy Cloud
+Soporte
+Requerimiento en aplicación
+
+
+
+Nivel 1 Facilities Administración:
+
+Facilities Administracion
+Mantenimiento
+Sistema Contra Incendio
+ 
+Facilities Administracion
+Configuracion
+Configuracion Aire Acondicionado
+ 
+Facilities Administracion
+Configuracion
+Configuracion Controles Biometricos
+ 
+Facilities Administracion
+Configuracion
+Configuracion Equipos de Gestion de Energia
+ 
+Facilities Administracion
+Configuracion
+Configuracion Grupo Electrogeno
+ 
+Facilities Administracion
+Configuracion
+Configuracion Sistema Contra Incendio
+ 
+Facilities Administracion
+Configuracion
+Configuracion Sistema de Combustible
+ 
+Facilities Administracion
+Continuidad
+Ejecucion de Prueba con Carga
+ 
+Facilities Administracion
+Continuidad
+Ejecucion de Prueba de Recirculacion
+ 
+Facilities Administracion
+Continuidad
+Ejecucion de Prueba en Vacio
+
+
+Facilities Administracion
+Continuidad
+Medicion de Parametros Electricos
+ 
+Facilities Administracion
+Documentos
+Elaboracion Informe del Servicio Facilities
+ 
+Facilities Administracion
+Documentos
+Elaboracion Informe Mensual para Cliente
+ 
+Facilities Administracion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Facilities Administracion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Facilities Administracion
+Gestion de Espacio Fisico
+Movimiento/Ordenamiento Cableado Electrico
+ 
+Facilities Administracion
+Gestion de Espacio Fisico
+Movimiento/Ordenamiento Cableado FO UTP
+ 
+Facilities Administracion
+Gestion de Espacio Fisico
+Supervision Rackeo/Desrackeo Equipos
+ 
+Facilities Administracion
+Ingreso DC
+Acceso al Datacenter
+ 
+Facilities Administracion
+Ingreso DC
+Recepcion de Equipos
+
+
+Facilities Administracion
+Inventario
+Ingreso Devolucion de Equipos
+ 
+Facilities Administracion
+Inventario
+Inventario de Equipos
+ 
+Facilities Administracion
+Mantenimiento
+Limpieza Tecnica
+ 
+Facilities Administracion
+Mantenimiento
+Mantenimiento Aire Acondicionado
+ 
+Facilities Administracion
+Mantenimiento
+Mantenimiento Controles Biometricos
+ 
+Facilities Administracion
+Mantenimiento
+Mantenimiento Equipos de Gestion de Energia
+ 
+Facilities Administracion
+Mantenimiento
+Mantenimiento Grupo Electrogeno
+ 
+Facilities Administracion
+Mantenimiento
+Mantenimiento Sistema de Combustible
+ 
+Facilities Administracion
+Mantenimiento
+Validacion de Equipos del Datacenter
+ 
+Facilities Administracion
+Soporte
+Asesoria Tecnica
+
+Facilities Administracion
+Soporte
+Coordinacion de Trabajos
+ 
+Facilities Administracion
+Soporte
+Gestion de Proveedores
+ 
+Facilities Administracion
+Soporte
+Visita Tecnica
+
+
+
+Nivel 1 Facilities Consultoria:
+
+
+Facilities Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+Facilities Consultoria
+Relevamiento
+Levantamiento de Información
+
+
+Nivel 1 Facilities Implementación:
+
+Facilities Implementacion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Facilities Implementacion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Facilities Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+Facilities Implementacion
+Gestion de Espacio Fisico
+Supervision Cambio/Reemplazo Equipo
+ 
+Facilities Implementacion
+Gestion de Espacio Fisico
+Supervision Instalaciones Enlaces de Comunicacion
+ 
+Facilities Implementacion
+Gestion de Espacio Fisico
+Supervision Instalaciones Equipos
+ 
+Facilities Implementacion
+Gestion de Espacio Fisico
+Supervision Movimiento/Retiro Gabinete
+ 
+Facilities Implementacion
+Gestion de Espacio Fisico
+Supervision Rackeo/Desrackeo Equipos
+ 
+Facilities Implementacion
+Gestion de Espacio Fisico
+Supervision Retiro Baja de Equipos
+ 
+Facilities Implementacion
+Relevamiento
+Levantamiento de Informacion
+
+Facilities Implementacion
+Soporte
+Visita Tecnica
+
+
+Nivel 1 Facilities PreVenta:
+
+Facilities PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Facilities PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Facilities PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+Facilities PreVenta
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Facilities PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Facilities PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+Facilities PreVenta
+Soporte
+Visita Tecnica
+
+
+Nivel 1 Infraestructura TI Administración:
+
+Infraestructura TI Administracion
+Accesos
+Accesos a Plataforma Virtualizacion
+ 
+Infraestructura TI Administracion
+Capacidades
+Asignacion de Capacidades CPU
+ 
+Infraestructura TI Administracion
+Capacidades
+Asignacion de Capacidades Disco
+ 
+Infraestructura TI Administracion
+Capacidades
+Asignacion de Capacidades Memoria
+ 
+Infraestructura TI Administracion
+Capacidades
+Aumento Capacidad Datastore
+ 
+Infraestructura TI Administracion
+Capacidades
+Creacion Presentacion LUN
+ 
+Infraestructura TI Administracion
+Capacidades
+Elimacion de LUN
+ 
+Infraestructura TI Administracion
+Capacidades
+Incrementar Capacidad de LUN
+ 
+Infraestructura TI Administracion
+Capacidades
+Modificar Asignacion Datastore
+ 
+Infraestructura TI Administracion
+Capacidades
+Revision Espacio Datastore
+
+Infraestructura TI Administracion
+Clonacion
+Eliminacion de Clon Temporal
+ 
+Infraestructura TI Administracion
+Configuracion
+Configuracion de Plan SRM
+ 
+Infraestructura TI Administracion
+Configuracion
+Configuracion de Replica
+ 
+Infraestructura TI Administracion
+Configuracion
+Consolidacion de Discos
+ 
+Infraestructura TI Administracion
+Configuracion
+Generar Eliminar Revertir Snapshots
+ 
+Infraestructura TI Administracion
+Configuracion
+Revision Periodica de Snapshots
+ 
+Infraestructura TI Administracion
+Configuracion
+Zonificacion de Servidores Storage Librerias
+ 
+Infraestructura TI Administracion
+Continuidad
+Balanceo de VM
+ 
+Infraestructura TI Administracion
+Copias
+Export Import OVF de VM
+ 
+Infraestructura TI Administracion
+Documentos
+Elaboracion Informe Mensual
+
+Infraestructura TI Administracion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Infraestructura TI Administracion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Infraestructura TI Administracion
+Documentos
+Generacion de Reporte de Capacidades
+ 
+Infraestructura TI Administracion
+Mantenimiento
+Reemplazo de Disco Duro Fisico
+ 
+Infraestructura TI Administracion
+Mantenimiento
+Validacion de Configuracion de SRM
+ 
+Infraestructura TI Administracion
+Mantenimiento
+Validacion de IO Tiempo de Respuesta en DataStore
+ 
+Infraestructura TI Administracion
+Soporte
+Escalamiento a Marca Proveedor
+ 
+Infraestructura TI Administracion
+Rutinarias
+Ejecucion de Rutinarias
+
+
+
+Nivel 1 Infraestructura TI Consultoria:
+
+Infraestructura TI Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+Infraestructura TI Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+Infraestructura TI Consultoria
+Relevamiento
+Workload Assessment
+
+
+Nivel 1 Infraestructura TI Implementación:
+
+Infraestructura TI Implementacion
+Documentos
+Elaboracion Informe Tecnico
+ 
+Infraestructura TI Implementacion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Infraestructura TI Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+Infraestructura TI Implementacion
+Entrega
+Solucion de Storage
+ 
+Infraestructura TI Implementacion
+Relevamiento
+Levantamiento de Información
+
+
+Nivel 1 Infraestructura TI PreVenta:
+
+Infraestructura TI PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Infraestructura TI PreVenta
+Diseño
+Diseño de Arquitectura
+ 
+Infraestructura TI PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Infraestructura TI PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+Infraestructura TI PreVenta
+Documentos
+Elaboracion Plan de Trabajo
+ 
+Infraestructura TI PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Infraestructura TI PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+Infraestructura TI PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+Infraestructura TI PreVenta
+Relevamiento
+Workload Assessment
+
+
+
+Nivel 1 LINUX-UNIX Administración:
+
+
+LINUX-UNIX Administracion
+Accesos
+Creacion de Accesos Cuentas
+ 
+LINUX-UNIX Administracion
+Accesos
+Modificacion Accesos Permisos
+ 
+LINUX-UNIX Administracion
+Accesos
+Permisos de Lectura Escritura Archivos Carpetas
+ 
+LINUX-UNIX Administracion
+Altas
+Definicion de Politica de Monitoreo
+ 
+LINUX-UNIX Administracion
+Altas
+Definicion de Politica de Respaldos
+ 
+LINUX-UNIX Administracion
+Capacidades
+Modificacion de Memoria Virtual SWAP
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de Cron Crontab
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de Particiones Filesystem
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de Politicas de Seguridad
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion Hardware Power
+
+
+LINUX-UNIX Administracion
+Configuracion
+Configuracion SO AIX
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion SO Linux
+ 
+LINUX-UNIX Administracion
+Configuracion
+Crear Eliminar Links Simbolicos
+ 
+LINUX-UNIX Administracion
+Configuracion
+Crear Eliminar Pools
+ 
+LINUX-UNIX Administracion
+Configuracion
+DHCP Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+DHCP Reservar Liberar IP
+ 
+LINUX-UNIX Administracion
+Configuracion
+DNS Agregar Quitar Registros
+ 
+LINUX-UNIX Administracion
+Configuracion
+DNS Agregar Quitar Zonas
+ 
+LINUX-UNIX Administracion
+Configuracion
+DNS Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+Firewall Iptables Configuracion
+
+
+LINUX-UNIX Administracion
+Configuracion
+FTP SFTP Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+Hardening de SO
+ 
+LINUX-UNIX Administracion
+Configuracion
+NTP Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+Proxy de Navegacion Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+Proxy Reverso Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+Samba Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+SMTP Relay Correo Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+Tomcat Configuracion
+ 
+LINUX-UNIX Administracion
+Configuracion
+Tunning de SO
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Actualizacion Diagramas
+
+
+
+LINUX-UNIX Administracion
+Documentos
+Reportes de Consumo de Capacidades
+ 
+LINUX-UNIX Administracion
+Eventos
+Definir Ajuste en Metrica de Monitoreo
+ 
+LINUX-UNIX Administracion
+Instalacion SW
+Instalacion de Software de Terceros
+ 
+LINUX-UNIX Administracion
+Instalacion SW
+Instalacion de Software Paquetes
+ 
+LINUX-UNIX Administracion
+Inventario
+Actualizacion de Inventario
+ 
+LINUX-UNIX Administracion
+Soporte
+Escalamiento a Marca Proveedor
+ 
+LINUX-UNIX Administracion
+Accesos
+Permisos Lect Escrit Archiv Carpet subsistem
+ 
+LINUX-UNIX Administracion
+Accesos
+Permisos Lect Escrit Archiv Carpet subsistem espec
+ 
+LINUX-UNIX Administracion
+Capacidades
+Modificacion de Memoria Virtual SWAP subsistema
+ 
+LINUX-UNIX Administracion
+Configuracion
+Apache Configuracion subsistema
+
+
+LINUX-UNIX Administracion
+Configuracion
+Apache Configuracion subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de Cron Crontab subsistema
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de LDAP subsistema
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de LDAP subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de Particiones Filesystem subsistema
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de Politicas de Seguridad subsistema
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion de Scripts Batch subsistema
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configurac Scripts Batch subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configurac Hardware Power subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Configuracion SO Linux subsistema
+
+LINUX-UNIX Administracion
+Configuracion
+Configuracion SO AIX subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Crear Eliminar Pools subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+DHCP Configuracion subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Firewall IPtables Config subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+FTP SFTP Configuracion subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Hardening de SO subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Proxy Navegacion Config subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Proxy Reverso Configurac subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Samba Configuracion subsistema
+ 
+LINUX-UNIX Administracion
+Configuracion
+SMTP Relay Correo Config subsistema especializado
+
+
+LINUX-UNIX Administracion
+Configuracion
+Tomcat Configuracion subsistema especializado
+ 
+LINUX-UNIX Administracion
+Configuracion
+Tunning de SO subsistema especializado
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Actualizacion Diagramas subsistema
+ 
+LINUX-UNIX Administracion
+Documentos
+Elab Actualizac Diagramas subsistema especializado
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Informe Mensual-N1
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Informe Mensual-N2-Criticos
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Informe Tecnico-N1-Preliminar
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Informe Tecnico-N2-Estandar
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Informe Tecnico-N3-Revision
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+LINUX-UNIX Administracion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+LINUX-UNIX Administracion
+Documentos
+Reportes de Consumo de Capacidades subsistema
+ 
+LINUX-UNIX Administracion
+Documentos
+Report Consumo Capacidades subsistem especializado
+ 
+LINUX-UNIX Administracion
+Eventos
+Defin Ajust MetricMonitoreo subsistem especializad
+ 
+LINUX-UNIX Administracion
+Instalacion SW
+Instalacion de Software de Terceros subsistema
+ 
+LINUX-UNIX Administracion
+Instalacion SW
+Instalac Software Terceros subsistem especializado
+ 
+LINUX-UNIX Administracion
+Instalacion SW
+Instalacion de Software Paquetes subsistema
+ 
+LINUX-UNIX Administracion
+Soporte
+Escalamiento a Marca Proveedor subsistema
+
+
+Nivel 1 LINUX-UNIX Consultoria:
+
+LINUX-UNIX Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+LINUX-UNIX Consultoria
+Relevamiento
+Workload Assessment
+ 
+LINUX-UNIX Consultoria
+Documentos
+Elaboracion Informe Tecnico para Consultoria
+ 
+LINUX-UNIX Consultoria
+Documentos
+Elab Inform Tecnico para Consultoria especializado
+ 
+LINUX-UNIX Consultoria
+Relevamiento
+Levantamiento Informacion subsistema especializado
+ 
+LINUX-UNIX Consultoria
+Relevamiento
+Workload Assessment subsistema especializado
+
+Nivel 1: LINUX-UNIX Implementación
+
+LINUX-UNIX Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+LINUX-UNIX Implementacion
+Migracion
+Toma Administracion SO Relevamiento
+ 
+LINUX-UNIX Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+LINUX-UNIX Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+LINUX-UNIX Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+LINUX-UNIX Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+LINUX-UNIX Implementacion
+Documentos
+Elab Informe Tecnic-Intermedio para implementacion
+ 
+LINUX-UNIX Implementacion
+Documentos
+Elab Informe Tecnico-Avanzado para implementacion
+ 
+LINUX-UNIX Implementacion
+Documentos
+Revision Document Tecnicos subsistem especializado
+ 
+LINUX-UNIX Implementacion
+Migracion
+Toma Administrac SO Relev subsistema especializado
+
+
+ LINUX-UNIX Implementacion
+Relevamiento
+Levantamiento Informacion subsistema especializado
+
+
+
+Nivel 1 LINUX-UNIX PreVenta:
+
+LINUX-UNIX PreVenta
+Diseño
+Costeo de Propuesta
+ 
+LINUX-UNIX PreVenta
+Diseño
+Diseño de Arquitectura
+ 
+LINUX-UNIX PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+LINUX-UNIX PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+LINUX-UNIX PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+LINUX-UNIX PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+LINUX-UNIX PreVenta
+Relevamiento
+Workload Assessment
+ 
+LINUX-UNIX PreVenta
+Diseño
+Costeo de Propuesta Especializada
+ 
+LINUX-UNIX PreVenta
+Diseño
+Diseño de Arquitectura Especializada
+ 
+LINUX-UNIX PreVenta
+Diseño
+Elaboracion de Propuesta Especializada
+
+
+LINUX-UNIX PreVenta
+Documentos
+Elaboracion Informe Tecnico para Propuesta
+ 
+LINUX-UNIX PreVenta
+Documentos
+Elaborac Informe Tecnico complejo para Propuesta
+ 
+LINUX-UNIX PreVenta
+Documentos
+Elaborac Plan de Trabajo-Intermedio para Propuesta
+ 
+LINUX-UNIX PreVenta
+Documentos
+Elaborac Plan de Trabajo-Avanzado para Propuesta
+ 
+LINUX-UNIX PreVenta
+Documentos
+Revision Document Tecnicos subsistem especializado
+ 
+LINUX-UNIX PreVenta
+Pilotos
+Ejecucion de PoC Especializada
+ 
+LINUX-UNIX PreVenta
+Relevamiento
+Levantamiento Informacion subsistema especializado
+ 
+LINUX-UNIX PreVenta
+Relevamiento
+Workload Assessment subsistema especializado
+
+
+
+Nivel 1 Monitoreo Administración:
+
+Monitoreo Administracion
+Accesos
+Alta Modificacion Accesos a Herramientas de Monito
+ 
+Monitoreo Administracion
+Accesos
+Baja Accesos a Herramientas de Monitoreo
+ 
+Monitoreo Administracion
+Accesos
+Permisos en Herramientas de Monitoreo
+ 
+Monitoreo Administracion
+Actualizacion
+Actualizacion de Agente de Monitoreo
+ 
+Monitoreo Administracion
+Actualizacion
+Actualizacion de Servidor de Monitoreo
+ 
+Monitoreo Administracion
+Actualizacion
+Actualizacion de Software de Monitoreo
+ 
+Monitoreo Administracion
+Altas
+Adicion de nuevo CI a la Politica de Monitoreo
+ 
+Monitoreo Administracion
+Altas
+Creacion de Politica de Monitoreo
+ 
+Monitoreo Administracion
+Altas
+Instalacion de Agente de Monitoreo
+ 
+Monitoreo Administracion
+Bajas
+Baja de CI en la Politica de Monitoreo
+
+Monitoreo Administracion
+Bajas
+Baja de Politica de Monitoreo
+ 
+Monitoreo Administracion
+Bajas
+Desinstalacion de Agente de Monitoreo
+ 
+Monitoreo Administracion
+Configuracion
+Configuracion Agente de Monitoreo
+ 
+Monitoreo Administracion
+Configuracion
+Configuracion Consola de Monitoreo
+ 
+Monitoreo Administracion
+Configuracion
+Configuracion Reporte de Herramienta de Monitoreo
+ 
+Monitoreo Administracion
+Documentos
+Elaboracion Informe Mensual
+ 
+Monitoreo Administracion
+Documentos
+Reporte de Equipos Monitoreados
+ 
+Monitoreo Administracion
+Documentos
+Reporte de Metricas
+ 
+Monitoreo Administracion
+Mantenimiento
+Adicion de Metrica Opcionales
+ 
+Monitoreo Administracion
+Mantenimiento
+Adicion de Nueva Metrica
+
+Monitoreo Administracion
+Mantenimiento
+Modificacion de Metrica
+ 
+Monitoreo Administracion
+Mantenimiento
+Modificacion de Politica de Monitoreo
+ 
+Monitoreo Administracion
+Mantenimiento
+Puesta en Mantenimiento
+ 
+Monitoreo Administracion
+Mantenimiento
+Retiro Desactivacion Metrica
+ 
+Monitoreo Administracion
+Mantenimiento
+Validacion de Politica de Monitoreo
+ 
+Monitoreo Administracion
+Mantenimiento
+Validacion de Servicios Monitoreados
+ 
+Monitoreo Administracion
+Reinicios
+Reinicio de Agente de Monitoreo
+ 
+Monitoreo Administracion
+Reinicios
+Reinicio de Servicios
+ 
+Monitoreo Administracion
+Soporte
+Escalamiento a Marca Proveedor
+ 
+Monitoreo Administracion
+Configuracion
+Agentes de observabilidad
+
+Monitoreo Administracion
+Configuracion
+Herramienta de observabilidad
+ 
+Monitoreo Administracion
+Documentos
+Elaboracion Informe Tecnico-N1-Preliminar
+ 
+Monitoreo Administracion
+Documentos
+Elaboracion Informe Tecnico-N2-Estandar
+ 
+Monitoreo Administracion
+Documentos
+Elaboracion Informe Tecnico-N3-Revision
+ 
+Monitoreo Administracion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+Monitoreo Administracion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+Monitoreo Administracion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+Monitoreo Administracion
+Soporte
+Mantenimiento de mapas de red y/o componentes
+ 
+Monitoreo Administracion
+Soporte
+Mantenimiento de Dashboard
+ 
+Monitoreo Administracion
+Soporte
+Soporte War Room basico
+
+Monitoreo Administracion
+Soporte
+Soporte War Room intermedio
+ 
+Monitoreo Administracion
+Soporte
+Soporte War Room avanzado
+
+
+Nivel 1 Monitoreo Consultoria:
+
+Monitoreo Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+Monitoreo Consultoria
+Relevamiento
+Workload Assessment
+ 
+Monitoreo Consultoria
+Documentos
+Elaboracion Informe Tecnico para Consultoria
+ 
+Monitoreo Consultoria
+Documentos
+Elab Inform Tecnico para Consultoria especializado
+
+
+
+Nivel 1 Monitoreo Implementación:
+
+Monitoreo Implementacion
+Altas
+Adicion de nuevo CI a la Politica de Monitoreo
+ 
+Monitoreo Implementacion
+Altas
+Creacion de Politica de Monitoreo
+ 
+Monitoreo Implementacion
+Altas
+Instalacion de Agente de Monitoreo
+ 
+Monitoreo Implementacion
+Bajas
+Baja de CI en la Politica de Monitoreo
+ 
+Monitoreo Implementacion
+Bajas
+Baja de Politica de Monitoreo
+ 
+Monitoreo Implementacion
+Bajas
+Desinstalacion de Agente de Monitoreo
+ 
+Monitoreo Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+Monitoreo Implementacion
+Migracion
+Migracion a otra herramienta de Monitoreo
+ 
+Monitoreo Implementacion
+Migracion
+Upgrade de Herramienta de Monitoreo
+ 
+Monitoreo Implementacion
+Relevamiento
+Investigacion nueva metrica
+
+
+Monitoreo Implementacion
+Relevamiento
+Investigacion nueva solucion de Monitoreo
+ 
+Monitoreo Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+Monitoreo Implementacion
+Documentos
+Elabor Inform Tecnico-Intermed para implementacion
+ 
+Monitoreo Implementacion
+Documentos
+Elabor Inform Tecnico-Avanzado para implementacion
+ 
+Monitoreo Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+Monitoreo Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+Monitoreo Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+Monitoreo Implementacion
+Implementacion
+Agentes de observabilidad
+ 
+Monitoreo Implementacion
+Implementacion
+Diseño de Arquitectura
+ 
+Monitoreo Implementacion
+Implementacion
+Herramientas de monitoreo IaaS
+
+Monitoreo Implementacion
+Implementacion
+Herramientas de monitoreo OnPremise
+ 
+Monitoreo Implementacion
+Implementacion
+Herramienta de observabilidad
+ 
+Monitoreo Implementacion
+Implementacion
+Integracion de herramienta de monitoreo IaaS
+ 
+Monitoreo Implementacion
+Implementacion
+Integracion de herramienta de monitoreo OnPremise
+
+
+Nivel 1 Monitoreo PreVenta:
+
+Monitoreo PreVenta
+Diseño
+Costeo de Propuesta
+ 
+Monitoreo PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+Monitoreo PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Monitoreo PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+Monitoreo PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+Monitoreo PreVenta
+Relevamiento
+Workload Assessment
+ 
+Monitoreo PreVenta
+Documentos
+Elaboracion Informe Tecnico para Propuesta
+ 
+Monitoreo PreVenta
+Documentos
+Elaboracion Inform Tecnico complejo para Propuesta
+ 
+Monitoreo PreVenta
+Documentos
+Elaboracion Plan de Trabajo-Intermed para Propuest
+ 
+Monitoreo PreVenta
+Documentos
+Elaboracion Plan de Trabajo-Avanzado para Propuest
+
+
+
+Nivel 1  NOC Administración
+
+NOC Administracion
+Auditoria
+Captura y Analisis de Red
+ 
+NOC Administracion
+Configuracion
+Instalacion de Hardware
+ 
+NOC Administracion
+Configuracion
+Monitoreo de Equipo de Redes
+ 
+NOC Administracion
+Configuracion
+Switching y Routing Configuracion de Gestion
+ 
+NOC Administracion
+Configuracion
+Switching y Routing Agregar Rutas Estaticas No def
+ 
+NOC Administracion
+Configuracion
+Switching y Routing NAT
+ 
+NOC Administracion
+Configuracion
+Switching y Routing NTP
+ 
+NOC Administracion
+Configuracion
+Switching y Routing Port Mirror Puerto Espejo
+ 
+NOC Administracion
+Configuracion
+Switching y Routing SNMP
+ 
+NOC Administracion
+Configuracion
+Switching y Routing Trunk
+
+
+NOC Administracion
+Configuracion
+Switching y Routing VLAN
+ 
+NOC Administracion
+Configuracion
+Switching y Routing Switch Acceso Campus
+ 
+NOC Administracion
+Configuracion
+Switching y Routing Syslog
+ 
+NOC Administracion
+Configuracion
+Switching y Routing Creacion de un nuevo SVI
+ 
+NOC Administracion
+Configuracion
+Telefonia Agentes Usuario Final
+ 
+NOC Administracion
+Configuracion
+Telefonia Troncales SIP
+ 
+NOC Administracion
+Configuracion
+Telefonia Despliegue Telefonos 5 Max
+ 
+NOC Administracion
+Configuracion
+Telefonia Integracion con Active Directory
+ 
+NOC Administracion
+Configuracion
+Wireless Enlace Punto a Punto
+ 
+NOC Administracion
+Configuracion
+Wireless Portal Cautivo
+
+
+NOC Administracion
+Configuracion
+Wireless Radius
+ 
+NOC Administracion
+Configuracion
+Wireless Mac para Mac Filtering
+ 
+NOC Administracion
+Configuracion
+Wireless Creacion de Nuevo SSID
+ 
+NOC Administracion
+Configuracion
+Wireless Inscripcion Access Point en WLC
+ 
+NOC Administracion
+Documentos
+Elaboracion Actualizacion Diagramas
+ 
+NOC Administracion
+Documentos
+Elaboracion Informe Mensual
+ 
+NOC Administracion
+Documentos
+Elaboracion Informe Tecnico
+ 
+NOC Administracion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+NOC Administracion
+Documentos
+Reportes de Tarificacion
+ 
+NOC Administracion
+Inventario
+Actualizacion de Inventario
+
+NOC Administracion
+Mantenimiento
+Healthcheck de Equipo de Red
+ 
+NOC Administracion
+Soporte
+Escalamiento a Marca Proveedor
+ 
+NOC Administracion
+Soporte
+Gestion de RMA
+ 
+NOC Administracion
+Rutinaria
+Ejecucion de Rutinarias
+
+
+Nivel 1  NOC Consultoria:
+
+NOC Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+NOC Consultoria
+Relevamiento
+Assessment de Red Cableada
+ 
+NOC Consultoria
+Relevamiento
+Assessment de Red Colaboracion y Voz
+ 
+NOC Consultoria
+Relevamiento
+Assessment de Red Inalambrica WLAN
+ 
+NOC Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+NOC Consultoria
+Relevamiento
+Servicio de Supervision
+
+
+Nivel 1 NOC Implementación:
+
+NOC Implementacion
+Levantamiento de Informacion
+Reunion Tecnica
+ 
+NOC Implementacion
+Levantamiento de Informacion
+Recopilacion de Informacion
+ 
+NOC Implementacion
+Levantamiento de Informacion
+Site Survey
+ 
+NOC Implementacion
+Levantamiento de Informacion
+Inventario
+ 
+NOC Implementacion
+Planificacion y Diseño
+Reunion Tecnica
+ 
+NOC Implementacion
+Planificacion y Diseño
+Revision de Informacion
+ 
+NOC Implementacion
+Planificacion y Diseño
+Documentacion
+ 
+NOC Implementacion
+Planificacion y Diseño
+Laboratorio
+ 
+NOC Implementacion
+Implementacion
+Reunion Tecnica
+ 
+NOC Implementacion
+Implementacion
+Configuracion
+
+NOC Implementacion
+Implementacion
+Instalacion Fisica
+ 
+NOC Implementacion
+Implementacion
+Puesta en Operacion
+ 
+NOC Implementacion
+Implementacion
+Supervision a Proveedor
+ 
+NOC Implementacion
+Implementacion
+Post-Implementacion
+ 
+NOC Implementacion
+Implementacion
+Documentacion
+ 
+NOC Implementacion
+Implementacion
+Transferencia de Conocimientos
+ 
+NOC Implementacion
+Implementacion
+Site Survey
+
+
+Nivel 1 NOC PreVenta:
+
+NOC PreVenta
+Piloto
+POC
+ 
+NOC PreVenta
+Propuesta
+Levantamiento de Informacion
+ 
+NOC PreVenta
+Piloto
+Levantamiento de Informacion
+ 
+NOC PreVenta
+Propuesta
+Lectura de TDR
+ 
+NOC PreVenta
+Propuesta
+Elaboracion de Propuesta
+ 
+NOC PreVenta
+Piloto
+Documentacion
+ 
+NOC PreVenta
+Propuesta
+Diseño de Arquitectura
+ 
+NOC PreVenta
+Propuesta
+Cotizacion de MO
+
+
+Nivel 1 Operadores SEDAPAL Operación:
+
+Operadores SEDAPAL Operacion
+Cintas
+Traslado de Cintas
+ 
+Operadores SEDAPAL Operacion
+Gestion de Respaldos
+Revision Validacion de Backup
+ 
+Operadores SEDAPAL Operacion
+Reinicios
+Reinicio Servicios
+ 
+Operadores SEDAPAL Operacion
+Soporte
+Inspeccion
+ 
+Operadores SEDAPAL Operacion
+Accesos
+Accesos Cuentas
+
+Nivel 1 Procesos Administración:
+
+Procesos Administracion
+Soporte
+Definicion de Proceso
+ 
+Procesos Administracion
+Inventario
+Actualizacion CMDB
+
+
+Nivel 1 Procesos PreVenta:
+
+Procesos PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+Procesos PreVenta
+Relevamiento
+Levantamiento de Información
+
+Nivel 1 SI Mantenimiento Administración:
+
+SI Mantenimiento Administracion
+Entrega
+Visita Tecnica
+ 
+SI Mantenimiento Administracion
+Soporte
+Soporte a Usuario
+ 
+SI Mantenimiento Administracion
+Laboratorio
+Revision de Equipo en Laboratorio
+ 
+SI Mantenimiento Administracion
+Documentos
+Reportes de Consumo de Capacidades
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Preventivo Logico
+ 
+SI Mantenimiento Administracion
+Documentos
+Preventivo Informe Tecnico
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Preventivo Fisico/Logico
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Preventivo Fisico
+ 
+SI Mantenimiento Administracion
+Documentos
+Preventivo Elaborar Plan de Trabajo
+ 
+SI Mantenimiento Administracion
+Entrega
+Prestamo de Equipos
+
+SI Mantenimiento Administracion
+Gestion de Espacio Fisico
+Movimiento/Retiro Equipos
+ 
+SI Mantenimiento Administracion
+Entrega
+Inventariar Equipos
+ 
+SI Mantenimiento Administracion
+Gestion de Espacio Fisico
+Instalacion Rackeo/Desrackeo Equipos
+ 
+SI Mantenimiento Administracion
+Entrega
+Informe Infraestructura
+ 
+SI Mantenimiento Administracion
+Laboratorio
+Gestion de Garantia
+ 
+SI Mantenimiento Administracion
+Entrega
+Etiquetado de Equipos
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Envio o Recojo de Suministros
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Envio o Recojo de Equipos
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Entrega de Equipos
+ 
+SI Mantenimiento Administracion
+Entrega
+Entrega de Equipos
+
+SI Mantenimiento Administracion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+SI Mantenimiento Administracion
+Documentos
+Elaboracion Informe Tecnico
+ 
+SI Mantenimiento Administracion
+Documentos
+Elaboracion Informe Mensual
+ 
+SI Mantenimiento Administracion
+Documentos
+Elaboracion Actualizacion Diagramas
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Correctivo Logico
+ 
+SI Mantenimiento Administracion
+Documentos
+Correctivo Informe Tecnico
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Correctivo Fisico/Logico
+ 
+SI Mantenimiento Administracion
+Mantenimiento
+Correctivo Fisico
+ 
+SI Mantenimiento Administracion
+Documentos
+Correctivo Elaborar Plan de Trabajo
+ 
+SI Mantenimiento Administracion
+Configuracion
+Configuracion de equipo
+
+Nivel 1: SI Mantenimiento Consultoria
+
+SI Mantenimiento Consultoria
+Soporte
+Uso de Horas de Soporte
+ 
+SI Mantenimiento Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+SI Mantenimiento Consultoria
+Documentos
+Elaboracion Informe Tecnico
+
+
+Nivel 1: SI Mantenimiento PreVenta
+
+SI Mantenimiento PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+SI Mantenimiento PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+SI Mantenimiento PreVenta
+Soporte
+Escalamiento a Marca Proveedor Garantia
+ 
+SI Mantenimiento PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+SI Mantenimiento PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+SI Mantenimiento PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+SI Mantenimiento PreVenta
+Diseño
+Costeo de Propuesta
+
+
+Nivel 1 : SOC Administración
+
+SOC Administracion
+Configuracion
+WAF Reglas Excepciones
+ 
+SOC Administracion
+Administracion de firewall
+Validacion o exportacion de Logs
+ 
+SOC Administracion
+Administracion de firewall
+Validacion de configuracion basica
+ 
+SOC Administracion
+Administracion de firewall
+Validacion de configuracion avanzada
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria verificacion de vigencia credenciales
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria verificacion de inventario
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria verificacion de ejecucion de backups
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria verificacion de diagramas actualizados
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria verificacion caducidad de componentes
+ 
+SOC Administracion
+Control operativo
+Rutinaria reporte de tickets transversales
+
+
+SOC Administracion
+Servicios transversales
+Rutinaria deteccion de fallos en integraciones
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria de reportes para informe mensual
+ 
+SOC Administracion
+Control operativo
+Rutinaria de reporte de tickets pendientes
+ 
+SOC Administracion
+Control operativo
+Rutinaria de reporte de ocupabilidad
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria de deteccion de fallos en los HA
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria comprobacion de alertamientos
+ 
+SOC Administracion
+Administracion de firewall
+Rutinaria Fortitoken-Cliente
+ 
+SOC Administracion
+Administracion de firewall
+Rutinaria FW-Salida Internet
+ 
+SOC Administracion
+Servicios transversales
+Rutinaria FW-Monitoreo Recursos
+ 
+SOC Administracion
+Control operativo
+Rutinaria Backup-Soportesoc
+
+SOC Administracion
+Servicios transversales
+Revision de brechas o mejoras de seguridad
+ 
+SOC Administracion
+Administracion de firewall
+Revision de alerta de seguridad
+ 
+SOC Administracion
+Soporte
+Revision de Alerta EDR
+ 
+SOC Administracion
+Servicios transversales
+Revision QA de informe mensual
+ 
+SOC Administracion
+Servicios transversales
+Remitir informacion tecnica del servicio
+ 
+SOC Administracion
+Servicios transversales
+Recurso dedicado a cliente/proyecto
+ 
+SOC Administracion
+Configuracion
+Proxy Reverso Regla de Redireccion URL
+ 
+SOC Administracion
+Configuracion
+Proxy Reverso Configuracion
+ 
+SOC Administracion
+Configuracion
+IPS Reglas de Proteccion
+ 
+SOC Administracion
+Configuracion
+IPS Configuracion
+
+SOC Administracion
+Administracion de firewall
+Investigacion de solucion compleja
+ 
+SOC Administracion
+Administracion de firewall
+Integracion de funcionalidad con otro equipo
+ 
+SOC Administracion
+Accesos
+Firewall Cuenta VPN Cliente
+ 
+SOC Administracion
+Configuracion
+Firewall Configuracion
+ 
+SOC Administracion
+Administracion de firewall
+Escalamiento al fabricante
+ 
+SOC Administracion
+Soporte
+Escalamiento a Marca Proveedor
+ 
+SOC Administracion
+Servicios transversales
+Elaboracion plan de trabajo servicio gestionado
+ 
+SOC Administracion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+SOC Administracion
+Documentos
+Elaboracion Informe Tecnico
+ 
+SOC Administracion
+Documentos
+Elaboracion Informe Mensual
+
+
+SOC Administracion
+Servicios transversales
+Elaboracion de plan de trabajo de cliente
+ 
+SOC Administracion
+Servicios transversales
+Elaboracion de informe mensual
+ 
+SOC Administracion
+Servicios transversales
+Elaboracion de informe de incidente
+ 
+SOC Administracion
+Documentos
+Elaboracion Actualizacion Diagramas
+ 
+SOC Administracion
+Administracion de firewall
+Ejecucion de pruebas de HA o DRP
+ 
+SOC Administracion
+Administracion de firewall
+Ejecucion de plan de pruebas de servicios
+ 
+SOC Administracion
+Configuracion
+EDR Antivirus Instalacion Despliegue
+ 
+SOC Administracion
+Configuracion
+EDR Antivirus Directivas Excepciones de Analisis
+ 
+SOC Administracion
+Configuracion
+EDR Antivirus Configuracion
+ 
+SOC Administracion
+Servicios transversales
+Documentacion tecnica de proyecto
+
+SOC Administracion
+Servicios transversales
+Documentacion de procedimiento tecnico
+ 
+SOC Administracion
+Servicios transversales
+Creacion o actualizacion de diagramas
+ 
+SOC Administracion
+Administracion de firewall
+Creacion de tunel VPN Cliente
+ 
+SOC Administracion
+Administracion de firewall
+Creacion de VPN S2S basica
+ 
+SOC Administracion
+Servicios transversales
+Configuracion o gestiones de monitoreo y alertas
+ 
+SOC Administracion
+Servicios transversales
+Configuracion o gestiones de backup
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion o baja de VPN S2S
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de segmento de red
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de WAF
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de Traffic Shapping
+
+SOC Administracion
+Administracion de firewall
+Configuracion de ruta
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de parametro especializado
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de SDWAN
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de Regla de acceso basica
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de Regla de acceso avanzada
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de Publicacion basica
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de Publicacion avanzada
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de NAT
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de Filtro Web basica
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de Filtro Web avanzada
+
+SOC Administracion
+Administracion de firewall
+Configuracion de alta o baja de regla de acceso
+ 
+SOC Administracion
+Administracion de firewall
+Configuracion de alta baja cuenta VPN Cliente
+ 
+SOC Administracion
+Configuracion
+Balanceador Enlaces Configuracion
+ 
+SOC Administracion
+Configuracion
+Balanceador App Configuracion
+ 
+SOC Administracion
+Configuracion
+Balanceador App Certificado Digital
+ 
+SOC Administracion
+Configuracion
+Antispam Listas Blancas o Negras
+ 
+SOC Administracion
+Configuracion
+Antispam Configuracion
+ 
+SOC Administracion
+Accesos
+Alta,Baja Accesos de Usuarios
+ 
+SOC Administracion
+Servicios transversales
+Actualizacion de Inventario
+ 
+SOC Administracion
+Inventario
+Actualizacion de Inventario
+
+
+
+Nivel 1 SOC Consultoria:
+
+SOC Consultoria
+Relevamiento
+Workload Assessment
+ 
+SOC Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+SOC Consultoria
+Auditoria
+Ethical Hacking
+ 
+SOC Consultoria
+Auditoria
+Entrega de Evidencias Tecnicas
+ 
+SOC Consultoria
+Documentos
+Elaboracion Informe Tecnico
+ 
+SOC Consultoria
+Auditoria
+Analisis de Vulnerabilidades
+
+Nivel 1 SOC Implementación:
+
+SOC Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+SOC Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+SOC Implementacion
+Documentos
+Elaboracion Plan de Trabajo
+ 
+SOC Implementacion
+Documentos
+Elaboracion Informe Tecnico
+ 
+SOC Implementacion
+Documentos
+Elaboracion Actualizacion Diagramas
+
+
+Nivel 1 SOC PreVenta:
+
+SOC PreVenta
+Relevamiento
+Workload Assessment
+ 
+SOC PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+SOC PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+SOC PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+SOC PreVenta
+Documentos
+Elaboracion Plan de Trabajo
+ 
+SOC PreVenta
+Documentos
+Elaboracion Informe Tecnico
+ 
+SOC PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+SOC PreVenta
+Diseño
+Diseño de Arquitectura
+ 
+SOC PreVenta
+Diseño
+Costeo de Propuesta
+
+
+Nivel 1 WINTEL Administración:
+
+WINTEL Administracion
+Configuracion
+WSUS Reportes de actualizacion de estaciones
+ 
+WINTEL Administracion
+Configuracion
+WSUS Configuracion Despliegue Politicas
+ 
+WINTEL Administracion
+Configuracion
+Tunning de SO
+ 
+WINTEL Administracion
+Configuracion
+Terminal Server Instalacion de Licencias
+ 
+WINTEL Administracion
+Configuracion
+Terminal Server Configuracion
+ 
+WINTEL Administracion
+Rutinarias
+Subsistema Especializado Basico
+ 
+WINTEL Administracion
+Rutinarias
+Subsistema Especializado Avanzado
+ 
+WINTEL Administracion
+Rutinarias
+Sistema Operativo
+ 
+WINTEL Administracion
+Rutinarias
+Servicios-Roles Intermedio
+ 
+WINTEL Administracion
+Configuracion
+SMTP Configuracion
+
+
+WINTEL Administracion
+Rutinarias
+Servicios-Roles Basico
+ 
+WINTEL Administracion
+Documentos
+Reportes de Consumo de Capacidades
+ 
+WINTEL Administracion
+Configuracion
+Reduccion Ampliacion de Particiones
+ 
+WINTEL Administracion
+Accesos
+Permisos de Lectura Escritura Archivos Carpetas
+ 
+WINTEL Administracion
+Accesos
+Modificacion Accesos Permisos
+ 
+WINTEL Administracion
+Documentos
+Levantamiento Informacion para PDT - Parchado
+ 
+WINTEL Administracion
+Documentos
+Levantamiento Informacion para PDT - Intermedio
+ 
+WINTEL Administracion
+Documentos
+Levantamiento Informacion para PDT - Basico
+ 
+WINTEL Administracion
+Documentos
+Levantamiento Informacion para PDT - Avanzado
+ 
+WINTEL Administracion
+Soporte
+Incidente-Intermedio
+
+
+WINTEL Administracion
+Soporte
+Incidente-Basico
+ 
+WINTEL Administracion
+Soporte
+Incidente-Avanzado
+ 
+WINTEL Administracion
+Mantenimiento
+Healthcheck de Servidor
+ 
+WINTEL Administracion
+Configuracion
+Habilitacion de Roles Caracteristicas
+ 
+WINTEL Administracion
+Rutinarias
+File Server Intermedio
+ 
+WINTEL Administracion
+Configuracion
+File Server Configuracion Permisos
+ 
+WINTEL Administracion
+Configuracion
+File Server Configuracion Cuotas Almacenamiento
+ 
+WINTEL Administracion
+Configuracion
+File Server Configuracion
+ 
+WINTEL Administracion
+Rutinarias
+File Server Basico
+ 
+WINTEL Administracion
+Soporte
+Escalamiento a Marca Proveedor
+
+WINTEL Administracion
+Configuracion
+Elaboracion de Scripts Power Shell
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Plan de Trabajo-Parchado
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Informe Tecnico-N3-Revision
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Informe Tecnico-N2-Estandar
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Informe Tecnico-N1-Preliminar
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Informe Mensual-N2-Criticos
+ 
+WINTEL Administracion
+Documentos
+Elaboracion Informe Mensual-N1
+
+WINTEL Administracion
+Documentos
+Elaboracion Actualizacion Diagramas
+ 
+WINTEL Administracion
+Configuracion
+Ejecucion de Scripts Power Shell
+ 
+WINTEL Administracion
+Eventos
+Definir Ajuste en Metrica de Respaldos
+ 
+WINTEL Administracion
+Configuracion
+DNS Configuracion
+ 
+WINTEL Administracion
+Configuracion
+DNS Agregar Quitar Zonas
+ 
+WINTEL Administracion
+Configuracion
+DNS Agregar Quitar Registros
+ 
+WINTEL Administracion
+Configuracion
+DHCP Reservar Liberar IP
+ 
+WINTEL Administracion
+Configuracion
+DHCP Configuracion
+ 
+WINTEL Administracion
+Configuracion
+DFS Configuracion Replicacion
+ 
+WINTEL Administracion
+Configuracion
+DFS Configuracion Namespace
+
+WINTEL Administracion
+Eventos
+Definir Ajuste en Metrica de Monitoreo
+ 
+WINTEL Administracion
+Altas
+Definicion de Politica de Respaldos
+ 
+WINTEL Administracion
+Altas
+Definicion de Politica de Monitoreo
+ 
+WINTEL Administracion
+Configuracion
+Crear Modificar Claves de Registro Regedit
+ 
+WINTEL Administracion
+Accesos
+Creacion de Accesos Cuentas
+ 
+WINTEL Administracion
+Copias
+Copia de Archivos
+ 
+WINTEL Administracion
+Configuracion
+Configuracion de Tareas Programadas
+ 
+WINTEL Administracion
+Configuracion
+Configuracion de GPO Politicas de Seguridad
+ 
+WINTEL Administracion
+Accesos
+Citrix Sesiones
+ 
+WINTEL Administracion
+Configuracion
+Citrix Configuracion de Licencia
+
+WINTEL Administracion
+Accesos
+Citrix Configuracion Accesos
+ 
+WINTEL Administracion
+Configuracion
+Citrix Configuracion
+ 
+WINTEL Administracion
+Configuracion
+Certificados SSL Adicion Actualizacion Retiro
+ 
+WINTEL Administracion
+Mantenimiento
+Analisis-Healthcheck de Servidor
+ 
+WINTEL Administracion
+Inventario
+Actualizacion de Inventario
+ 
+WINTEL Administracion
+Configuracion
+Active Directory Transferencia de Roles
+ 
+WINTEL Administracion
+Configuracion
+Active Directory Relacion de confianza
+ 
+WINTEL Administracion
+Configuracion
+Active Directory Modificacion Atributos Esquema
+ 
+WINTEL Administracion
+Configuracion
+ADFS Relacion de Confianza
+ 
+WINTEL Administracion
+Configuracion
+ADFS Agregar Retirar Dominio Federado
+
+WINTEL Administracion
+Rutinarias
+Active Directory-DNS Intermedio
+ 
+WINTEL Administracion
+Rutinarias
+Active Directory-DNS Basico
+ 
+WINTEL Administracion
+Configuracion
+Active Directory Configuración
+
+
+
+
+
+Nivel 1 WINTEL Consultoria:
+
+WINTEL Consultoria
+Relevamiento
+Workload Assessment
+ 
+WINTEL Consultoria
+Relevamiento
+Levantamiento de Informacion
+ 
+WINTEL Consultoria
+Documentos
+Elab Inform Tecnico para Consultoria especializado
+
+
+
+Nivel 1 WINTEL Implementación:
+
+WINTEL Implementacion
+Migracion
+Toma Administracion Validacion Alcance
+ 
+WINTEL Implementacion
+Migracion
+Toma Administracion Registro Servidor CMDB
+ 
+WINTEL Implementacion
+Migracion
+Toma Administracion Asessment Servidor
+ 
+WINTEL Implementacion
+Documentos
+Revision de Documentos Tecnicos
+ 
+WINTEL Implementacion
+Relevamiento
+Levantamiento de Informacion
+ 
+WINTEL Implementacion
+Documentos
+Levantamiento Informacion para PDT - Intermedio
+ 
+WINTEL Implementacion
+Documentos
+Levantamiento Informacion para PDT - Basico
+ 
+WINTEL Implementacion
+Documentos
+Levantamiento Informacion para PDT - Avanzado
+ 
+WINTEL Implementacion
+Configuracion
+Hardening de SO
+ 
+WINTEL Implementacion
+Documentos
+Elabor Inform Tecnico-Intermed para implementacion
+
+
+WINTEL Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Intermedio
+ 
+WINTEL Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Basico
+ 
+WINTEL Implementacion
+Documentos
+Elaboracion Plan de Trabajo-Avanzado
+ 
+WINTEL Implementacion
+Documentos
+Elabor Inform Tecnico-Avanzado para implementacion
+
+
+Nivel 1 WINTEL PreVenta:
+
+WINTEL PreVenta
+Relevamiento
+Workload Assessment
+ 
+WINTEL PreVenta
+Documentos
+Revision de Documentos Tecnicos
+ 
+WINTEL PreVenta
+Relevamiento
+Levantamiento de Informacion
+ 
+WINTEL PreVenta
+Diseño
+Elaboracion de Propuesta
+ 
+WINTEL PreVenta
+Documentos
+Elaboracion Plan de Trabajo-Avanzado para Propuest
+ 
+WINTEL PreVenta
+Documentos
+Elaboracion Inform Tecnico complejo para Propuesta
+ 
+WINTEL PreVenta
+Pilotos
+Ejecucion de PoC
+ 
+WINTEL PreVenta
+Diseño
+Diseño de Arquitectura
+ 
+WINTEL PreVenta
+Diseño
+Costeo de Propuesta
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
