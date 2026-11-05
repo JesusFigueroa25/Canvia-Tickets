@@ -1,0 +1,356 @@
+
+<section class="table-card">
+
+    <div class="table-header">
+
+        <div>
+            <h2>
+                Explorador por Proyectos
+            </h2>
+
+            <p>
+                {{
+                modo === 'consolidado'
+                ? (
+                entidadConsolidado === 'requerimientos'
+                ? 'Cantidad de requerimientos registrados por proyecto.'
+                : 'Cantidad de incidentes registrados por proyecto.'
+                )
+                : 'Volumen y cumplimiento SLA por proyecto.'
+                }}
+            </p>
+        </div>
+
+        <div class="project-filters-controls">
+
+            <!-- COMBO DE PROYECTOS CON BUSCADOR -->
+            <mat-form-field *ngIf="modoBusqueda === 'combo'" appearance="outline"
+                class="search-field project-select-field">
+
+                <mat-icon matPrefix>search</mat-icon>
+
+                <mat-select placeholder="Todos los proyectos" [value]="proyectoSeleccionado"
+                    (openedChange)="abrirComboProyecto($event)"
+                    (selectionChange)="seleccionarProyecto($event.value)">
+
+                    <!-- BUSCADOR -->
+                    <div class="project-search-container" (click)="$event.stopPropagation()"
+                        (keydown)="manejarTeclaBusqueda($event)">
+
+                        <input type="text" class="project-search-input" placeholder="Buscar proyecto..."
+                            [value]="busquedaProyecto" (input)="filtrarProyectos($event)"
+                            aria-label="Buscar proyecto">
+                    </div>
+
+                    <!-- TODOS -->
+                    <mat-option [value]="null">
+                        Todos los proyectos
+                    </mat-option>
+
+                    <!-- PROYECTOS -->
+                    <mat-option *ngFor="let proyecto of proyectosFiltrados" [value]="proyecto">
+                        {{ proyecto }}
+                    </mat-option>
+
+                    <mat-option *ngIf="proyectosFiltrados.length === 0" disabled>
+                        No se encontraron proyectos
+                    </mat-option>
+
+                </mat-select>
+
+            </mat-form-field>
+
+
+            <!-- BUSCADOR ANTERIOR -->
+            <mat-form-field *ngIf="modoBusqueda === 'texto'" appearance="outline" class="search-field">
+
+                <mat-icon matPrefix>
+                    search
+                </mat-icon>
+
+                <input matInput placeholder="Buscar proyecto..." (keyup)="aplicarBusqueda($event)">
+
+            </mat-form-field>
+
+
+            <!-- NUEVO: BOTON DE EXCLUSION MULTIPLE -->
+            <button *ngIf="habilitarExclusionProyectos" type="button" class="exclusion-trigger"
+                [class.exclusion-trigger-active]="proyectosExcluidos.length > 0"
+                [attr.aria-expanded]="exclusionesAbiertas"
+                aria-controls="project-exclusion-panel"
+                (click)="abrirExclusiones()">
+
+                <mat-icon>filter_list</mat-icon>
+
+                <span>
+                    Excluir proyectos
+                </span>
+
+                <span class="exclusion-counter" *ngIf="proyectosExcluidos.length > 0">
+                    {{ proyectosExcluidos.length }}
+                </span>
+
+                <mat-icon class="exclusion-arrow">
+                    {{ exclusionesAbiertas ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- NUEVO: PANEL DE EXCLUSION MULTIPLE -->
+    <div id="project-exclusion-panel" class="exclusion-panel"
+        *ngIf="habilitarExclusionProyectos && exclusionesAbiertas">
+
+        <div class="exclusion-panel-header">
+
+            <div>
+                <h3>Proyectos excluidos</h3>
+                <p>Marca los proyectos que deseas quitar del análisis.</p>
+            </div>
+
+            <button type="button" class="exclusion-close" aria-label="Cerrar exclusiones"
+                (click)="cerrarExclusiones()">
+                <mat-icon>close</mat-icon>
+            </button>
+
+        </div>
+
+
+        <!-- BUSCADOR DE PROYECTOS -->
+        <div class="exclusion-search">
+
+            <mat-icon>search</mat-icon>
+
+            <input type="text" class="exclusion-search-input"
+                placeholder="Buscar proyecto para excluir..."
+                [value]="busquedaExclusion"
+                (input)="filtrarExclusiones($event)"
+                (keydown.escape)="cerrarExclusiones()"
+                aria-label="Buscar proyectos para excluir">
+
+        </div>
+
+
+        <!-- ACCIONES DE SELECCION -->
+        <div class="exclusion-actions">
+
+            <label class="exclusion-select-all">
+
+                <input type="checkbox"
+                    [checked]="todosVisiblesExcluidos"
+                    [disabled]="proyectosFiltradosExclusion.length === 0"
+                    (change)="alternarExclusionVisibles()">
+
+                <span>
+                    {{ todosVisiblesExcluidos ? 'Reincluir los visibles' : 'Excluir todos los visibles' }}
+                </span>
+
+            </label>
+
+            <button type="button" class="exclusion-clear"
+                [disabled]="proyectosExcluidos.length === 0"
+                (click)="limpiarExclusiones()">
+
+                <mat-icon>restart_alt</mat-icon>
+                Limpiar exclusiones
+
+            </button>
+
+        </div>
+
+
+        <!-- LISTA DE PROYECTOS CON CHECKBOXES -->
+        <div class="exclusion-list">
+
+            <label class="exclusion-item"
+                *ngFor="let proyecto of proyectosFiltradosExclusion"
+                [class.exclusion-item-selected]="estaExcluido(proyecto)">
+
+                <input type="checkbox"
+                    [checked]="estaExcluido(proyecto)"
+                    (change)="alternarExclusionProyecto(proyecto)">
+
+                <span [title]="proyecto">
+                    {{ proyecto }}
+                </span>
+
+            </label>
+
+
+            <!-- SIN RESULTADOS -->
+            <div class="exclusion-empty"
+                *ngIf="proyectosFiltradosExclusion.length === 0">
+
+                No se encontraron proyectos.
+
+            </div>
+
+        </div>
+
+
+        <!-- RESUMEN -->
+        <div class="exclusion-footer">
+
+            <span>
+                {{ proyectosExcluidos.length }} proyecto(s) excluido(s)
+            </span>
+
+            <span>
+                {{ proyectosFiltradosExclusion.length }} proyecto(s) visible(s)
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table mat-table [dataSource]="dataSource" [class.compact-table]="modo === 'consolidado'" matSort>
+
+            <ng-container matColumnDef="proyecto">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Proyecto
+                </th>
+
+                <td mat-cell *matCellDef="let item" class="project-cell">
+                    {{ item.proyecto || 'Sin proyecto' }}
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="tickets">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Tickets
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    {{ item.tickets }}
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="cantidad">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Cantidad
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    {{ item.cantidad | number:'1.0-0' }}
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="medibles">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Medibles
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    {{ item.medibles }}
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="sin_medicion">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Sin medición
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    {{ item.sin_medicion }}
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="cumple">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Cumple
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    <span class="count-success">
+                        {{ item.cumple }}
+                    </span>
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="incumple">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Incumple
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    <span class="count-danger">
+                        {{ item.incumple }}
+                    </span>
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="sla_solucion">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    SLA Solución
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    <span class="sla-badge" [ngClass]="obtenerClaseSla(item.sla_solucion ?? 0)">
+                        {{ item.sla_solucion }}%
+                    </span>
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="sla_respuesta">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    SLA Respuesta
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    <span class="sla-badge" [ngClass]="obtenerClaseSla(item.sla_respuesta ?? 0)">
+                        {{ item.sla_respuesta }}%
+                    </span>
+                </td>
+            </ng-container>
+
+
+            <ng-container matColumnDef="porcentaje_volumen">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    % Volumen
+                </th>
+
+                <td mat-cell *matCellDef="let item">
+                    {{ item.porcentaje_volumen }}%
+                </td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"> </tr>
+
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"
+                [class.proyecto-clickable]="modoBusqueda === 'combo'"
+                [class.proyecto-seleccionado]="modoBusqueda === 'combo' && row.proyecto === proyectoSeleccionado"
+                (click)="seleccionarFilaProyecto(row)">
+            </tr>
+
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="no-data" [attr.colspan]="displayedColumns.length">
+                    No se encontraron proyectos.
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5]" showFirstLastButtons>
+    </mat-paginator>
+
+</section>

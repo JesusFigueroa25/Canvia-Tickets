@@ -1,0 +1,591 @@
+<div class="requirement-audit-page">
+
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1>Auditoría de Categorización</h1>
+            <p>
+                Evaluación de coherencia entre las categorizaciones registradas
+                y las actividades descritas en los requerimientos.
+            </p>
+        </div>
+    </header>
+
+
+
+    <!-- FILTROS GLOBALES DEL DASHBOARD -->
+    <details class="filters-card" open>
+
+        <summary class="filters-toggle">
+            <mat-icon>tune</mat-icon>
+            <span>Filtros Globales</span>
+        </summary>
+
+        <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+
+            <!-- FECHA DESDE -->
+            <div class="filter-field">
+
+                <label>Desde</label>
+
+                <mat-form-field appearance="outline" class="full-width">
+
+                    <input matInput [matDatepicker]="filtroPickerDesde" formControlName="desde"
+                        placeholder="Seleccionar fecha">
+
+                    <mat-datepicker-toggle matIconSuffix [for]="filtroPickerDesde">
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #filtroPickerDesde></mat-datepicker>
+
+                    <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
+                        La fecha inicial es obligatoria.
+                    </mat-error>
+
+                </mat-form-field>
+
+            </div>
+
+            <!-- FECHA HASTA -->
+            <div class="filter-field">
+
+                <label>Hasta</label>
+
+                <mat-form-field appearance="outline" class="full-width">
+
+                    <input matInput [matDatepicker]="filtroPickerHasta" formControlName="hasta"
+                        placeholder="Seleccionar fecha">
+
+                    <mat-datepicker-toggle matIconSuffix [for]="filtroPickerHasta">
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #filtroPickerHasta></mat-datepicker>
+
+                    <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
+                        La fecha final es obligatoria.
+                    </mat-error>
+
+                </mat-form-field>
+
+            </div>
+
+            <!-- GRUPO RESOLUTOR CON BUSCADOR -->
+
+            <div class="filter-field">
+
+                <label>Grupo Resolutor</label>
+
+                <mat-form-field appearance="outline" class="full-width">
+
+                    <mat-select formControlName="grupo_resolutor" placeholder="Seleccionar grupo resolutor">
+
+                        <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
+
+                            {{ grupo }}
+
+                        </mat-option>
+
+                    </mat-select>
+
+                    <mat-error *ngIf="filtrosForm.get('grupo_resolutor')?.hasError('required')">
+                        El grupo resolutor es obligatorio.
+                    </mat-error>
+
+                </mat-form-field>
+
+            </div>
+
+
+            <!-- PROYECTO CON BUSCADOR
+             
+               
+            -->
+
+            <div class="filter-field">
+
+                <label>Proyecto</label>
+
+                <mat-form-field appearance="outline" class="full-width">
+
+                    <input matInput type="text" formControlName="proyecto" list="auditoria-proyectos"
+                        placeholder="Todos los proyectos" autocomplete="off">
+
+                    <mat-icon matSuffix>search</mat-icon>
+
+                </mat-form-field>
+
+                <datalist id="auditoria-proyectos">
+                    <option *ngFor="let proyecto of opcionesFiltros.proyectos" [value]="proyecto">
+                    </option>
+                </datalist>
+
+            </div>
+
+
+            <!-- PROYECTO 
+                <div class="filter-field">
+
+                <label>Proyecto</label>
+
+                <mat-form-field appearance="outline" class="full-width">
+
+                    <mat-select formControlName="proyecto" placeholder="Todos los proyectos">
+
+                        <mat-option [value]="''">
+                            Todos los proyectos
+                        </mat-option>
+
+                        <mat-option *ngFor="let proyecto of opcionesFiltros.proyectos" [value]="proyecto">
+
+                            {{ proyecto }}
+
+                        </mat-option>
+
+                    </mat-select>
+
+                </mat-form-field>
+
+            </div>
+            -->
+
+
+
+            <!-- ACCIONES -->
+            <div class="filter-actions">
+
+                <button mat-button type="button" class="clear-button" (click)="limpiarFiltrosDashboard()">
+
+                    <mat-icon>restart_alt</mat-icon>
+                    Limpiar
+
+                </button>
+
+                <button mat-flat-button type="submit" class="apply-button"
+                    [disabled]="cargandoFiltros || filtrosForm.invalid || !filtrosListos">
+
+                    <mat-icon>filter_alt</mat-icon>
+                    Aplicar
+
+                </button>
+
+            </div>
+
+        </form>
+
+        <!-- RANGO DISPONIBLE -->
+        <div class="filters-note" *ngIf="opcionesFiltros.fecha_min && opcionesFiltros.fecha_max">
+
+            <mat-icon>info_outline</mat-icon>
+
+            <span>
+                Datos disponibles:
+                {{ opcionesFiltros.fecha_min | date:'dd/MM/yyyy' }}
+                al
+                {{ opcionesFiltros.fecha_max | date:'dd/MM/yyyy' }}.
+                Solo se consideran los tickets vigentes de la agrupación anual.
+            </span>
+
+        </div>
+
+        <div class="filters-note" *ngIf="cargandoFiltros">
+            <mat-icon>hourglass_top</mat-icon>
+            <span>Cargando opciones de filtros...</span>
+        </div>
+
+        <div class="execution-form-error" *ngIf="errorFormularioFiltros || errorFiltros" role="alert">
+
+            <mat-icon>error_outline</mat-icon>
+            {{ errorFormularioFiltros || errorFiltros }}
+
+        </div>
+
+    </details>
+
+
+    <details class="execution-card">
+
+        <summary class="filters-toggle">
+            <mat-icon>play_circle_outline</mat-icon>
+            <span>Ejecutar Nueva Auditoría</span>
+        </summary>
+
+        <form class="execution-form" [formGroup]="formEjecucion" (ngSubmit)="ejecutarAuditoria()">
+
+            <div class="execution-fields">
+
+                <div class="execution-field">
+                    <label>
+                        Grupo Resolutor
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <mat-select formControlName="grupo_resolutor" placeholder="Seleccionar grupo resolutor">
+
+                            <mat-option *ngFor="let grupo of gruposResolutores" [value]="grupo">
+                                {{ grupo }}
+                            </mat-option>
+
+                        </mat-select>
+
+                        <mat-error *ngIf="formEjecucion.get('grupo_resolutor')?.hasError('required')">
+                            El grupo resolutor es obligatorio.
+                        </mat-error>
+
+                    </mat-form-field>
+                </div>
+
+
+                <div class="execution-field">
+
+                    <label>
+                        Rango de Fechas
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    <div class="date-range-fields">
+
+                        <div class="execution-field">
+                            <mat-form-field appearance="outline" class="full-width">
+                                <input matInput [matDatepicker]="pickerDesde" formControlName="desde"
+                                    placeholder="Desde">
+
+                                <mat-datepicker-toggle matIconSuffix [for]="pickerDesde">
+                                </mat-datepicker-toggle>
+
+                                <mat-datepicker #pickerDesde></mat-datepicker>
+
+                                <mat-error *ngIf="formEjecucion.get('desde')?.hasError('required')">
+                                    La fecha inicial es obligatoria.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="execution-field">
+                            <mat-form-field appearance="outline" class="full-width">
+
+                                <input matInput [matDatepicker]="pickerHasta" formControlName="hasta"
+                                    placeholder="Hasta">
+                                <mat-datepicker-toggle matIconSuffix [for]="pickerHasta">
+                                </mat-datepicker-toggle>
+
+                                <mat-datepicker #pickerHasta></mat-datepicker>
+
+                                <mat-error *ngIf="formEjecucion.get('hasta')?.hasError('required')">
+                                    La fecha final es obligatoria.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="execution-form-footer">
+                <div class="execution-note">
+                    <mat-icon>info_outline</mat-icon>
+                    <span>
+                        Selecciona un rango de fechas de 2026 para ejecutar la auditoría.
+                        Los tickets nuevos se incorporarán a la agrupación anual.
+                        Si vuelves a evaluar tickets anteriores, sus resultados
+                        más recientes reemplazarán a los anteriores en los reportes
+                        acumulados, sin duplicarlos.
+                    </span>
+                </div>
+
+                <button mat-flat-button type="submit" class="execute-button"
+                    [disabled]="creandoAuditoria || cargandoEstado || ejecucionEnCurso">
+
+                    <mat-icon>
+                        {{ creandoAuditoria ? 'hourglass_top' : 'play_arrow' }}
+                    </mat-icon>
+
+                    {{ creandoAuditoria ? 'Creando auditoría...' : 'Ejecutar Auditoría' }}
+
+                </button>
+
+            </div>
+
+        </form>
+
+        <div class="execution-form-error" *ngIf="errorFormularioEjecucion" role="alert">
+
+            <mat-icon>error_outline</mat-icon>
+            {{ errorFormularioEjecucion }}
+
+        </div>
+
+        <ng-container *ngIf="ejecucionActual as ejecucion">
+
+            <div class="execution-divider"></div>
+
+            <div class="execution-header">
+
+                <div>
+                    <h2>Estado de la Última Ejecución</h2>
+                    <p>Auditoría #{{ ejecucion.run_id }}</p>
+                </div>
+
+                <span class="execution-status" [ngClass]="{
+                'status-pending': ejecucion.status === 'PENDING',
+                'status-running': ejecucion.status === 'RUNNING',
+                'status-completed': ejecucion.status === 'COMPLETED',
+                'status-error': ejecucion.status === 'PARTIAL' || ejecucion.status === 'FAILED'
+            }">
+                    {{ ejecucion.status }}
+                </span>
+
+            </div>
+
+            <div class="execution-stats">
+
+                <div class="execution-stat">
+                    <span>Total de Tickets</span>
+                    <strong>{{ ejecucion.total_tickets | number:'1.0-0' }}</strong>
+                </div>
+
+                <div class="execution-stat">
+                    <span>Procesados</span>
+                    <strong>{{ ejecucion.processed_tickets | number:'1.0-0' }}</strong>
+                </div>
+
+                <div class="execution-stat">
+                    <span>Correctos</span>
+                    <strong class="text-green">
+                        {{ ejecucion.correct_count | number:'1.0-0' }}
+                    </strong>
+                </div>
+
+                <div class="execution-stat">
+                    <span>Incorrectos</span>
+                    <strong class="text-orange">
+                        {{ ejecucion.incorrect_count | number:'1.0-0' }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="execution-progress" *ngIf="ejecucion.status === 'PENDING' || ejecucion.status === 'RUNNING'">
+
+                <div class="progress-info">
+                    <span>Progreso de la auditoría</span>
+                    <strong>{{ porcentajeProgreso | number:'1.0-1' }}%</strong>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill" [style.width.%]="porcentajeProgreso">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="execution-footer">
+                <mat-icon>schedule</mat-icon>
+                <span>
+                    Grupo: {{ ejecucion.grupo_resolutor }}
+                    · Periodo:
+                    {{ ejecucion.period_from ? (ejecucion.period_from | date:'dd/MM/yyyy') : 'Inicio del histórico'
+                    }}
+                    -
+                    {{ ejecucion.period_to ? (ejecucion.period_to | date:'dd/MM/yyyy') : 'Fin del histórico' }}
+                </span>
+            </div>
+
+        </ng-container>
+
+    </details>
+
+    <section class="status-card" *ngIf="cargandoEstado" role="status">
+        <mat-icon>hourglass_top</mat-icon>
+        Consultando el estado de la auditoría...
+    </section>
+
+    <section class="status-card success-card" *ngIf="mensajeEjecucion">
+        <mat-icon>check_circle_outline</mat-icon>
+        {{ mensajeEjecucion }}
+    </section>
+
+    <section class="status-card error-card" *ngIf="errorEjecucion" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorEjecucion }}
+    </section>
+
+    <section class="status-card error-card" *ngIf="errorResumen" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorResumen }}
+    </section>
+
+    <section class="status-card error-card" *ngIf="errorTickets" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorTickets }}
+    </section>
+
+    <section class="status-card error-card" *ngIf="errorResolutores" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorResolutores }}
+    </section>
+
+    <section class="status-card" *ngIf="sinResultados && !cargandoResumen && !cargandoEstado">
+        <mat-icon>info_outline</mat-icon>
+        Todavía no existen tickets evaluados en la agrupación anual.
+    </section>
+
+    <section class="status-card" *ngIf="cargandoResumen" role="status">
+        <mat-icon>hourglass_top</mat-icon>
+        Cargando indicadores de categorización...
+    </section>
+
+    <section class="kpi-area" *ngIf="resumen">
+
+        <div class="section-heading">
+            <div>
+                <h2>Indicadores de Categorización</h2>
+                <p>
+                    Resultados acumulados de
+                    {{ resumen.group_name || 'Auditoría de Categorización 2026' }}.
+                    {{ resumen.completed_runs || 0 }} ejecuciones completadas,
+                    considerando únicamente la última evaluación de cada ticket.
+                </p>
+            </div>
+        </div>
+
+        <div class="kpis-section">
+
+            <app-kpi-card titulo="Tickets Evaluados" [valor]="resumen.processed_tickets" icono="confirmation_number"
+                color="orange">
+            </app-kpi-card>
+
+            <app-kpi-card titulo="Categorizaciones Correctas" [valor]="resumen.correct_count" icono="check_circle"
+                color="green">
+            </app-kpi-card>
+
+            <app-kpi-card titulo="Categorizaciones Incorrectas" [valor]="resumen.incorrect_count" icono="error_outline"
+                color="orange">
+            </app-kpi-card>
+
+            <app-kpi-card titulo="% Correctas" [valor]="resumen.correct_percentage.toFixed(1) + '%'" icono="verified"
+                color="green">
+            </app-kpi-card>
+
+            <app-kpi-card titulo="% Incorrectas" [valor]="resumen.incorrect_percentage.toFixed(1) + '%'" icono="percent"
+                color="orange">
+            </app-kpi-card>
+
+        </div>
+
+    </section>
+
+
+
+
+    <!-- FILA 1: GRÁFICOS DE DONA -->
+    <section class="charts-section" *ngIf="resumen ||
+           motivosResolucion ||
+           cargandoResumen ||
+           cargandoMotivosResolucion ||
+           errorResumen ||
+           errorMotivosResolucion">
+
+        <div class="chart-item">
+            <!-- Distribución de Categorizaciones -->
+
+            <!-- Distribución de Categorizaciones -->
+            <app-requirement-categorization-distribution [modo]="'categorizacion'" [datos]="resumen"
+                [cargando]="cargandoResumen" [error]="errorResumen"
+                [resultadoSeleccionado]="filtrosActuales.resultado ?? null"
+                (resultadoChange)="seleccionarResultado($event)">
+            </app-requirement-categorization-distribution>
+
+        </div>
+
+        <div class="chart-item">
+            <!-- Distribución por Motivo Resolución -->
+
+            <app-requirement-categorization-distribution [modo]="'motivo_resolucion'" [datosMotivos]="motivosResolucion"
+                [cargando]="cargandoMotivosResolucion" [error]="errorMotivosResolucion"
+                [motivoSeleccionado]="filtrosActuales.motivo_resolucion ?? null"
+                (motivoChange)="seleccionarMotivoResolucion($event)">
+            </app-requirement-categorization-distribution>
+
+        </div>
+
+    </section>
+
+
+    <!-- FILA 2: GRÁFICOS POR COLABORADOR Y POR MES -->
+    <section class="charts-section" *ngIf="resolutores.length > 0 ||
+           estadisticasMensuales.length > 0 ||
+           cargandoResolutores ||
+           cargandoEstadisticasMensuales ||
+           errorResolutores ||
+           errorEstadisticasMensuales">
+
+        <div class="chart-item">
+            <!-- Top 10: Categorizaciones Incorrectas por Colaborador -->
+            <app-requirement-categorization-resolvers [datos]="resolutores" [cargando]="cargandoResolutores"
+                [error]="errorResolutores">
+            </app-requirement-categorization-resolvers>
+        </div>
+
+        <div class="chart-item">
+            <!-- Categorizaciones Correctas e Incorrectas por Mes -->
+            <app-requirement-categorization-monthly-chart [datos]="estadisticasMensuales"
+                [cargando]="cargandoEstadisticasMensuales" [error]="errorEstadisticasMensuales">
+            </app-requirement-categorization-monthly-chart>
+        </div>
+
+    </section>
+
+
+    <!-- FILA 3: CUADROS ESTADÍSTICOS -->
+    <section class="monthly-report-section" *ngIf="
+       opcionesFiltros.meses.length > 0 ||
+       estadisticasMensuales.length > 0 ||
+       resolutores.length > 0 ||
+       cargandoEstadisticasMensuales ||
+       cargandoResolutores ||
+       errorEstadisticasMensuales ||
+       errorResolutores">
+
+        <div class="monthly-report-item">
+            <!-- Cuadro Estadístico Mensual -->
+            <app-requirement-categorization-monthly-table [datos]="estadisticasMensuales"
+                [cargando]="cargandoEstadisticasMensuales" [error]="errorEstadisticasMensuales"
+                [opcionesMeses]="opcionesFiltros.meses" [mesSeleccionado]="filtrosActuales.mes ?? null"
+                (mesChange)="seleccionarMes($event)">
+            </app-requirement-categorization-monthly-table>
+
+        </div>
+
+        <div class="monthly-report-item">
+            <!-- Cuadro Estadístico por Colaborador -->
+            <app-requirement-categorization-resolvers-table [datos]="resolutores" [cargando]="cargandoResolutores"
+                [error]="errorResolutores" [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
+                [resolutorSeleccionado]="filtrosActuales.nombre_resolutor ?? null"
+                (resolutorChange)="seleccionarResolutor($event)">
+            </app-requirement-categorization-resolvers-table>
+
+        </div>
+
+    </section>
+
+
+    <!-- FILA 4: EXPLORADOR DE TICKETS AUDITADOS -->
+    <section class="results-card"
+        *ngIf="opcionesFiltros.ticket_ids.length > 0 || resumen || tickets || cargandoTickets || errorTickets">
+
+        <app-requirement-categorization-tickets-table [datos]="tickets" [cargando]="cargandoTickets"
+            [error]="errorTickets" [opcionesTicketIds]="opcionesFiltros.ticket_ids"
+            [ticketIdSeleccionado]="filtrosActuales.ticket_id ?? null" (ticketIdChange)="seleccionarTicket($event)"
+            (paginaChange)="cambiarPagina($event.pagina, $event.tamano)">
+        </app-requirement-categorization-tickets-table>
+
+    </section>
+
+
+
+
+</div>

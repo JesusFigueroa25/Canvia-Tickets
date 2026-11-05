@@ -1,0 +1,88 @@
+<div class="ai-chat-page">
+
+    <!-- ENCABEZADO DE PÁGINA -->
+    <header class="page-header">
+
+        <div class="page-header-content">
+            <h1>Asistente Analítico IA</h1>
+            <p>
+                Consulta incidentes, requerimientos y cumplimiento
+                SLA/OLA mediante lenguaje natural.
+            </p>
+        </div>
+
+        <button type="button" class="refresh-button" [disabled]="enviando || cargandoConversacion"
+            (click)="refrescar()">
+
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+
+        </button>
+
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <section class="chat-workspace">
+
+        <!-- HIJO 1: HISTORIAL -->
+        <app-ai-chat-sidebar [conversaciones]="conversaciones" [conversacionSeleccionada]="conversacionId"
+            [cargando]="cargandoConversaciones" [deshabilitado]="enviando" [error]="errorConversaciones"
+            (nueva)="nuevaConversacion()" (seleccionada)="seleccionarConversacion($event)">
+        </app-ai-chat-sidebar>
+
+        <!-- PANEL DE CONVERSACIÓN -->
+        <div class="chat-main">
+
+            <!-- ENCABEZADO INTERNO -->
+            <div class="chat-main-header">
+
+                <div class="chat-brand-icon">
+                    <mat-icon>smart_toy</mat-icon>
+                </div>
+
+                <div class="chat-main-info">
+                    <h2>Chat Analítico</h2>
+
+                    <p>
+                        {{ fuenteActual }}
+                    </p>
+                </div>
+
+                <div class="chat-state">
+                    <span class="status-dot"></span>
+                    <span>Canvia IA</span>
+                </div>
+
+            </div>
+
+            <!-- ERROR DE CARGA -->
+            <div class="chat-alert" role="alert" *ngIf="errorConversacion">
+
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ errorConversacion }}</span>
+
+            </div>
+
+            <!-- HIJO 2: MENSAJES -->
+            <app-ai-chat-messages [mensajes]="mensajes" [cargando]="cargandoConversacion" [respondiendo]="enviando"
+                (sugerencia)="usarSugerencia($event)">
+            </app-ai-chat-messages>
+
+            <!-- ERROR DE ENVÍO -->
+            <div *ngIf="errorEnvio" class="send-error" role="alert">
+
+                <mat-icon>warning_amber</mat-icon>
+                <span>{{ errorEnvio }}</span>
+
+            </div>
+
+            <!-- HIJO 3: ENTRADA -->
+            <app-ai-chat-composer [valor]="borrador" [deshabilitado]="enviando || cargandoConversacion"
+                (valorChange)="borrador = $event" (enviar)="enviarMensaje()">
+            </app-ai-chat-composer>
+
+        </div>
+
+    </section>
+
+</div>

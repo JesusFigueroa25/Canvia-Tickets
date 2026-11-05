@@ -1,0 +1,249 @@
+<div class="home-page">
+
+    <!--  HEADER-->
+    <header class="page-header">
+        <div class="page-header-content">
+            <h1>
+                Dashboard General
+            </h1>
+            <p>
+                Vista ejecutiva de la operación,
+                volumen de tickets y cumplimiento SLA
+                de los servicios gestionados.
+            </p>
+        </div>
+
+        <button mat-stroked-button type="button" class="refresh-button" [disabled]="cargandoResumen"
+            (click)="cargarResumen()">
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+        </button>
+
+    </header>
+
+    <!--  ESTADOS-->
+    <section class="status-card" *ngIf="cargandoResumen" role="status">
+        Cargando información del Dashboard Home...
+    </section>
+
+    <section class="status-card error-card" *ngIf="errorResumen && !cargandoResumen" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorResumen }}
+    </section>
+
+
+    <!--  CONTENIDO HOME-->
+    <ng-container *ngIf="resumen && !cargandoResumen">
+
+        <!-- KPIs PRINCIPALES -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <div>
+                    <h2>Volumen de Operación</h2>
+                    <p>
+                        Total de tickets registrados
+                        en los diferentes conjuntos de datos.
+                    </p>
+                </div>
+            </div>
+
+            <div class="kpis-grid">
+                <app-kpi-card titulo="Incidentes Consolidados" [valor]="resumen.kpis.incidentes_consolidados"
+                    icono="assignment" color="orange">
+                </app-kpi-card>
+
+                <app-kpi-card titulo="Incidentes SLA" [valor]="resumen.kpis.incidentes_sla" icono="verified"
+                    color="green">
+                </app-kpi-card>
+
+                <app-kpi-card titulo="Requerimientos Consolidados" [valor]="resumen.kpis.requerimientos_consolidados"
+                    icono="description" color="orange">
+                </app-kpi-card>
+
+                <app-kpi-card titulo="Requerimientos SLA" [valor]="resumen.kpis.requerimientos_sla" icono="task_alt"
+                    color="green">
+                </app-kpi-card>
+            </div>
+
+        </section>
+
+
+        <!-- INDICADORES CLAVE -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <div>
+                    <h2>Indicadores Clave</h2>
+                    <p>
+                        Cumplimiento del SLA de solución
+                        e incumplimientos registrados.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="indicators-grid">
+
+                <!-- SLA SOLUCIÓN INCIDENTES -->
+                <article class="indicator-card" [class.indicator-good]=" resumen.indicadores_clave.sla_solucion_incidentes >= 95
+                    " [class.indicator-warning]=" resumen.indicadores_clave.sla_solucion_incidentes >= 90 && resumen.indicadores_clave.sla_solucion_incidentes < 95
+                    " [class.indicator-danger]="resumen.indicadores_clave.sla_solucion_incidentes < 90">
+
+                    <div class="indicator-top">
+                        <div class="indicator-icon">
+                            <mat-icon>shield</mat-icon>
+                        </div>
+                    </div>
+
+                    <span class="indicator-label">
+                        SLA Solución Incidentes
+                    </span>
+
+                    <strong class="indicator-value">
+                        {{
+                        resumen.indicadores_clave.sla_solucion_incidentes
+                        | number:'1.2-2'
+                        }}%
+                    </strong>
+
+                    <p class="indicator-description">
+                        Cumplimiento de resolución
+                        de incidentes.
+                    </p>
+                </article>
+
+
+                <!-- SLA SOLUCIÓN REQUERIMIENTOS -->
+                <article class="indicator-card" [class.indicator-good]="resumen.indicadores_clave.sla_solucion_requerimientos >= 95
+                    " [class.indicator-warning]="resumen.indicadores_clave.sla_solucion_requerimientos >= 90 && resumen.indicadores_clave.sla_solucion_requerimientos < 95
+                    " [class.indicator-danger]="resumen.indicadores_clave.sla_solucion_requerimientos < 90">
+
+                    <div class="indicator-top">
+                        <div class="indicator-icon">
+                            <mat-icon>verified_user</mat-icon>
+                        </div>
+                    </div>
+
+                    <span class="indicator-label">
+                        SLA Solución Requerimientos
+                    </span>
+
+                    <strong class="indicator-value">
+                        {{
+                        resumen.indicadores_clave.sla_solucion_requerimientos
+                        | number:'1.2-2'
+                        }}%
+                    </strong>
+
+                    <p class="indicator-description">
+                        Cumplimiento de atención
+                        de requerimientos.
+                    </p>
+                </article>
+
+
+                <!-- INCUMPLIMIENTOS INCIDENTES -->
+                <article class="indicator-card indicator-danger">
+
+                    <div class="indicator-top">
+                        <div class="indicator-icon">
+                            <mat-icon>report_problem</mat-icon>
+                        </div>
+                    </div>
+
+                    <span class="indicator-label">
+                        Incumplimientos Incidentes
+                    </span>
+
+                    <strong class="indicator-value">
+                        {{
+                        resumen.indicadores_clave.incumplimientos_incidentes
+                        | number:'1.0-0'
+                        }}
+                    </strong>
+
+                    <p class="indicator-description">
+                        Incidentes que no cumplieron
+                        el SLA de solución.
+                    </p>
+
+                </article>
+
+
+                <!-- INCUMPLIMIENTOS REQUERIMIENTOS -->
+                <article class="indicator-card indicator-danger">
+
+                    <div class="indicator-top">
+                        <div class="indicator-icon">
+                            <mat-icon>warning_amber</mat-icon>
+                        </div>
+                    </div>
+
+                    <span class="indicator-label">
+                        Incumplimientos Requerimientos
+                    </span>
+
+                    <strong class="indicator-value">
+                        {{
+                        resumen.indicadores_clave.incumplimientos_requerimientos
+                        | number:'1.0-0'
+                        }}
+                    </strong>
+
+                    <p class="indicator-description">
+                        Requerimientos que no cumplieron
+                        el SLA de solución.
+                    </p>
+
+                </article>
+
+            </div>
+        </section>
+
+
+        <!--  ANÁLISIS DE OPERACIÓN -->
+        <section class="dashboard-section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Análisis de Operación</h2>
+                    <p>
+                        Comportamiento mensual del volumen operativo
+                        y evolución del cumplimiento SLA.
+                    </p>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <!-- VOLUMEN MENSUAL -->
+                <app-home-monthly-volume [datos]="resumen.graficos.volumen_mensual">
+                </app-home-monthly-volume>
+
+                <!-- EVOLUCIÓN SLA -->
+                <app-home-sla-evolution [datos]="resumen.graficos.evolucion_sla">
+                </app-home-sla-evolution>
+            </div>
+
+        </section>
+
+
+        <!--  RESUMEN EJECUTIVO -->
+        <section class="dashboard-section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Resumen Ejecutivo</h2>
+                    <p>
+                        Principales hallazgos sobre la evolución
+                        operativa, el cumplimiento SLA y los
+                        proyectos que requieren atención.
+                    </p>
+                </div>
+            </div>
+
+            <app-home-executive-summary [datos]="resumen.resumen_ejecutivo">
+            </app-home-executive-summary>
+
+        </section>
+
+    </ng-container>
+</div>

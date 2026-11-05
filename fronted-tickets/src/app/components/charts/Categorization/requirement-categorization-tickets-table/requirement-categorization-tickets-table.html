@@ -1,0 +1,351 @@
+<section class="table-card">
+
+  <div class="table-header">
+
+    <div class="table-title">
+      <h2>Explorador de Tickets Auditados</h2>
+      <p>
+        Consulta las categorizaciones evaluadas, identifica inconsistencias
+        y revisa la evidencia semántica de cada requerimiento.
+      </p>
+    </div>
+
+    <div class="table-count" *ngIf="datos">
+      <mat-icon>confirmation_number</mat-icon>
+      <strong>{{ datos.total | number:'1.0-0' }}</strong>
+      <span>Tickets</span>
+    </div>
+
+  </div>
+
+
+  <!-- FILTRO DINÁMICO POR TICKET ID -->
+  <div class="ticket-filter-toolbar">
+
+    <mat-form-field appearance="outline" class="ticket-search-field">
+
+      <mat-icon matPrefix>search</mat-icon>
+
+      <mat-select placeholder="Todos los tickets" [value]="ticketIdSeleccionado"
+        (openedChange)="abrirComboTickets($event)" (selectionChange)="seleccionarTicketDesdeCombo($event.value)">
+
+        <mat-select-trigger>
+          {{ ticketIdSeleccionado || 'Todos los tickets' }}
+        </mat-select-trigger>
+
+        <!-- BUSCADOR -->
+        <div class="ticket-search-container" (click)="$event.stopPropagation()"
+          (keydown)="manejarTeclaBusquedaTickets($event)">
+
+          <input type="text" class="ticket-search-input" placeholder="Buscar Ticket ID..." [value]="busquedaTicketId"
+            (input)="filtrarTickets($event)" aria-label="Buscar Ticket ID">
+
+        </div>
+
+        <!-- TODOS LOS TICKETS -->
+        <mat-option [value]="null">
+          Todos los tickets
+        </mat-option>
+
+        <!-- TICKETS DISPONIBLES -->
+        <mat-option *ngFor="let ticketId of ticketIdsFiltrados" [value]="ticketId">
+
+          {{ ticketId }}
+
+        </mat-option>
+
+        <mat-option *ngIf="totalCoincidenciasTickets === 0" disabled>
+
+          No se encontraron tickets
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+
+  <div class="loading-message" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando tickets auditados...
+  </div>
+
+  <div class="error-message" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <div class="table-container">
+
+      <table mat-table [dataSource]="datos?.items ?? []" class="audit-table">
+
+        <ng-container matColumnDef="ticket_id">
+          <th mat-header-cell *matHeaderCellDef>
+            Ticket ID
+          </th>
+
+          <td mat-cell *matCellDef="let item" class="ticket-cell">
+            {{ item.ticket_id }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="project_name">
+          <th mat-header-cell *matHeaderCellDef>
+            Proyecto
+          </th>
+
+          <td mat-cell *matCellDef="let item" class="project-cell">
+            {{ item.project_name || 'Sin proyecto' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="resolver_name">
+          <th mat-header-cell *matHeaderCellDef>
+            Resolutor
+          </th>
+
+          <td mat-cell *matCellDef="let item" class="resolver-cell">
+            {{ item.resolver_name || 'Sin asignar' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="original_category">
+          <th mat-header-cell *matHeaderCellDef>
+            Categorización Original
+          </th>
+
+          <td mat-cell *matCellDef="let item" class="category-cell">
+            <span [title]="obtenerRutaOriginal(item)">
+              {{ obtenerRutaOriginal(item) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="result_status">
+          <th mat-header-cell *matHeaderCellDef>
+            Resultado
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+            <span class="result-badge" [ngClass]="obtenerClaseResultado(item)">
+              <mat-icon>
+                {{ item.result_status === 'CORRECT' ? 'check_circle' : 'error_outline' }}
+              </mat-icon>
+              {{ obtenerTextoResultado(item) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="suggested_category">
+          <th mat-header-cell *matHeaderCellDef>
+            Categoría Sugerida
+          </th>
+
+          <td mat-cell *matCellDef="let item" class="category-cell">
+            <span *ngIf="item.suggested_catalog_id !== null; else sinSugerencia" [title]="obtenerRutaSugerida(item)">
+              {{ obtenerRutaSugerida(item) }}
+            </span>
+
+            <ng-template #sinSugerencia>
+              <span class="muted-text">Sin sugerencia</span>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="reason_text">
+          <th mat-header-cell *matHeaderCellDef>
+            Motivo de Evaluación
+          </th>
+
+          <td mat-cell *matCellDef="let item" class="reason-cell">
+            <span [title]="item.reason_text">
+              {{ item.reason_text }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>
+            Detalle
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+
+            <button mat-stroked-button type="button" class="detail-button" [attr.aria-expanded]="
+        ticketSeleccionado?.result_id === item.result_id
+    " (click)="$event.stopPropagation(); seleccionarTicket(item)" (keydown.enter)="$event.stopPropagation()"
+              (keydown.space)="$event.stopPropagation()">
+
+
+              <mat-icon>
+                {{ ticketSeleccionado?.result_id === item.result_id ? 'expand_less' : 'visibility' }}
+              </mat-icon>
+
+              {{ ticketSeleccionado?.result_id === item.result_id ? 'Ocultar' : 'Ver detalle' }}
+
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasMostradas"></tr>
+
+
+        <tr mat-row *matRowDef="let row; columns: columnasMostradas" class="ticket-filter-row" [class.row-selected]="
+        ticketSeleccionado?.result_id === row.result_id
+    " [class.row-filtered]="
+        row.ticket_id === ticketIdSeleccionado
+    " [attr.tabindex]="0" [attr.aria-selected]="
+        row.ticket_id === ticketIdSeleccionado
+    " (click)="seleccionarTicketFiltroDesdeFila(row)" (keydown.enter)="seleccionarTicketFiltroDesdeFila(row)"
+          (keydown.space)="seleccionarTicketFiltroDesdeFila(row); $event.preventDefault()">
+        </tr>
+
+
+      </table>
+
+    </div>
+
+  </ng-container>
+
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>search_off</mat-icon>
+    <p>No se encontraron tickets auditados.</p>
+  </div>
+
+  <mat-paginator *ngIf="datos && datos.total > 0" [length]="datos.total" [pageIndex]="datos.page - 1"
+    [pageSize]="datos.page_size" [pageSizeOptions]="[10, 25, 50, 100]" [disabled]="cargando"
+    (page)="cambiarPagina($event)" showFirstLastButtons>
+  </mat-paginator>
+
+
+</section> <!-- CIERRE DE table-card -->
+
+<!-- VENTANA EMERGENTE DEL DETALLE -->
+<div class="ticket-modal-backdrop" *ngIf="ticketSeleccionado as ticket" (click)="cerrarDetalle()">
+
+  <section class="detail-panel ticket-modal" role="dialog" aria-modal="true" aria-labelledby="ticket-detail-title"
+    (click)="$event.stopPropagation()">
+
+
+    <div class="detail-header">
+
+      <div>
+        <h3 id="ticket-detail-title">
+          Detalle de Auditoría — {{ ticket.ticket_id }}
+        </h3>
+        <p>
+          Evaluación realizada el
+          {{ ticket.evaluated_at | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
+
+      <button mat-icon-button type="button" aria-label="Cerrar detalle del ticket" (click)="cerrarDetalle()">
+        <mat-icon>close</mat-icon>
+      </button>
+
+    </div>
+
+    <div class="detail-summary">
+
+      <div class="detail-summary-item">
+        <span>Resultado</span>
+        <strong [ngClass]="ticket.result_status === 'CORRECT' ? 'text-green' : 'text-red'">
+          {{ obtenerTextoResultado(ticket) }}
+        </strong>
+      </div>
+
+      <div class="detail-summary-item">
+        <span>Motivo registrado</span>
+        <strong>{{ ticket.source_status_reason || 'No disponible' }}</strong>
+      </div>
+
+      <div class="detail-summary-item">
+        <span>Estado de solución</span>
+        <strong>{{ obtenerEstadoSolucion(ticket.solution_check_status) }}</strong>
+      </div>
+
+      <div class="detail-summary-item">
+        <span>Fecha de apertura</span>
+        <strong>{{ ticket.source_opened_at | date:'dd/MM/yyyy HH:mm' }}</strong>
+      </div>
+
+    </div>
+
+    <div class="detail-grid">
+
+      <div class="detail-field">
+        <label>Categorización Original</label>
+        <p>{{ obtenerRutaOriginal(ticket) }}</p>
+      </div>
+
+      <div class="detail-field">
+        <label>Categorización Sugerida</label>
+        <p>
+          {{ ticket.suggested_catalog_id !== null ? obtenerRutaSugerida(ticket) : 'Sin sugerencia' }}
+        </p>
+      </div>
+
+      <div class="detail-field full-width">
+        <label>Descripción</label>
+        <p class="ticket-text">{{ ticket.descripcion || 'Sin descripción' }}</p>
+      </div>
+
+      <div class="detail-field full-width">
+        <label>Detalle</label>
+        <p class="ticket-text">{{ ticket.detalle || 'Sin detalle' }}</p>
+      </div>
+
+      <div class="detail-field full-width">
+        <label>Solución</label>
+        <p class="ticket-text">{{ ticket.solucion || 'Sin solución registrada' }}</p>
+      </div>
+
+      <div class="detail-field full-width">
+        <label>Justificación de la Evaluación</label>
+        <p class="ticket-text">{{ ticket.reason_text }}</p>
+      </div>
+
+      <div class="detail-field">
+        <label>Código de Evaluación</label>
+        <p>{{ ticket.reason_code }}</p>
+      </div>
+
+      <div class="detail-field">
+        <label>Similitud Semántica</label>
+        <p>
+          {{ ticket.semantic_score !== null ? (ticket.semantic_score | number:'1.3-3') : 'No disponible' }}
+        </p>
+      </div>
+
+      <div class="detail-field full-width" *ngIf="ticket.solution_check_reason">
+        <label>Verificación de Solución</label>
+        <p class="ticket-text">{{ ticket.solution_check_reason }}</p>
+      </div>
+
+    </div>
+
+    <details class="evidence-section" *ngIf="ticket.evidence_json">
+      <summary>
+        <mat-icon>data_object</mat-icon>
+        Ver evidencia técnica de MiniLM
+      </summary>
+
+      <pre>{{ ticket.evidence_json | json }}</pre>
+    </details>
+
+    <div class="detail-note">
+      <mat-icon>info_outline</mat-icon>
+      <span>
+        La categoría sugerida es una referencia para revisión.
+        Cualquier corrección en Service AIDE debe validarse antes de aplicarse.
+      </span>
+    </div>
+
+  </section> 
+
+</div> 

@@ -1,0 +1,725 @@
+
+/* Página y colores */
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+
+  --canvia-orange: #ff620f;
+  --canvia-green: #63b891;
+  --page-bg: #f7f9fb;
+  --card-bg: #ffffff;
+  --border-color: #e5e9ee;
+  --text-primary: #101828;
+  --text-secondary: #667085;
+}
+
+.requirement-sla-page {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+
+
+/* Cabecera sticky */
+.header-master {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  box-sizing: border-box;
+
+  margin: -24px -24px 0;
+  padding: 14px 24px 12px;
+
+  background: var(--page-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.045);
+}
+
+/* Oculta los gráficos detrás del encabezado */
+.header-master::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 96px;
+  background: var(--page-bg);
+  pointer-events: none;
+}
+
+
+/* Título principal */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  min-width: 0;
+  margin-bottom: 12px;
+}
+
+.page-header-content {
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.page-header p {
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+/* Navegación interna */
+.section-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+
+  scrollbar-width: thin;
+  scrollbar-color: #cdd5df transparent;
+}
+
+.section-nav button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  min-height: 35px;
+  padding: 7px 11px;
+
+  color: #475467;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.section-nav button:hover {
+  color: var(--canvia-orange);
+  background: #fff4ed;
+  border-color: #ffdcc7;
+}
+
+.section-nav button:focus-visible {
+  outline: 2px solid var(--canvia-orange);
+  outline-offset: 2px;
+}
+
+/* Scroll de navegación */
+.section-nav::-webkit-scrollbar {
+  height: 5px;
+}
+
+.section-nav::-webkit-scrollbar-track {
+  background: #f2f4f7;
+  border-radius: 10px;
+}
+
+.section-nav::-webkit-scrollbar-thumb {
+  background: #cdd5df;
+  border-radius: 10px;
+}
+
+
+/* Filtros globales */
+.filters-card {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 11px 16px 10px;
+
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.025);
+}
+
+/* Cabecera plegable */
+.filters-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #344054;
+  font-size: 12px;
+  font-weight: 700;
+
+  list-style: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+.filters-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.filters-toggle::marker {
+  content: "";
+}
+
+.filters-toggle mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: var(--canvia-orange);
+}
+
+.filters-toggle::after {
+  content: "▾";
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.filters-card:not([open]) .filters-toggle::after {
+  content: "▸";
+}
+
+
+/* Formulario de filtros */
+.filters-form {
+  display: grid;
+  grid-template-columns:
+    minmax(230px, 1.25fr)
+    repeat(4, minmax(130px, 0.8fr))
+    minmax(100px, 0.5fr);
+
+  align-items: end;
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* Campos de fechas */
+.date-range-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Campos generales */
+.filter-field {
+  min-width: 0;
+}
+
+.filter-field label {
+  display: block;
+  margin-bottom: 5px;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Angular Material */
+:host ::ng-deep .filters-card .mat-mdc-form-field-infix {
+  min-height: 42px;
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+}
+
+
+/* Botones del formulario */
+.filter-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  padding-bottom: 1px;
+}
+
+.filter-actions button {
+  width: 100%;
+  justify-content: center;
+  font-size: 11px;
+}
+
+.clear-button {
+  color: #ffffff !important;
+  background: var(--canvia-green) !important;
+}
+
+.apply-button {
+  color: #ffffff !important;
+  background: var(--canvia-orange) !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s ease;
+}
+
+.apply-button:disabled {
+  color: #98a2b3 !important;
+  background: #e4e7ec !important;
+  opacity: 1 !important;
+}
+
+
+/* Rango de fechas */
+.available-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 10px;
+
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.available-range mat-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--canvia-green);
+}
+
+
+/* Filtros dinámicos activos */
+.header-master .sla-selection-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  margin-top: 10px;
+  padding: 10px 12px;
+
+  background: #fff7f2;
+  border: 1px solid #ffd8c2;
+  border-radius: 10px;
+}
+
+/* Un filtro activo ocupa todo el ancho */
+.header-master .sla-selection-bar > :only-child {
+  grid-column: 1 / -1;
+}
+
+/* Filtro de SLA y Proyecto */
+.active-filter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 6px 10px;
+
+  background: var(--card-bg);
+  border: 1px solid #ffd8c2;
+  border-radius: 8px;
+}
+
+/* Información del filtro */
+.active-filter-item .sla-selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  color: #475467;
+  font-size: 12px;
+}
+
+.active-filter-item .sla-selection-info mat-icon {
+  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+  color: var(--canvia-orange);
+}
+
+.active-filter-item .sla-selection-info span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.active-filter-item .sla-selection-info strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Botones para quitar filtros */
+.active-filter-item button {
+  flex-shrink: 0;
+  color: #d65b10 !important;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.active-filter-item button mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}
+
+
+/* Indicadores KPI */
+.kpis-section {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 14px;
+
+  width: 100%;
+  min-width: 0;
+  margin-top: 20px;
+}
+
+.kpis-section > * {
+  min-width: 0;
+}
+
+
+/* Secciones del dashboard */
+.dashboard-section {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 34px;
+
+  /* Respaldo para navegación con encabezado sticky */
+  scroll-margin-top: 280px;
+}
+
+/* Encabezados de sección */
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0;
+
+  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Indicador naranja del título */
+.section-header h1::before {
+  content: "";
+  display: inline-block;
+  flex-shrink: 0;
+
+  width: 4px;
+  height: 22px;
+
+  background: var(--canvia-orange);
+  border-radius: 4px;
+}
+
+.section-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* Gráficos en dos columnas */
+.charts-grid,
+.project-pareto-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 16px;
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Separación entre bloques */
+.dashboard-section > .charts-grid,
+.dashboard-section > .project-pareto-grid,
+.dashboard-section > .chart-full-width {
+  margin-top: 16px;
+}
+
+/* Primer gráfico después del título */
+.dashboard-section > .section-header + .charts-grid,
+.dashboard-section > .section-header + .project-pareto-grid,
+.dashboard-section > .section-header + .chart-full-width {
+  margin-top: 0;
+}
+
+
+/* Contenedores de gráficos */
+.chart-grid-item,
+.chart-full-width {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.chart-grid-item > *,
+.chart-full-width > * {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+
+/* Explorador de Proyectos y Pareto */
+.project-pareto-grid .projects-section,
+.project-pareto-grid .pareto-section {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Componentes con altura adaptable */
+.project-pareto-grid app-project-explorer-table,
+.project-pareto-grid app-sla-pareto {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+}
+
+/* Tarjeta interna del Explorador */
+:host ::ng-deep
+.project-pareto-grid app-project-explorer-table .table-card {
+  flex: 1 1 auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+/* Estados de carga */
+.projects-loading {
+  padding: 5px 0 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+/* Errores de gráficos */
+.dashboard-load-error {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+
+  color: #b42318;
+  background: #fef3f2;
+
+  border: 1px solid #fecdca;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+
+/* Responsive: laptop */
+@media (max-width: 1450px) {
+
+  .page-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .section-nav {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .filters-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* Responsive: KPIs */
+@media (max-width: 1350px) {
+
+  .kpis-section {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* Responsive: tablet */
+@media (max-width: 1100px) {
+
+  .charts-grid,
+  .project-pareto-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* Responsive: filtros activos */
+@media (max-width: 900px) {
+
+  .header-master .sla-selection-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .header-master .sla-selection-bar > :only-child {
+    grid-column: auto;
+  }
+}
+
+
+/* Responsive: móvil */
+@media (max-width: 768px) {
+
+  .requirement-sla-page {
+    padding: 16px;
+  }
+
+  .header-master {
+    margin: -16px -16px 0;
+    padding: 12px 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .page-header h1 {
+    font-size: 23px;
+  }
+
+  .page-header p {
+    font-size: 11px;
+  }
+
+  .filters-form {
+    grid-template-columns: 1fr;
+  }
+
+  /* Scroll interno del formulario abierto */
+  .filters-card[open] .filters-form {
+    max-height: 45vh;
+    overflow-y: auto;
+  }
+
+  .kpis-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .dashboard-section {
+    margin-top: 26px;
+  }
+
+  .section-header h1 {
+    font-size: 20px;
+  }
+}
+
+
+/* Responsive: filtros en móvil pequeño */
+@media (max-width: 600px) {
+
+  .active-filter-item {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .active-filter-item button {
+    margin-left: auto;
+  }
+}
+
+
+/* Responsive: móvil pequeño */
+@media (max-width: 520px) {
+
+  .requirement-sla-page {
+    padding: 12px;
+  }
+
+  .header-master {
+    margin: -12px -12px 0;
+    padding: 10px 12px;
+  }
+
+  .page-header h1 {
+    font-size: 21px;
+  }
+
+  .filters-card {
+    padding: 11px 12px;
+  }
+
+  .kpis-section {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header h1 {
+    font-size: 19px;
+  }
+
+  .charts-grid,
+  .project-pareto-grid {
+    gap: 14px;
+  }
+}

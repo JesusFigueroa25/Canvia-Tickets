@@ -1,0 +1,477 @@
+/* CONTENEDOR PRINCIPAL */
+
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.table-card {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e9ee;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+
+/* HEADER */
+
+.table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px 14px;
+}
+
+.table-title {
+    min-width: 0;
+}
+
+.table-title h2 {
+    margin: 0;
+    color: #101828;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.table-title p {
+    margin: 5px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* BUSCADOR */
+
+.search-field {
+    width: 320px;
+    flex-shrink: 0;
+}
+
+:host ::ng-deep .search-field .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+}
+
+:host ::ng-deep .search-field .mat-mdc-text-field-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+:host ::ng-deep .search-field .mat-mdc-form-field-infix {
+    min-height: 44px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+:host ::ng-deep .search-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .search-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .search-field.mat-focused .mdc-notched-outline__trailing {
+    border-color: #ff620f !important;
+}
+
+.clear-search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #98a2b3;
+    cursor: pointer;
+}
+
+.clear-search mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.clear-search:hover {
+    color: #ff620f;
+}
+
+
+/* TABLA */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.events-table {
+    width: 100%;
+    min-width: 650px;
+}
+
+th.mat-mdc-header-cell {
+    background: #f8faf9;
+    color: #475467;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+td.mat-mdc-cell {
+    color: #344054;
+    font-size: 12px;
+}
+
+th.mat-mdc-header-cell,
+td.mat-mdc-cell,
+td.mat-mdc-footer-cell {
+    padding: 0 16px !important;
+}
+
+
+/* COLUMNA DETALLE */
+
+.mat-column-detalle {
+    width: 85%;
+    min-width: 450px;
+}
+
+.detail-cell {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.detail-expand {
+    width: 100%;
+}
+
+.detail-expand summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.detail-expand summary::-webkit-details-marker {
+    display: none;
+}
+
+.detail-preview {
+    flex: 1;
+    min-width: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+    color: #253047;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.detail-expand-label {
+    flex-shrink: 0;
+    color: #e35b10;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.detail-expand[open] .detail-expand-label {
+    color: #16835b;
+}
+
+.detail-expand[open] .detail-expand-label::after {
+    content: " abierto";
+}
+
+.detail-full {
+    margin-top: 12px;
+    padding: 13px 15px;
+    background: #f7f9fb;
+    border: 1px solid #e5e9ee;
+    border-radius: 8px;
+    color: #344054;
+    font-size: 12px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.unspecified-text {
+    color: #98a2b3;
+    font-style: italic;
+}
+
+
+/* TOTAL */
+
+.mat-column-total {
+    width: 15%;
+    min-width: 125px;
+    text-align: right;
+}
+
+.numeric-cell {
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.total-cell {
+    color: #e35b10 !important;
+    font-size: 13px !important;
+    font-weight: 700;
+}
+
+
+/* FILAS */
+
+tr.mat-mdc-row {
+    transition: background-color 0.15s ease;
+}
+
+tr.mat-mdc-row:hover {
+    background: #fafcfb;
+}
+
+.detail-expand summary:focus-visible {
+    outline: 2px solid #ff620f;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+
+/* FILA TOTAL GENERAL */
+
+.totals-row td {
+    height: 48px;
+    background: #f2f6f4;
+    border-top: 1px solid #dbe8e0;
+    color: #101828;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.totals-row .grand-total {
+    color: #16835b;
+    font-weight: 800;
+}
+
+.total-label {
+    white-space: nowrap;
+}
+
+
+/* CARGA Y SIN DATOS */
+
+.loading-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: #f7f9fb;
+    color: #667085;
+    font-size: 12px;
+}
+
+.loading-message mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: #ff620f;
+}
+
+.no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 30px 20px;
+    color: #98a2b3;
+    font-size: 12px;
+    text-align: center;
+}
+
+.no-data mat-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+}
+
+
+/* RESUMEN Y PAGINACION */
+
+.table-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    border-top: 1px solid #edf0f2;
+    color: #667085;
+    font-size: 12px;
+}
+
+.table-summary strong {
+    color: #101828;
+}
+
+mat-paginator {
+    background: #ffffff;
+    border-top: 1px solid #edf0f2;
+}
+
+.table-note {
+    margin: 0;
+    padding: 9px 20px 13px;
+    color: #98a2b3;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .search-field {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .table-header {
+        padding: 16px;
+    }
+
+    .mat-column-detalle {
+        min-width: 300px;
+    }
+
+    .table-summary {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
+/* ====================================================
+   FILTRO DINAMICO - DETALLES TECNICOS
+   ==================================================== */
+
+.selection-hint {
+    margin: 8px 0 0;
+    color: #16835B;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+
+/* ====================================================
+   FILAS INTERACTIVAS
+   ==================================================== */
+
+tr.mat-mdc-row.detail-row-clickable {
+    cursor: pointer;
+}
+
+tr.mat-mdc-row.detail-row-clickable:hover td {
+    background: #FFF8F3;
+}
+
+
+/* ====================================================
+   FILA SELECCIONADA
+   ==================================================== */
+
+tr.mat-mdc-row.detail-row-selected td.mat-mdc-cell {
+    background: #FFF0E5;
+}
+
+tr.mat-mdc-row.detail-row-selected:hover td.mat-mdc-cell {
+    background: #FFE8D6;
+}
+
+tr.mat-mdc-row.detail-row-selected .detail-preview {
+    color: #B54708;
+    font-weight: 600;
+}
+
+
+/* ====================================================
+   CONTENIDO DE COLUMNA TOTAL
+   ==================================================== */
+
+.total-cell-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
+    width: 100%;
+}
+
+
+/* ====================================================
+   BOTON DE FILTRADO
+   ==================================================== */
+
+.detail-filter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 29px;
+    height: 29px;
+    padding: 0;
+
+    background: #FFFFFF;
+    color: #FF620F;
+
+    border: 1px solid #FFD7BE;
+    border-radius: 7px;
+
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.detail-filter-button mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+}
+
+.detail-filter-button:hover {
+    background: #FFF3EB;
+    border-color: #FF620F;
+}
+
+.detail-filter-button.is-selected {
+    background: #FF620F;
+    border-color: #FF620F;
+    color: #FFFFFF;
+}
+
+.detail-filter-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.detail-filter-button:focus-visible {
+    outline: 2px solid #FF620F;
+    outline-offset: 2px;
+}

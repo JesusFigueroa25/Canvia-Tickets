@@ -1,0 +1,52 @@
+<section class="chart-card" [ngClass]="{'chart-card-consolidado': modo === 'consolidado'}">
+
+    <div class="chart-header">
+        <div>
+
+            <h2>
+                {{
+                modo === 'consolidado'
+                ? (
+                entidadConsolidado === 'requerimientos'
+                ? 'Volumen Mensual de Requerimientos'
+                : 'Nro Incidentes por Mes'
+                )
+                : (
+                entidadSla === 'requerimientos'
+                ? 'Volumen de Requerimientos'
+                : 'Volumen de Incidentes'
+                )
+                }}
+            </h2>
+
+            <p>
+                {{
+                modo === 'consolidado'
+                ? (
+                entidadConsolidado === 'requerimientos'
+                ? 'Evolución del volumen de requerimientos registrados por mes.'
+                : 'Evolución del volumen de incidentes registrados por mes.'
+                )
+                : (
+                entidadSla === 'requerimientos'
+                ? 'Evolución mensual del volumen y tendencia de requerimientos.'
+                : 'Evolución mensual de tickets.'
+                )
+                }}
+            </p>
+
+            <!-- FILTRO DINAMICO MENSUAL -->
+            <p *ngIf="filtroMesActivo" class="selection-hint">
+                Haz clic en una barra para filtrar por ese mes.
+                Haz clic nuevamente para quitar la selección.
+            </p>
+
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'">
+        </canvas>
+    </div>
+
+</section>

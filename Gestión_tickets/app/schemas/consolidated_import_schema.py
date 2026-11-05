@@ -1,0 +1,365 @@
+from pydantic import BaseModel, Field
+from datetime import date, datetime
+
+class ConsolidatedImportOut(BaseModel):
+    tipo: str
+    tabla_staging: str
+    tabla_destino: str
+    filas_excel: int 
+    filas_procesadas: int
+    filas_staging: int
+    duplicados: int
+    nuevos: int = 0
+    modificados: int = 0
+    sin_cambios: int = 0
+    mensaje: str
+    
+#Incidentes Consolidado
+
+class IncidentConsolidatedFiltersOut(BaseModel):
+    fecha_min: date | None = None
+    fecha_max: date | None = None
+    prioridades: list[str]
+    motivos_estado: list[str]
+    motivos_resolucion: list[str]
+    grupos_resolutores: list[str]
+    proyectos: list[str]
+    nombres_resolutores: list[str]
+    
+class IncidentConsolidatedKPIOut(BaseModel):
+    total_tickets: int
+    total_proyectos: int
+    alta_criticidad: int
+    porcentaje_alta_criticidad: float
+    
+class IncidentConsolidatedVolumenItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+    tickets: int
+    
+class IncidentConsolidatedProyectoItem(BaseModel):
+    proyecto: str
+    cantidad: int    
+    
+class IncidentConsolidatedTipoItem(BaseModel):
+    tipo_incidente: str
+    cantidad: int
+    
+class IncidentConsolidatedPrioridadItem(BaseModel):
+    prioridad: str
+    cantidad: int
+    
+class IncidentConsolidatedTopPeriodoItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+
+class IncidentConsolidatedTopMesItem(BaseModel):
+    periodo: str
+    tickets: int
+
+class IncidentConsolidatedTopProyectoItem(BaseModel):
+    proyecto: str
+    total_tickets: int
+    mensual: list[IncidentConsolidatedTopMesItem]
+
+class IncidentConsolidatedTopProyectosOut(BaseModel):
+    periodos: list[IncidentConsolidatedTopPeriodoItem]
+    proyectos: list[IncidentConsolidatedTopProyectoItem]    
+        
+class IncidentConsolidatedPrioridadMesDetalleItem(BaseModel):
+    prioridad: str
+    cantidad: int
+    porcentaje: float
+
+class IncidentConsolidatedPrioridadMensualItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+    total_tickets: int
+    prioridades: list[IncidentConsolidatedPrioridadMesDetalleItem]
+    
+    
+class IncidentConsolidatedRendimientoPeriodoItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+
+class IncidentConsolidatedRendimientoMesItem(BaseModel):
+    periodo: str
+    tickets: int
+
+class IncidentConsolidatedRendimientoResolutorItem(BaseModel):
+    nombre_resolutor: str
+    total_tickets: int
+    mensual: list[IncidentConsolidatedRendimientoMesItem]
+
+class IncidentConsolidatedRendimientoOut(BaseModel):
+    periodos: list[IncidentConsolidatedRendimientoPeriodoItem]
+    resolutores: list[IncidentConsolidatedRendimientoResolutorItem]
+    totales_mensuales: list[IncidentConsolidatedRendimientoMesItem]
+    total_general: int
+    total_resolutores: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+class IncidentConsolidatedExploradorPeriodoItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+
+class IncidentConsolidatedExploradorMesItem(BaseModel):
+    periodo: str
+    tickets: int
+
+class IncidentConsolidatedExploradorDescripcionItem(BaseModel):
+    descripcion: str
+    total_tickets: int
+    mensual: list[IncidentConsolidatedExploradorMesItem]
+
+class IncidentConsolidatedExploradorDescripcionesOut(BaseModel):
+    periodos: list[IncidentConsolidatedExploradorPeriodoItem]
+    descripciones: list[IncidentConsolidatedExploradorDescripcionItem]
+    totales_mensuales: list[IncidentConsolidatedExploradorMesItem]
+    total_general: int
+    total_descripciones: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+    
+class IncidentConsolidatedDetalleEventoItem(BaseModel):
+    detalle_id: str
+    detalle: str
+    total: int
+
+class IncidentConsolidatedDetalleEventosOut(BaseModel):
+    detalles: list[IncidentConsolidatedDetalleEventoItem]
+    total_general: int
+    total_detalles: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+    
+class IncidentConsolidatedIncidentesPorcentajeItem(BaseModel):
+    descripcion: str
+    cantidad: int
+    porcentaje: float
+
+class IncidentConsolidatedIncidentesPorcentajesOut(BaseModel):
+    total_general: int
+    limite: int
+    descripciones: list[IncidentConsolidatedIncidentesPorcentajeItem]
+    
+class IncidentConsolidatedTopDescripcionProyectoItem(BaseModel):
+    descripcion: str
+    proyecto: str
+    tickets: int
+
+class IncidentConsolidatedTopDescripcionProyectoOut(BaseModel):
+    total_general: int
+    combinaciones: list[IncidentConsolidatedTopDescripcionProyectoItem]
+    
+class IncidentConsolidatedTopDetalleItem(BaseModel):
+    detalle: str
+    tickets: int
+
+class IncidentConsolidatedTopDetallesOut(BaseModel):
+    total_general: int
+    detalles: list[IncidentConsolidatedTopDetalleItem]
+    
+class IncidentConsolidatedTicketsPorResolutorOut(BaseModel):
+    total_general: int
+    limite: int
+    periodos: list[IncidentConsolidatedRendimientoPeriodoItem]
+    resolutores: list[IncidentConsolidatedRendimientoResolutorItem]
+    
+
+class IncidentConsolidatedDashboardFilters(BaseModel):
+    desde: date | None = None
+    hasta: date | None = None
+    prioridad: str | None = None
+    motivo_estado: str | None = None
+    motivo_resolucion: str | None = None
+    grupo_resolutor: str | None = None
+    proyecto: str | None = None
+    proyectos_excluidos: list[str] = Field(
+        default_factory=list
+    )
+    nombre_resolutor: str | None = None
+    descripcion: str | None = None
+    periodo: str | None = Field(
+        default=None,
+        pattern=r"^(19|20)\d{2}-(0[1-9]|1[0-2])$"
+    )
+    tipo_incidente: list[str] = Field(
+        default_factory=list
+    )
+    detalle_id: str | None = Field(
+        default=None,
+        max_length=20
+    )
+    ticket_id: str | None = Field(
+        default=None,
+        max_length=20
+    )
+
+
+
+class IncidentConsolidatedTicketItem(BaseModel):
+    Ticket_ID: str
+    Fecha_Apertura: datetime
+    Fecha_Resolucion: datetime | None = None
+    Fecha_Cierre: datetime | None = None
+    Fecha_Ultima_Modificacion: datetime | None = None
+    Proyecto: str | None = None
+    ALP: str | None = None
+    BU: str | None = None
+    Grupo_Resolutor: str | None = None
+    Nombre_Resolutor: str | None = None
+    Categorizacion_Nivel_1: str | None = None
+    Categorizacion_Nivel_2: str | None = None
+    Categorizacion_Nivel_3: str | None = None
+    Prioridad: str | None = None
+    Urgencia: str | None = None
+    Impacto: str | None = None
+    Estado: str | None = None
+    Motivo_Estado: str | None = None
+    Descripcion: str | None = None
+    Detalle: str | None = None
+    Fuente_Reportada: str | None = None
+    Solucion: str | None = None
+    Causa: str | None = None
+    Motivo_Resolucion: str | None = None
+
+
+class IncidentConsolidatedTicketsOut(BaseModel):
+    tickets: list[IncidentConsolidatedTicketItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+
+# Requerimientos Consolidado
+class RequirementConsolidatedFiltersOut(BaseModel):
+    fecha_min: date | None = None
+    fecha_max: date | None = None
+    prioridades: list[str]
+    motivos_estado: list[str]
+    motivos_resolucion: list[str]
+    grupos_resolutores: list[str]
+    proyectos: list[str]
+        
+class RequirementConsolidatedKPIOut(BaseModel):
+    total_tickets: int
+    total_proyectos: int
+    alta_criticidad: int
+    porcentaje_alta_criticidad: float
+
+    
+class RequirementConsolidatedVolumenItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+    tickets: int
+    
+class RequirementConsolidatedProyectoItem(BaseModel):
+    proyecto: str
+    cantidad: int                
+
+class RequirementConsolidatedTipoItem(BaseModel):
+    tipo_requerimiento: str
+    cantidad: int    
+
+class RequirementConsolidatedPrioridadItem(BaseModel):
+    prioridad: str
+    cantidad: int
+    
+class RequirementConsolidatedTopPeriodoItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+
+class RequirementConsolidatedTopMesItem(BaseModel):
+    periodo: str
+    tickets: int
+
+class RequirementConsolidatedTopProyectoItem(BaseModel):
+    proyecto: str
+    total_tickets: int
+    mensual: list[RequirementConsolidatedTopMesItem]
+
+class RequirementConsolidatedTopProyectosOut(BaseModel):
+    periodos: list[RequirementConsolidatedTopPeriodoItem]
+    proyectos: list[RequirementConsolidatedTopProyectoItem]        
+    
+    
+class RequirementConsolidatedPrioridadMesDetalleItem(BaseModel):
+    prioridad: str
+    cantidad: int
+    porcentaje: float
+
+class RequirementConsolidatedPrioridadMensualItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+    total_tickets: int
+    prioridades: list[RequirementConsolidatedPrioridadMesDetalleItem]    
+    
+
+class RequirementConsolidatedDashboardFilters(BaseModel):
+    desde: date | None = None
+    hasta: date | None = None
+    prioridad: str | None = None
+    motivo_estado: str | None = None
+    motivo_resolucion: str | None = None
+    grupo_resolutor: str | None = None
+    proyecto: str | None = None
+    periodo: str | None = Field(
+        default=None,
+        pattern=r"^(19|20)\d{2}-(0[1-9]|1[0-2])$"
+    )
+    tipo_requerimiento: list[str] = Field(default_factory=list)
+    proyectos_excluidos: list[str] = Field(default_factory=list)
+    ticket_id: str | None = Field(
+        default=None,
+        max_length=20
+    )
+
+
+# TABLA PAGINADA - DETALLE DE TICKETS REQUERIMIENTOS CONSOLIDADOS
+
+class RequirementConsolidatedTicketItem(BaseModel):
+    Ticket_ID: str
+    Fecha_Apertura: datetime
+    Fecha_Resolucion: datetime | None = None
+    Fecha_Cierre: datetime | None = None
+    Fecha_Ultima_Modificacion: datetime | None = None
+    Proyecto: str | None = None
+    ALP: str | None = None
+    BU: str | None = None
+    Grupo_Resolutor: str | None = None
+    Nombre_Resolutor: str | None = None
+    Categorizacion_Nivel_1: str | None = None
+    Categorizacion_Nivel_2: str | None = None
+    Categorizacion_Nivel_3: str | None = None
+    Prioridad: str | None = None
+    Urgencia: str | None = None
+    Impacto: str | None = None
+    Estado: str | None = None
+    Motivo_Estado: str | None = None
+    Descripcion: str | None = None
+    Detalle: str | None = None
+    Fuente_Reportada: str | None = None
+    Solucion: str | None = None
+    Motivo_Resolucion: str | None = None
+
+
+class RequirementConsolidatedTicketsOut(BaseModel):
+    tickets: list[RequirementConsolidatedTicketItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int

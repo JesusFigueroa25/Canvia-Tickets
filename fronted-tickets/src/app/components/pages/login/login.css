@@ -1,0 +1,509 @@
+:host {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+
+/* =========================================================
+   PANTALLA
+   ========================================================= */
+
+.login-page {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #fbfdfc 55%,
+      #fffaf7 100%
+    );
+}
+
+
+/* =========================================================
+   CONTENIDO PRINCIPAL
+   ========================================================= */
+
+.login-content {
+  position: relative;
+  z-index: 10;
+
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 26px;
+
+  transform: translateY(-15px);
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.canvia-logo {
+  display: block;
+
+  width: 340px;
+  max-width: 55vw;
+
+  height: auto;
+
+  object-fit: contain;
+}
+
+
+/* =========================================================
+   CARD LOGIN
+   ========================================================= */
+
+.login-card {
+  width: 430px;
+  max-width: calc(100vw - 48px);
+
+  box-sizing: border-box;
+
+  padding: 36px 38px 32px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border: 1px solid #e8ecea;
+  border-radius: 22px;
+
+  box-shadow:
+    0 18px 55px rgba(12, 63, 43, 0.08),
+    0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.login-header {
+  text-align: center;
+
+  margin-bottom: 28px;
+}
+
+
+.login-header h1 {
+  margin: 0 0 8px;
+
+  color: #111827;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+
+.login-header p {
+  margin: 0;
+
+  color: #667085;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+.login-form {
+  width: 100%;
+}
+
+
+.form-group {
+  position: relative;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+
+.form-group > label {
+  display: block;
+
+  margin: 0 0 7px 2px;
+
+  color: #253047;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  text-align: left;
+}
+
+
+.full-width {
+  width: 100%;
+}
+
+
+.field-icon {
+  margin-right: 8px;
+
+  color: #68758b;
+}
+
+
+.password-button {
+  color: #68758b;
+}
+
+
+/* =========================================================
+   OLVIDÉ CONTRASEÑA
+   ========================================================= */
+
+.forgot-container {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: -2px;
+  margin-bottom: 22px;
+}
+
+
+.forgot-password {
+  color: #0e7146;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+
+.forgot-password:hover {
+  color: #ff620f;
+}
+
+
+/* =========================================================
+   BOTÓN INGRESAR
+   ========================================================= */
+
+.login-button {
+  width: 100%;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    90deg,
+    #ff620f 0%,
+    #ff5607 100%
+  );
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 24px rgba(255, 98, 15, 0.22);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 28px rgba(255, 98, 15, 0.28);
+
+  filter: brightness(1.03);
+}
+
+
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+
+.login-button:disabled {
+  background: #d5d8dc;
+
+  color: #8b9098;
+
+  box-shadow: none;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   REGISTRO
+   ========================================================= */
+
+.register-section {
+  margin-top: 25px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid #edf0ee;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+
+.register-button {
+  width: auto !important;
+  min-width: auto;
+
+  color: #0e7146 !important;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   REGRESAR
+   ========================================================= */
+
+.back-button {
+  position: fixed;
+
+  top: 24px;
+  left: 26px;
+
+  z-index: 20;
+
+  width: auto !important;
+
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 7px 15px !important;
+
+  border-radius: 10px;
+
+  color: #344054 !important;
+
+  font-weight: 600;
+
+  background: rgba(255, 255, 255, 0.88);
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+
+  backdrop-filter: blur(8px);
+}
+
+
+.back-button:hover {
+  color: #ff620f !important;
+
+  background: #fff7f1;
+}
+
+
+/* =========================================================
+   DECORACIONES
+   ========================================================= */
+
+.decoration {
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+
+/* Verde superior izquierda */
+
+.decoration-top-left {
+  width: 480px;
+  height: 480px;
+
+  top: -285px;
+  left: -80px;
+
+  border: 3px solid rgba(99, 184, 145, 0.55);
+
+  box-shadow:
+    0 0 0 60px rgba(99, 184, 145, 0.06),
+    0 0 0 125px rgba(99, 184, 145, 0.025);
+}
+
+
+/* Naranja inferior derecha */
+
+.decoration-bottom-right {
+  width: 470px;
+  height: 470px;
+
+  right: -180px;
+  bottom: -300px;
+
+  border: 3px solid rgba(255, 98, 15, 0.25);
+
+  box-shadow:
+    0 0 0 58px rgba(255, 98, 15, 0.055),
+    0 0 0 120px rgba(255, 98, 15, 0.02);
+}
+
+
+/* =========================================================
+   ANGULAR MATERIAL
+   ========================================================= */
+
+:host ::ng-deep .mat-mdc-text-field-wrapper {
+  background: #ffffff;
+}
+
+
+:host ::ng-deep .mdc-notched-outline__leading,
+:host ::ng-deep .mdc-notched-outline__notch,
+:host ::ng-deep .mdc-notched-outline__trailing {
+  border-color: #d9dfe6 !important;
+}
+
+
+:host ::ng-deep
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__leading,
+
+:host ::ng-deep
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__notch,
+
+:host ::ng-deep
+.mat-mdc-form-field.mat-focused
+.mdc-notched-outline__trailing {
+  border-color: #63b891 !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .login-content {
+    padding: 70px 20px 30px;
+
+    box-sizing: border-box;
+
+    transform: none;
+  }
+
+
+  .canvia-logo {
+    width: 290px;
+    max-width: 75vw;
+  }
+
+
+  .login-card {
+    width: 100%;
+
+    max-width: 420px;
+
+    padding: 30px 26px;
+  }
+
+
+  .login-header h1 {
+    font-size: 27px;
+  }
+
+
+  .back-button {
+    top: 14px;
+    left: 14px;
+  }
+
+
+  .decoration-top-left {
+    width: 330px;
+    height: 330px;
+
+    top: -215px;
+    left: -125px;
+  }
+
+
+  .decoration-bottom-right {
+    width: 330px;
+    height: 330px;
+
+    right: -155px;
+    bottom: -215px;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .login-card {
+    padding: 27px 21px;
+  }
+
+
+  .canvia-logo {
+    width: 240px;
+  }
+
+
+  .login-header h1 {
+    font-size: 25px;
+  }
+
+
+  .register-section {
+    flex-direction: column;
+
+    gap: 1px;
+  }
+
+}

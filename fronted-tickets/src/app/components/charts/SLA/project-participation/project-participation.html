@@ -1,0 +1,24 @@
+<section class="chart-card">
+
+    <div class="chart-header">
+        <div>
+            <h2>Participación por Proyecto </h2>
+            <p>
+                Distribución del volumen entre
+                los 10 proyectos con mayor cantidad
+                de requerimientos.
+            </p>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas
+        baseChart
+        [data]="chartData"
+        [options]="chartOptions"
+        [plugins]="chartPlugins"
+        [type]="'doughnut'">
+        </canvas>
+    </div>
+
+</section>

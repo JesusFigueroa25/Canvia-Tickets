@@ -1,0 +1,79 @@
+<section class="pareto-chart-card">
+
+  <!--ENCABEZADO-->
+  <div class="card-header">
+    <div class="card-heading">
+      <h2>Cant Req. No Cumplidos y % Acum. por Categorización - Categoría </h2>
+      <p>
+        Concentración de incumplimientos SLA
+        y análisis acumulado de Pareto 80/20.
+      </p>
+
+    </div>
+    <mat-icon class="header-icon">
+      analytics
+    </mat-icon>
+  </div>
+
+  <!--CARGANDO-->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando gráfico de Pareto...
+  </div>
+
+  <!--ERROR-->
+  <div class="error-state" *ngIf="!cargando && error">
+    <mat-icon>error_outline</mat-icon>
+    No se pudo cargar el gráfico de Pareto.
+  </div>
+
+  <!--CONTENIDO PRINCIPAL-->
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <!--LEYENDA-->
+    <div class="chart-legend">
+      <div class="legend-item">
+        <span class="legend-bar"></span>
+        <span>Req. no cumplidos</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-line"></span>
+        <span>% Acumulado</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-target"></span>
+        <span>Umbral 80%</span>
+      </div>
+    </div>
+
+
+    <!--GRAFICO MIXTO-->
+    <div class="chart-scroll">
+      <div class="chart-area" [style.minWidth.px]="anchoGrafico" [style.height.px]="alturaGrafico">
+        <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"
+          role="img" aria-label="Pareto de incumplimientos SLA por categoría">
+        </canvas>
+      </div>
+    </div>
+
+  </ng-container>
+
+
+  <!--SIN INCUMPLIMIENTOS-->
+  <div class="empty-state" *ngIf="!cargando && !error && sinIncumplimientos">
+    <mat-icon>check_circle_outline</mat-icon>
+    <h3>Sin incumplimientos registrados</h3>
+    <p>No se identificaron requerimientos incumplidos para los filtros seleccionados.</p>
+    <span>{{ totalCategorias }} categorías analizadas</span>
+  </div>
+
+
+  <!--SIN DATOS-->
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos && !sinIncumplimientos">
+    <mat-icon>insert_chart_outlined</mat-icon>
+    <p>
+      No hay datos disponibles para el análisis de Pareto.
+    </p>
+  </div>
+
+</section>

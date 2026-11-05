@@ -1,0 +1,163 @@
+:host {
+    display: block;
+    min-height: 100%;
+    background: #F7F9FB;
+}
+
+.importaciones-page {
+    padding: 30px 34px 42px;
+    max-width: 1600px;
+    margin: 0 auto;
+    font-family: inherit;
+    color: #101828;
+}
+
+.importaciones-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 36px;
+}
+
+.header-content {
+    max-width: 800px;
+}
+
+.header-accent {
+    width: 42px;
+    height: 4px;
+    border-radius: 4px;
+    background: #FF620F;
+    margin-bottom: 15px;
+}
+
+.importaciones-header h1 {
+    margin: 0;
+    font-size: 33px;
+    font-weight: 750;
+    letter-spacing: -0.9px;
+    color: #101828;
+}
+
+.importaciones-header p {
+    margin: 12px 0 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #667085;
+}
+
+.header-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 10px;
+    padding: 10px 14px;
+    border: 1px solid #E5E9EE;
+    border-radius: 10px;
+    background: #FFFFFF;
+    color: #475467;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.info-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #16835B;
+}
+
+.importaciones-section {
+    width: 100%;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.section-heading h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.section-heading p {
+    margin: 7px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.section-counter {
+    color: #667085;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.importaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+}
+
+.importaciones-grid app-importacion-card {
+    display: block;
+    min-width: 0;
+}
+
+.importaciones-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    padding: 16px 18px;
+    background: #FFFFFF;
+    border: 1px solid #E5E9EE;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #667085;
+}
+
+.footer-indicator {
+    flex-shrink: 0;
+    width: 4px;
+    height: 26px;
+    border-radius: 4px;
+    background: #FF620F;
+}
+
+@media (max-width: 1100px) {
+    .importaciones-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .importaciones-page {
+        padding: 22px 16px 30px;
+    }
+    .importaciones-header,
+    .section-heading {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .importaciones-header {
+        gap: 12px;
+        margin-bottom: 28px;
+    }
+    .importaciones-header h1 {
+        font-size: 28px;
+    }
+    .header-info {
+        margin-top: 0;
+    }
+}

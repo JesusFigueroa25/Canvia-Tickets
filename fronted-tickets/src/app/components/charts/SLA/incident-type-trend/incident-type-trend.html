@@ -1,0 +1,27 @@
+<section class="chart-card">
+    <div class="chart-header">
+        <div>
+            <h2>
+                {{
+                entidad === 'requerimientos'
+                ? 'Tendencia de Requerimientos'
+                : 'Tendencia de Incidentes'
+                }}
+            </h2>
+
+            <p>
+                {{
+                entidad === 'requerimientos'
+                ? 'Evolución mensual de los tipos de requerimiento más frecuentes.'
+                : 'Evolución mensual de los tipos de incidente con mayor volumen.'
+                }}
+            </p>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'line'">
+        </canvas>
+    </div>
+
+</section>

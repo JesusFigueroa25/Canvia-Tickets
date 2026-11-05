@@ -1,0 +1,64 @@
+
+<div class="importaciones-page">
+
+    <header class="importaciones-header">
+        <div class="header-content">
+            <div class="header-accent"></div>
+
+            <h1>Importación de Datos</h1>
+
+            <p>
+                Administra y actualiza la información de incidentes
+                y requerimientos mediante archivos Excel.
+            </p>
+        </div>
+
+        <div class="header-info">
+            <span class="info-dot"></span>
+            Integración con SQL Server
+        </div>
+    </header>
+
+    <section class="importaciones-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Módulos de importación</h2>
+                <p>
+                    Selecciona uno o varios archivos Excel por módulo
+                    y ejecuta su importación secuencial.
+                </p>
+            </div>
+
+            <span class="section-counter">
+                4 módulos disponibles
+            </span>
+        </div>
+
+        <div class="importaciones-grid">
+
+            <app-importacion-card
+                *ngFor="let modulo of modulos; trackBy: trackByModulo"
+                [idModulo]="modulo.id"
+                [titulo]="modulo.titulo"
+                [descripcion]="modulo.descripcion"
+                [archivos]="estados[modulo.id].archivos"
+                [cargando]="estados[modulo.id].cargando"
+                (archivosSeleccionados)="agregarArchivos(modulo.id, $event)"
+                (archivoQuitado)="quitarArchivo(modulo.id, $event)"
+                (limpiarSolicitado)="limpiarLista(modulo.id)"
+                (importarSolicitado)="importarExcel(modulo.id)">
+            </app-importacion-card>
+
+        </div>
+
+    </section>
+
+    <footer class="importaciones-footer">
+        <span class="footer-indicator"></span>
+        Cada archivo se procesa individualmente mediante los servicios
+        de importación de Canvia. Revisa los resultados antes de realizar
+        una nueva carga.
+    </footer>
+
+</div>

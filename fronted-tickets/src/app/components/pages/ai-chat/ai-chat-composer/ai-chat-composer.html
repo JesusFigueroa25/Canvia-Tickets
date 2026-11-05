@@ -1,0 +1,44 @@
+
+<div class="composer">
+
+  <div class="composer-box">
+
+    <textarea
+      aria-label="Escribe un mensaje para Canvia IA"
+      rows="2"
+      maxlength="2000"
+      placeholder="Escribe tu consulta sobre incidentes, requerimientos o SLA..."
+      [value]="valor"
+      (input)="actualizarValor($event)"
+      (keydown.enter)="manejarEnter($event)"
+      [disabled]="deshabilitado">
+    </textarea>
+
+    <button
+      type="button"
+      class="send-button"
+      aria-label="Enviar mensaje"
+      [disabled]="!puedeEnviar"
+      (click)="enviar.emit()">
+
+      <mat-icon>
+        {{ deshabilitado ? 'hourglass_empty' : 'arrow_upward' }}
+      </mat-icon>
+
+    </button>
+
+  </div>
+
+  <div class="composer-footer">
+
+    <span>
+      Las respuestas se fundamentan en datos de los tickets.
+    </span>
+
+    <span class="counter">
+      {{ valor.length }}/2000
+    </span>
+
+  </div>
+
+</div>

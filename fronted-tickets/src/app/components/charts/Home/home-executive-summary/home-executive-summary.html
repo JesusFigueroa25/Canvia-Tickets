@@ -1,0 +1,197 @@
+<section class="executive-grid" *ngIf="datos as resumen">
+
+    <article class="executive-card">
+
+        <div class="card-header">
+            <div class="card-icon icon-orange">
+                <mat-icon>
+                    {{
+                    obtenerIconoVariacion( resumen.evolucion_operativa.variacion_porcentaje )
+                    }}
+                </mat-icon>
+            </div>
+
+            <div class="card-heading">
+                <h3>
+                    Evolución Operativa
+                </h3>
+                <p>
+                    Variación mensual de incidentes
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- MÉTRICA -->
+        <div class="metric-container">
+
+            <ng-container *ngIf="resumen.evolucion_operativa.variacion_porcentaje !== null; else sinVariacion">
+                <strong class="metric-value metric-orange">
+                    {{ resumen.evolucion_operativa.variacion_porcentaje > 0 ? '+' : '' }}
+                    {{ resumen.evolucion_operativa.variacion_porcentaje | number:'1.2-2' }} %
+                </strong>
+                <span class="metric-caption">
+                    respecto al mes anterior
+                </span>
+            </ng-container>
+
+
+            <ng-template #sinVariacion>
+                <strong class="metric-value metric-neutral"> — </strong>
+                <span class="metric-caption"> Comparación no disponible </span>
+            </ng-template>
+
+        </div>
+
+        <!-- MENSAJE BACKEND -->
+        <p class="executive-message">
+            {{ resumen.evolucion_operativa.mensaje }}
+        </p>
+
+        <!-- DETALLE -->
+        <div class="card-footer"
+            *ngIf=" resumen.evolucion_operativa.periodo_actual && resumen.evolucion_operativa.periodo_anterior">
+
+            <div class="footer-item">
+                <span> Mes anterior </span>
+                <strong>{{ resumen.evolucion_operativa.periodo_anterior }}</strong>
+                <small> {{ resumen.evolucion_operativa.volumen_anterior | number:'1.0-0' }} tickets </small>
+            </div>
+
+            <div class="footer-item">
+                <span> Mes actual comparado </span>
+                <strong> {{ resumen.evolucion_operativa.periodo_actual }} </strong>
+                <small>
+                    {{ resumen.evolucion_operativa.volumen_actual | number:'1.0-0' }} tickets
+                </small>
+            </div>
+
+        </div>
+    </article>
+
+
+    <!-- CUMPLIMIENTO SLA-->
+    <article class="executive-card" [class.card-success]="resumen.cumplimiento.sla_solucion >= 95 "
+        [class.card-warning]="resumen.cumplimiento.sla_solucion >= 90 && resumen.cumplimiento.sla_solucion < 95"
+        [class.card-danger]="resumen.cumplimiento.sla_solucion < 90">
+
+        <div class="card-header">
+            <div class="card-icon icon-status">
+                <mat-icon>
+                    verified_user
+                </mat-icon>
+            </div>
+            <div class="card-heading">
+                <h3> Cumplimiento SLA </h3>
+                <p>
+                    Solución de incidentes
+                </p>
+            </div>
+        </div>
+
+        <!-- MÉTRICA -->
+        <div class="metric-container">
+            <strong class="metric-value metric-status">
+                {{resumen.cumplimiento.sla_solucion | number:'1.2-2' }}%
+            </strong>
+            <span class="metric-caption">
+                Objetivo: {{ resumen.cumplimiento.objetivo | number:'1.2-2' }} %
+            </span>
+        </div>
+
+        <!-- MENSAJE BACKEND -->
+        <p class="executive-message">
+            {{ resumen.cumplimiento.mensaje }}
+        </p>
+
+        <!-- DETALLE -->
+        <div class="card-footer">
+            <div class="footer-item">
+                <span>
+                    SLA Solución
+                </span>
+                <strong>
+                    {{ resumen.cumplimiento.sla_solucion | number:'1.2-2' }} %
+                </strong>
+            </div>
+
+            <div class="footer-item">
+                <span> Diferencia frente al objetivo </span>
+                <strong class="status-text">
+                    {{ resumen.cumplimiento.diferencia_pp > 0 ? '+' : '' }}
+                    {{ resumen.cumplimiento.diferencia_pp | number:'1.2-2' }} pp
+                </strong>
+            </div>
+        </div>
+    </article>
+
+
+
+    <!-- FOCO DE ATENCIÓN -->
+    <article class="executive-card" [class.card-danger]="resumen.foco_atencion.total_incumplimientos > 0">
+
+        <div class="card-header">
+            <div class="card-icon icon-focus">
+                <mat-icon>
+                    report_problem
+                </mat-icon>
+            </div>
+
+            <div class="card-heading">
+                <h3> Foco de Atención </h3>
+                <p> Proyecto con más incumplimientos</p>
+            </div>
+        </div>
+
+        <!-- PROYECTO -->
+        <div class="focus-project">
+            <span class="focus-label">
+                Proyecto identificado
+            </span>
+            <strong>
+                {{ resumen.foco_atencion.proyecto || 'Sin proyecto crítico identificado' }}
+            </strong>
+        </div>
+
+        <!-- MÉTRICA -->
+        <div class="metric-container">
+            <strong class="metric-value metric-focus">
+                {{ resumen.foco_atencion.total_incumplimientos | number:'1.0-0'}}
+            </strong>
+
+            <span class="metric-caption">
+                incumplimientos SLA Solución
+            </span>
+        </div>
+
+        <!-- MENSAJE BACKEND -->
+        <p class="executive-message">
+            {{resumen.foco_atencion.mensaje }}
+        </p>
+
+        <!-- DETALLE -->
+        <div class="card-footer">
+            <div class="footer-item">
+                <span>Incidentes</span>
+                <strong>
+                    {{ resumen.foco_atencion.incumplimientos_incidentes | number:'1.0-0' }}
+                </strong>
+            </div>
+
+            <div class="footer-item">
+                <span>Requerimientos</span>
+                <strong>
+                    {{ resumen.foco_atencion.incumplimientos_requerimientos | number:'1.0-0'}}
+                </strong>
+            </div>
+
+            <div class="footer-item">
+                <span>Participación global</span>
+                <strong>
+                    {{ resumen.foco_atencion.porcentaje_total | number:'1.2-2' }} %
+                </strong>
+            </div>
+        </div>
+    </article>
+</section>

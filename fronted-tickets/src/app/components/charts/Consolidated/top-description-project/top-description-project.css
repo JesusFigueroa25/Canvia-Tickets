@@ -1,0 +1,266 @@
+/* CONTENEDOR PRINCIPAL */
+
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.chart-card {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e9ee;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+
+/* HEADER */
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 20px 14px;
+}
+
+.chart-title {
+    min-width: 0;
+}
+
+.chart-title h2 {
+    margin: 0;
+    color: #101828;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.chart-title p {
+    margin: 5px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* RESUMEN */
+
+.chart-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 12px 20px;
+    border-top: 1px solid #edf0f2;
+    background: #fcfdfd;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.summary-label {
+    color: #667085;
+    font-size: 11px;
+}
+
+.summary-value {
+    color: #101828;
+    font-size: 21px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.highlight-value {
+    color: #ff620f;
+}
+
+
+/* LEYENDA */
+
+.chart-legend {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 14px 20px 6px;
+    color: #667085;
+    font-size: 11px;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #475467;
+    font-weight: 600;
+}
+
+.legend-color {
+    width: 32px;
+    height: 12px;
+    border-radius: 3px;
+
+    background: linear-gradient(
+        90deg,
+        #FF620F 0%,
+        #FFB184 15%,
+        #16835B 30%,
+        #63B891 45%,
+        #D97706 60%,
+        #F4C95D 75%,
+        #12633F 90%,
+        #A8DCC2 100%
+    );
+}
+
+.legend-hint {
+    color: #98a2b3;
+}
+
+
+/* AREA DEL GRAFICO */
+
+.chart-viewport {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 12px 16px 20px;
+    scrollbar-width: thin;
+    scrollbar-color: #cdd5df transparent;
+}
+
+.chart-content {
+    position: relative;
+    height: 480px;
+    min-width: 1100px;
+    transition: opacity 0.15s ease;
+}
+
+.chart-content canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-content.is-loading {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+
+/* INDICADOR DE CARGA */
+
+.loading-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    background: #f7f9fb;
+    color: #667085;
+    font-size: 12px;
+}
+
+.loading-message mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: #ff620f;
+}
+
+
+/* SIN DATOS */
+
+.no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 200px;
+    padding: 24px;
+    color: #98a2b3;
+    font-size: 12px;
+    text-align: center;
+}
+
+.no-data mat-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+}
+
+
+/* PIE */
+
+.chart-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #edf0f2;
+    color: #98a2b3;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+
+    .chart-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .chart-summary {
+        gap: 20px;
+    }
+
+    .chart-content {
+        height: 420px;
+    }
+
+}
+
+@media (max-width: 520px) {
+
+    .chart-header {
+        padding: 16px;
+    }
+
+    .chart-summary {
+        padding: 12px 16px;
+        gap: 16px;
+    }
+
+    .chart-legend {
+        padding: 12px 16px 6px;
+    }
+
+    .chart-viewport {
+        padding: 10px 12px 18px;
+    }
+
+    .chart-footer {
+        padding: 12px 16px;
+    }
+
+}
+
+/* ALTURA UNIFICADA */
+
+.chart-content {
+    height: 380px;
+}
+
+@media (max-width: 850px) {
+    .chart-content {
+        height: 360px;
+    }
+}

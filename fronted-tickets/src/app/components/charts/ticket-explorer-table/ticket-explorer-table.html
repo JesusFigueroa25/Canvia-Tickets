@@ -1,0 +1,396 @@
+
+<section class="table-card">
+
+  <!-- CABECERA -->
+  <div class="table-header">
+
+    <div class="table-title">
+      <h2>Explorador de Tickets</h2>
+
+      <p>
+        Consulta los registros de {{ nombreDashboard }},
+        revisa la información completa y filtra el dashboard
+        seleccionando un Ticket ID.
+      </p>
+    </div>
+
+    <div class="table-count" *ngIf="datos">
+
+      <mat-icon>confirmation_number</mat-icon>
+
+      <strong>
+        {{ datos.total | number:'1.0-0' }}
+      </strong>
+
+      <span>Tickets</span>
+
+    </div>
+
+  </div>
+
+
+  <!-- FILTRO DINÁMICO POR TICKET ID -->
+  <div class="ticket-filter-toolbar">
+
+    <div class="ticket-search-box">
+
+      <mat-icon>search</mat-icon>
+
+      <input
+        type="text"
+        class="ticket-search-input"
+        placeholder="Buscar Ticket ID..."
+        aria-label="Buscar Ticket ID"
+        maxlength="20"
+        [value]="busquedaTicketId"
+        [disabled]="cargando"
+        (input)="actualizarBusqueda($event)"
+        (keydown.enter)="aplicarBusqueda()"
+      />
+
+    </div>
+
+    <button
+      type="button"
+      class="search-button"
+      [disabled]="cargando"
+      (click)="aplicarBusqueda()">
+
+      <mat-icon>search</mat-icon>
+      Buscar
+
+    </button>
+
+    <button
+      type="button"
+      class="clear-button"
+      *ngIf="ticketIdSeleccionado || busquedaTicketId"
+      [disabled]="cargando"
+      (click)="limpiarBusqueda()">
+
+      <mat-icon>close</mat-icon>
+      Limpiar
+
+    </button>
+
+  </div>
+
+
+  <div class="search-error" *ngIf="mensajeBusqueda">
+    <mat-icon>error_outline</mat-icon>
+    {{ mensajeBusqueda }}
+  </div>
+
+
+  <!-- FILTRO ACTIVO -->
+  <div class="active-filter" *ngIf="ticketIdSeleccionado">
+
+    <mat-icon>filter_alt</mat-icon>
+
+    <span>
+      Filtrando el dashboard por:
+      <strong>{{ ticketIdSeleccionado }}</strong>
+    </span>
+
+    <button
+      type="button"
+      aria-label="Quitar filtro por Ticket ID"
+      [disabled]="cargando"
+      (click)="limpiarBusqueda()">
+
+      <mat-icon>close</mat-icon>
+
+    </button>
+
+  </div>
+
+
+  <!-- CARGANDO -->
+  <div
+    class="loading-message"
+    *ngIf="cargando"
+    role="status">
+
+    <mat-icon>hourglass_top</mat-icon>
+
+    Actualizando tickets...
+
+  </div>
+
+
+  <!-- ERROR -->
+  <div
+    class="error-message"
+    *ngIf="!cargando && error"
+    role="alert">
+
+    <mat-icon>error_outline</mat-icon>
+
+    {{ error }}
+
+  </div>
+
+
+  <!-- TABLA DE TICKETS -->
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <div class="table-container">
+
+      <table
+        mat-table
+        [dataSource]="tickets"
+        class="tickets-table">
+
+        <!-- TODAS LAS COLUMNAS DEL MODELO -->
+        <ng-container
+          *ngFor="let columna of columnas"
+          [matColumnDef]="columna.clave">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ columna.titulo }}
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let ticket"
+            [class.ticket-cell]="columna.clave === 'Ticket_ID'"
+            [class.long-text-cell]="columna.larga">
+
+            <span
+              class="cell-content"
+              [title]="formatearValor(ticket, columna)">
+
+              {{ formatearValor(ticket, columna) }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- ACCIONES -->
+        <ng-container matColumnDef="acciones">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Detalle
+          </th>
+
+          <td mat-cell *matCellDef="let ticket">
+
+            <button
+              type="button"
+              class="detail-button"
+              (click)="$event.stopPropagation(); abrirDetalle(ticket)">
+
+              <mat-icon>visibility</mat-icon>
+
+              Ver detalle
+
+            </button>
+
+          </td>
+
+        </ng-container>
+
+
+        <!-- CABECERA -->
+        <tr
+          mat-header-row
+          *matHeaderRowDef="columnasMostradas">
+        </tr>
+
+
+        <!-- FILAS -->
+        <tr
+          mat-row
+          *matRowDef="let row; columns: columnasMostradas"
+          class="ticket-filter-row"
+          [class.row-filtered]="esTicketSeleccionado(row)"
+          [attr.tabindex]="0"
+          [attr.aria-selected]="esTicketSeleccionado(row)"
+          (click)="seleccionarTicketDesdeFila(row)"
+          (keydown.enter)="seleccionarTicketDesdeFila(row)"
+          (keydown.space)="seleccionarTicketDesdeFila(row); $event.preventDefault()">
+        </tr>
+
+      </table>
+
+    </div>
+
+    <div class="table-help">
+
+      <mat-icon>info_outline</mat-icon>
+
+      <span>
+        Desplázate horizontalmente para consultar todas las columnas.
+        Haz clic en una fila para filtrar el dashboard o selecciona
+        "Ver detalle" para revisar el ticket completo.
+      </span>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- SIN RESULTADOS -->
+  <div
+    class="empty-state"
+    *ngIf="!cargando && !error && !tieneDatos">
+
+    <mat-icon>search_off</mat-icon>
+
+    <p>
+      No se encontraron tickets con los filtros aplicados.
+    </p>
+
+  </div>
+
+
+  <!-- PAGINACIÓN -->
+  <mat-paginator
+    *ngIf="datos && datos.total > 0"
+    [length]="datos.total"
+    [pageIndex]="indicePagina"
+    [pageSize]="datos.tamano"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    [disabled]="cargando"
+    (page)="cambiarPagina($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+
+</section>
+
+
+<!-- MODAL: DETALLE COMPLETO DEL TICKET -->
+<div
+  class="ticket-modal-backdrop"
+  *ngIf="ticketDetalle as ticket"
+  (click)="cerrarDetalle()">
+
+  <section
+    class="detail-panel ticket-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ticket-detail-title"
+    (click)="$event.stopPropagation()">
+
+
+    <!-- CABECERA DEL MODAL -->
+    <div class="detail-header">
+
+      <div>
+
+        <h3 id="ticket-detail-title">
+          Detalle del Ticket — {{ obtenerTicketId(ticket) }}
+        </h3>
+
+        <p>
+          {{ nombreDashboard }}
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="modal-close-button"
+        aria-label="Cerrar detalle del ticket"
+        (click)="cerrarDetalle()">
+
+        <mat-icon>close</mat-icon>
+
+      </button>
+
+    </div>
+
+
+    <!-- INFORMACIÓN GENERAL -->
+    <div class="detail-summary">
+
+      <div class="detail-summary-item">
+
+        <span>Ticket ID</span>
+
+        <strong>
+          {{ obtenerTicketId(ticket) }}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-summary-item">
+
+        <span>Proyecto</span>
+
+        <strong>
+          {{ formatearValor(ticket, {clave: 'Proyecto', titulo: 'Proyecto'}) }}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-summary-item">
+
+        <span>Prioridad</span>
+
+        <strong>
+          {{ formatearValor(ticket, {clave: 'Prioridad', titulo: 'Prioridad'}) }}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-summary-item">
+
+        <span>Estado</span>
+
+        <strong>
+          {{ formatearValor(ticket, {clave: 'Estado', titulo: 'Estado'}) }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- TODAS LAS COLUMNAS DEL MODELO -->
+    <div class="detail-grid">
+
+      <div
+        class="detail-field"
+        *ngFor="let columna of columnas"
+        [class.full-width]="columna.larga">
+
+        <label>
+          {{ columna.titulo }}
+        </label>
+
+        <p
+          class="ticket-text"
+          [class.long-text]="columna.larga">
+
+          {{ formatearValor(ticket, columna) }}
+
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- NOTA -->
+    <div class="detail-note">
+
+      <mat-icon>info_outline</mat-icon>
+
+      <span>
+        La información corresponde al registro almacenado
+        en SQL Server y considera los filtros aplicados
+        al momento de consultar el ticket.
+      </span>
+
+    </div>
+
+  </section>
+
+</div>

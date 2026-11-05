@@ -1,0 +1,77 @@
+<section class="distribution-card">
+
+  <div class="card-header">
+    <div class="card-heading">
+      <h2>{{ tituloGrafico }}</h2>
+      <p>{{ descripcionGrafico }}</p>
+    </div>
+
+    <mat-icon class="header-icon">donut_large</mat-icon>
+  </div>
+
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    {{ mensajeActualizando }}
+  </div>
+
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+
+    <div class="chart-legend">
+
+      <div class="legend-item" *ngFor="let item of resumen"
+        [class.legend-item-interactive]="esSegmentoFiltrable(item.nombre)"
+        [class.legend-item-selected]="esResultadoSeleccionado(item.nombre) || esMotivoSeleccionado(item.nombre)"
+        [attr.role]="esSegmentoFiltrable(item.nombre) ? 'button' : null"
+        [attr.tabindex]="esSegmentoFiltrable(item.nombre) ? 0 : null"
+        [attr.aria-pressed]="esSegmentoFiltrable(item.nombre)? (esResultadoSeleccionado(item.nombre) ||esMotivoSeleccionado(item.nombre)): null"
+        (click)="seleccionarDesdeLeyenda(item.nombre)" (keydown.enter)="seleccionarDesdeLeyenda(item.nombre)"
+        (keydown.space)="seleccionarDesdeLeyenda(item.nombre); $event.preventDefault()">
+
+        <span class="legend-dot" [style.backgroundColor]="item.color">
+        </span>
+
+        <span>{{ item.nombre }}</span>
+
+        <strong>
+          {{ item.cantidad | number:'1.0-0' }}
+        </strong>
+
+        <span class="legend-percentage">
+          {{ item.porcentaje | number:'1.1-1' }}%
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="chart-area">
+
+
+      <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"
+        [class.canvas-filterable]="modo === 'categorizacion'" [attr.aria-label]="descripcionAccesible"
+        (chartClick)="seleccionarDesdeGrafico($event)">
+      </canvas>
+
+
+      <div class="donut-center">
+        <strong>{{ totalTickets | number:'1.0-0' }}</strong>
+        <span>{{ etiquetaCentro }}</span>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>donut_large</mat-icon>
+    <p>{{ mensajeVacio }}</p>
+  </div>
+
+</section>

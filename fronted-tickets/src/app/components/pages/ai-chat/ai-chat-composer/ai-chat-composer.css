@@ -1,0 +1,101 @@
+
+:host {
+  display: block;
+  flex-shrink: 0;
+}
+
+.composer {
+  padding: 16px 20px;
+  border-top: 1px solid #E5E9EE;
+  background: #FFFFFF;
+}
+
+.composer-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  border: 1px solid #D0D5DD;
+  border-radius: 12px;
+  padding: 10px;
+  background: #FFFFFF;
+  transition: border-color 0.2s ease;
+}
+
+.composer-box:focus-within {
+  border-color: #FF620F;
+  box-shadow: 0 0 0 3px rgba(255, 98, 15, 0.08);
+}
+
+.composer-box textarea {
+  flex: 1;
+  min-width: 0;
+  max-height: 160px;
+  min-height: 42px;
+  resize: vertical;
+  border: none;
+  outline: none;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #101828;
+  background: transparent;
+}
+
+.composer-box textarea::placeholder {
+  color: #98A2B3;
+}
+
+.send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  background: #FF620F;
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
+.send-button:hover:not(:disabled) {
+  background: #E9570B;
+}
+
+.send-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.send-button mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 9px;
+  font-size: 10px;
+  color: #98A2B3;
+}
+
+.counter {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+  .composer {
+    padding: 12px;
+  }
+
+  .composer-footer {
+    font-size: 9px;
+  }
+}

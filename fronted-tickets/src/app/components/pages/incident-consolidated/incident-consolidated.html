@@ -1,0 +1,583 @@
+<div class="incident-consolidated-page">
+
+    <!-- HEADER MASTER - STICKY-->
+    <div class="header-master">
+
+        <!-- CABECERA Y NAVEGACION -->
+        <header class="page-header">
+
+            <div class="page-header-content">
+                <h1>Incidentes Consolidados</h1>
+
+                <p>
+                    Análisis del volumen operativo,
+                    distribución de incidentes y
+                    comportamiento de proyectos.
+                </p>
+            </div>
+
+            <!-- NAVEGACION INTERNA SIN CAMBIAR LA URL -->
+
+            <nav class="section-nav" aria-label="Navegación del dashboard">
+
+                <button type="button" (click)="irASeccion('graficos-principales')">
+                    Gráficos Principales
+                </button>
+
+                <button type="button" (click)="irASeccion('resolutor')">
+                    Resolutor
+                </button>
+
+                <button type="button" (click)="irASeccion('empresa')">
+                    Empresa
+                </button>
+
+                <button type="button" (click)="irASeccion('alertas')">
+                    Alertas
+                </button>
+
+                <button type="button" (click)="irASeccion('detalle-alertas')">
+                    Detalle Alertas
+                </button>
+
+
+                <button type="button" (click)="irASeccion('explorador-tickets')">
+
+                    Explorador de Tickets
+
+                </button>
+
+
+            </nav>
+
+        </header>
+
+        <!-- FILTROS GLOBALES-->
+        <details class="filters-card" open>
+
+            <summary class="filters-toggle">
+                <mat-icon>tune</mat-icon>
+                <span>Filtros globales</span>
+            </summary>
+
+            <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+
+                <!-- FECHAS -->
+                <div class="date-range-fields">
+
+                    <!-- DESDE -->
+                    <div class="filter-field">
+                        <label>Desde</label>
+
+                        <mat-form-field appearance="outline" class="full-width">
+
+                            <input matInput [matDatepicker]="pickerDesde" formControlName="desde"
+                                placeholder="Seleccionar fecha">
+
+                            <mat-datepicker-toggle matIconSuffix [for]="pickerDesde">
+                            </mat-datepicker-toggle>
+
+                            <mat-datepicker #pickerDesde></mat-datepicker>
+
+                            <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
+                                Este campo es obligatorio.
+                            </mat-error>
+
+                        </mat-form-field>
+                    </div>
+
+                    <!-- HASTA -->
+                    <div class="filter-field">
+                        <label>Hasta</label>
+
+                        <mat-form-field appearance="outline" class="full-width">
+
+                            <input matInput [matDatepicker]="pickerHasta" formControlName="hasta"
+                                placeholder="Seleccionar fecha">
+
+                            <mat-datepicker-toggle matIconSuffix [for]="pickerHasta">
+                            </mat-datepicker-toggle>
+
+                            <mat-datepicker #pickerHasta></mat-datepicker>
+
+                            <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
+                                Este campo es obligatorio.
+                            </mat-error>
+
+                        </mat-form-field>
+                    </div>
+
+                </div>
+
+
+                <!-- PRIORIDAD -->
+                <div class="filter-field">
+                    <label>Prioridad</label>
+
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <mat-select formControlName="prioridad" placeholder="Todas">
+
+                            <mat-option [value]="null">
+                                Todas
+                            </mat-option>
+
+                            <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">
+
+                                {{ prioridad }}
+
+                            </mat-option>
+
+                        </mat-select>
+
+                    </mat-form-field>
+                </div>
+
+
+                <!-- MOTIVO DE ESTADO -->
+                <div class="filter-field">
+                    <label>Motivo de Estado</label>
+
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <mat-select formControlName="motivo_estado" placeholder="Todos">
+
+                            <mat-option [value]="null">
+                                Todos
+                            </mat-option>
+
+                            <mat-option *ngFor="let motivo of opcionesFiltros.motivos_estado" [value]="motivo">
+
+                                {{ motivo }}
+
+                            </mat-option>
+
+                        </mat-select>
+
+                    </mat-form-field>
+                </div>
+
+
+                <!-- MOTIVO DE RESOLUCION -->
+                <div class="filter-field">
+                    <label>Motivo de Resolución</label>
+
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <mat-select formControlName="motivo_resolucion" placeholder="Todos">
+
+                            <mat-option [value]="null">
+                                Todos
+                            </mat-option>
+
+                            <mat-option *ngFor="let motivo of opcionesFiltros.motivos_resolucion" [value]="motivo">
+
+                                {{ motivo }}
+
+                            </mat-option>
+
+                        </mat-select>
+
+                    </mat-form-field>
+                </div>
+
+
+                <!-- GRUPO RESOLUTOR -->
+                <div class="filter-field">
+                    <label>Grupo Resolutor</label>
+
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <mat-select formControlName="grupo_resolutor" placeholder="Todos">
+
+                            <mat-option [value]="null">
+                                Todos
+                            </mat-option>
+
+                            <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
+
+                                {{ grupo }}
+
+                            </mat-option>
+
+                        </mat-select>
+
+                    </mat-form-field>
+                </div>
+
+
+                <!-- BOTONES -->
+                <div class="filter-actions">
+
+                    <button mat-button type="button" class="clear-button" (click)="limpiarFiltros()">
+
+                        <mat-icon>restart_alt</mat-icon>
+                        Limpiar
+
+                    </button>
+
+                    <button mat-flat-button type="submit" class="apply-button" [disabled]="filtrosForm.invalid">
+
+                        <mat-icon>filter_alt</mat-icon>
+                        Aplicar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+
+        </details>
+
+        <!--FILTROS DINAMICOS ACTIVOS - TIPOS DE INCIDENTE
+        
+        <section class="active-type-filters" *ngIf="tiposIncidenteSeleccionados.length > 0">
+
+            <div class="active-filters-heading">
+
+                <mat-icon>filter_alt</mat-icon>
+
+                <span>
+                    Tipos de incidente seleccionados:
+                </span>
+
+                <strong>
+                    {{ tiposIncidenteSeleccionados.length }}
+                </strong>
+
+            </div>
+
+
+
+
+            <div class="active-filters-content">
+
+
+                <button type="button" class="type-filter-chip" *ngFor="let tipo of tiposIncidenteSeleccionados"
+                    [title]="tipo" [attr.aria-label]="'Quitar filtro ' + tipo" (click)="quitarTipoIncidente(tipo)">
+
+                    <span>{{ tipo }}</span>
+
+                    <mat-icon>close</mat-icon>
+
+                </button>
+
+
+                <button type="button" class="clear-types-button" (click)="cambiarTiposIncidente([])">
+                    <mat-icon>restart_alt</mat-icon>
+                    Limpiar tipos
+                </button>
+            </div>
+
+
+
+
+        </section>
+
+
+           <section class="active-month-filter" *ngIf="periodoSeleccionado">
+
+            <div class="active-month-info">
+
+                <mat-icon>calendar_month</mat-icon>
+
+                <span>Mes seleccionado:</span>
+
+                <strong>
+                    {{ periodoSeleccionado }}
+                </strong>
+
+            </div>
+
+            <button type="button" class="clear-month-button" (click)="cambiarPeriodo(null)">
+
+                <mat-icon>close</mat-icon>
+
+                Quitar mes
+
+            </button>
+
+        </section>
+        
+
+          <section class="active-detail-filter" *ngIf="detalleSeleccionadoId">
+            <div class="active-detail-info">
+                <mat-icon>filter_alt</mat-icon>
+                <span>
+                    Detalle técnico seleccionado:
+                </span>
+                <strong [title]="detalleSeleccionadoTexto ?? ''">
+                    {{
+                    detalleSeleccionadoTexto || 'Sin especificar'
+                    }}
+                </strong>
+            </div>
+
+            <button type="button" class="clear-detail-button" (click)="cambiarDetalleTecnico(null)">
+                <mat-icon>close</mat-icon>
+                Quitar detalle
+            </button>
+        </section>
+        -->
+
+    </div>
+
+    <!-- MENSAJES DE ERROR-->
+    <section class="status-card error-card" *ngIf="errorDashboard" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorDashboard }}
+    </section>
+
+    <section class="status-card error-card" *ngIf="errorKpis" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorKpis }}
+    </section>
+
+    <!-- KPIS GENERALES-->
+    <section class="kpis-section" *ngIf="kpis">
+
+        <app-kpi-card titulo="Total de Incidentes" [valor]="kpis.total_tickets" icono="confirmation_number"
+            color="orange">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="Total de Proyectos" [valor]="kpis.total_proyectos" icono="business" color="green">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="Alta Criticidad" [valor]="kpis.alta_criticidad" icono="priority_high" color="orange">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="% Alta Criticidad" [valor]="kpis.porcentaje_alta_criticidad + '%'" icono="percent"
+            color="orange">
+        </app-kpi-card>
+
+    </section>
+
+    <!-- Gráficos Principales -->
+    <section id="graficos-principales" class="dashboard-section">
+
+        <header class="section-header">
+            <h1>Gráficos Principales</h1>
+            <p>
+                Volumen mensual y distribución general de incidentes.
+            </p>
+        </header>
+
+
+        <div class="charts-grid">
+
+            <!-- Nro Incidentes por Mes -->
+            <div class="chart-grid-item" *ngIf="volumenMensual.length > 0">
+                <app-volume-month modo="consolidado" entidadConsolidado="incidentes"
+                    [datosConsolidados]="volumenMensual" [habilitarFiltroMes]="true"
+                    [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenMensual"
+                    (periodoChange)="cambiarPeriodo($event)">
+                </app-volume-month>
+            </div>
+
+
+            <!--Distribución por Tipo de Incidente-->
+            <div class="chart-grid-item" *ngIf="tiposGrafico.length > 0">
+                <app-category-distribution titulo="Distribución por Tipo de Incidente"
+                    descripcion="Tipos de incidentes ordenados por volumen de tickets." orientacion="vertical"
+                    [datos]="tiposGrafico" [seleccionMultiple]="true" [tiposSeleccionados]="tiposIncidenteSeleccionados"
+                    [cargando]="cargandoTipos" (tiposChange)="cambiarTiposIncidente($event)">
+                </app-category-distribution>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Resolutor -->
+    <section id="resolutor" class="dashboard-section">
+        <header class="section-header">
+            <h1>Resolutor</h1>
+            <p>
+                Distribución de tickets y rendimiento mensual
+                de los resolutores.
+            </p>
+        </header>
+
+        <!-- Rendimiento por Resolutor -->
+        <div class="chart-full-width" *ngIf="rendimientoResolutores || cargandoRendimientoResolutores">
+            <app-resolutor-performance-table [datos]="rendimientoResolutores"
+                [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
+                [resolutorSeleccionado]="resolutorSeleccionado" [cargando]="cargandoRendimientoResolutores"
+                (resolutorChange)="cambiarResolutor($event)" (paginaChange)="cambiarPaginaResolutores($event)">
+            </app-resolutor-performance-table>
+        </div>
+
+        <!-- Número de Tickets por Resolutor -->
+
+        <div class="chart-full-width" *ngIf="ticketsPorResolutor || cargandoTicketsPorResolutor">
+
+            <app-resolver-monthly-tickets [datos]="ticketsPorResolutor" [cargando]="cargandoTicketsPorResolutor"
+                [limite]="limiteTicketsPorResolutor" [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
+                (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+            </app-resolver-monthly-tickets>
+
+        </div>
+
+
+
+    </section>
+
+
+    <!-- Empresa-->
+    <section id="empresa" class="dashboard-section">
+
+        <header class="section-header">
+            <h1>Empresa</h1>
+            <p>
+                Distribución de incidentes por proyecto
+                y nivel de prioridad.
+            </p>
+        </header>
+
+
+        <div class="charts-grid">
+
+            <!-- Explorador por Proyectos -->
+            <div class="chart-grid-item" *ngIf="proyectos.length > 0 || proyectosExcluidos.length > 0">
+
+                <app-project-explorer-table modo="consolidado" entidadConsolidado="incidentes"
+                    [datosConsolidados]="proyectos" modoBusqueda="combo" [opcionesProyectos]="opcionesProyectos"
+                    [proyectoSeleccionado]="proyectoSeleccionado" (proyectoChange)="cambiarProyecto($event)"
+                    [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
+                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)">
+                </app-project-explorer-table>
+
+            </div>
+
+
+            <!-- Top 10: Tickets por Proyecto y Mes -->
+            <div class="chart-grid-item" *ngIf="topProyectos.proyectos.length > 0">
+                <app-project-monthly-top [datos]="topProyectos" [proyectoSeleccionado]="proyectoSeleccionado">
+                </app-project-monthly-top>
+            </div>
+        </div>
+
+        <!-- N.º de Incidencias por Prioridad -->
+        <div class="chart-full-width" *ngIf="prioridadMensual.length > 0">
+            <app-priority-monthly-stack [datos]="prioridadMensual">
+            </app-priority-monthly-stack>
+        </div>
+
+    </section>
+
+
+    <!-- Alertas -->
+    <section id="alertas" class="dashboard-section">
+
+        <header class="section-header">
+            <h1>Alertas</h1>
+            <p>
+                Análisis de eventos técnicos y distribución
+                de alertas registradas.
+            </p>
+        </header>
+
+        <!-- Explorador por Descripciones x Mes -->
+        <div class="chart-full-width" *ngIf="exploradorDescripciones || cargandoExploradorDescripciones">
+            <app-description-month-explorer [datos]="exploradorDescripciones"
+                [descripcionSeleccionada]="descripcionSeleccionada" [busqueda]="busquedaDescripcion"
+                [cargando]="cargandoExploradorDescripciones" (descripcionChange)="cambiarDescripcion($event)"
+                (busquedaChange)="cambiarBusquedaDescripciones($event)"
+                (paginaChange)="cambiarPaginaDescripciones($event)">
+            </app-description-month-explorer>
+        </div>
+
+
+        <div class="charts-grid">
+
+            <!-- Tabla Detalle de Eventos Técnicos -->
+            <div class="chart-grid-item" *ngIf="detalleEventosTecnicos || cargandoDetalleEventosTecnicos">
+                <app-technical-events-table [datos]="detalleEventosTecnicos" [busqueda]="busquedaDetalles"
+                    [cargando]="cargandoDetalleEventosTecnicos" [habilitarFiltroDetalle]="true"
+                    [detalleSeleccionadoId]="detalleSeleccionadoId"
+                    [detalleSeleccionadoTexto]="detalleSeleccionadoTexto"
+                    (detalleChange)="cambiarDetalleTecnico($event)" (busquedaChange)="cambiarBusquedaDetalles($event)"
+                    (paginaChange)="cambiarPaginaDetalles($event)">
+                </app-technical-events-table>
+            </div>
+
+            <!-- N.º de Incidentes x Porcentajes -->
+            <div class="chart-grid-item" *ngIf="incidentesPorcentajes || cargandoIncidentesPorcentajes">
+                <app-incident-percentage-bars [datos]="incidentesPorcentajes" [cargando]="cargandoIncidentesPorcentajes"
+                    [limite]="limiteIncidentesPorcentajes" (limiteChange)="cambiarLimiteIncidentesPorcentajes($event)">
+                </app-incident-percentage-bars>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Detalle Alertas -->
+    <section id="detalle-alertas" class="dashboard-section">
+
+        <header class="section-header">
+            <h1>Detalle Alertas</h1>
+            <p>
+                Distribución por criticidad y ranking
+                de descripciones y eventos técnicos.
+            </p>
+        </header>
+
+        <!-- Distribución por Prioridad -->
+        <div class="chart-full-width" *ngIf="prioridadesGrafico.length > 0">
+            <app-category-distribution titulo="Distribución por Prioridad"
+                descripcion="Cantidad de incidentes según su nivel de criticidad." orientacion="vertical"
+                [coloresPorPrioridad]="true" [datos]="prioridadesGrafico">
+            </app-category-distribution>
+        </div>
+
+        <!-- TOP 10 Tickets por Descripción y Proyecto -->
+        <div class="chart-full-width" *ngIf="topDescripcionesProyectos || cargandoTopDescripcionesProyectos">
+            <app-top-description-project [datos]="topDescripcionesProyectos"
+                [cargando]="cargandoTopDescripcionesProyectos">
+            </app-top-description-project>
+        </div>
+
+        <!-- Top 10 Tickets por Detalle -->
+        <div class="chart-full-width" *ngIf="topDetalles || cargandoTopDetalles">
+            <app-top-technical-details [datos]="topDetalles" [cargando]="cargandoTopDetalles">
+            </app-top-technical-details>
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+     EXPLORADOR DE TICKETS
+     ================================================== -->
+
+    <section id="explorador-tickets" class="dashboard-section">
+
+        <header class="section-header">
+
+            <h1>Explorador de Tickets</h1>
+
+            <p>
+                Consulta todos los campos de los incidentes,
+                busca tickets específicos y analiza su información.
+            </p>
+
+        </header>
+
+        <div class="chart-full-width">
+
+            <app-ticket-explorer-table [tipoDashboard]="'incident-consolidated'" [datos]="ticketsDetalle"
+                [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
+                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
+            </app-ticket-explorer-table>
+
+        </div>
+
+    </section>
+
+
+
+</div>

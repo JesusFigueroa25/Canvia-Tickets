@@ -1,0 +1,61 @@
+<section class="chart-card">
+
+    <div class="chart-header">
+        <h2>
+            {{
+            vistaMensual
+            ? 'Tickets por Mes - Proyecto Seleccionado'
+            : 'Top 10: Tickets por Proyecto y Mes'
+            }}
+        </h2>
+
+        <p>
+            <ng-container *ngIf="vistaMensual; else descripcionGeneral">
+                Evolución mensual de
+                {{
+                entidadConsolidado === 'requerimientos'
+                ? 'requerimientos'
+                : 'incidentes'
+                }}
+                del proyecto:
+
+                <strong>
+                    {{ proyectoVistaMensual }}
+                </strong>
+
+            </ng-container>
+
+
+            <ng-template #descripcionGeneral>
+
+                {{
+                entidadConsolidado === 'requerimientos'
+                ? 'Comparación del volumen mensual de los proyectos con mayor cantidad de requerimientos.'
+                : 'Comparación del volumen mensual de los proyectos con mayor cantidad de incidentes.'
+                }}
+
+            </ng-template>
+
+        </p>
+
+    </div>
+
+    <div class="chart-scroll" *ngIf="datos.proyectos.length > 0; else sinDatos">
+
+        <div class="chart-container" [style.min-width.px]="vistaMensual ? null : anchoGrafico">
+
+            <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'">
+            </canvas>
+
+        </div>
+
+    </div>
+
+
+    <ng-template #sinDatos>
+        <div class="empty-state">
+            No hay proyectos para el periodo seleccionado.
+        </div>
+    </ng-template>
+
+</section>

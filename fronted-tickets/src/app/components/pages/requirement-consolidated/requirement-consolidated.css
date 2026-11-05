@@ -1,0 +1,478 @@
+
+/* Página y colores */
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+
+  --req-bg: #f7f9fb;
+  --req-surface: #ffffff;
+  --req-border: #e5e9ee;
+  --req-text: #101828;
+  --req-muted: #667085;
+  --req-orange: #ff620f;
+  --req-green: #63b891;
+}
+
+.requirement-consolidated-page {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--req-bg);
+  color: var(--req-text);
+}
+
+
+/* Cabecera */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.page-header-content {
+  min-width: 0;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--req-text);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.page-header p {
+  margin: 6px 0 0;
+  color: var(--req-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* Tarjeta de filtros */
+.filters-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 18px 20px 12px;
+  background: var(--req-surface);
+  border: 1px solid var(--req-border);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+/* Formulario */
+.filters-form {
+  display: grid;
+  grid-template-columns:
+    minmax(230px, 1.25fr)
+    minmax(135px, 0.55fr)
+    minmax(180px, 0.8fr)
+    minmax(200px, 0.8fr)
+    minmax(200px, 0.8fr)
+    auto;
+  align-items: end;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Campos */
+.filter-field {
+  min-width: 0;
+}
+
+.filter-field label {
+  display: block;
+  margin-bottom: 6px;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Fechas: desde y hasta */
+.date-range-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.date-range-fields .filter-field {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* Angular Material */
+:host ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 42px;
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+}
+
+
+/* Botones de filtros */
+.filter-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding-bottom: 1px;
+}
+
+.filter-actions button {
+  width: 100%;
+  justify-content: center;
+}
+
+.clear-button {
+  color: #ffffff !important;
+  background: #00ca8a !important;
+}
+
+.apply-button {
+  color: #ffffff !important;
+  background: var(--req-orange) !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s ease;
+}
+
+.apply-button:disabled {
+  color: #98a2b3 !important;
+  background: #e4e7ec !important;
+  opacity: 1 !important;
+}
+
+
+/* Rango de fechas disponible */
+.available-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--req-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.available-range mat-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--req-green);
+}
+
+
+/* Mensajes de error */
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 20px;
+  background: var(--req-surface);
+  border: 1px solid var(--req-border);
+  border-radius: 14px;
+  color: var(--req-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.status-card mat-icon {
+  flex-shrink: 0;
+}
+
+.error-card {
+  color: #d95c4f;
+  background: #fff8f7;
+  border-color: #fee4e2;
+}
+
+
+/* Indicadores KPI */
+.kpis-section {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 18px;
+}
+
+.kpis-section > * {
+  min-width: 0;
+}
+
+
+/* Explorador de Proyectos */
+.projects-section {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 24px;
+}
+
+.projects-section > * {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* Gráficos con scroll horizontal */
+.charts-scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 16px) / 2);
+  gap: 16px;
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  margin-top: 24px;
+  padding-bottom: 12px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: #cdd5df transparent;
+}
+
+/* Tarjetas dentro del scroll */
+.chart-scroll-item {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+}
+
+.chart-scroll-item > * {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Barra de desplazamiento */
+.charts-scroll::-webkit-scrollbar {
+  height: 7px;
+}
+
+.charts-scroll::-webkit-scrollbar-track {
+  background: #f2f4f7;
+  border-radius: 10px;
+}
+
+.charts-scroll::-webkit-scrollbar-thumb {
+  background: #cdd5df;
+  border-radius: 10px;
+}
+
+.charts-scroll::-webkit-scrollbar-thumb:hover {
+  background: #98a2b3;
+}
+
+
+/* Gráficos de ancho completo */
+.chart-full-width {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 24px;
+}
+
+.chart-full-width > * {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* Responsive: laptop */
+@media (max-width: 1350px) {
+
+  .filters-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+  }
+
+  .kpis-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* Responsive: tablet */
+@media (max-width: 1100px) {
+
+  .charts-scroll {
+    grid-auto-columns: 85%;
+  }
+}
+
+
+/* Responsive: móvil */
+@media (max-width: 768px) {
+
+  .requirement-consolidated-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+  }
+
+  .filters-form {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .projects-section,
+  .chart-full-width {
+    margin-top: 20px;
+  }
+
+  .charts-scroll {
+    grid-auto-columns: 95%;
+    gap: 14px;
+    margin-top: 20px;
+  }
+}
+
+
+/* Responsive: móvil pequeño */
+@media (max-width: 520px) {
+
+  .requirement-consolidated-page {
+    padding: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 25px;
+  }
+
+  .filters-card {
+    padding: 16px;
+  }
+
+  .kpis-section {
+    grid-template-columns: 1fr;
+  }
+
+  .status-card {
+    flex-wrap: wrap;
+  }
+}
+
+
+
+
+/* ==============================================
+   EXPLORADOR DE TICKETS - REQUERIMIENTOS CONSOLIDADOS
+   ============================================== */
+
+.ticket-explorer-section {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 34px;
+}
+
+.ticket-explorer-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--req-border);
+}
+
+.ticket-explorer-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--req-text);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ticket-explorer-header h2::before {
+  content: "";
+  display: inline-block;
+  flex-shrink: 0;
+  width: 4px;
+  height: 22px;
+  background: var(--req-orange);
+  border-radius: 4px;
+}
+
+.ticket-explorer-header p {
+  margin: 0;
+  color: var(--req-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ticket-explorer-section app-ticket-explorer-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+
+  .ticket-explorer-section {
+    margin-top: 26px;
+  }
+
+  .ticket-explorer-header h2 {
+    font-size: 20px;
+  }
+
+  .ticket-explorer-header h2::before {
+    height: 20px;
+  }
+
+}
+
+@media (max-width: 520px) {
+
+  .ticket-explorer-header h2 {
+    font-size: 19px;
+  }
+
+}

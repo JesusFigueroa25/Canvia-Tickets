@@ -1,0 +1,94 @@
+
+<section class="solutions-card">
+
+  <div class="card-header">
+
+    <div class="card-heading">
+      <h2>Estado de las Soluciones</h2>
+      <p>
+        Distribución de requerimientos según la presencia
+        y obligatoriedad de la solución registrada.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">bar_chart</mat-icon>
+
+  </div>
+
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando estado de las soluciones...
+  </div>
+
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+  <div class="error-state" *ngIf="!cargando && !error && datosInconsistentes" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    Los conteos de soluciones no coinciden con el total de tickets evaluados.
+  </div>
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <div class="chart-viewport">
+
+      <div class="chart-container">
+
+        <canvas
+          baseChart
+          [data]="chartData"
+          [options]="chartOptions"
+          [plugins]="chartPlugins"
+          [type]="chartType"
+          aria-label="Distribución del estado de las soluciones">
+        </canvas>
+
+      </div>
+
+    </div>
+
+    <div class="chart-legend">
+
+      <div class="legend-item" *ngFor="let item of resumen">
+
+        <div class="legend-heading">
+          <span
+            class="legend-dot"
+            [style.backgroundColor]="item.color">
+          </span>
+
+          <span>{{ item.categoria }}</span>
+        </div>
+
+        <div class="legend-values">
+          <strong>{{ item.cantidad | number:'1.0-0' }}</strong>
+          <span>{{ item.porcentaje | number:'1.1-1' }}%</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="chart-footer">
+      <mat-icon>info_outline</mat-icon>
+      <span>
+        La ausencia de una solución opcional no representa un incumplimiento.
+        Los estados por verificar corresponden a la situación del ticket,
+        no a su categorización.
+      </span>
+    </div>
+
+  </ng-container>
+
+  <div
+    class="empty-state"
+    *ngIf="!cargando && !error && !datosInconsistentes && !tieneDatos">
+
+    <mat-icon>bar_chart</mat-icon>
+    <p>No hay información disponible sobre el estado de las soluciones.</p>
+
+  </div>
+
+</section>

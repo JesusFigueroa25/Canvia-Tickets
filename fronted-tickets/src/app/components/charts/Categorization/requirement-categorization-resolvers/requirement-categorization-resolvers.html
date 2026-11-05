@@ -1,0 +1,62 @@
+<section class="resolvers-card">
+
+  <div class="card-header">
+    <div class="card-heading">
+      <h2>Top 10: Categorizaciones Incorrectas por Colaborador</h2>
+      <p>
+        Comparación de categorizaciones correctas e incorrectas
+        de los 10 colaboradores con mayor cantidad de tickets
+        mal categorizados.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">stacked_bar_chart</mat-icon>
+  </div>
+
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando categorizaciones por resolutor...
+  </div>
+
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <div class="chart-legend">
+
+      <div class="legend-item">
+        <span class="legend-dot correct"></span>
+        <span>Correctas</span>
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-dot incorrect"></span>
+        <span>Incorrectas</span>
+      </div>
+
+    </div>
+
+    <div class="chart-viewport">
+
+      <div class="chart-area" [style.height.px]="alturaGrafico">
+
+        <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"
+          aria-label="Categorizaciones correctas e incorrectas por resolutor">
+        </canvas>
+
+      </div>
+
+    </div>
+
+
+  </ng-container>
+
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>bar_chart</mat-icon>
+    <p>No hay categorizaciones por resolutor disponibles.</p>
+  </div>
+
+</section>

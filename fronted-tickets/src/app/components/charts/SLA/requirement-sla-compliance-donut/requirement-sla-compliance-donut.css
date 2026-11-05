@@ -1,0 +1,356 @@
+
+/* Componente y colores */
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  --donut-bg: #ffffff;
+  --donut-border: #e5e9ee;
+  --donut-title: #101828;
+  --donut-muted: #667085;
+  --donut-orange: #ff620f;
+  --donut-green: #16835b;
+}
+
+
+/* Tarjeta principal */
+.compliance-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 18px 20px 20px;
+  background: var(--donut-bg);
+  border: 1px solid var(--donut-border);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+
+/* Encabezado */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.card-heading {
+  min-width: 0;
+}
+
+.card-heading h2 {
+  margin: 0;
+  color: var(--donut-title);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.card-heading p {
+  margin: 5px 0 0;
+  color: var(--donut-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.header-icon {
+  flex-shrink: 0;
+  color: var(--donut-green);
+}
+
+/* Color original de Condición Día */
+.compliance-card.day-mode .header-icon {
+  color: var(--donut-orange);
+}
+
+
+/* Selección activa de Cumplimiento SLA */
+.selection-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 9px 12px;
+  background: #fff7f2;
+  border: 1px solid #ffd8c2;
+  border-radius: 8px;
+}
+
+.selection-description {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--donut-muted);
+  font-size: 12px;
+}
+
+.selection-description mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  color: var(--donut-orange);
+}
+
+.selection-description strong {
+  color: var(--donut-title);
+  font-weight: 700;
+}
+
+/* Quitar filtro */
+.clear-selection {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #c45110;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clear-selection:hover {
+  background: #ffebdd;
+}
+
+.clear-selection mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+
+/* Leyenda compartida */
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #475467;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+
+/* Leyenda interactiva de Cumplimiento SLA */
+.legend-button {
+  background: var(--donut-bg);
+  cursor: pointer;
+}
+
+.legend-button:hover {
+  background: #f7f9fb;
+  border-color: var(--donut-border);
+}
+
+.legend-button:focus-visible {
+  outline: 2px solid var(--donut-orange);
+  outline-offset: 2px;
+}
+
+.legend-button.is-selected {
+  color: var(--donut-title);
+  background: #fff4ec;
+  border-color: #ffb184;
+  font-weight: 700;
+}
+
+.legend-button.is-muted {
+  opacity: 0.65;
+}
+
+/* Leyenda no seleccionable */
+.legend-static {
+  color: var(--donut-muted);
+  cursor: default;
+}
+
+/* Leyenda original de Condición Día */
+.compliance-card.day-mode .chart-legend {
+  gap: 10px 18px;
+}
+
+.compliance-card.day-mode .legend-static {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  color: #475467;
+}
+
+
+/* Área del gráfico */
+.chart-area {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 275px;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+.chart-area canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+
+/* Total central */
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center strong {
+  color: var(--donut-title);
+  font-size: 29px;
+  font-weight: 750;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.donut-center span {
+  color: var(--donut-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+
+/* Estados de carga y error */
+.loading-state,
+.error-state {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.loading-state {
+  background: #fff7f2;
+  color: #c45110;
+}
+
+.error-state {
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.loading-state mat-icon,
+.error-state mat-icon {
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+}
+
+
+/* Estado sin datos */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  min-height: 240px;
+  padding: 20px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  width: 35px;
+  height: 35px;
+  font-size: 35px;
+  color: #98a2b3;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--donut-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* Responsive: móvil */
+@media (max-width: 768px) {
+
+  .compliance-card {
+    padding: 16px;
+  }
+
+  .card-heading h2 {
+    font-size: 16px;
+  }
+
+  .chart-area {
+    max-width: 320px;
+    height: 250px;
+  }
+
+  .donut-center strong {
+    font-size: 25px;
+  }
+
+  .compliance-card.day-mode .chart-legend {
+    gap: 8px 12px;
+  }
+}
+
+
+/* Responsive: móvil pequeño */
+@media (max-width: 420px) {
+
+  .chart-area {
+    height: 235px;
+  }
+}

@@ -1,0 +1,277 @@
+<section class="table-card">
+
+    <!-- HEADER -->
+    <div class="table-header">
+
+        <div class="table-title">
+            <h2>Explorador por Descripciones x Mes</h2>
+            <p>
+                Frecuencia mensual de alertas e incidentes técnicos.
+                Selecciona una descripción para filtrar el dashboard.
+            </p>
+        </div>
+
+        <div class="table-actions">
+
+            <!-- QUITAR FILTRO GLOBAL -->
+            <button
+                *ngIf="descripcionSeleccionada"
+                type="button"
+                class="clear-selection"
+                [disabled]="cargando"
+                (click)="seleccionarDescripcion(null)">
+
+                <mat-icon>close</mat-icon>
+                Quitar filtro
+
+            </button>
+
+            <!-- BUSCADOR -->
+            <mat-form-field
+                appearance="outline"
+                class="search-field">
+
+                <mat-icon matPrefix>search</mat-icon>
+
+                <input
+                    matInput
+                    type="text"
+                    placeholder="Buscar descripción..."
+                    [value]="busqueda"
+                    (input)="cambiarBusqueda($event)"
+                    aria-label="Buscar descripción">
+
+                <button
+                    *ngIf="busqueda"
+                    matSuffix
+                    type="button"
+                    class="clear-search"
+                    (click)="limpiarBusqueda()"
+                    aria-label="Limpiar búsqueda">
+
+                    <mat-icon>close</mat-icon>
+
+                </button>
+
+            </mat-form-field>
+
+        </div>
+
+    </div>
+
+    <!-- FILTRO SELECCIONADO -->
+    <div
+        class="selection-info"
+        *ngIf="descripcionSeleccionada">
+
+        <mat-icon>filter_alt</mat-icon>
+
+        <span class="selection-label">
+            Filtro activo:
+        </span>
+
+        <span
+            class="selection-value"
+            [title]="descripcionSeleccionada">
+            {{ descripcionSeleccionada }}
+        </span>
+
+    </div>
+
+    <!-- INDICADOR DE CARGA -->
+    <div class="loading-message" *ngIf="cargando">
+
+        <mat-icon>hourglass_top</mat-icon>
+
+        Actualizando descripciones...
+
+    </div>
+
+    <!-- MATRIZ DE DESCRIPCIONES -->
+    <div class="table-container">
+
+        <table
+            mat-table
+            [dataSource]="datos?.descripciones ?? []"
+            class="description-table">
+
+            <!-- DESCRIPCION -->
+            <ng-container matColumnDef="descripcion" sticky>
+
+                <th mat-header-cell *matHeaderCellDef>
+                    Descripción
+                </th>
+
+                <td
+                    mat-cell
+                    *matCellDef="let fila"
+                    class="description-cell">
+
+                    <span
+                        class="description-text"
+                        [title]="fila.descripcion">
+
+                        {{ fila.descripcion }}
+
+                    </span>
+
+                </td>
+
+                <td
+                    mat-footer-cell
+                    *matFooterCellDef
+                    class="total-label">
+
+                    Total general
+
+                </td>
+
+            </ng-container>
+
+            <!-- MESES DINAMICOS -->
+            <ng-container
+                *ngFor="let periodo of (datos?.periodos ?? []); let i = index"
+                [matColumnDef]="periodo.periodo">
+
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="numeric-cell">
+
+                    {{ periodo.periodo.replace('-', '/') }}
+
+                </th>
+
+                <td
+                    mat-cell
+                    *matCellDef="let fila"
+                    class="numeric-cell">
+
+                    {{
+                        (fila.mensual[i]?.tickets ?? 0)
+                        | number:'1.0-0'
+                    }}
+
+                </td>
+
+                <td
+                    mat-footer-cell
+                    *matFooterCellDef
+                    class="numeric-cell">
+
+                    {{
+                        (datos?.totales_mensuales?.[i]?.tickets ?? 0)
+                        | number:'1.0-0'
+                    }}
+
+                </td>
+
+            </ng-container>
+
+            <!-- TOTAL POR DESCRIPCION -->
+            <ng-container matColumnDef="total" stickyEnd>
+
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="numeric-cell">
+
+                    Total ↓
+
+                </th>
+
+                <td
+                    mat-cell
+                    *matCellDef="let fila"
+                    class="numeric-cell total-cell">
+
+                    {{ fila.total_tickets | number:'1.0-0' }}
+
+                </td>
+
+                <td
+                    mat-footer-cell
+                    *matFooterCellDef
+                    class="numeric-cell grand-total">
+
+                    {{ (datos?.total_general ?? 0) | number:'1.0-0' }}
+
+                </td>
+
+            </ng-container>
+
+            <!-- HEADER -->
+            <tr
+                mat-header-row
+                *matHeaderRowDef="columnasMostradas">
+            </tr>
+
+            <!-- FILAS -->
+            <tr
+                mat-row
+                *matRowDef="let fila; columns: columnasMostradas"
+                class="description-row"
+                [class.description-selected]="fila.descripcion === descripcionSeleccionada"
+                [class.row-disabled]="cargando"
+                [attr.tabindex]="cargando ? -1 : 0"
+                [attr.aria-selected]="fila.descripcion === descripcionSeleccionada"
+                (click)="seleccionarFila(fila)"
+                (keydown.enter)="seleccionarFila(fila)"
+                (keydown.space)="seleccionarFila(fila); $event.preventDefault()">
+            </tr>
+
+            <!-- TOTAL GENERAL -->
+            <tr
+                mat-footer-row
+                *matFooterRowDef="columnasMostradas"
+                class="totals-row">
+            </tr>
+
+        </table>
+
+        <!-- SIN DATOS -->
+        <div
+            class="no-data"
+            *ngIf="!cargando && datos && datos.total_descripciones === 0">
+
+            <mat-icon>search_off</mat-icon>
+
+            <span>
+                No se encontraron descripciones para los criterios seleccionados.
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- INFORMACION DE RESULTADOS -->
+    <div class="table-summary" *ngIf="datos">
+
+        <span>
+            {{ datos.total_descripciones | number:'1.0-0' }}
+            descripciones encontradas
+        </span>
+
+        <span>
+            Total de incidentes:
+            <strong>
+                {{ datos.total_general | number:'1.0-0' }}
+            </strong>
+        </span>
+
+    </div>
+
+    <!-- PAGINADOR DEL BACKEND -->
+    <mat-paginator
+        *ngIf="datos && datos.total_descripciones > 0"
+        [length]="datos.total_descripciones"
+        [pageIndex]="datos.pagina - 1"
+        [pageSize]="datos.tamano"
+        [pageSizeOptions]="[5, 10, 20, 50, 100]"
+        [disabled]="cargando"
+        (page)="cambiarPagina($event)"
+        showFirstLastButtons>
+    </mat-paginator>
+
+
+</section>

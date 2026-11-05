@@ -1,0 +1,719 @@
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==============================================
+   CONTENEDOR GENERAL
+   ============================================== */
+
+.table-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EE;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+/* ==============================================
+   CABECERA
+   ============================================== */
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px 14px;
+}
+
+.table-title {
+  min-width: 0;
+}
+
+.table-title h2 {
+  margin: 0;
+  color: #101828;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.table-title p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.table-count {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  background: #FFF4EB;
+  border: 1px solid #FFE1CC;
+  border-radius: 9px;
+}
+
+.table-count mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #FF620F;
+}
+
+.table-count strong {
+  color: #101828;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.table-count span {
+  color: #667085;
+  font-size: 11px;
+}
+
+/* ==============================================
+   BUSCADOR DINÁMICO
+   ============================================== */
+
+.ticket-filter-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 20px 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ticket-search-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 270px;
+  max-width: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border: 1px solid #D0D5DD;
+  border-radius: 8px;
+  transition: border-color 0.15s ease;
+}
+
+.ticket-search-box:focus-within {
+  border-color: #FF620F;
+}
+
+.ticket-search-box mat-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #98A2B3;
+}
+
+.ticket-search-input {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #344054;
+  font-size: 12px;
+}
+
+.ticket-search-input::placeholder {
+  color: #98A2B3;
+}
+
+.search-button,
+.clear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 39px;
+  padding: 0 13px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.search-button {
+  border: 1px solid #FF620F;
+  background: #FF620F;
+  color: #FFFFFF;
+}
+
+.search-button:hover {
+  background: #E9560B;
+}
+
+.clear-button {
+  border: 1px solid #E5E9EE;
+  background: #FFFFFF;
+  color: #475467;
+}
+
+.clear-button:hover {
+  background: #FFF4EB;
+  border-color: #FFB184;
+  color: #D9560D;
+}
+
+.search-button mat-icon,
+.clear-button mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.search-button:disabled,
+.clear-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.search-error {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 20px 12px;
+  color: #B42318;
+  font-size: 11px;
+}
+
+.search-error mat-icon {
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+}
+
+/* ==============================================
+   FILTRO ACTIVO
+   ============================================== */
+
+.active-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 14px;
+  padding: 9px 12px;
+  background: #FFF4EB;
+  border: 1px solid #FFE1CC;
+  border-radius: 8px;
+  color: #A8480F;
+  font-size: 12px;
+}
+
+.active-filter > mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  color: #FF620F;
+}
+
+.active-filter span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.active-filter strong {
+  color: #101828;
+  font-weight: 700;
+}
+
+.active-filter button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #A8480F;
+  cursor: pointer;
+}
+
+.active-filter button:hover {
+  background: #FFE1CC;
+}
+
+.active-filter button mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+/* ==============================================
+   TABLA
+   ============================================== */
+
+.table-container {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #CDD5DF transparent;
+}
+
+.tickets-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+th.mat-mdc-header-cell {
+  background: #F8FAF9;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+td.mat-mdc-cell {
+  color: #344054;
+  font-size: 12px;
+}
+
+th.mat-mdc-header-cell,
+td.mat-mdc-cell {
+  padding: 10px 13px !important;
+  border-bottom-color: #EDF0F2;
+}
+
+tr.mat-mdc-row {
+  transition: background-color 0.15s ease;
+}
+
+tr.mat-mdc-row:hover {
+  background: #FAFCFB;
+}
+
+.cell-content {
+  display: block;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ticket-cell {
+  color: #FF620F !important;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ticket-cell .cell-content {
+  max-width: none;
+}
+
+.long-text-cell .cell-content {
+  width: 280px;
+  max-width: 280px;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+/* ==============================================
+   FILAS SELECCIONABLES
+   ============================================== */
+
+tr.ticket-filter-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+tr.ticket-filter-row:hover {
+  background: #FFF4ED;
+}
+
+tr.ticket-filter-row.row-filtered,
+tr.ticket-filter-row.row-filtered:hover {
+  background: #FFF0E6;
+}
+
+tr.ticket-filter-row.row-filtered .ticket-cell {
+  color: #FF620F !important;
+  font-weight: 800;
+}
+
+tr.ticket-filter-row:focus-visible {
+  outline: 2px solid #FF620F;
+  outline-offset: -2px;
+}
+
+/* ==============================================
+   BOTÓN VER DETALLE
+   ============================================== */
+
+.detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #E5E9EE;
+  border-radius: 7px;
+  background: #FFFFFF;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.detail-button:hover {
+  background: #FFF4EB;
+  border-color: #FFB184;
+  color: #D9560D;
+}
+
+.detail-button mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+/* ==============================================
+   MENSAJES Y PAGINACIÓN
+   ============================================== */
+
+.loading-message,
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 20px;
+  font-size: 12px;
+}
+
+.loading-message {
+  background: #FFF7F2;
+  color: #C45110;
+}
+
+.error-message {
+  background: #FEF3F2;
+  color: #B42318;
+}
+
+.loading-message mat-icon,
+.error-message mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 160px;
+  padding: 20px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  color: #98A2B3;
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #667085;
+  font-size: 12px;
+}
+
+.table-help {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.table-help mat-icon {
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  color: #98A2B3;
+}
+
+mat-paginator {
+  border-top: 1px solid #EDF0F2;
+  background: #FFFFFF;
+}
+
+/* ==============================================
+   MODAL DE DETALLE
+   ============================================== */
+
+.ticket-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: rgba(16, 24, 40, 0.65);
+}
+
+.ticket-modal {
+  width: 100%;
+  max-width: 1050px;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  background: #FCFDFE;
+  border: 1px solid #E5E9EE;
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(16, 24, 40, 0.25);
+  scrollbar-width: thin;
+  scrollbar-color: #CDD5DF transparent;
+}
+
+.detail-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 10px 0 14px;
+  background: #FCFDFE;
+  border-bottom: 1px solid #E5E9EE;
+}
+
+.detail-header h3 {
+  margin: 0;
+  color: #101828;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.detail-header p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 11px;
+}
+
+.modal-close-button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #667085;
+  cursor: pointer;
+}
+
+.modal-close-button:hover {
+  background: #FEECE9;
+  color: #D95C4F;
+}
+
+.modal-close-button mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+/* ==============================================
+   RESUMEN DEL MODAL
+   ============================================== */
+
+.detail-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.detail-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EE;
+  border-radius: 9px;
+}
+
+.detail-summary-item span {
+  color: #667085;
+  font-size: 11px;
+}
+
+.detail-summary-item strong {
+  color: #101828;
+  font-size: 12px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* ==============================================
+   CAMPOS DEL MODAL
+   ============================================== */
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.detail-field {
+  min-width: 0;
+  padding: 14px;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EE;
+  border-radius: 9px;
+}
+
+.detail-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.detail-field p {
+  margin: 0;
+  color: #344054;
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.ticket-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.long-text {
+  max-height: none;
+}
+
+.detail-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.detail-note mat-icon {
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+  color: #16835B;
+}
+
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media (max-width: 1100px) {
+
+  .detail-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .ticket-filter-toolbar {
+    justify-content: flex-start;
+  }
+
+  .ticket-search-box {
+    width: 100%;
+  }
+
+  .ticket-modal-backdrop {
+    padding: 12px;
+  }
+
+  .ticket-modal {
+    max-height: calc(100dvh - 24px);
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-field.full-width {
+    grid-column: auto;
+  }
+
+}
+
+@media (max-width: 520px) {
+
+  .detail-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .search-button,
+  .clear-button {
+    flex: 1;
+  }
+
+}

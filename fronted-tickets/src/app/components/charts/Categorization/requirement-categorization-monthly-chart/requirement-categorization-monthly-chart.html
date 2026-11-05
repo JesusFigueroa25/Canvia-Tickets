@@ -1,0 +1,71 @@
+
+<section class="monthly-chart-card">
+
+  <div class="card-header">
+    <div class="card-heading">
+      <h2>Categorizaciones Correctas e Incorrectas por Mes</h2>
+      <p>
+        Distribución mensual de los tickets auditados,
+        considerando únicamente los resultados vigentes.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">stacked_bar_chart</mat-icon>
+  </div>
+
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Cargando estadísticas mensuales...
+  </div>
+
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <div class="chart-legend">
+      <div class="legend-item">
+        <span class="legend-dot correct"></span>
+        <span>Correctas</span>
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-dot incorrect"></span>
+        <span>Incorrectas</span>
+      </div>
+    </div>
+
+    <div class="chart-area">
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+        [plugins]="chartPlugins"
+        aria-label="Estadísticas mensuales de categorizaciones correctas e incorrectas">
+      </canvas>
+    </div>
+
+    <div class="chart-footer">
+      <mat-icon>info_outline</mat-icon>
+      <span>
+        Total acumulado:
+        <strong>{{ totalTickets | number:'1.0-0' }}</strong>
+        tickets.
+        Correctas:
+        <strong>{{ totalCorrectos | number:'1.0-0' }}</strong>.
+        Incorrectas:
+        <strong>{{ totalIncorrectos | number:'1.0-0' }}</strong>.
+      </span>
+    </div>
+
+  </ng-container>
+
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>bar_chart</mat-icon>
+    <p>No existen estadísticas mensuales disponibles.</p>
+  </div>
+
+</section>

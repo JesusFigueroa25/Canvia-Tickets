@@ -1,0 +1,261 @@
+<section class="pareto-card">
+
+  <!--HEADER-->
+  <div class="table-header">
+    <div class="table-heading">
+      <h2>Análisis de Pareto de Incumplimientos por Categoría </h2>
+      <p>
+        Priorización de categorías según su volumen
+        de incumplimientos de SLA.
+      </p>
+    </div>
+
+    <!-- BUSCADOR LOCAL -->
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Buscar categoría..." aria-label="Buscar categoría" [value]="busqueda"
+        (input)="filtrarCategorias($event)">
+    </div>
+
+  </div>
+
+  <!--LEYENDA SEMAFOROS-->
+  <div class="semaphore-legend">
+
+    <div class="legend-item">
+      <span class="semaphore-dot semaforo-rojo"></span>
+      <span>Rojo: mayor prioridad de análisis</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="semaphore-dot semaforo-amarillo"></span>
+      <span>Amarillo: prioridad intermedia</span>
+    </div>
+
+    <div class="legend-item">
+      <span class="semaphore-dot semaforo-verde"></span>
+      <span>Verde: menor prioridad relativa</span>
+    </div>
+
+  </div>
+
+  <!--CARGANDO-->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando análisis de Pareto...
+  </div>
+
+  <!--ERROR-->
+  <div class="error-state" *ngIf="!cargando && error">
+    <mat-icon>error_outline</mat-icon>
+    No se pudo cargar el análisis de Pareto.
+  </div>
+
+  <!--TABLA PRINCIPAL-->
+  <div class="table-scroll" *ngIf="!cargando && !error && tieneDatos">
+    <table class="pareto-table">
+
+      <!--ENCABEZADOS-->
+      <thead>
+        <tr>
+          <th scope="col" class="category-heading sticky-category">Categorización - Categoría</th>
+          <th scope="col">Total </th>
+          <th scope="col">Req. Cump. </th>
+          <th scope="col">Req. Incump. </th>
+          <th scope="col">Cancelados</th>
+          <th scope="col">Rank </th>
+          <th scope="col">Req. Inc. Acum. </th>
+          <th scope="col">% Req. </th>
+          <th scope="col" class="accumulated-heading">% Acum. </th>
+        </tr>
+      </thead>
+
+
+      <!--FILAS DEL PARETO-->
+      <tbody>
+        <tr *ngFor="let fila of filasVisibles">
+          <!-- CATEGORIA + SEMAFORO -->
+          <th scope="row" class="category-cell sticky-category" [title]="fila.categoria">
+            <div class="category-content">
+              <span class="semaphore-dot" [ngClass]="obtenerClaseSemaforo(fila.semaforo)"
+                [title]="'Semáforo: ' + fila.semaforo" aria-hidden="true">
+              </span>
+              <span class="category-name">
+                {{ fila.categoria }}
+              </span>
+              <span class="sr-only">
+                Semáforo: {{ fila.semaforo }}
+              </span>
+            </div>
+          </th>
+
+          <!-- TOTAL TICKETS -->
+          <td class="numeric-cell">
+            {{ fila.total_tickets | number:'1.0-0' }}
+          </td>
+
+          <!-- CUMPLIDOS -->
+          <td class="numeric-cell text-success">
+            {{ fila.cumplidos | number:'1.0-0' }}
+          </td>
+
+          <!-- INCUMPLIDOS -->
+          <td class="numeric-cell text-danger strong-cell">
+            {{ fila.incumplidos | number:'1.0-0' }}
+          </td>
+
+          <!-- CANCELADOS -->
+          <td class="numeric-cell">
+            {{ fila.cancelados | number:'1.0-0' }}
+          </td>
+
+          <!-- RANKING -->
+          <td class="numeric-cell">
+            <span class="rank-value">
+              {{ fila.ranking }}
+            </span>
+          </td>
+
+          <!-- INCUMPLIDOS ACUMULADOS -->
+          <td class="numeric-cell strong-cell">
+            {{ fila.incumplidos_acumulados | number:'1.0-0' }}
+          </td>
+
+          <!-- PORCENTAJE INDIVIDUAL -->
+          <td class="numeric-cell">
+            {{ fila.porcentaje_req | number:'1.2-2' }}%
+          </td>
+
+          <!-- PORCENTAJE ACUMULADO -->
+          <td class="accumulated-cell" [ngClass]="obtenerClaseSemaforo(fila.semaforo)">
+
+            <div class="accumulated-content">
+              <strong>
+                {{ fila.porcentaje_acumulado | number:'1.2-2' }}%
+              </strong>
+
+              <div class="progress-track">
+                <div class="progress-fill" [style.width.%]="obtenerAnchoPorcentaje(fila.porcentaje_acumulado)"></div>
+              </div>
+
+            </div>
+          </td>
+        </tr>
+
+
+        <!--SIN FILAS / SIN RESULTADOS LOCALES-->
+        <tr *ngIf="filasFiltradas.length === 0">
+
+          <td class="no-data" [attr.colspan]="totalColumnas">
+            <ng-container *ngIf="!tieneIncumplimientos">
+              No se registran incumplimientos
+              en el conjunto seleccionado.
+            </ng-container>
+
+            <ng-container *ngIf="tieneIncumplimientos">
+              No se encontraron categorías
+              con el texto de búsqueda.
+            </ng-container>
+
+          </td>
+        </tr>
+      </tbody>
+
+      <!--TOTAL GENERAL DEL BACKEND-->
+      <tfoot>
+        <tr class="total-row">
+          <th scope="row" class="total-label sticky-category">
+            TOTAL GENERAL
+          </th>
+
+          <!-- TOTAL -->
+          <td class="numeric-cell">
+            {{ totalGeneral.total_tickets | number:'1.0-0' }}
+          </td>
+
+          <!-- CUMPLIDOS -->
+          <td class="numeric-cell text-success">
+            {{ totalGeneral.cumplidos | number:'1.0-0' }}
+          </td>
+
+          <!-- INCUMPLIDOS -->
+          <td class="numeric-cell text-danger">
+            {{ totalGeneral.incumplidos | number:'1.0-0' }}
+          </td>
+
+          <!-- CANCELADOS -->
+          <td class="numeric-cell">
+            {{ totalGeneral.cancelados | number:'1.0-0' }}
+          </td>
+
+          <!-- RANKING TOTAL -->
+          <td class="numeric-cell">
+            —
+          </td>
+
+          <!-- ACUMULADO -->
+          <td class="numeric-cell">
+            {{
+            totalGeneral.incumplidos_acumulados
+            | number:'1.0-0'
+            }}
+          </td>
+
+          <!-- PORCENTAJE INDIVIDUAL -->
+          <td class="numeric-cell">
+            {{ totalGeneral.porcentaje_req | number:'1.2-2' }}%
+          </td>
+
+          <!-- PORCENTAJE ACUMULADO -->
+          <td class="numeric-cell final-percentage">
+            {{ totalGeneral.porcentaje_acumulado | number:'1.2-2' }}%
+          </td>
+
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+
+  <!--SIN TICKETS-->
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>table_chart</mat-icon>
+    <p>
+      No hay requerimientos disponibles
+      para los filtros seleccionados.
+    </p>
+  </div>
+
+
+  <!--PIE DE TABLA-->
+  <div class="table-footer" *ngIf="!cargando && !error && tieneDatos">
+    <div class="footer-info">
+      <span> Mostrando
+        <strong>
+          {{ filasVisibles.length }}
+        </strong>
+        de
+        <strong>
+          {{ filasFiltradas.length }}
+        </strong>
+        filas
+      </span>
+      <span class="footer-note">
+        Los totales corresponden al conjunto filtrado
+        en el backend, no a la búsqueda local.
+      </span>
+    </div>
+  </div>
+
+
+  <!--PAGINACION-->
+  <mat-paginator *ngIf="
+      !cargando &&
+      !error &&
+      tieneDatos &&
+      filasFiltradas.length > 10
+    " [length]="filasFiltradas.length" [pageIndex]="paginaActual" [pageSize]="tamanoPagina"
+    [pageSizeOptions]="opcionesPaginacion" [showFirstLastButtons]="true" (page)="cambiarPagina($event)">
+  </mat-paginator>
+
+</section>

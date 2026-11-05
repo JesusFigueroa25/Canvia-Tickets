@@ -1,0 +1,239 @@
+<section class="table-card">
+
+  <div class="table-header">
+
+    <div class="table-title">
+      <h2>Cuadro Estadístico por Colaborador</h2>
+      <p>
+        Comparación de categorizaciones correctas e incorrectas por resolutor,
+        con porcentajes y soluciones obligatorias faltantes.
+      </p>
+    </div>
+
+    <div class="table-summary">
+
+      <div class="summary-item">
+        <span>Resolutores</span>
+        <strong>{{ totalResolutores | number:'1.0-0' }}</strong>
+      </div>
+
+      <div class="summary-item">
+        <span>Tickets evaluados</span>
+        <strong>{{ totalTickets | number:'1.0-0' }}</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- FILTRO DINÁMICO POR COLABORADOR -->
+  <div class="resolver-filter-toolbar">
+
+    <mat-form-field appearance="outline" class="resolver-search-field">
+
+      <mat-icon matPrefix>search</mat-icon>
+
+      <mat-select placeholder="Todos los colaboradores" [value]="resolutorSeleccionado"
+        (openedChange)="abrirComboResolutor($event)" (selectionChange)="seleccionarResolutorDesdeCombo($event.value)">
+
+        <!-- BUSCADOR -->
+        <div class="resolver-search-container" (click)="$event.stopPropagation()"
+          (keydown)="manejarTeclaBusquedaResolutor($event)">
+
+          <input type="text" class="resolver-search-input" placeholder="Buscar colaborador..."
+            [value]="busquedaResolutor" (input)="filtrarResolutores($event)" aria-label="Buscar colaborador">
+
+        </div>
+
+        <!-- TODOS LOS COLABORADORES -->
+        <mat-option [value]="null">
+          Todos los colaboradores
+        </mat-option>
+
+        <!-- COLABORADORES DISPONIBLES -->
+        <mat-option *ngFor="let nombre of resolutoresFiltrados" [value]="nombre">
+
+          {{ nombre }}
+
+        </mat-option>
+
+        <mat-option *ngIf="resolutoresFiltrados.length === 0" disabled>
+
+          No se encontraron colaboradores
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+
+  <div class="loading-message" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando desempeño por resolutor...
+  </div>
+
+  <div class="error-message" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <div class="table-container">
+
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="total_tickets" matSortDirection="desc"
+        class="performance-table">
+
+        <ng-container matColumnDef="resolver_name">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Nombre del Resolutor
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="resolver-cell">
+            {{ obtenerNombreResolutor(fila.resolver_name) }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="total-label">
+            Total general
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="total_tickets">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            Total
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell total-cell">
+            {{ fila.total_tickets | number:'1.0-0' }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell grand-total">
+            {{ totalTickets | number:'1.0-0' }}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="correct_count">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            Correctas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell count-success">
+            {{ fila.correct_count | number:'1.0-0' }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell count-success">
+            {{ totalCorrectos | number:'1.0-0' }}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="incorrect_count">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            Incorrectas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell count-danger">
+            {{ fila.incorrect_count | number:'1.0-0' }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell count-danger">
+            {{ totalIncorrectos | number:'1.0-0' }}
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="correct_percentage">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            % Correctas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell">
+            <span class="percentage-value percentage-success">
+              {{ fila.correct_percentage | number:'1.1-1' }}%
+            </span>
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell">
+            {{ porcentajeCorrectos | number:'1.1-1' }}%
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="incorrect_percentage">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            % Incorrectas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell">
+            <span class="percentage-value percentage-danger">
+              {{ fila.incorrect_percentage | number:'1.1-1' }}%
+            </span>
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell">
+            {{ porcentajeIncorrectos | number:'1.1-1' }}%
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="missing_required_solution_count">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            Sin Solución Obligatoria
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell">
+            <span [class.count-danger]="fila.missing_required_solution_count > 0">
+              {{ fila.missing_required_solution_count | number:'1.0-0' }}
+            </span>
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell">
+            {{ totalSinSolucionObligatoria | number:'1.0-0' }}
+          </td>
+
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasMostradas"></tr>
+
+
+        <tr mat-row *matRowDef="let fila; columns: columnasMostradas" class="resolver-row-clickable"
+          [class.resolver-row-selected]="
+        obtenerNombreResolutor(fila.resolver_name) === resolutorSeleccionado
+    " [attr.tabindex]="0" [attr.aria-selected]="
+        obtenerNombreResolutor(fila.resolver_name) === resolutorSeleccionado
+    " (click)="seleccionarResolutorDesdeFila(fila)" (keydown.enter)="seleccionarResolutorDesdeFila(fila)"
+          (keydown.space)="seleccionarResolutorDesdeFila(fila); $event.preventDefault()">
+        </tr>
+
+
+        <tr mat-footer-row *matFooterRowDef="columnasMostradas" class="totals-row">
+        </tr>
+
+      </table>
+
+    </div>
+
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons>
+    </mat-paginator>
+
+  </ng-container>
+
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>people_outline</mat-icon>
+    <p>No existen datos de desempeño por resolutor.</p>
+  </div>
+
+</section>

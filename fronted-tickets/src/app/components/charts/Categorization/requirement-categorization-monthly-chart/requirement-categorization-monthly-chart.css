@@ -1,0 +1,160 @@
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+.monthly-chart-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 18px 20px 20px;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EE;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.card-heading h2 {
+  margin: 0;
+  color: #101828;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.card-heading p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.header-icon {
+  color: #16835B;
+  flex-shrink: 0;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #475467;
+  font-size: 12px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.legend-dot.correct {
+  background: #16835B;
+}
+
+.legend-dot.incorrect {
+  background: #D95C4F;
+}
+
+.chart-area {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  min-width: 0;
+}
+
+.chart-area canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #E5E9EE;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.chart-footer mat-icon {
+  flex-shrink: 0;
+  color: #16835B;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.loading-state,
+.error-state {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.loading-state {
+  background: #FFF7F2;
+  color: #C45110;
+}
+
+.error-state {
+  background: #FEF3F2;
+  color: #B42318;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  min-height: 240px;
+  color: #667085;
+  text-align: center;
+  font-size: 12px;
+}
+
+.empty-state mat-icon {
+  color: #98A2B3;
+  font-size: 35px;
+  width: 35px;
+  height: 35px;
+}
+
+@media (max-width: 768px) {
+  .monthly-chart-card {
+    padding: 16px;
+  }
+
+  .chart-area {
+    height: 300px;
+  }
+}

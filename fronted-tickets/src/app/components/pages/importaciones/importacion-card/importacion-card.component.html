@@ -1,0 +1,329 @@
+
+<article class="import-card">
+
+    <div class="card-heading">
+
+        <div class="module-icon">
+            <svg
+                width="23"
+                height="23"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <path d="M14 2v6h6"/>
+                <path d="m8 13 4 5"/>
+                <path d="m12 13-4 5"/>
+            </svg>
+        </div>
+
+        <div class="heading-text">
+            <h3>{{ titulo }}</h3>
+            <p>{{ descripcion }}</p>
+        </div>
+
+    </div>
+
+    <div
+        class="drop-zone"
+        [class.dragging]="arrastrando"
+        [class.disabled]="cargando"
+        (dragover)="alArrastrar($event)"
+        (dragleave)="alSalir($event)"
+        (drop)="alSoltar($event)">
+
+        <input
+            class="file-input"
+            type="file"
+            accept=".xlsx"
+            multiple
+            [id]="'archivo-' + idModulo"
+            [disabled]="cargando"
+            (change)="seleccionarDesdeInput($event)">
+
+        <label
+            class="drop-content"
+            [attr.for]="'archivo-' + idModulo">
+
+            <div class="upload-icon">
+                <svg
+                    width="25"
+                    height="25"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 16V4"/>
+                    <path d="m7 9 5-5 5 5"/>
+                    <path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/>
+                </svg>
+            </div>
+
+            <span class="drop-title">
+                Seleccionar archivos Excel
+            </span>
+
+            <span class="drop-description">
+                Selecciona varios archivos o arrástralos aquí
+            </span>
+
+            <span class="file-format">
+                Formato admitido: XLSX
+            </span>
+
+        </label>
+
+    </div>
+
+    <div class="import-error" role="alert" *ngIf="errorLocal">
+        <span class="error-symbol">!</span>
+        <span>{{ errorLocal }}</span>
+    </div>
+
+    <section class="file-list-section" *ngIf="archivos.length">
+
+        <div class="file-list-heading">
+            <div>
+                <h4>Archivos seleccionados</h4>
+                <span>{{ archivos.length }} archivo(s)</span>
+            </div>
+
+            <button
+                class="clear-button"
+                type="button"
+                [disabled]="cargando"
+                (click)="limpiarLista()">
+                Limpiar lista
+            </button>
+        </div>
+
+        <div class="file-list">
+
+            <div
+                class="file-item"
+                *ngFor="let item of archivos; trackBy: trackByArchivo">
+
+                <div class="file-item-main">
+
+                    <div class="selected-file-icon">
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <path d="M14 2v6h6"/>
+                        </svg>
+                    </div>
+
+                    <div class="selected-file-info">
+                        <span class="file-name" [title]="item.archivo.name">
+                            {{ item.archivo.name }}
+                        </span>
+
+                        <span class="file-size">
+                            {{ formatearTamano(item.archivo.size) }}
+                        </span>
+                    </div>
+
+                    <button
+                        class="remove-file"
+                        type="button"
+                        [attr.aria-label]="'Quitar ' + item.archivo.name"
+                        [disabled]="cargando"
+                        (click)="quitarArchivo(item.id)">
+                        &times;
+                    </button>
+
+                </div>
+
+                <div class="file-item-footer">
+
+                    <span
+                        class="file-status"
+                        [class.status-pendiente]="item.estado === 'pendiente'"
+                        [class.status-procesando]="item.estado === 'procesando'"
+                        [class.status-completado]="item.estado === 'completado'"
+                        [class.status-error]="item.estado === 'error'">
+                        {{ etiquetaEstado(item.estado) }}
+                    </span>
+
+                    <span
+                        class="file-item-summary"
+                        *ngIf="item.resultado">
+                        {{ item.resultado.filas_procesadas | number }} filas procesadas
+                    </span>
+
+                </div>
+
+                <div
+                    class="import-error file-error"
+                    role="alert"
+                    *ngIf="item.error">
+                    <span class="error-symbol">!</span>
+                    <span>{{ item.error }}</span>
+                </div>
+
+                <details
+                    class="file-result-details"
+                    *ngIf="item.resultado as resultado">
+
+                    <summary>Ver resultado del archivo</summary>
+
+                    <p class="file-result-message">
+                        {{ resultado.mensaje }}
+                    </p>
+
+                    <div class="file-result-grid">
+
+                        <div>
+                            <span>Procesados</span>
+                            <strong>{{ resultado.filas_procesadas | number }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Nuevos</span>
+                            <strong>{{ resultado.nuevos | number }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Modificados</span>
+                            <strong>{{ resultado.modificados | number }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Sin cambios</span>
+                            <strong>{{ resultado.sin_cambios | number }}</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="technical-row">
+                        <span>Tabla staging</span>
+                        <strong>{{ resultado.tabla_staging }}</strong>
+                    </div>
+
+                    <div class="technical-row">
+                        <span>Tabla destino</span>
+                        <strong>{{ resultado.tabla_destino }}</strong>
+                    </div>
+
+                    <div class="technical-row">
+                        <span>Filas staging</span>
+                        <strong>{{ resultado.filas_staging | number }}</strong>
+                    </div>
+
+                </details>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <button
+        class="import-button"
+        type="button"
+        [disabled]="!procesables || cargando"
+        (click)="solicitarImportacion()">
+
+        <ng-container *ngIf="!cargando">
+            Importar {{ procesables }}
+            {{ procesables === 1 ? 'archivo' : 'archivos' }}
+        </ng-container>
+
+        <ng-container *ngIf="cargando">
+            <span class="loading-spinner"></span>
+            Procesando archivos...
+        </ng-container>
+
+    </button>
+
+    <div
+        class="processing-note"
+        aria-live="polite"
+        *ngIf="cargando">
+        Los archivos se están importando uno por uno.
+        Espera a que finalice el procesamiento.
+    </div>
+
+    <section
+        class="import-result"
+        aria-live="polite"
+        *ngIf="resumen as totales">
+
+        <div class="result-heading">
+            <div class="success-icon">
+                &#10003;
+            </div>
+
+            <div>
+                <h4>Resumen de importaciones</h4>
+                <p>
+                    {{ completados }} archivo(s) completado(s) correctamente.
+                    <ng-container *ngIf="errores">
+                        {{ errores }} archivo(s) con errores.
+                    </ng-container>
+                </p>
+            </div>
+        </div>
+
+        <div class="result-metrics">
+
+            <div class="metric">
+                <span class="metric-label">
+                    Filas procesadas
+                </span>
+
+                <strong class="metric-value processed">
+                    {{ totales.filas_procesadas | number }}
+                </strong>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">
+                    Nuevos
+                </span>
+
+                <strong class="metric-value new">
+                    {{ totales.nuevos | number }}
+                </strong>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">
+                    Modificados
+                </span>
+
+                <strong class="metric-value modified">
+                    {{ totales.modificados | number }}
+                </strong>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">
+                    Sin cambios
+                </span>
+
+                <strong class="metric-value unchanged">
+                    {{ totales.sin_cambios | number }}
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="summary-footer">
+            Total de filas staging:
+            <strong>{{ totales.filas_staging | number }}</strong>
+        </div>
+
+    </section>
+
+</article>

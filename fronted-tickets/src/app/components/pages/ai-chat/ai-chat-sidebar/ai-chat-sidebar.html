@@ -1,0 +1,69 @@
+<aside class="sidebar">
+
+  <div class="sidebar-heading">
+    <div>
+      <h3>Conversaciones</h3>
+      <p>Historial de consultas</p>
+    </div>
+
+    <span class="conversation-count">
+      {{ conversaciones.length }}
+    </span>
+  </div>
+
+  <button type="button" class="new-chat-button" [disabled]="deshabilitado" (click)="nueva.emit()">
+
+    <mat-icon>add</mat-icon>
+    Nueva conversación
+  </button>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="history-title">
+    <mat-icon>history</mat-icon>
+    <span>Historial</span>
+  </div>
+
+  <div class="sidebar-message" *ngIf="cargando">
+    Cargando conversaciones...
+  </div>
+
+  <div *ngIf="error && !cargando" class="sidebar-error" role="alert">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!cargando && !error && conversaciones.length === 0" class="sidebar-empty">
+    No tienes conversaciones todavía.
+  </div>
+
+  <nav class="conversations-list" aria-label="Historial de conversaciones">
+
+    <button type="button" *ngFor="let conversacion of conversaciones; trackBy: trackById" class="conversation-item"
+      [class.active]="conversacion.id === conversacionSeleccionada" [disabled]="deshabilitado" [attr.aria-current]="
+        conversacion.id === conversacionSeleccionada
+          ? 'page'
+          : null
+      " (click)="seleccionada.emit(conversacion.id)">
+
+      <mat-icon>chat_bubble_outline</mat-icon>
+
+      <span class="conversation-details">
+        <span class="conversation-name">
+          {{ titulo(conversacion) }}
+        </span>
+
+        <span class="conversation-subtitle">
+          {{ subtitulo(conversacion) }}
+        </span>
+      </span>
+
+    </button>
+
+  </nav>
+
+  <div class="sidebar-footer">
+    <mat-icon>verified</mat-icon>
+    <span>Consultas respaldadas por datos</span>
+  </div>
+
+</aside>

@@ -1,0 +1,142 @@
+<section class="compliance-card" [class.day-mode]="modo === 'condicion-dia'">
+
+  <!-- Encabezado -->
+  <div class="card-header">
+    <div class="card-heading">
+      <h2>
+        {{
+        modo === 'condicion-dia'
+        ? 'Distribución por Condición Día'
+        : 'Porcentaje de Cumplimiento de SLA'
+        }}
+      </h2>
+
+      <p *ngIf="modo === 'condicion-dia'">
+        Proporción de requerimientos según
+        la jornada de registro.
+      </p>
+
+      <p *ngIf="modo === 'cumplimiento-sla'">
+        Distribución de requerimientos según
+        el cumplimiento del SLA de solución.
+      </p>
+
+    </div>
+
+    <mat-icon class="header-icon">
+      {{
+      modo === 'condicion-dia'
+      ? 'donut_large'
+      : 'verified'
+      }}
+    </mat-icon>
+
+  </div>
+
+
+  <!-- Selección exclusiva de Cumplimiento SLA -->
+  <div class="selection-state" *ngIf="modo === 'cumplimiento-sla' && seleccion">
+
+    <div class="selection-description">
+      <mat-icon>filter_alt</mat-icon>
+      <span>
+        Selección:
+        <strong>{{ seleccion }}</strong>
+      </span>
+    </div>
+
+    <button type="button" class="clear-selection" (click)="quitarSeleccion()">
+      <mat-icon>close</mat-icon>
+      Quitar
+    </button>
+
+  </div>
+
+
+  <!-- Estado de carga -->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    {{
+    modo === 'condicion-dia'
+    ? 'Actualizando distribución...'
+    : 'Actualizando cumplimiento SLA...'
+    }}
+  </div>
+
+
+  <!-- Estado de error -->
+  <div class="error-state" *ngIf="!cargando && error">
+    <mat-icon>error_outline</mat-icon>
+    <span *ngIf="modo === 'condicion-dia'">
+      No se pudo cargar la distribución por Condición Día.
+    </span>
+    <span *ngIf="modo === 'cumplimiento-sla'">
+      No se pudo cargar el porcentaje de cumplimiento SLA.
+    </span>
+  </div>
+
+
+  <!-- Gráfico y leyenda -->
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <!-- Leyenda -->
+    <div class="chart-legend">
+
+      <ng-container *ngFor="let item of resumen">
+
+        <!-- Leyenda interactiva: Cumplimiento SLA -->
+        <button *ngIf="modo === 'cumplimiento-sla' && item.seleccionable; else leyendaInformativa" type="button"
+          class="legend-item legend-button" [class.is-selected]="seleccion === item.condicion"
+          [class.is-muted]="seleccion !== null && seleccion !== item.condicion"
+          [attr.aria-pressed]="seleccion === item.condicion" [attr.aria-label]="'Filtrar por ' + item.condicion"
+          (click)="seleccionarCondicion(item.condicion)">
+
+          <span class="legend-dot" [style.backgroundColor]="item.color"></span>
+          <span>{{ item.condicion }}</span>
+
+        </button>
+
+
+        <!-- Leyenda informativa: Condición Día y otros -->
+        <ng-template #leyendaInformativa>
+          <div class="legend-item legend-static">
+            <span class="legend-dot" [style.backgroundColor]="item.color"></span>
+            <span>{{ item.condicion }}</span>
+          </div>
+        </ng-template>
+
+      </ng-container>
+    </div>
+
+
+    <!-- Dona -->
+    <div class="chart-area">
+
+      <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"
+        [attr.aria-label]="modo === 'condicion-dia'? 'Distribución de requerimientos por Condición Día': 'Distribución de cumplimiento SLA'">
+      </canvas>
+
+      <!-- Total central -->
+      <div class="donut-center">
+        <strong>
+          {{ totalTickets | number:'1.0-0' }}
+        </strong>
+        <span>
+          Requerimientos
+        </span>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- Sin datos -->
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>donut_large</mat-icon>
+    <p>
+      No hay requerimientos para los filtros seleccionados.
+    </p>
+  </div>
+
+</section>

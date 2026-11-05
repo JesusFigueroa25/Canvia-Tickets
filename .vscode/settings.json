@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./Gestión_tickets/test_"
+    ]
+}

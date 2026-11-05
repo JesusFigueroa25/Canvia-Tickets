@@ -1,0 +1,107 @@
+<div class="login-page">
+
+    <!-- Decoraciones de fondo -->
+    <div class="decoration decoration-top-left"></div>
+    <div class="decoration decoration-bottom-right"></div>
+
+    <!-- Regresar al Landing -->
+    <button type="button" class="back-button" mat-button (click)="irALandingPage()" routerLink="/">
+
+        <mat-icon>arrow_back</mat-icon>
+        <span>Regresar</span>
+
+    </button>
+
+
+    <!-- Contenido -->
+    <main class="login-content">
+
+
+        <!-- Card Login -->
+        <section class="login-card">
+
+            <div class="login-header">
+                <h1>Iniciar sesión</h1>
+                <p>
+                    Ingresa tus credenciales para acceder al sistema
+                </p>
+            </div>
+
+
+            <form class="login-form" [formGroup]="logeoForm" (ngSubmit)="logearUsuario()">
+
+                <!-- USUARIO -->
+                <div class="form-group">
+
+                    <label>Usuario</label>
+
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <mat-icon matPrefix class="field-icon">
+                            person_outline
+                        </mat-icon>
+
+                        <input matInput formControlName="correo" placeholder="Ingresa tu usuario"
+                            autocomplete="correo" />
+
+                        <mat-error *ngIf="logeoForm.get('correo')?.hasError('minlength')">
+                            Debe tener un mínimo de 3 caracteres
+                        </mat-error>
+
+                    </mat-form-field>
+
+                </div>
+
+
+                <!-- CONTRASEÑA -->
+                <div class="form-group">
+
+                    <label>Contraseña</label>
+
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <mat-icon matPrefix class="field-icon">
+                            lock_outline
+                        </mat-icon>
+
+                        <input matInput formControlName="password" [type]="muestraPassword ? 'text' : 'password'"
+                            placeholder="Ingresa tu contraseña" autocomplete="current-password" />
+
+                        <button type="button" mat-icon-button matSuffix class="password-button"
+                            (click)="muestraPassword = !muestraPassword">
+
+                            <mat-icon>
+                                {{ muestraPassword ? 'visibility_off' : 'visibility' }}
+                            </mat-icon>
+
+                        </button>
+
+                        <mat-error *ngIf="logeoForm.get('password')?.hasError('minlength')">
+                            Debe tener un mínimo de 3 caracteres
+                        </mat-error>
+
+                    </mat-form-field>
+
+                </div>
+
+
+
+                <!-- INGRESAR -->
+                <button type="submit"  (click)="logearUsuario()"  class="login-button" [disabled]="logeoForm.invalid">
+
+                    <span>Ingresar</span>
+
+                    <mat-icon>
+                        arrow_forward
+                    </mat-icon>
+
+                </button>
+
+            </form>
+
+
+        </section>
+
+    </main>
+
+</div>

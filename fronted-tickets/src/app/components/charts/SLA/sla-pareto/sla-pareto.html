@@ -1,0 +1,27 @@
+<section class="chart-card">
+
+    <div class="chart-header">
+
+        <div>
+            <h2>{{ titulo }}</h2>
+            <p>{{ descripcion }}</p>
+
+            <p *ngIf="seleccionMultiple" class="selection-hint">
+                Haz clic en las barras para seleccionar
+                varios tipos. "Otros" no es seleccionable.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="chart-container">
+        <canvas 
+        baseChart [data]="chartData" 
+        [options]="chartOptions" 
+        [plugins]="chartPlugins" 
+        [type]="'bar'">
+        </canvas>
+    </div>
+
+</section>

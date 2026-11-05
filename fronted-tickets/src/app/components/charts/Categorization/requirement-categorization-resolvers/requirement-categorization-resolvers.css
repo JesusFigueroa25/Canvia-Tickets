@@ -1,0 +1,264 @@
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  --chart-surface: #FFFFFF;
+  --chart-border: #E5E9EE;
+  --chart-text: #101828;
+  --chart-muted: #667085;
+  --chart-orange: #FF620F;
+  --chart-green: #16835B;
+  --chart-red: #D95C4F;
+}
+
+.resolvers-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 18px 20px 20px;
+  background: var(--chart-surface);
+  border: 1px solid var(--chart-border);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.card-heading {
+  min-width: 0;
+}
+
+.card-heading h2 {
+  margin: 0;
+  color: var(--chart-text);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.card-heading p {
+  margin: 5px 0 0;
+  color: var(--chart-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.header-icon {
+  flex-shrink: 0;
+  color: var(--chart-green);
+}
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475467;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 3px;
+}
+
+.legend-dot.correct {
+  background: var(--chart-green);
+}
+
+.legend-dot.incorrect {
+  background: var(--chart-red);
+}
+
+.chart-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 11px 14px;
+  background: #F9FAFB;
+  border: 1px solid #EDF0F2;
+  border-radius: 9px;
+}
+
+.summary-item span {
+  color: var(--chart-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.summary-item strong {
+  color: var(--chart-text);
+  font-size: 21px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-viewport {
+  width: 100%;
+  max-height: 365px;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #CDD5DF transparent;
+}
+
+.chart-area {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 280px;
+}
+
+.chart-area canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-viewport::-webkit-scrollbar {
+  width: 7px;
+}
+
+.chart-viewport::-webkit-scrollbar-track {
+  background: #F2F4F7;
+  border-radius: 10px;
+}
+
+.chart-viewport::-webkit-scrollbar-thumb {
+  background: #CDD5DF;
+  border-radius: 10px;
+}
+
+.chart-viewport::-webkit-scrollbar-thumb:hover {
+  background: #98A2B3;
+}
+
+.chart-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid var(--chart-border);
+  color: var(--chart-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.chart-footer mat-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--chart-green);
+}
+
+.loading-state,
+.error-state {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.loading-state {
+  background: #FFF7F2;
+  color: #C45110;
+}
+
+.error-state {
+  background: #FEF3F2;
+  color: #B42318;
+}
+
+.loading-state mat-icon,
+.error-state mat-icon {
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  min-height: 240px;
+  padding: 20px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  width: 35px;
+  height: 35px;
+  font-size: 35px;
+  color: #98A2B3;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--chart-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .resolvers-card {
+    padding: 16px;
+  }
+
+  .card-heading h2 {
+    font-size: 16px;
+  }
+
+  .chart-viewport {
+    max-height: 330px;
+  }
+}
+
+@media (max-width: 420px) {
+  .chart-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-viewport {
+    max-height: 300px;
+  }
+}

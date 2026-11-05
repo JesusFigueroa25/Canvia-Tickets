@@ -1,0 +1,169 @@
+<section class="table-card">
+
+    <!-- HEADER -->
+    <div class="table-header">
+
+        <div class="table-title">
+            <h2>Rendimiento por Resolutor</h2>
+            <p>
+                Distribución mensual de incidentes por resolutor.
+                Selecciona uno para filtrar el dashboard.
+            </p>
+        </div>
+
+        <div class="table-actions">
+
+            <!-- FILTRO ACTIVO -->
+            <button *ngIf="resolutorSeleccionado" type="button" class="clear-selection" [disabled]="cargando"
+                (click)="seleccionarResolutor(null)">
+                <mat-icon>close</mat-icon>
+                Quitar filtro
+            </button>
+
+            <!-- SELECTOR DE RESOLUTORES -->
+            <mat-form-field appearance="outline" class="resolver-select-field">
+
+                <mat-icon matPrefix>search</mat-icon>
+
+                <mat-select placeholder="Todos los resolutores" [value]="resolutorSeleccionado" [disabled]="cargando"
+                    (openedChange)="abrirComboResolutor($event)" (selectionChange)="seleccionarResolutor($event.value)">
+
+                    <!-- BUSCADOR -->
+                    <div class="resolver-search-container" (click)="$event.stopPropagation()"
+                        (keydown)="manejarTeclaBusqueda($event)">
+
+                        <input type="text" class="resolver-search-input" placeholder="Buscar resolutor..."
+                            [value]="busquedaResolutor" (input)="filtrarResolutores($event)"
+                            aria-label="Buscar resolutor">
+
+                    </div>
+
+                    <mat-option [value]="null">
+                        Todos los resolutores
+                    </mat-option>
+
+                    <mat-option *ngFor="let resolutor of resolutoresFiltrados" [value]="resolutor">
+
+                        {{ resolutor }}
+
+                    </mat-option>
+
+                    <mat-option *ngIf="resolutoresFiltrados.length === 0" disabled>
+                        No se encontraron resolutores
+                    </mat-option>
+
+                </mat-select>
+
+            </mat-form-field>
+
+        </div>
+    </div>
+
+    <!-- INDICADOR DE CARGA -->
+    <div class="loading-message" *ngIf="cargando">
+        <mat-icon>hourglass_top</mat-icon>
+        Actualizando rendimiento de resolutores...
+    </div>
+
+    <!-- TABLA PIVOTE -->
+    <div class="table-container">
+
+        <table mat-table [dataSource]="datos?.resolutores ?? []" class="performance-table">
+
+            <!-- RESOLUTOR -->
+            <ng-container matColumnDef="nombre_resolutor">
+
+                <th mat-header-cell *matHeaderCellDef>
+                    Nombre del Resolutor
+                </th>
+
+                <td mat-cell *matCellDef="let fila" class="resolver-cell" [title]="fila.nombre_resolutor">
+
+                    {{ fila.nombre_resolutor }}
+
+                </td>
+
+                <td mat-footer-cell *matFooterCellDef class="total-label">
+                    Total general
+                </td>
+
+            </ng-container>
+
+            <!-- COLUMNAS MENSUALES DINÁMICAS -->
+            <ng-container *ngFor="let periodo of datos?.periodos; let i = index" [matColumnDef]="periodo.periodo">
+
+                <th mat-header-cell *matHeaderCellDef class="numeric-cell">
+                    {{ periodo.periodo.replace('-', '/') }}
+                </th>
+
+                <td mat-cell *matCellDef="let fila" class="numeric-cell">
+
+                    {{ (fila.mensual[i]?.tickets ?? 0) | number:'1.0-0' }}
+
+                </td>
+
+                <td mat-footer-cell *matFooterCellDef class="numeric-cell">
+
+                    {{
+                    (datos?.totales_mensuales?.[i]?.tickets ?? 0)
+                    | number:'1.0-0'
+                    }}
+
+                </td>
+
+            </ng-container>
+
+            <!-- TOTAL POR RESOLUTOR -->
+            <ng-container matColumnDef="total">
+
+                <th mat-header-cell *matHeaderCellDef class="numeric-cell">
+                    Total ↓
+                </th>
+
+                <td mat-cell *matCellDef="let fila" class="numeric-cell total-cell">
+
+                    {{ fila.total_tickets | number:'1.0-0' }}
+
+                </td>
+
+                <td mat-footer-cell *matFooterCellDef class="numeric-cell grand-total">
+
+                    {{ (datos?.total_general ?? 0) | number:'1.0-0' }}
+
+                </td>
+
+            </ng-container>
+
+            <!-- FILAS -->
+            <tr mat-header-row *matHeaderRowDef="columnasMostradas">
+            </tr>
+
+            <tr mat-row *matRowDef="let fila; columns: columnasMostradas" class="resolver-row"
+                [class.resolver-selected]="fila.nombre_resolutor === resolutorSeleccionado"
+                [class.row-disabled]="cargando" [attr.tabindex]="cargando ? -1 : 0"
+                [attr.aria-selected]="fila.nombre_resolutor === resolutorSeleccionado" (click)="seleccionarFila(fila)"
+                (keydown.enter)="seleccionarFila(fila)"
+                (keydown.space)="seleccionarFila(fila); $event.preventDefault()">
+            </tr>
+
+            <!-- FILA TOTAL GENERAL -->
+            <tr mat-footer-row *matFooterRowDef="columnasMostradas" class="totals-row">
+            </tr>
+
+        </table>
+
+        <div class="no-data" *ngIf="!cargando && datos && datos.total_resolutores === 0">
+
+            No se encontraron resolutores para los filtros seleccionados.
+
+        </div>
+
+    </div>
+
+    <!-- PAGINACIÓN DEL BACKEND -->
+    <mat-paginator *ngIf="datos && datos.total_resolutores > 0" [length]="datos.total_resolutores"
+        [pageIndex]="datos.pagina - 1" [pageSize]="datos.tamano" [pageSizeOptions]="[5, 10, 20, 50, 100]"
+        [disabled]="cargando" (page)="cambiarPagina($event)" showFirstLastButtons>
+    </mat-paginator>
+
+</section>

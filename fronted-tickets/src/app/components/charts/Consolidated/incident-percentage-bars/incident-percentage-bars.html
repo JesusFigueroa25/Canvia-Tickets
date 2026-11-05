@@ -1,0 +1,48 @@
+<section class="chart-card">
+
+    <!-- HEADER -->
+    <div class="chart-header">
+        <div class="chart-title">
+            <h2>N.º de Incidentes x Porcentajes</h2>
+            <p>
+                Ranking de alertas técnicas según su volumen
+                y participación sobre el total de incidentes.
+            </p>
+        </div>
+    </div>
+
+    <!-- LEYENDA -->
+    <div class="chart-legend" *ngIf="datos && datos.descripciones.length > 0">
+        <span class="legend-item">
+            <span class="legend-color"></span>
+            N.º de incidentes
+        </span>
+    </div>
+
+    <!-- CARGANDO -->
+    <div class="loading-message" *ngIf="cargando">
+        <mat-icon>hourglass_top</mat-icon>
+        Actualizando distribución de incidentes...
+    </div>
+
+    <!-- GRAFICO -->
+    <div class="chart-viewport" *ngIf="datos && datos.descripciones.length > 0">
+        <div class="chart-content" [class.is-loading]="cargando" [style.height.px]="alturaGrafico">
+            <canvas
+                baseChart
+                [type]="chartType"
+                [data]="chartData"
+                [options]="chartOptions"
+                [plugins]="chartPlugins">
+            </canvas>
+        </div>
+    </div>
+
+    <!-- SIN DATOS -->
+    <div
+        class="no-data" *ngIf="!cargando && datos && datos.descripciones.length === 0">
+        <mat-icon>bar_chart</mat-icon>
+        <span>No se encontraron incidentes para los filtros seleccionados.</span>
+    </div>
+
+</section>

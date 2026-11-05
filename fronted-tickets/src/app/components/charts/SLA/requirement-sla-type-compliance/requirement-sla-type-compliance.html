@@ -1,0 +1,91 @@
+<section class="type-compliance-card">
+
+  <!-- HEADER -->
+  <div class="card-header">
+    <div class="card-heading">
+      <h2>
+        Cumplimiento de SLA por Tipo
+      </h2>
+      <p>
+        Requerimientos cumplidos e incumplidos
+        según el tipo de servicio.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">
+      bar_chart
+    </mat-icon>
+  </div>
+
+
+  <!-- ESTADO DE CARGA -->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando cumplimiento por tipo...
+  </div>
+
+
+  <!-- ESTADO DE ERROR -->
+  <div class="error-state" *ngIf="!cargando && error">
+    <mat-icon>error_outline</mat-icon>
+    No se pudo cargar el cumplimiento
+    de SLA por tipo de requerimiento.
+  </div>
+
+
+  <!-- CONTENIDO -->
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+    <!--   LEYENDA SUPERIOR -->
+
+    <div class="chart-legend">
+      <div class="legend-item">
+        <span class="legend-dot legend-success"></span>
+        <span>Cumplidos</span>
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-dot legend-danger"></span>
+        <span>No cumplidos</span>
+      </div>
+
+      <span class="chart-description">
+        Ordenado por volumen de requerimientos
+      </span>
+
+    </div>
+
+
+    <!--   GRAFICO HORIZONTAL APILADO -->
+    <div class="chart-scroll" *ngIf="tieneBarras; else sinBarras">
+      <div class="chart-area" [style.height.px]="alturaGrafico">
+        <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"
+          role="img" aria-label="Cumplimiento de SLA por Tipo de Requerimiento">
+        </canvas>
+      </div>
+    </div>
+
+
+    <!--   SIN BARRAS -->
+    <ng-template #sinBarras>
+      <div class="empty-chart">
+        <mat-icon>insert_chart_outlined</mat-icon>
+        <p>
+          No existen requerimientos cumplidos o
+          incumplidos para representar en el gráfico.
+        </p>
+      </div>
+    </ng-template>
+
+  </ng-container>
+
+
+  <!-- SIN RESULTADOS -->
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>bar_chart</mat-icon>
+    <p>
+      No hay tipos de requerimiento disponibles
+      para los filtros seleccionados.
+    </p>
+  </div>
+
+</section>

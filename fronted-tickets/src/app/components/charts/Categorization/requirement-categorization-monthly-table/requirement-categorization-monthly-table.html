@@ -1,0 +1,206 @@
+<section class="table-card">
+
+  <div class="table-header">
+
+    <div class="table-title">
+      <h2>Cuadro Estadístico Mensual</h2>
+      <p>
+        Cantidad de tickets bien y mal categorizados
+        por mes, con totales y porcentajes.
+      </p>
+    </div>
+
+    <div class="table-summary">
+      <div class="summary-item">
+        <span>Meses auditados</span>
+        <strong>{{ totalMeses | number:'1.0-0' }}</strong>
+      </div>
+
+      <div class="summary-item">
+        <span>Tickets evaluados</span>
+        <strong>{{ totalTickets | number:'1.0-0' }}</strong>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <!-- FILTRO DINÁMICO POR MES -->
+  <div class="monthly-filter-toolbar">
+
+    <mat-form-field appearance="outline" class="monthly-search-field">
+
+      <mat-icon matPrefix>search</mat-icon>
+
+      <mat-select placeholder="Todos los meses" [value]="mesSeleccionado" (openedChange)="abrirComboMes($event)"
+        (selectionChange)="seleccionarMesDesdeCombo($event.value)">
+
+        <!-- BUSCADOR -->
+        <div class="month-search-container" (click)="$event.stopPropagation()"
+          (keydown)="manejarTeclaBusquedaMes($event)">
+
+          <input type="text" class="month-search-input" placeholder="Buscar mes..." [value]="busquedaMes"
+            (input)="filtrarMeses($event)" aria-label="Buscar mes">
+
+        </div>
+
+        <!-- TODOS LOS MESES -->
+        <mat-option [value]="null">
+          Todos los meses
+        </mat-option>
+
+        <!-- MESES DISPONIBLES -->
+        <mat-option *ngFor="let mes of mesesFiltrados" [value]="mes">
+
+          {{ obtenerNombreMes(mes) }}
+
+        </mat-option>
+
+        <mat-option *ngIf="mesesFiltrados.length === 0" disabled>
+
+          No se encontraron meses
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+
+  <div class="loading-message" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando cuadro estadístico mensual...
+  </div>
+
+  <div class="error-message" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <div class="table-container">
+
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="month" matSortDirection="asc"
+        class="monthly-table">
+
+        <ng-container matColumnDef="month">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Mes
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="month-cell">
+            {{ obtenerNombreMes(fila.month) }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="total-label">
+            Total general
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="total_tickets">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            Total
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell total-cell">
+            {{ fila.total_tickets | number:'1.0-0' }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell grand-total">
+            {{ totalTickets | number:'1.0-0' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="correct_count">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            Correctas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell count-success">
+            {{ fila.correct_count | number:'1.0-0' }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell count-success">
+            {{ totalCorrectos | number:'1.0-0' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="incorrect_count">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            Incorrectas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell count-danger">
+            {{ fila.incorrect_count | number:'1.0-0' }}
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell count-danger">
+            {{ totalIncorrectos | number:'1.0-0' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="correct_percentage">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            % Correctas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell">
+            <span class="percentage-value percentage-success">
+              {{ fila.correct_percentage | number:'1.1-1' }}%
+            </span>
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell">
+            {{ porcentajeCorrectos | number:'1.1-1' }}%
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="incorrect_percentage">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric-cell">
+            % Incorrectas
+          </th>
+
+          <td mat-cell *matCellDef="let fila" class="numeric-cell">
+            <span class="percentage-value percentage-danger">
+              {{ fila.incorrect_percentage | number:'1.1-1' }}%
+            </span>
+          </td>
+
+          <td mat-footer-cell *matFooterCellDef class="numeric-cell">
+            {{ porcentajeIncorrectos | number:'1.1-1' }}%
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasMostradas"></tr>
+
+
+        <tr mat-row *matRowDef="let fila; columns: columnasMostradas" class="month-row-clickable"
+          [class.month-row-selected]="fila.month === mesSeleccionado" [attr.tabindex]="0"
+          [attr.aria-selected]="fila.month === mesSeleccionado" (click)="seleccionarMesDesdeFila(fila)"
+          (keydown.enter)="seleccionarMesDesdeFila(fila)"
+          (keydown.space)="seleccionarMesDesdeFila(fila); $event.preventDefault()">
+        </tr>
+
+
+        <tr mat-footer-row *matFooterRowDef="columnasMostradas" class="totals-row">
+        </tr>
+
+      </table>
+
+    </div>
+
+    <mat-paginator [pageSize]="12" [pageSizeOptions]="[6, 12, 24]" showFirstLastButtons>
+    </mat-paginator>
+
+  </ng-container>
+
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+    <mat-icon>table_chart</mat-icon>
+    <p>No existen resultados estadísticos mensuales.</p>
+  </div>
+
+</section>

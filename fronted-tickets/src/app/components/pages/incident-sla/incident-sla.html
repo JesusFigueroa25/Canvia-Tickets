@@ -1,0 +1,228 @@
+<div class="incident-sla-page">
+
+    <!-- HEADER -->
+    <header class="page-header">
+        <div>
+            <h1>Incidentes SLA</h1>
+            <p>
+                Monitoreo del cumplimiento SLA, evolución de incidentes
+                y desempeño operativo.
+            </p>
+        </div>
+    </header>
+
+    <!-- FILTROS -->
+    <section class="filters-card">
+        <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+
+            <!-- FECHAS-->
+            <div class="date-range-fields">
+
+                <div class="filter-field">
+                    <label>Desde</label>
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <input matInput [matDatepicker]="pickerDesde" formControlName="desde"
+                            placeholder="Seleccionar fecha">
+                        <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerDesde></mat-datepicker>
+                        <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">Este campo es
+                            obligatoria</mat-error>
+
+                    </mat-form-field>
+                </div>
+
+
+                <!-- Fecha hasta -->
+                <div class="filter-field">
+                    <label>Hasta</label>
+                    <mat-form-field appearance="outline" class="full-width">
+
+                        <input matInput [matDatepicker]="pickerHasta" formControlName="hasta"
+                            placeholder="Seleccionar fecha">
+                        <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerHasta></mat-datepicker>
+                        <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">Este campo es
+                            obligatoria</mat-error>
+
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <!-- GRUPO RESOLUTOR -->
+            <div class="filter-field">
+                <label>Grupo resolutor</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-select formControlName="grupo_resolutor" placeholder="Todos los grupos">
+                        <mat-option [value]="null">
+                            Todos los grupos
+                        </mat-option>
+                        <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
+                            {{ grupo }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- PRIORIDAD -->
+            <div class="filter-field">
+                <label>Prioridad</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-select formControlName="prioridad" placeholder="Todas las prioridades">
+                        <mat-option [value]="null">
+                            Todas las prioridades
+                        </mat-option>
+                        <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">
+                            {{ prioridad }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="filter-actions">
+                <button type="button" class="clear-button" mat-button (click)="limpiarFiltros()">
+                    <mat-icon>restart_alt</mat-icon>
+                    Limpiar
+                </button>
+
+                <button type="submit" class="apply-button" mat-flat-button [disabled]="filtrosForm.invalid">
+
+                    <mat-icon>filter_alt</mat-icon>
+                    Aplicar
+
+                </button>
+            </div>
+        </form>
+
+        <!-- INFORMACIÓN DEL RANGO DISPONIBLE -->
+        <div class="available-range" *ngIf="opcionesFiltros.fecha_min && opcionesFiltros.fecha_max">
+            <mat-icon>info</mat-icon>
+            <span>
+                Datos disponibles:
+                {{ opcionesFiltros.fecha_min }}
+                al
+                {{ opcionesFiltros.fecha_max }}
+            </span>
+        </div>
+    </section>
+
+
+    <!-- KPIs-->
+    <section class="kpis-section" *ngIf="kpis">
+        <app-kpi-card titulo="Total Tickets" [valor]="kpis.total_tickets" icono="confirmation_number" color="orange">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="SLA Respuesta" [valor]="kpis.sla_respuesta + '%'" icono="schedule" color="green">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="SLA Solución" [valor]="kpis.sla_solucion + '%'" icono="verified" color="green">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="OLA Respuesta" [valor]="kpis.ola_respuesta + '%'" icono="timer" color="orange">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="OLA Solución" [valor]="kpis.ola_solucion + '%'" icono="task_alt" color="green">
+        </app-kpi-card>
+    </section>
+
+
+
+    <section class="project-pareto-grid"
+        *ngIf="proyectos.length > 0 || opcionesProyectos.length > 0 || proyectosExcluidos.length > 0 || cargandoProyectos">
+
+        <!-- Explorador de Proyectos -->
+        <div class="projects-section">
+
+            <div *ngIf="cargandoProyectos" class="projects-loading" role="status" aria-live="polite">
+                Actualizando proyectos...
+            </div>
+
+            <app-project-explorer-table modo="sla" modoBusqueda="combo" [datos]="proyectos"
+                [opcionesProyectos]="opcionesProyectos" [proyectoSeleccionado]="proyectoSeleccionado"
+                (proyectoChange)="cambiarProyecto($event)" [habilitarExclusionProyectos]="true"
+                [proyectosExcluidos]="proyectosExcluidos"
+                (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)">
+            </app-project-explorer-table>
+
+        </div>
+
+
+        <!-- Pareto de Tipos de Incidente -->
+        <div class="pareto-section">
+
+            <button *ngIf="tiposIncidenteSeleccionados.length > 0" type="button" class="pareto-clear-button"
+                (click)="cambiarTiposIncidente([])">
+                Limpiar tipos
+            </button>
+
+            <app-sla-pareto *ngIf="paretoTipos.length > 0" [datos]="paretoTipos" [seleccionMultiple]="true"
+                [tiposSeleccionados]="tiposIncidenteSeleccionados" (tiposChange)="cambiarTiposIncidente($event)">
+            </app-sla-pareto>
+
+        </div>
+
+    </section>
+
+
+
+
+
+    <section class="analysis-grid">
+
+
+        <!-- Volumen de Incidentes -->
+        <app-volume-month *ngIf="volumenIncidentes.length > 0" modo="sla" entidadSla="incidentes"
+            [datos]="volumenIncidentes" [habilitarFiltroMes]="true" [periodoSeleccionado]="periodoSeleccionado"
+            [cargando]="cargandoVolumenIncidentes" (periodoChange)="cambiarPeriodo($event)">
+        </app-volume-month>
+
+        <!-- Desempeño por Resolutor -->
+        <app-resolutor-performance *ngIf="resolutores.length > 0" [datos]="resolutores">
+        </app-resolutor-performance>
+    </section>
+
+
+
+    <section class="charts-grid">
+        <!-- SLA Solución: Tendencia -->
+        <app-sla-solution-trend *ngIf="slaSolucionTendencia.length > 0" [datos]="slaSolucionTendencia">
+        </app-sla-solution-trend>
+
+
+        <!-- Tendencia de Incidentes -->
+        <app-tendencia-type-trend *ngIf="tendenciaIncidentes && tendenciaIncidentes.series.length > 0"
+            [datos]="tendenciaIncidentes">
+        </app-tendencia-type-trend>
+
+    </section>
+
+
+
+    <section class="ticket-explorer-section">
+
+        <header class="ticket-explorer-header">
+
+            <h2>Explorador de Tickets</h2>
+
+            <p>
+                Consulta los registros de Incidentes SLA, revisa sus
+                indicadores de cumplimiento y filtra el dashboard
+                por Ticket ID.
+            </p>
+
+        </header>
+
+        <div class="ticket-explorer-container">
+
+            <app-ticket-explorer-table [tipoDashboard]="'incident-sla'" [datos]="ticketsDetalle"
+                [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
+                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
+            </app-ticket-explorer-table>
+
+        </div>
+
+    </section>
+
+
+</div>

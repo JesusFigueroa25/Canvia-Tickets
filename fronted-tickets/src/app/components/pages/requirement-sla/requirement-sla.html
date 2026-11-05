@@ -1,0 +1,479 @@
+<div class="requirement-sla-page">
+
+    <!--  HEADER MASTER - STICKY-->
+    <div class="header-master">
+        <header class="page-header">
+            <div class="page-header-content">
+                <h1>Requerimientos SLA</h1>
+                <p>
+                    Monitoreo del cumplimiento SLA,
+                    evolución de requerimientos
+                    y desempeño operativo.
+                </p>
+            </div>
+
+            <!-- NAVEGACIÓN INTERNA -->
+            <nav class="section-nav" aria-label="Navegación del dashboard">
+                <button type="button" (click)="irASeccion('graficos-principales')">Gráficos Principales</button>
+                <button type="button" (click)="irASeccion('sla-req-gral')"> SLA Req Gral. </button>
+                <button type="button" (click)="irASeccion('sla-req-categorias')"> SLA Req Categorías </button>
+                <button type="button" (click)="irASeccion('sla-req-categorias-8020')"> SLA Req Categorías 80/20</button>
+
+                <button type="button" (click)="irASeccion('explorador-tickets')">
+                    Explorador de Tickets
+                </button>
+
+            </nav>
+
+        </header>
+
+
+        <!--FILTROS GLOBALES - DESPLEGABLES-->
+        <details class="filters-card" open>
+            <summary class="filters-toggle">
+                <mat-icon>tune</mat-icon>
+                <span>Filtros globales</span>
+            </summary>
+
+            <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+
+                <!-- FECHAS -->
+                <div class="date-range-fields">
+
+                    <!-- DESDE -->
+                    <div class="filter-field">
+                        <label>Desde</label>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <input matInput [matDatepicker]="pickerDesde" formControlName="desde"
+                                placeholder="Seleccionar fecha">
+                            <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+                            <mat-datepicker #pickerDesde></mat-datepicker>
+                            <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
+                                Este campo es obligatorio.
+                            </mat-error>
+
+                        </mat-form-field>
+
+                    </div>
+
+
+                    <!-- HASTA -->
+                    <div class="filter-field">
+                        <label>Hasta</label>
+                        <mat-form-field appearance="outline" class="full-width">
+
+                            <input matInput [matDatepicker]="pickerHasta" formControlName="hasta"
+                                placeholder="Seleccionar fecha">
+                            <mat-datepicker-toggle matIconSuffix [for]="pickerHasta">
+                            </mat-datepicker-toggle>
+
+                            <mat-datepicker #pickerHasta>
+                            </mat-datepicker>
+
+                            <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
+                                Este campo es obligatorio.
+                            </mat-error>
+
+                        </mat-form-field>
+                    </div>
+
+                </div>
+
+                <!-- GRUPO RESOLUTOR -->
+                <div class="filter-field">
+                    <label>Grupo Resolutor</label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select formControlName="grupo_resolutor" placeholder="Todos los grupos">
+                            <mat-option [value]="null">Todos los grupos</mat-option>
+                            <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
+                                {{ grupo }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <!-- PRIORIDAD -->
+                <div class="filter-field">
+                    <label>Prioridad</label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select formControlName="prioridad" placeholder="Todas">
+                            <mat-option [value]="null">
+                                Todas las prioridades
+                            </mat-option>
+                            <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">
+                                {{ prioridad }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <!-- CATEGORÍA -->
+                <div class="filter-field">
+                    <label>Categoría</label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select formControlName="categoria" placeholder="Todas">
+                            <mat-option [value]="null">
+                                Todas las categorías
+                            </mat-option>
+                            <mat-option *ngFor="let categoria of opcionesFiltros.categorias" [value]="categoria">
+                                {{ categoria }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <!-- CONDICIÓN DÍA -->
+                <div class="filter-field">
+                    <label>Condición Día</label>
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-select formControlName="condicion_dia" placeholder="Todas las condiciones">
+                            <mat-option [value]="null">
+                                Todas las condiciones
+                            </mat-option>
+                            <mat-option *ngFor="let condicion of opcionesFiltros.condiciones_dia" [value]="condicion">
+                                {{ condicion }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <!-- ACCIONES -->
+                <div class="filter-actions">
+                    <button type="button" mat-button class="clear-button" (click)="limpiarFiltros()">
+                        <mat-icon>restart_alt</mat-icon>
+                        Limpiar
+                    </button>
+
+                    <button type="submit" mat-flat-button class="apply-button" [disabled]="filtrosForm.invalid">
+                        <mat-icon>filter_alt</mat-icon>
+                        Aplicar
+                    </button>
+                </div>
+            </form>
+
+            <!-- RANGO DISPONIBLE -->
+            <div class="available-range" *ngIf="opcionesFiltros.fecha_min && opcionesFiltros.fecha_max">
+                <mat-icon>info</mat-icon>
+                <span>
+                    Datos disponibles:
+                    {{ opcionesFiltros.fecha_min | date:'dd/MM/yyyy':'UTC' }}
+                    al
+                    {{ opcionesFiltros.fecha_max | date:'dd/MM/yyyy':'UTC' }}
+                </span>
+            </div>
+
+        </details>
+
+        <!--
+          <div class="sla-selection-bar" *ngIf="slaSolucionSeleccionada || proyectoSeleccionado || periodoSeleccionado">
+            
+            <div class="active-filter-item" *ngIf="slaSolucionSeleccionada">
+                <div class="sla-selection-info">
+                    <mat-icon>filter_alt</mat-icon>
+
+                    <span> Filtro SLA activo:
+                        <strong>
+                            {{ slaSolucionSeleccionada }}
+                        </strong>
+                    </span>
+
+                </div>
+
+                <button type="button" mat-button (click)="limpiarSeleccionSla()">
+                    <mat-icon>close</mat-icon>
+                    Quitar filtro
+                </button>
+
+            </div>
+
+            <div class="active-filter-item" *ngIf="proyectoSeleccionado">
+                <div class="sla-selection-info">
+
+                    <mat-icon>business</mat-icon>
+                    <span>
+                        Proyecto seleccionado:
+                        <strong>
+                            {{ proyectoSeleccionado }}
+                        </strong>
+                    </span>
+
+                </div>
+
+                <button type="button" mat-button (click)="cambiarProyecto(null)">
+                    <mat-icon>close</mat-icon>
+                    Quitar filtro
+                </button>
+            </div>
+
+
+        </div>
+        
+        -->
+
+    </div>
+
+    <!-- KPIs GENERALES-->
+    <section class="kpis-section" *ngIf="kpis">
+
+        <app-kpi-card titulo="Total Tickets" [valor]="kpis.total_tickets" icono="confirmation_number" color="orange">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="SLA Respuesta" [valor]="kpis.sla_respuesta + '%'" icono="schedule" color="green">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="SLA Solución" [valor]="kpis.sla_solucion + '%'" icono="verified" color="green">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="OLA Respuesta" [valor]="kpis.ola_respuesta + '%'" icono="timer" color="orange">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="OLA Solución" [valor]="kpis.ola_solucion + '%'" icono="task_alt" color="green">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="Req. Cumplidos" [valor]="kpis.cant_req_cumplidos" icono="check_circle" color="green">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="Req. No Cumplidos" [valor]="kpis.cant_req_no_cumplidos" icono="error_outline"
+            color="orange">
+        </app-kpi-card>
+
+        <app-kpi-card titulo="% Cumpl. Req." [valor]="kpis.porcentaje_cumpl_req + '%'" icono="verified_user"
+            color="green"></app-kpi-card>
+
+    </section>
+
+
+    <!--Gráficos Principales-->
+    <section id="graficos-principales" class="dashboard-section">
+        <header class="section-header">
+            <h1>Gráficos Principales</h1>
+            <p>
+                Distribución general, volumen operativo
+                y participación de proyectos.
+            </p>
+        </header>
+
+
+        <div class="charts-grid">
+            <!-- Distribución por Condición Día -->
+            <div class="chart-g rid-item">
+                <app-requirement-sla-compliance-donut modo="condicion-dia"
+                    [datosCondicionDia]="distribucionCondicionDia"
+                    [cargando]="cargandoNuevosGraficos['distribucionCondicionDia'] ?? false"
+                    [error]="erroresNuevosGraficos['distribucionCondicionDia'] ?? null">
+                </app-requirement-sla-compliance-donut>
+            </div>
+
+            <!--Porcentaje de Cumplimiento de SLA-->
+            <div class="chart-grid-item">
+                <app-requirement-sla-compliance-donut [datos]="porcentajeCumplimientoSla"
+                    [cargando]="cargandoNuevosGraficos['porcentajeCumplimientoSla'] ?? false"
+                    [error]="erroresNuevosGraficos['porcentajeCumplimientoSla'] ?? null"
+                    [seleccion]="slaSolucionSeleccionada" (seleccionChange)="seleccionarSlaSolucion($event)">
+                </app-requirement-sla-compliance-donut>
+            </div>
+        </div>
+
+
+        <div class="project-pareto-grid">
+
+
+            <!-- Explorador por Proyectos-->
+            <div class="projects-section">
+
+                <div *ngIf="cargandoProyectos" class="projects-loading" role="status" aria-live="polite">
+                    Actualizando proyectos...
+                </div>
+
+                <app-project-explorer-table modo="sla" modoBusqueda="combo" [datos]="proyectos"
+                    [opcionesProyectos]="opcionesProyectos" [proyectoSeleccionado]="proyectoSeleccionado"
+                    (proyectoChange)="cambiarProyecto($event)" [habilitarExclusionProyectos]="true"
+                    [proyectosExcluidos]="proyectosExcluidos"
+                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)">
+                </app-project-explorer-table>
+
+            </div>
+
+
+
+            <!-- Pareto de Tipos de Requerimiento-->
+            <div class="pareto-section">
+                <app-sla-pareto *ngIf="paretoRequerimientos.length > 0" [datos]="paretoRequerimientos"
+                    entidad="requerimientos" titulo="Pareto de Tipos de Requerimiento"
+                    descripcion="Tipos con mayor volumen de requerimientos." [seleccionMultiple]="true"
+                    [tiposSeleccionados]="tiposRequerimientoSeleccionados"
+                    (tiposChange)="seleccionarTiposRequerimiento($event)">
+                </app-sla-pareto>
+            </div>
+
+        </div>
+
+        <div class="charts-grid">
+
+            <!-- Volumen de Requerimientos -->
+            <div class="chart-grid-item">
+
+                <app-volume-month *ngIf="volumenRequerimientos.length > 0" modo="sla" entidadSla="requerimientos"
+                    [datos]="volumenRequerimientos" [habilitarFiltroMes]="true"
+                    [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenRequerimientos"
+                    (periodoChange)="cambiarPeriodo($event)">
+                </app-volume-month>
+
+            </div>
+
+
+            <!-- Participación por Proyecto -->
+            <div class="chart-grid-item">
+                <app-project-participation *ngIf="participacionProyectos.length > 0" [datos]="participacionProyectos">
+                </app-project-participation>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!--SLA Req Gral.-->
+    <section id="sla-req-gral" class="dashboard-section">
+        <header class="section-header">
+            <h1>SLA Req Gral.</h1>
+            <p>
+                Análisis general del cumplimiento SLA,
+                tiempos y desempeño de resolutores.
+            </p>
+        </header>
+
+        <!-- Explorador de Tipos de Requerimientos-->
+        <div class="chart-full-width">
+            <app-requirement-sla-type-explorer [datos]="exploradorTipos"
+                [cargando]="cargandoNuevosGraficos['exploradorTipos'] ?? false">
+            </app-requirement-sla-type-explorer>
+
+            <p class="dashboard-load-error" *ngIf="erroresNuevosGraficos['exploradorTipos']">
+                No se pudo cargar el Explorador de Tipos de Requerimientos.
+            </p>
+        </div>
+
+
+        <div class="charts-grid">
+            <!-- SLA Solución: Cumplidos vs Incumplidos-->
+            <div class="chart-grid-item">
+                <app-requirement-sla-solution-trend *ngIf="slaSolucionTendencia.length > 0"
+                    [datos]="slaSolucionTendencia">
+                </app-requirement-sla-solution-trend>
+            </div>
+
+            <!-- Desempeño por Resolutor -->
+            <div class="chart-grid-item">
+                <app-resolutor-performance *ngIf="resolutores.length > 0" [datos]="resolutores"
+                    entidad="requerimientos">
+                </app-resolutor-performance>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <!-- Cumplimiento de SLA por Horario - Condición Día -->
+            <div class="chart-grid-item">
+                <app-requirement-sla-hourly-compliance [datos]="cumplimientoSlaHorario"
+                    [cargando]="cargandoNuevosGraficos['cumplimientoSlaHorario'] ?? false"
+                    [error]="erroresNuevosGraficos['cumplimientoSlaHorario'] ?? null">
+                </app-requirement-sla-hourly-compliance>
+            </div>
+
+            <!-- Cumplimiento de SLA por Prioridad-->
+            <div class="chart-grid-item">
+                <app-requirement-sla-priority-compliance [datos]="cumplimientoSlaPrioridad"
+                    [cargando]="cargandoNuevosGraficos['cumplimientoSlaPrioridad'] ?? false"
+                    [error]="erroresNuevosGraficos['cumplimientoSlaPrioridad'] ?? null">
+                </app-requirement-sla-priority-compliance>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- SLA Req Categorías -->
+    <section id="sla-req-categorias" class="dashboard-section">
+        <header class="section-header">
+            <h1>SLA Req Categorías</h1>
+            <p>
+                Cumplimiento de SLA por categoría, tipo
+                y evolución de requerimientos.
+            </p>
+        </header>
+
+        <!--Top 10 - Cumplimiento de SLA por Categoría-->
+        <div class="chart-full-width">
+            <app-requirement-sla-top-categories [datos]="top10CumplimientoSlaCategoria"
+                [cargando]="cargandoNuevosGraficos['top10CumplimientoSlaCategoria'] ?? false"
+                [error]="erroresNuevosGraficos['top10CumplimientoSlaCategoria'] ?? null">
+            </app-requirement-sla-top-categories>
+        </div>
+
+        <!--Cumplimiento de SLA por Tipo-->
+        <div class="chart-full-width">
+            <app-requirement-sla-type-compliance [datos]="cumplimientoSlaTipo"
+                [cargando]="cargandoNuevosGraficos['cumplimientoSlaTipo'] ?? false"
+                [error]="erroresNuevosGraficos['cumplimientoSlaTipo'] ?? null">
+            </app-requirement-sla-type-compliance>
+        </div>
+
+        <!--Tendencia de Requerimientos-->
+        <div class="chart-full-width">
+            <app-tendencia-type-trend *ngIf="tendenciaRequerimientos.length > 0" [datos]="tendenciaRequerimientos"
+                entidad="requerimientos" (rankingChange)="cambiarRankingTendencia($event)">
+            </app-tendencia-type-trend>
+        </div>
+    </section>
+
+    <!--  SLA Req Categorías 80/20 -->
+    <section id="sla-req-categorias-8020" class="dashboard-section">
+        <header class="section-header">
+            <h1>SLA Req Categorías 80/20</h1>
+            <p>
+                Análisis de Pareto para identificar
+                las categorías que concentran los
+                mayores incumplimientos de SLA.
+            </p>
+        </header>
+
+        <!-- Análisis de Pareto de Incumplimientos por Categoría-->
+        <div class="chart-full-width">
+            <app-requirement-sla-pareto-table [datos]="paretoSlaCategorias"
+                [cargando]="cargandoNuevosGraficos['paretoSlaCategorias'] ?? false"
+                [error]="erroresNuevosGraficos['paretoSlaCategorias'] ?? null">
+            </app-requirement-sla-pareto-table>
+        </div>
+
+        <!-- Cant Req. No Cumplidos y % Acum. por Categorización - Categoría -->
+        <div class="chart-full-width">
+            <app-requirement-sla-pareto-chart [datos]="paretoSlaCategoriasGrafico"
+                [cargando]="cargandoNuevosGraficos['paretoSlaCategoriasGrafico'] ?? false"
+                [error]="erroresNuevosGraficos['paretoSlaCategoriasGrafico'] ?? null">
+            </app-requirement-sla-pareto-chart>
+        </div>
+    </section>
+
+
+    <section id="explorador-tickets" class="dashboard-section">
+
+        <header class="section-header">
+            <h1>Explorador de Tickets</h1>
+            <p>
+                Consulta los registros de Requerimientos SLA,
+                revisa sus condiciones de cumplimiento y filtra
+                el dashboard por Ticket ID.
+            </p>
+
+        </header>
+
+        <div class="chart-full-width">
+            <app-ticket-explorer-table [tipoDashboard]="'requirement-sla'" [datos]="ticketsDetalle"
+                [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
+                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
+            </app-ticket-explorer-table>
+        </div>
+
+    </section>
+
+
+</div>

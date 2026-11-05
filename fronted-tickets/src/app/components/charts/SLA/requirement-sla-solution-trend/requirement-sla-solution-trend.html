@@ -1,0 +1,16 @@
+<section class="chart-card">
+    <div class="chart-header">
+        <div>
+            <h2>SLA Solución: Cumplidos vs Incumplidos </h2>
+            <p>
+                Evolución mensual del cumplimiento
+                del SLA de solución.
+            </p>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'line'">
+        </canvas>
+    </div>
+</section>

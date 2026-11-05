@@ -1,0 +1,41 @@
+<section class="chart-card">
+
+
+    <div class="chart-header">
+
+        <h2>
+            {{
+            entidadConsolidado === 'requerimientos'
+            ? 'N.º de Requerimientos por Prioridad'
+            : 'N.º de Incidencias por Prioridad'
+            }}
+        </h2>
+
+        <p>
+            {{
+            entidadConsolidado === 'requerimientos'
+            ? 'Composición mensual de requerimientos por criticidad. Las columnas representan el 100% de cada mes.'
+            : 'Composición mensual de incidentes por criticidad. Las columnas representan el 100% de cada mes.'
+            }}
+        </p>
+
+    </div>
+
+
+    <div class="chart-container" *ngIf="registros.length > 0; else sinDatos">
+
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'">
+        </canvas>
+
+    </div>
+
+
+    <ng-template #sinDatos>
+
+        <div class="empty-state">
+            No hay información de prioridades para este periodo.
+        </div>
+
+    </ng-template>
+
+</section>

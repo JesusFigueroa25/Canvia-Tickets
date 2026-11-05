@@ -1,0 +1,374 @@
+/* CONTENEDOR PRINCIPAL */
+
+:host {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+.table-card {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e9ee;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+
+/* HEADER */
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 20px 14px;
+}
+
+.table-title {
+    min-width: 0;
+}
+
+.table-title h2 {
+    margin: 0;
+    color: #101828;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.table-title p {
+    margin: 5px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+/* SELECTOR */
+
+.resolver-select-field {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+:host ::ng-deep
+.resolver-select-field .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+}
+
+:host ::ng-deep
+.resolver-select-field .mat-mdc-text-field-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+:host ::ng-deep
+.resolver-select-field .mat-mdc-form-field-infix {
+    min-height: 44px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+:host ::ng-deep
+.resolver-select-field .mdc-notched-outline__leading,
+:host ::ng-deep
+.resolver-select-field .mdc-notched-outline__notch,
+:host ::ng-deep
+.resolver-select-field .mdc-notched-outline__trailing {
+    border-color: #d0d5dd;
+}
+
+:host ::ng-deep
+.resolver-select-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep
+.resolver-select-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep
+.resolver-select-field.mat-focused .mdc-notched-outline__trailing {
+    border-color: #ff620f !important;
+}
+
+
+/* BUSCADOR INTERNO */
+
+.resolver-search-container {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 10px 12px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e9ee;
+}
+
+.resolver-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #344054;
+    font-size: 12px;
+    outline: none;
+}
+
+.resolver-search-input:focus {
+    border-color: #ff620f;
+}
+
+.resolver-search-input::placeholder {
+    color: #98a2b3;
+}
+
+
+/* QUITAR FILTRO */
+
+.clear-selection {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 7px 10px;
+    border: 1px solid #ffd7c2;
+    border-radius: 8px;
+    background: #fff4ed;
+    color: #d9560d;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.clear-selection mat-icon {
+    width: 17px;
+    height: 17px;
+    font-size: 17px;
+}
+
+.clear-selection:hover {
+    background: #ffe9da;
+}
+
+.clear-selection:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* TABLA */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cdd5df transparent;
+}
+
+.performance-table {
+    width: 100%;
+    min-width: 950px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th.mat-mdc-header-cell {
+    background: #f8faf9;
+    color: #475467;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+td.mat-mdc-cell {
+    color: #344054;
+    font-size: 12px;
+}
+
+th.mat-mdc-header-cell,
+td.mat-mdc-cell,
+td.mat-mdc-footer-cell {
+    padding: 0 14px !important;
+}
+
+
+/* NOMBRE DEL RESOLUTOR */
+
+.mat-column-nombre_resolutor {
+    min-width: 275px;
+    max-width: 340px;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #ffffff;
+}
+
+th.mat-column-nombre_resolutor {
+    z-index: 4;
+    background: #f8faf9;
+}
+
+.resolver-cell {
+    font-weight: 600;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: #253047;
+}
+
+
+/* COLUMNAS NUMÉRICAS */
+
+.numeric-cell {
+    min-width: 95px;
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.total-cell {
+    color: #e35b10 !important;
+    font-weight: 700;
+}
+
+.mat-column-total {
+    min-width: 110px;
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    background: #ffffff;
+}
+
+th.mat-column-total {
+    z-index: 4;
+    background: #f8faf9;
+}
+
+
+/* FILAS INTERACTIVAS */
+
+.resolver-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.resolver-row:hover,
+.resolver-row:hover td {
+    background: #fff8f3;
+}
+
+.resolver-row.resolver-selected,
+.resolver-row.resolver-selected td {
+    background: #fff0df;
+}
+
+.resolver-row.resolver-selected .resolver-cell {
+    color: #e35b10;
+}
+
+.resolver-row:focus-visible {
+    outline: 2px solid #ff620f;
+    outline-offset: -2px;
+}
+
+.resolver-row.row-disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+
+/* FILA TOTAL GENERAL */
+
+.totals-row td {
+    height: 48px;
+    background: #f2f6f4;
+    border-top: 1px solid #dbe8e0;
+    color: #101828;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.totals-row .mat-column-nombre_resolutor,
+.totals-row .mat-column-total {
+    background: #f2f6f4;
+    z-index: 3;
+}
+
+.totals-row .grand-total {
+    color: #16835b;
+    font-weight: 800;
+}
+
+.total-label {
+    white-space: nowrap;
+}
+
+
+/* CARGA Y SIN DATOS */
+
+.loading-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    color: #667085;
+    background: #f7f9fb;
+    font-size: 12px;
+}
+
+.loading-message mat-icon {
+    color: #ff620f;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.no-data {
+    padding: 24px;
+    color: #98a2b3;
+    text-align: center;
+    font-size: 12px;
+}
+
+
+/* PAGINADOR */
+
+mat-paginator {
+    background: #ffffff;
+    border-top: 1px solid #edf0f2;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .table-actions {
+        flex-wrap: wrap;
+    }
+
+    .resolver-select-field {
+        flex: 1 1 240px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .table-header {
+        padding: 16px;
+    }
+
+    .mat-column-nombre_resolutor {
+        min-width: 210px;
+        max-width: 250px;
+    }
+}

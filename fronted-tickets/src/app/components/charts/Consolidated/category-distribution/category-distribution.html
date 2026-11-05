@@ -1,0 +1,29 @@
+<section class="chart-card">
+
+  <div class="chart-header">
+    <h2>{{ titulo }}</h2>
+    <p>{{ descripcion }}</p>
+
+
+    <p *ngIf="seleccionMultiple" class="selection-hint">
+      Haz clic en las barras para seleccionar
+      uno o varios {{ textoSeleccionMultiple }}.
+      Haz clic nuevamente para quitar una selección.
+    </p>
+
+  </div>
+
+
+  <div class="chart-viewport" [class.horizontal]="orientacion === 'horizontal'">
+    <div class="chart-container" [style.height.px]="alturaGrafico">
+      <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'">
+      </canvas>
+    </div>
+  </div>
+
+
+  <div class="empty-state" *ngIf="datos.length === 0">
+    No hay información disponible.
+  </div>
+
+</section>

@@ -1,0 +1,147 @@
+
+/* Componente */
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Tarjeta principal */
+.chart-card {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e5e9ee;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+/* Encabezado */
+.chart-header {
+  padding: 18px 20px 14px;
+}
+
+.chart-title h2 {
+  margin: 0;
+  color: #101828;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.chart-title p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Leyenda */
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 14px 20px 6px;
+  color: #667085;
+  font-size: 11px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #475467;
+  font-weight: 600;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  background: #ffb184;
+  border: 1px solid #ff620f;
+  border-radius: 3px;
+}
+
+/* Contenedor del gráfico */
+.chart-viewport {
+  width: 100%;
+  max-height: 540px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: auto;
+  padding: 8px 14px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: #cdd5df transparent;
+}
+
+/* Altura dinámica del gráfico */
+.chart-content {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  transition: opacity 0.15s ease;
+}
+
+.chart-content canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Atenuar durante la carga */
+.chart-content.is-loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Mensaje de carga */
+.loading-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  background: #f7f9fb;
+  color: #667085;
+  font-size: 12px;
+}
+
+.loading-message mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #ff620f;
+}
+
+/* Mensaje sin datos */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+  padding: 20px;
+  color: #98a2b3;
+  font-size: 12px;
+  text-align: center;
+}
+
+.no-data mat-icon {
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+}
+
+/* Responsive: móvil */
+@media (max-width: 520px) {
+  .chart-header {
+    padding: 16px;
+  }
+  .chart-legend {
+    padding: 12px 16px 6px;
+  }
+  .chart-viewport {
+    padding: 8px 10px 12px;
+  }
+}

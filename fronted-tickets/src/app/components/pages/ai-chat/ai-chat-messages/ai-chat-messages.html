@@ -1,0 +1,110 @@
+
+<section
+  #scrollArea
+  class="messages-area"
+  aria-label="Mensajes del chatbot">
+
+  <!-- ESTADO DE CARGA -->
+  <div class="loading-state" *ngIf="cargando">
+    <mat-icon>hourglass_empty</mat-icon>
+    <span>Cargando conversación...</span>
+  </div>
+
+  <!-- BIENVENIDA -->
+  <div
+    class="welcome-state"
+    *ngIf="!cargando && mensajes.length === 0">
+
+    <div class="welcome-icon">
+      <mat-icon>auto_awesome</mat-icon>
+    </div>
+
+    <h2>¿Qué deseas analizar hoy?</h2>
+
+    <p>
+      Consulta los datos de incidentes, requerimientos,
+      proyectos, prioridades y cumplimiento SLA/OLA.
+    </p>
+
+    <div class="suggestions-title">
+      Prueba con una consulta
+    </div>
+
+    <div class="suggestions-list">
+      <button
+        type="button"
+        class="suggestion-button"
+        *ngFor="let ejemplo of sugerencias"
+        [disabled]="respondiendo"
+        (click)="sugerencia.emit(ejemplo)">
+
+        <mat-icon>north_east</mat-icon>
+
+        <span>{{ ejemplo }}</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- MENSAJES -->
+  <ng-container *ngIf="!cargando">
+
+    <div
+      class="message-row"
+      *ngFor="let mensaje of mensajes; trackBy: trackById"
+      [class.user-row]="mensaje.role === 'user'"
+      [class.assistant-row]="mensaje.role === 'assistant'">
+
+      <!-- AVATAR ASISTENTE -->
+      <div
+        class="message-avatar"
+        *ngIf="mensaje.role === 'assistant'">
+        <mat-icon>smart_toy</mat-icon>
+      </div>
+
+      <div class="message-bubble"
+           [class.pending]="mensaje.pending">
+
+        <div
+          class="message-author"
+          *ngIf="mensaje.role === 'assistant'">
+          Canvia IA
+        </div>
+
+        <div class="message-content">
+          {{ mensaje.content }}
+        </div>
+
+        <div
+          class="message-pending"
+          *ngIf="mensaje.pending">
+          Enviando...
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- INDICADOR DE RESPUESTA -->
+    <div
+      *ngIf="respondiendo"
+      class="typing-row"
+      role="status"
+      aria-label="Procesando consulta">
+
+      <div class="message-avatar">
+        <mat-icon>smart_toy</mat-icon>
+      </div>
+
+      <div class="typing-bubble">
+        <span></span>
+        <span></span>
+        <span></span>
+        <small>Analizando información...</small>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</section>

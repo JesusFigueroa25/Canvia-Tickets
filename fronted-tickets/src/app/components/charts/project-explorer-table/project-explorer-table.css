@@ -1,0 +1,682 @@
+/*CONTENEDOR PRINCIPAL*/
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.table-card {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e5e9ee;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+
+/*HEADER*/
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px 20px 8px;
+}
+
+.table-header h2 {
+  margin: 0;
+  color: #101828;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.table-header p {
+  margin: 4px 0 0;
+  color: #667085;
+  font-size: 12px;
+}
+
+/*BUSCADOR*/
+.search-field {
+  width: 260px;
+  flex-shrink: 0;
+}
+:host ::ng-deep .search-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+
+/*TABLA*/
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  min-width: 1100px;
+}
+th {
+  background: #f8faf9;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+td {
+  color: #344054;
+  font-size: 12px;
+  white-space: nowrap;
+}
+th,
+td {
+  padding: 0 13px !important;
+}
+tr.mat-mdc-row {
+  transition: background 0.15s ease;
+}
+tr.mat-mdc-row:hover {
+  background: #fafcfb;
+}
+
+
+/*MODO CONSOLIDADO*/
+table.compact-table {
+  min-width: 100%;
+}
+.compact-table .mat-column-proyecto {
+  width: 80%;
+}
+.compact-table .mat-column-cantidad {
+  width: 20%;
+  text-align: right;
+}
+.compact-table .project-cell {
+  max-width: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/*NOMBRE DEL PROYECTO*/
+.project-cell {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: #253047;
+}
+
+/*INDICADORES DE CUMPLIMIENTO*/
+.count-success {
+  color: #16835b;
+  font-weight: 700;
+}
+.count-danger {
+  color: #d94c16;
+  font-weight: 700;
+}
+
+/*INDICADORES SLA*/
+.sla-badge {
+  display: inline-flex;
+  min-width: 62px;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.sla-good {
+  color: #12633f;
+  background: #dff3e6;
+}
+.sla-warning {
+  color: #a94a0a;
+  background: #fff0df;
+}
+.sla-danger {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+/*SIN RESULTADOS*/
+.no-data {
+  padding: 30px !important;
+  text-align: center;
+  color: #98a2b3;
+}
+
+/*PAGINACIÓN*/
+mat-paginator {
+  border-top: 1px solid #edf0f2;
+  background: #ffffff;
+}
+
+
+/*RESPONSIVE*/
+@media (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+}
+
+/*EXPLORADOR DE PROYECTOS*/
+.projects-section {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 24px;
+}
+
+.projects-section>* {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .projects-section {
+    margin-top: 20px;
+  }
+}
+
+
+/* BUSCADOR DENTRO DEL SELECT */
+.project-search-container {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 10px 12px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e9ee;
+}
+
+.project-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #d0d5dd;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #344054;
+    font-size: 12px;
+    outline: none;
+}
+
+.project-search-input:focus {
+    border-color: #ff620f;
+}
+
+.project-search-input::placeholder {
+    color: #98a2b3;
+}
+
+
+/* SELECTOR DE PROYECTOS */
+
+.project-select-field {
+    width: 260px;
+    flex-shrink: 0;
+}
+
+/* Altura y fondo */
+:host ::ng-deep
+.project-select-field .mat-mdc-text-field-wrapper {
+    height: 44px;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+/* Centrar verticalmente */
+:host ::ng-deep
+.project-select-field .mat-mdc-form-field-flex {
+    height: 100%;
+    align-items: center;
+}
+
+:host ::ng-deep
+.project-select-field .mat-mdc-form-field-infix {
+    min-height: 44px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex;
+    align-items: center;
+}
+
+:host ::ng-deep
+.project-select-field .mat-mdc-select-trigger {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+/* Texto del selector */
+:host ::ng-deep
+.project-select-field .mat-mdc-select-placeholder {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+/* Proyecto seleccionado */
+:host ::ng-deep
+.project-select-field .mat-mdc-select-value-text {
+    color: #344054;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Icono */
+:host ::ng-deep
+.project-select-field .mat-mdc-form-field-icon-prefix {
+    color: #98a2b3;
+    padding-left: 10px;
+}
+
+/* Borde normal */
+:host ::ng-deep
+.project-select-field .mdc-notched-outline__leading,
+:host ::ng-deep
+.project-select-field .mdc-notched-outline__notch,
+:host ::ng-deep
+.project-select-field .mdc-notched-outline__trailing {
+    border-color: #d0d5dd !important;
+}
+
+/* Borde al seleccionar */
+:host ::ng-deep
+.project-select-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep
+.project-select-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep
+.project-select-field.mat-focused .mdc-notched-outline__trailing {
+    border-color: #ff620f !important;
+}
+
+/* Eliminar espacio inferior */
+:host ::ng-deep
+.project-select-field .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+}
+
+tr.proyecto-clickable {
+    cursor: pointer;
+}
+
+tr.proyecto-clickable:hover {
+    background: #fff4ed;
+}
+
+tr.proyecto-seleccionado {
+    background: #fff0e6;
+}
+
+tr.proyecto-seleccionado .project-cell {
+    color: #ff620f;
+}
+
+
+/* ====================================================
+   CONTROLES DE FILTROS POR PROYECTO
+   ==================================================== */
+
+.project-filters-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-width: 0;
+}
+
+
+/* ====================================================
+   BOTON DE EXCLUSION MULTIPLE
+   ==================================================== */
+
+.exclusion-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 0 12px;
+    background: #ffffff;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    color: #344054;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.exclusion-trigger:hover {
+    background: #fff4ed;
+    border-color: #ff620f;
+}
+
+.exclusion-trigger-active {
+    border-color: #ff620f;
+    color: #ff620f;
+}
+
+.exclusion-trigger mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+.exclusion-trigger .exclusion-arrow {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    color: #667085;
+}
+
+.exclusion-counter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    background: #fff3eb;
+    border-radius: 12px;
+    color: #ff620f;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/* ====================================================
+   PANEL DE EXCLUSION DE PROYECTOS
+   ==================================================== */
+
+.exclusion-panel {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 20px;
+    background: #ffffff;
+    border-top: 1px solid #e5e9ee;
+    border-bottom: 1px solid #e5e9ee;
+}
+
+.exclusion-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.exclusion-panel-header h3 {
+    margin: 0;
+    color: #101828;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.exclusion-panel-header p {
+    margin: 4px 0 0;
+    color: #667085;
+    font-size: 11px;
+}
+
+.exclusion-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    color: #667085;
+    cursor: pointer;
+}
+
+.exclusion-close:hover {
+    background: #f2f4f7;
+}
+
+.exclusion-close mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+
+/* BUSCADOR DE EXCLUSIONES */
+
+.exclusion-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 12px;
+    background: #ffffff;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+}
+
+.exclusion-search:focus-within {
+    border-color: #ff620f;
+}
+
+.exclusion-search mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: #98a2b3;
+}
+
+.exclusion-search-input {
+    flex: 1;
+    min-width: 0;
+    height: 38px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #344054;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.exclusion-search-input::placeholder {
+    color: #98a2b3;
+}
+
+
+/* ACCIONES DE SELECCION */
+
+.exclusion-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.exclusion-select-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.exclusion-select-all input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #ff620f;
+    cursor: pointer;
+}
+
+.exclusion-select-all input:disabled {
+    cursor: not-allowed;
+}
+
+.exclusion-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    background: #ffffff;
+    border: 1px solid #d0d5dd;
+    border-radius: 7px;
+    color: #ff620f;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.exclusion-clear:hover:not(:disabled) {
+    background: #fff4ed;
+    border-color: #ff620f;
+}
+
+.exclusion-clear:disabled {
+    color: #98a2b3;
+    cursor: not-allowed;
+}
+
+.exclusion-clear mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+}
+
+
+/* LISTA CON CHECKBOXES */
+
+.exclusion-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    max-height: 230px;
+    padding: 3px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.exclusion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    padding: 10px 11px;
+    background: #ffffff;
+    border: 1px solid #e5e9ee;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.exclusion-item:hover {
+    background: #fafcfb;
+}
+
+.exclusion-item-selected {
+    background: #fff4ed;
+    border-color: #ffd7be;
+}
+
+.exclusion-item-selected:hover {
+    background: #fff0e6;
+}
+
+.exclusion-item input {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #ff620f;
+    cursor: pointer;
+}
+
+.exclusion-item span {
+    min-width: 0;
+    color: #344054;
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.exclusion-item-selected span {
+    color: #b54708;
+    font-weight: 600;
+}
+
+.exclusion-empty {
+    grid-column: 1 / -1;
+    padding: 20px;
+    color: #98a2b3;
+    font-size: 12px;
+    text-align: center;
+}
+
+
+/* RESUMEN DE EXCLUSIONES */
+
+.exclusion-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e9ee;
+    color: #667085;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* ====================================================
+   RESPONSIVE
+   ==================================================== */
+
+@media (max-width: 768px) {
+
+    .project-filters-controls {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .project-filters-controls .search-field,
+    .project-filters-controls .project-select-field {
+        width: 100%;
+        flex-shrink: 1;
+    }
+
+    .exclusion-trigger {
+        width: 100%;
+    }
+
+    .exclusion-panel {
+        padding: 14px;
+    }
+
+    .exclusion-list {
+        grid-template-columns: 1fr;
+    }
+}

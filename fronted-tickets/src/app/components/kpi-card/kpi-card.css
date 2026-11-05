@@ -1,0 +1,84 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/*CARD */
+.kpi-card {
+  width: 100%;
+  min-height: 115px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(16, 24, 40, 0.07);
+}
+
+/*  ICONO */
+.kpi-icon {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.kpi-icon mat-icon {
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+}
+
+/*  CONTENIDO */
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+
+.kpi-title {
+  margin-bottom: 5px;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kpi-value {
+  color: #101828;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/*  NARANJA */
+.kpi-card.orange {
+  background: linear-gradient(135deg, #fff8f3 0%, #fff3e9 100%);
+  border-color: #ffe1cc;
+}
+
+.kpi-card.orange .kpi-icon {
+  color: #ff620f;
+  background: #ffe5d2;
+}
+
+/*  VERDE */
+.kpi-card.green {
+  background: linear-gradient(135deg, #f6fcf8 0%, #eef9f2 100%);
+  border-color: #d9eee1;
+}
+
+.kpi-card.green .kpi-icon {
+  color: #16835b;
+  background: #dff3e6;
+}

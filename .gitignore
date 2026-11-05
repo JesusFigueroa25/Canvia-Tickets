@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Angular
+node_modules/
+.angular/
+dist/
+
+# Variables privadas
+.env
+.env.*
+!.env.example
+
+# Bases de datos locales
+*.db
+
+# Archivos temporales
+*.log

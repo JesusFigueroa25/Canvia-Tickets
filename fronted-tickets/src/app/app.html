@@ -1,0 +1,25 @@
+<app-sidenav 
+    *ngIf="guia=='logeado'" 
+    (usuarioDeslogeado)="habilitarLogearse()" 
+    (onToggleSideNav)="onToggleSideNav($event)">
+</app-sidenav>
+
+<app-body
+    *ngIf="guia == 'logeado'"
+    [collapsed]="isSideNavCollapsed"
+    [screenWidth]="screenWidth">
+</app-body>
+
+<app-login
+   *ngIf="guia=='logearse'"
+    (usuarioLogeado)="habilitarContenido()"
+    (landingPage)="habilitarLandingPage()">
+></app-login>
+
+<app-landing  
+    *ngIf="guia=='landing-page'"
+    (logearse)="habilitarLogearse()">
+</app-landing>
+
+
+

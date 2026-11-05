@@ -1,0 +1,37 @@
+<section class="chart-card">
+
+    <div class="chart-header">
+        <div>
+            <h2>Desempeño por Resolutor</h2>
+            <p>
+                {{
+                    entidad === 'requerimientos'
+                    ? 'Top 10 resolutores con mayor volumen de requerimientos atendidos.'
+                    : 'Top 10 resolutores por volumen de tickets y cumplimiento SLA.'
+                }}
+            </p>
+        </div>
+        <div
+            class="total-badge"
+            *ngIf="entidad === 'requerimientos' && totalTickets > 0">
+            <span class="total-label">
+                Total
+            </span>
+            <strong>
+                {{ totalTickets | number:'1.0-0' }}
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="chart-container">
+        <canvas
+            baseChart
+            [data]="chartData"
+            [options]="chartOptions"
+            [plugins]="chartPlugins"
+            [type]="'bar'">
+        </canvas>
+    </div>
+
+</section>

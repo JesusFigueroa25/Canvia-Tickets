@@ -1,0 +1,258 @@
+<section class="table-card">
+
+  <!-- ENCABEZADO-->
+  <div class="table-header">
+    <div class="table-title">
+      <h2>
+        Explorador de Tipos de Requerimientos
+      </h2>
+      <p>
+        Volumen mensual y cumplimiento SLA
+        por tipo de requerimiento.
+      </p>
+    </div>
+
+    <!-- BUSQUEDA LOCAL -->
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Buscar tipo de requerimiento..." aria-label="Buscar tipo de requerimiento"
+        [value]="busqueda" (input)="filtrarTipos($event)">
+    </div>
+  </div>
+
+
+  <!-- DESCRIPCION DE METRICAS-->
+  <div class="table-info">
+    <span>
+      <strong>Tot:</strong> Total
+    </span>
+    <span>
+      <strong>C:</strong> Cumplidos
+    </span>
+    <span>
+      <strong>I:</strong> Incumplidos
+    </span>
+    <span>
+      <strong>%Inc:</strong> Porcentaje de incumplimiento
+    </span>
+  </div>
+
+
+  <!-- CARGANDO-->
+  <div class="table-loading" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando explorador de tipos...
+  </div>
+
+
+  <!-- MATRIZ-->
+  <div class="table-scroll" *ngIf="datos && periodos.length > 0">
+
+    <table class="matrix-table">
+      <!--CABECERA DINAMICA -->
+      <thead>
+
+        <!-- PRIMER NIVEL: PERIODOS -->
+        <tr class="period-header">
+          <th rowspan="2" scope="col" class="type-heading sticky-type">
+            Tipo de requerimiento
+          </th>
+
+          <th *ngFor="let periodo of periodos" colspan="4" scope="colgroup" class="period-group">
+            {{ periodo.periodo }}
+          </th>
+
+          <th colspan="4" scope="colgroup" class="total-group">
+            Total
+          </th>
+
+        </tr>
+
+
+        <!-- SEGUNDO NIVEL: METRICAS -->
+        <tr class="metrics-header">
+
+          <ng-container *ngFor="let periodo of periodos">
+            <th scope="col">Tot </th>
+            <th scope="col">C </th>
+            <th scope="col">I </th>
+            <th scope="col">%Inc </th>
+          </ng-container>
+
+
+          <!-- METRICAS DEL TOTAL -->
+          <th scope="col" class="total-heading">Tot</th>
+          <th scope="col" class="total-heading">C </th>
+          <th scope="col" class="total-heading">I </th>
+          <th scope="col" class="total-heading">%Inc </th>
+        </tr>
+
+      </thead>
+
+      <!--FILAS POR TIPO -->
+      <tbody>
+        <tr *ngFor="let fila of filasVisibles">
+
+          <!-- TIPO DE REQUERIMIENTO -->
+          <th scope="row" class="type-cell sticky-type" [title]="fila.tipo_requerimiento">
+            {{ fila.tipo_requerimiento }}
+          </th>
+
+
+          <!-- METRICAS DE CADA MES -->
+          <ng-container *ngFor="let metrica of fila.mensual">
+
+            <!-- TOTAL -->
+            <td class="metric-cell metric-volume">
+              {{ metrica.tot | number:'1.0-0' }}
+            </td>
+
+            <!-- CUMPLIDOS -->
+            <td class="metric-cell metric-success">
+              {{ metrica.c | number:'1.0-0' }}
+            </td>
+
+            <!-- INCUMPLIDOS -->
+            <td class="metric-cell metric-danger">
+              {{ metrica.i | number:'1.0-0' }}
+            </td>
+
+            <!-- PORCENTAJE INCUMPLIMIENTO -->
+            <td class="metric-cell heat-cell" [ngClass]="obtenerClaseIncumplimiento(metrica)">
+              <span *ngIf="metrica.tot > 0; else sinDatosMes">
+                {{ metrica.porcentaje_inc | number:'1.2-2' }}%
+              </span>
+              <ng-template #sinDatosMes>
+                —
+              </ng-template>
+            </td>
+
+          </ng-container>
+
+
+          <!--TOTAL POR TIPO -->
+          <td class="metric-cell total-cell">{{ fila.total.tot | number:'1.0-0' }}</td>
+          <td class="metric-cell total-cell metric-success">{{ fila.total.c | number:'1.0-0' }}</td>
+          <td class="metric-cell total-cell metric-danger">{{ fila.total.i | number:'1.0-0' }}</td>
+          <td class="metric-cell total-cell heat-cell" [ngClass]="obtenerClaseIncumplimiento(fila.total)">
+            <span *ngIf="fila.total.tot > 0; else sinDatosTotal">
+              {{ fila.total.porcentaje_inc | number:'1.2-2'}}%
+            </span>
+            <ng-template #sinDatosTotal>
+              —
+            </ng-template>
+          </td>
+        </tr>
+
+        <!--SIN RESULTADOS DE BUSQUEDA-->
+        <tr *ngIf="filasFiltradas.length === 0">
+          <td class="no-data" [attr.colspan]="totalColumnas">
+            No se encontraron tipos de requerimiento.
+          </td>
+        </tr>
+
+      </tbody>
+
+
+      <!--TOTAL GENERAL DEL BACKEND -->
+      <tfoot>
+        <tr class="general-total-row">
+          <th scope="row" class="sticky-type total-label">
+            TOTAL
+          </th>
+
+
+          <!-- TOTALES MENSUALES -->
+          <ng-container *ngFor="let metrica of totalGeneralMensual">
+            <td class="metric-cell">
+              {{ metrica.tot | number:'1.0-0' }}
+            </td>
+
+            <td class="metric-cell metric-success">
+              {{ metrica.c | number:'1.0-0' }}
+            </td>
+
+            <td class="metric-cell metric-danger">
+              {{ metrica.i | number:'1.0-0' }}
+            </td>
+
+            <td class="metric-cell heat-cell" [ngClass]="obtenerClaseIncumplimiento(metrica)">
+              <span *ngIf="metrica.tot > 0; else totalMesSinDatos">
+                {{ metrica.porcentaje_inc | number:'1.2-2' }}%
+              </span>
+              <ng-template #totalMesSinDatos>
+                —
+              </ng-template>
+            </td>
+
+          </ng-container>
+
+
+          <!-- TOTAL GENERAL -->
+          <td class="metric-cell final-total">
+            {{ totalGeneral.tot | number:'1.0-0' }}
+          </td>
+
+          <td class="metric-cell final-total metric-success">
+            {{ totalGeneral.c | number:'1.0-0' }}
+          </td>
+
+          <td class="metric-cell final-total metric-danger">
+            {{ totalGeneral.i | number:'1.0-0' }}
+          </td>
+
+          <td class="metric-cell final-total heat-cell" [ngClass]="obtenerClaseIncumplimiento(totalGeneral)">
+
+            <span *ngIf="totalGeneral.tot > 0; else sinTotalGeneral">
+              {{ totalGeneral.porcentaje_inc | number:'1.2-2' }}%
+            </span>
+
+            <ng-template #sinTotalGeneral>
+              —
+            </ng-template>
+
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+
+  <!-- SIN DATOS DEL ENDPOINT-->
+  <div class="empty-state" *ngIf="!cargando && (!datos || periodos.length === 0)">
+    <mat-icon>table_chart</mat-icon>
+    <p>
+      No hay datos disponibles para el explorador.
+    </p>
+  </div>
+
+
+  <!-- PIE DE TABLA-->
+  <div class="table-footer" *ngIf="datos">
+    <div class="table-footer-info">
+      <span>
+        Mostrando
+        <strong>{{ filasVisibles.length }}</strong>
+        de
+        <strong>{{ filasFiltradas.length }}</strong>
+        tipos
+      </span>
+
+      <span class="table-footer-note">
+        Los totales corresponden a los tipos devueltos
+        por el backend.
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- PAGINADOR-->
+
+  <mat-paginator *ngIf="datos && filasFiltradas.length > 5" [length]="filasFiltradas.length" [pageIndex]="paginaActual"
+    [pageSize]="tamanoPagina" [pageSizeOptions]="opcionesPaginacion" [showFirstLastButtons]="true"
+    (page)="cambiarPagina($event)">
+  </mat-paginator>
+
+</section>
