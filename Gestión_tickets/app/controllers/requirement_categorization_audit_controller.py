@@ -41,6 +41,8 @@ def _ejecutar_operacion(operacion: Callable[...,T],*args: Any,**kwargs: Any) -> 
         raise HTTPException(status_code=409,detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=400,detail=str(exc)) from exc
+    
+
 
 
 def _obtener_filtros_dashboard(

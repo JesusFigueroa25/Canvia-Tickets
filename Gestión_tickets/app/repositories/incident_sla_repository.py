@@ -276,8 +276,7 @@ def aplicar_filtros_dashboard(
 
     return consulta
 
-  
-# Insights 
+#-------------------------------------
 # Insights
 def obtener_estado_sla(
     db: Session,
@@ -294,9 +293,6 @@ def obtener_estado_sla(
     )
 
     return db.execute(consulta).mappings().one()
-
-
-
 
 def obtener_principal_foco(
     db: Session,
@@ -318,8 +314,6 @@ def obtener_principal_foco(
     )
 
     return db.execute(consulta).mappings().all()
-
-
 
 def obtener_prioridades_sla(
     db: Session,

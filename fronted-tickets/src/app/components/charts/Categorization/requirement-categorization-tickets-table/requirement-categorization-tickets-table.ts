@@ -187,13 +187,55 @@ export class RequirementCategorizationTicketsTable implements OnChanges {
     );
   }
 
+
   obtenerRutaSugerida(ticket: AuditTicket): string {
+
+    if (ticket.result_status !== 'INCORRECT') {
+      return 'No disponible';
+    }
+
+    // 1. Priorizar la sugerencia validada automáticamente.
+    if (ticket.suggested_catalog_id != null) {
+      const rutaValidada = this.construirRuta(
+        ticket.suggested_level_1,
+        ticket.suggested_level_2,
+        ticket.suggested_level_3
+      );
+
+      if (rutaValidada !== 'No disponible') {
+        return rutaValidada;
+      }
+    }
+
+    // 2. Utilizar la candidata preliminar de MiniLM.
+    const valor = ticket.evidence_json?.['mejor_candidato'];
+
+    if (
+      !valor ||
+      typeof valor !== 'object' ||
+      Array.isArray(valor)
+    ) {
+      return 'No disponible';
+    }
+
+    const candidato = valor as Record<string, unknown>;
+
+    const nivel1 = candidato['level_1'];
+    const nivel2 = candidato['level_2'];
+    const nivel3 = candidato['level_3'];
+
     return this.construirRuta(
-      ticket.suggested_level_1,
-      ticket.suggested_level_2,
-      ticket.suggested_level_3
+      typeof nivel1 === 'string' ? nivel1 : null,
+      typeof nivel2 === 'string' ? nivel2 : null,
+      typeof nivel3 === 'string' ? nivel3 : null
     );
   }
+
+  tieneCategoriaSugerida(ticket: AuditTicket): boolean {
+    return ticket.result_status === 'INCORRECT' &&
+      this.obtenerRutaSugerida(ticket) !== 'No disponible';
+  }
+
 
   private construirRuta(
     nivel1: string | null,

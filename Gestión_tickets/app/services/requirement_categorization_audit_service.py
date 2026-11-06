@@ -38,31 +38,95 @@ class AuditoriaEnCursoError(RuntimeError):
     pass
 
 
-def _validar_ejecucion(db: Session,run_id: int,grupo_resolutor: str | None = None) -> RequirementCategorizationAuditRun:
+
+def _validar_ejecucion(
+    db: Session,
+    run_id: int,
+    grupo_resolutor: str | None = None,
+) -> RequirementCategorizationAuditRun:
+
     if run_id < 1:
-        raise ValueError("run_id debe ser mayor a cero")
+        raise ValueError(
+            "run_id debe ser mayor a cero"
+        )
 
-    grupo = repo.normalizar_grupo_resolutor(grupo_resolutor)
-    ejecucion = repo.obtener_ejecucion(db,run_id)
-
-    if ejecucion is None or ejecucion.grupo_resolutor != grupo:
-        raise AuditoriaNoEncontradaError(f"No se encontró la auditoría {run_id} para el grupo solicitado")
-
-    return ejecucion
-
-
-def _resolver_ejecucion(db: Session,run_id: int | None = None,grupo_resolutor: str | None = None) -> RequirementCategorizationAuditRun:
-    grupo = repo.normalizar_grupo_resolutor(grupo_resolutor)
-
-    if run_id is not None:
-        return _validar_ejecucion(db,run_id,grupo)
-
-    ejecucion = repo.obtener_ultima_ejecucion(db,grupo,solo_completadas=True)
+    ejecucion = repo.obtener_ejecucion(
+        db,
+        run_id,
+    )
 
     if ejecucion is None:
-        raise AuditoriaNoEncontradaError("No existe una auditoría completada para el grupo seleccionado")
+        raise AuditoriaNoEncontradaError(
+            f"No se encontró la auditoría {run_id}."
+        )
+
+    # El grupo solo se valida cuando se proporciona
+    # expresamente en la solicitud.
+    if grupo_resolutor is not None:
+
+        grupo_solicitado = (
+            repo.normalizar_grupo_resolutor(
+                grupo_resolutor
+            )
+        )
+
+        grupo_ejecucion = (
+            repo.normalizar_grupo_resolutor(
+                ejecucion.grupo_resolutor
+            )
+        )
+
+        if grupo_solicitado != grupo_ejecucion:
+            raise AuditoriaNoEncontradaError(
+                f"La auditoría {run_id} no pertenece "
+                f"al grupo resolutor {grupo_solicitado}."
+            )
 
     return ejecucion
+
+
+
+
+def _resolver_ejecucion(
+    db: Session,
+    run_id: int | None = None,
+    grupo_resolutor: str | None = None,
+) -> RequirementCategorizationAuditRun:
+
+    # 1. Si existe run_id, identificar directamente
+    # la auditoría correspondiente.
+    if run_id is not None:
+
+        return _validar_ejecucion(
+            db,
+            run_id,
+            grupo_resolutor,
+        )
+
+    # 2. Si no existe run_id, consultar la última
+    # auditoría completada del grupo solicitado.
+    #
+    # Se conserva el grupo predeterminado únicamente
+    # para mantener compatibilidad con el frontend.
+
+    grupo = repo.normalizar_grupo_resolutor(
+        grupo_resolutor
+    )
+
+    ejecucion = repo.obtener_ultima_ejecucion(
+        db,
+        grupo,
+        solo_completadas=True,
+    )
+
+    if ejecucion is None:
+        raise AuditoriaNoEncontradaError(
+            "No existe una auditoría completada para "
+            f"el grupo resolutor {grupo}."
+        )
+
+    return ejecucion
+
 
 
 def crear_ejecucion(
@@ -75,6 +139,24 @@ def crear_ejecucion(
     )
 
     try:
+
+        # VALIDACIÓN DINÁMICA DEL GRUPO RESOLUTOR
+
+        alcance, categorias = (
+            repo.obtener_catalogo_ia_con_alcance(
+                db,
+                grupo_resolutor=grupo,
+            )
+        )
+
+        if not categorias:
+            raise ValueError(
+                "No existen categorías autorizadas "
+                f"para el grupo resolutor {grupo}."
+            )
+
+        # VALIDACIÓN DEL PERÍODO
+
         desde = datos.period_from
         hasta = datos.period_to
 
@@ -120,7 +202,11 @@ def crear_ejecucion(
                     f"No existe la agrupación {group_id}."
                 )
 
-            if agrupacion.grupo_resolutor != grupo:
+            if (
+                repo.normalizar_grupo_resolutor(
+                    agrupacion.grupo_resolutor
+                ) != grupo
+            ):
                 raise ValueError(
                     "La agrupación no corresponde al grupo resolutor."
                 )
@@ -278,7 +364,11 @@ def _validar_grupo(
             grupo_resolutor
         )
 
-        if grupo.grupo_resolutor != grupo_solicitado:
+        if (
+            repo.normalizar_grupo_resolutor(
+                grupo.grupo_resolutor
+            ) != grupo_solicitado
+        ):
             raise AuditoriaNoEncontradaError(
                 "La agrupación no corresponde al grupo resolutor solicitado."
             )
