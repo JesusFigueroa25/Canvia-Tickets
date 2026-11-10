@@ -123,59 +123,6 @@
     </div>
 
 
-    <!-- EJEMPLOS DE TICKETS
-     
-      <div class="examples-section">
-
-      <h3>Ejemplos de tickets por servidor</h3>
-
-      <div
-        class="server-example"
-        *ngFor="let servidor of servidoresVisibles | slice:0:5">
-
-        <div class="server-name">
-
-          <mat-icon>dns</mat-icon>
-
-          <strong [title]="servidor.servidor">
-            {{ servidor.servidor }}
-          </strong>
-
-          <span>
-            {{ servidor.incidentes | number:'1.0-0' }}
-            incidentes
-          </span>
-
-        </div>
-
-        <div class="ticket-list">
-
-          <span
-            class="ticket-chip"
-            *ngFor="let ticket of servidor.tickets_ejemplo">
-
-            {{ ticket }}
-
-          </span>
-
-          <span
-            class="no-examples"
-            *ngIf="servidor.tickets_ejemplo.length === 0">
-
-            Sin ejemplos disponibles
-
-          </span>
-
-        </div>
-
-      </div>
-
-    </div>
-    
-    -->
-  
-
-
     <div class="footer-note">
 
       <mat-icon>info_outline</mat-icon>

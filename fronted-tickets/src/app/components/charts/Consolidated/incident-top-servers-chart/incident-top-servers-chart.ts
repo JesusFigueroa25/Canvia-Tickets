@@ -1,24 +1,8 @@
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output
-} from '@angular/core';
-
-import {
-  ChartData,
-  ChartOptions
-} from 'chart.js';
-
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { ChartData, ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-import {
-  IncidentConsolidatedTopServidoresOut,
-  IncidentConsolidatedServidorItem
-} from '../../../../models/incident-consolidated';
-
+import { IncidentConsolidatedTopServidoresOut, IncidentConsolidatedServidorItem } from '../../../../models/incident-consolidated';
 
 @Component({
   selector: 'app-incident-top-servers-chart',

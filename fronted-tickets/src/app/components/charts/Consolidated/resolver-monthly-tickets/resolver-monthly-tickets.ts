@@ -1,24 +1,8 @@
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-
-import {
-  ChartData,
-  ChartOptions,
-  Plugin
-} from 'chart.js';
-
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChartData, ChartOptions, Plugin } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-import {
-  IncidentConsolidatedTicketsPorResolutorOut
-} from '../../../../models/incident-consolidated';
+import { IncidentConsolidatedTicketsPorResolutorOut } from '../../../../models/incident-consolidated';
 
 interface GrupoResolutor {
   nombre: string;
@@ -53,20 +37,18 @@ export class ResolverMonthlyTickets implements OnChanges {
   readonly chartType: 'bar' = 'bar';
   readonly opcionesLimite = [5, 10, 15, 20];
 
-  readonly coloresMeses: string[] = [
+  //09/11/2026
+  private readonly coloresMeses: string[] = [
     '#FF620F',
+    '#FFB184',
+    '#16835B',
     '#63B891',
-    '#527FC2',
-    '#A184D5',
-    '#E4AC4E',
-    '#3E9DA6',
-    '#E17C75',
-    '#7B9C50',
-    '#6884A5',
-    '#C184AD',
-    '#BF955C',
-    '#6D9F91'
+    '#D97706',
+    '#F4C95D',
+    '#12633F',
+    '#A8DCC2'
   ];
+  //Fin
 
   anchoGrafico = 600;
 
@@ -79,9 +61,7 @@ export class ResolverMonthlyTickets implements OnChanges {
     datasets: []
   };
 
-  // ==========================================
   // PLUGIN: NOMBRE CENTRADO POR RESOLUTOR
-  // ==========================================
 
   private readonly etiquetasResolutoresPlugin: Plugin<'bar'> = {
     id: 'etiquetasResolutores',
@@ -147,10 +127,7 @@ export class ResolverMonthlyTickets implements OnChanges {
     this.etiquetasResolutoresPlugin
   ];
 
-  // ==========================================
   // CONFIGURACIÓN CHART.JS
-  // ==========================================
-
   chartOptions: ChartOptions<'bar'> = {
 
     indexAxis: 'x',
@@ -379,10 +356,7 @@ export class ResolverMonthlyTickets implements OnChanges {
     }
   };
 
-  // ==========================================
   // DETECTAR CAMBIOS
-  // ==========================================
-
   ngOnChanges(changes: SimpleChanges): void {
 
     if (
@@ -393,11 +367,7 @@ export class ResolverMonthlyTickets implements OnChanges {
     }
   }
 
-  // ==========================================
   // CONSTRUIR GRÁFICO
-  // ==========================================
-
-
   private actualizarGrafico(): void {
 
     const periodos = this.datos?.periodos ?? [];
@@ -417,13 +387,6 @@ export class ResolverMonthlyTickets implements OnChanges {
 
       return;
     }
-
-    // ==========================================
-    // MODO 1: SIN FILTROS
-    // DISEÑO ORIGINAL
-    // EJE X = RESOLUTORES
-    // BARRAS AGRUPADAS POR MES
-    // ==========================================
 
     if (!this.mostrarMesesEnEjeX) {
 
@@ -475,11 +438,6 @@ export class ResolverMonthlyTickets implements OnChanges {
       return;
     }
 
-    // ==========================================
-    // MODO 2: CON FILTROS
-    // EJE X = MESES
-    // AGRUPADOS POR RESOLUTOR
-    // ==========================================
 
     const etiquetas: string[] = [];
     const valores: (number | null)[] = [];
@@ -503,7 +461,13 @@ export class ResolverMonthlyTickets implements OnChanges {
         );
 
         valores.push(tickets);
-        colores.push(this.colorPeriodo(indiceMes));
+        //09/11/2026
+        colores.push(
+          periodos.length === 1
+            ? this.colorPeriodo(indiceResolutor)
+            : this.colorPeriodo(indiceMes)
+        );
+        //Fin
 
         this.detalleBarras.push({
           nombre: resolutor.nombre_resolutor || 'Sin especificar',
@@ -515,14 +479,12 @@ export class ResolverMonthlyTickets implements OnChanges {
 
       const fin = etiquetas.length - 1;
 
-      // Un único nombre para todo el grupo
       this.gruposResolutores.push({
         nombre: resolutor.nombre_resolutor || 'Sin especificar',
         inicio,
         fin
       });
 
-      // Una categoría vacía separa los resolutores
       if (indiceResolutor < resolutores.length - 1) {
 
         etiquetas.push('');
@@ -533,13 +495,12 @@ export class ResolverMonthlyTickets implements OnChanges {
       }
     });
 
-    // IMPORTANTE:
-    // 58 px por categoría para que FEB/26,
-    // MAR/26, etc. no se superpongan.
+    //09/11/2026
     this.anchoGrafico = Math.max(
       620,
-      etiquetas.length * 58
+      etiquetas.length * 85
     );
+    //Fin
 
     this.chartData = {
 
@@ -570,10 +531,7 @@ export class ResolverMonthlyTickets implements OnChanges {
     this.actualizarEspacioInferior();
   }
 
-  // ==========================================
   // ESPACIO PARA NOMBRES DE RESOLUTORES
-  // ==========================================
-
   private actualizarEspacioInferior(): void {
 
     this.chartOptions = {
@@ -590,10 +548,7 @@ export class ResolverMonthlyTickets implements OnChanges {
     };
   }
 
-  // ==========================================
   // DIVIDIR NOMBRE PARA EJE X
-  // ==========================================
-
   private dividirEtiqueta(
     texto: string,
     maximo = 22,
@@ -642,10 +597,7 @@ export class ResolverMonthlyTickets implements OnChanges {
       : ['Sin especificar'];
   }
 
-  // ==========================================
   // TOOLTIP: NOMBRE COMPLETO
-  // ==========================================
-
   private dividirTextoTooltip(
     texto: string,
     maximo: number
@@ -677,10 +629,7 @@ export class ResolverMonthlyTickets implements OnChanges {
     return lineas;
   }
 
-  // ==========================================
   // SELECTOR TOP
-  // ==========================================
-
   cambiarLimite(valor: number): void {
 
     if (this.cargando || this.limite === valor) {

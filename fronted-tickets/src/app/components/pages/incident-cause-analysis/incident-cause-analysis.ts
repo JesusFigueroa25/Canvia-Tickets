@@ -1,48 +1,14 @@
 
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ChangeDetectorRef,
-  ElementRef,
-  ViewChild
-} from '@angular/core';
-
-import {
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-
-import {
-  MAT_DATE_LOCALE,
-  MatDateFormats,
-  provideNativeDateAdapter
-} from '@angular/material/core';
-
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
 import { Subscription } from 'rxjs';
-
-import {
-  IncidentConsolidatedFilters,
-  IncidentConsolidatedDashboardFilters,
-  IncidentConsolidatedKPI,
-  IncidentConsolidatedAtribucionOut,
-  IncidentConsolidatedTopServidoresOut,
-  IncidentConsolidatedAnalisisCausasOut,
-  IncidentConsolidatedDistribucionAjustadaOut,
-  IncidentConsolidatedPrincipalesHallazgosOut,
-  IncidentConsolidatedConclusionesOut
-} from '../../../models/incident-consolidated';
-
-import {
-  IncidentConsolidatedService
-} from '../../../services/incident-consolidated.service';
+import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut } from '../../../models/incident-consolidated';
+import { IncidentConsolidatedService } from '../../../services/incident-consolidated.service';
+import { toPng } from 'html-to-image';
 
 
-// ==========================================================
 // FORMATOS DE FECHA - PERU
-// ==========================================================
-
 const FORMATOS_FECHA: MatDateFormats = {
   parse: {
     dateInput: null
@@ -85,12 +51,8 @@ const FORMATOS_FECHA: MatDateFormats = {
 })
 export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
-  // ========================================================
   // 1. FILTROS GLOBALES
-  // ========================================================
-
   filtrosForm!: FormGroup;
-
   filtrosActuales: IncidentConsolidatedDashboardFilters = {};
 
   opcionesFiltros: IncidentConsolidatedFilters = {
@@ -108,84 +70,44 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   cargandoFiltros = false;
   errorFiltros: string | null = null;
 
-  // ========================================================
   // 2. KPIS
-  // ========================================================
-
   kpis: IncidentConsolidatedKPI | null = null;
-
   cargandoKpis = false;
   errorKpis: string | null = null;
 
-  // ========================================================
   // 3. DATOS DE GRAFICOS Y TABLAS
-  // Se conectaran cuando creemos los componentes hijos.
-  // ========================================================
-
   atribucionIncidentes: IncidentConsolidatedAtribucionOut | null = null;
-
   distribucionAjustada: IncidentConsolidatedDistribucionAjustadaOut | null = null;
-
   analisisCausas: IncidentConsolidatedAnalisisCausasOut | null = null;
-
   topServidores: IncidentConsolidatedTopServidoresOut | null = null;
 
-
-
-
-  // ========================================================
   // ANALISIS DE CAUSAS V3
-  // ========================================================
-
   cargandoAnalisisCausas = false;
   errorAnalisisCausas: string | null = null;
 
 
-  // ========================================================
   // TOP DE SERVIDORES
-  // ========================================================
-
   cargandoTopServidores = false;
   errorTopServidores: string | null = null;
-
   limiteTopServidores = 5;
-
   private suscripcionTopServidores: Subscription | null = null;
 
-
-
-  // ========================================================
   // GRAFICOS DE ATRIBUCION
-  // ========================================================
-
   cargandoAtribucion = false;
   errorAtribucion: string | null = null;
-
   atribucionSeleccionada: string | null = null;
 
-
-  // ========================================================
   // 4. PRINCIPALES HALLAZGOS - DENTRO DEL PADRE
-  // ========================================================
-
   principalesHallazgos: IncidentConsolidatedPrincipalesHallazgosOut | null = null;
-
   cargandoHallazgos = false;
   errorHallazgos: string | null = null;
 
-  // ========================================================
   // 5. CONCLUSIONES - DENTRO DEL PADRE
-  // ========================================================
-
   conclusiones: IncidentConsolidatedConclusionesOut | null = null;
-
   cargandoConclusiones = false;
   errorConclusiones: string | null = null;
 
-  // ========================================================
   // 6. CONTROL DE PETICIONES
-  // ========================================================
-
   private suscripcionFiltros: Subscription | null = null;
   private solicitudesDashboard = new Subscription();
 
@@ -197,10 +119,174 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   ) { }
 
 
-  // ========================================================
-  // 7. CICLO DE VIDA
-  // ========================================================
+  // REPORTE EJECUTIVO - EXPORTACION PNG
 
+  @ViewChild('reporteImagen')
+  private reporteImagen?: ElementRef<HTMLElement>;
+
+  exportandoReporte = false;
+  errorExportacion: string | null = null;
+
+  // VALIDAR QUE TODOS LOS DATOS ESTEN LISTOS
+  get reporteListo(): boolean {
+    return (
+      !this.cargandoFiltros &&
+      !this.cargandoAtribucion &&
+      !this.cargandoAnalisisCausas &&
+      !this.cargandoTopServidores &&
+      !this.cargandoHallazgos &&
+      !this.cargandoConclusiones &&
+
+      !this.errorAtribucion &&
+      !this.errorAnalisisCausas &&
+      !this.errorTopServidores &&
+      !this.errorHallazgos &&
+      !this.errorConclusiones &&
+
+      this.atribucionIncidentes !== null &&
+      this.distribucionAjustada !== null &&
+      this.analisisCausas !== null &&
+      this.topServidores !== null &&
+      this.principalesHallazgos !== null &&
+      this.conclusiones !== null
+    );
+  }
+
+
+  async descargarReporte(): Promise<void> {
+
+    if (this.exportandoReporte || !this.reporteListo) {
+      return;
+    }
+
+    // OBTENER EL CONTENEDOR ORIGINAL
+    const contenedor = this.reporteImagen?.nativeElement;
+
+    // CAPTURAR SOLO EL DOCUMENTO DEL REPORTE
+    // NO CAPTURAR EL CONTENEDOR CON left: -20000px
+    const elemento = contenedor?.querySelector<HTMLElement>(
+      '.report-document'
+    );
+
+    if (!elemento) {
+      this.errorExportacion =
+        'No se encontró el contenido del reporte.';
+      return;
+    }
+
+    this.exportandoReporte = true;
+    this.errorExportacion = null;
+
+    this.changeDetector.detectChanges();
+
+    try {
+
+      // ESPERAR A QUE LAS FUENTES ESTEN DISPONIBLES
+      await document.fonts.ready;
+
+      // ESPERAR A QUE TERMINE EL RENDERIZADO
+      await new Promise<void>(resolve => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+      });
+
+      // OBTENER DIMENSIONES REALES DEL REPORTE
+      const ancho = Math.ceil(elemento.scrollWidth);
+      const altura = Math.ceil(elemento.scrollHeight);
+
+      if (ancho <= 0 || altura <= 0) {
+        throw new Error(
+          'El reporte no tiene dimensiones válidas.'
+        );
+      }
+
+      console.log('Dimensiones del reporte:', {
+        ancho,
+        altura
+      });
+
+      // AJUSTAR RESOLUCION SEGUN EL TAMAÑO
+      const escala = altura > 4000 ? 1 : 2;
+
+      // GENERAR LA IMAGEN DEL CONTENIDO REAL
+      const imagen = await toPng(elemento, {
+
+        backgroundColor: '#F7F9FB',
+
+        width: ancho,
+        height: altura,
+
+        pixelRatio: escala,
+
+        cacheBust: true,
+
+        // EVITAR POSICIONES FUERA DEL AREA DE CAPTURA
+        style: {
+          position: 'static',
+          left: 'auto',
+          top: 'auto',
+          transform: 'none',
+          margin: '0'
+        }
+
+      });
+
+      // NOMBRE DEL PROYECTO
+      const proyecto = (
+        this.proyectoTitulo || 'general'
+      )
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9_-]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 60) || 'general';
+
+      // FECHA ACTUAL
+      const ahora = new Date();
+
+      const fecha = [
+        ahora.getFullYear(),
+        String(ahora.getMonth() + 1).padStart(2, '0'),
+        String(ahora.getDate()).padStart(2, '0')
+      ].join('-');
+
+      // DESCARGAR IMAGEN
+      const enlace = document.createElement('a');
+
+      enlace.href = imagen;
+
+      enlace.download =
+        `CANVIA-Analisis-Incidentes-${proyecto}-${fecha}.png`;
+
+      document.body.appendChild(enlace);
+
+      enlace.click();
+
+      enlace.remove();
+
+    } catch (error) {
+
+      console.error(
+        'Error al generar el reporte de incidentes:',
+        error
+      );
+
+      this.errorExportacion =
+        'No fue posible generar el reporte PNG.';
+
+    } finally {
+
+      this.exportandoReporte = false;
+
+      this.changeDetector.markForCheck();
+
+    }
+  }
+
+
+
+  // 7. CICLO DE VIDA
   ngOnInit(): void {
     this.crearFormularioFiltros();
     this.cargarOpcionesFiltros();
@@ -212,39 +298,26 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // 8. CREAR FORMULARIO
-  // ========================================================
-
   crearFormularioFiltros(): void {
-
     this.filtrosForm = this.formBuilder.group({
       desde: [null, Validators.required],
       hasta: [null, Validators.required],
-
       prioridad: [null],
       motivo_estado: [null],
       motivo_resolucion: [null],
       grupo_resolutor: [null],
-
       proyecto: [null],
       nombre_resolutor: [null],
-
       tipo_incidente: [[]],
-
       ticket_id: ['']
     });
   }
 
 
-  // ========================================================
   // 9. OBTENER OPCIONES DE FILTROS
-  // ========================================================
-
   cargarOpcionesFiltros(): void {
-
     this.suscripcionFiltros?.unsubscribe();
-
     this.cargandoFiltros = true;
     this.errorFiltros = null;
 
@@ -253,41 +326,24 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       .subscribe({
 
         next: (data) => {
-
           this.opcionesFiltros = data;
-
           this.cargandoFiltros = false;
-
           this.establecerFechasPorDefecto();
-
-
           this.cargarDashboard();
-
           this.changeDetector.markForCheck();
         },
 
         error: (error) => {
-
-          console.error(
-            'Error obteniendo filtros de análisis de incidentes:',
-            error
-          );
-
+          console.error('Error obteniendo filtros de análisis de incidentes:', error);
           this.cargandoFiltros = false;
-
-          this.errorFiltros =
-            'No se pudieron cargar las opciones de filtros.';
-
+          this.errorFiltros = 'No se pudieron cargar las opciones de filtros.';
           this.changeDetector.markForCheck();
         }
       });
   }
 
 
-  // ========================================================
   // 10. FECHAS POR DEFECTO
-  // ========================================================
-
   private convertirFecha(fecha: string | null): Date | null {
 
     if (!fecha) {
@@ -295,7 +351,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     }
 
     const [anio, mes, dia] = fecha.split('-').map(Number);
-
     return new Date(anio, mes - 1, dia);
   }
 
@@ -309,7 +364,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     const anio = fecha.getFullYear();
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const dia = String(fecha.getDate()).padStart(2, '0');
-
     return `${anio}-${mes}-${dia}`;
   }
 
@@ -336,17 +390,13 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
     this.filtrosActuales = {
       ...this.filtrosActuales,
-
       desde: this.formatearFecha(desde),
       hasta: this.formatearFecha(hasta)
     };
   }
 
 
-  // ========================================================
   // 11. APLICAR FILTROS
-  // ========================================================
-
   aplicarFiltros(): void {
 
     if (this.filtrosForm.invalid) {
@@ -355,7 +405,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     }
 
     const valores = this.filtrosForm.getRawValue();
-
     const desde = this.formatearFecha(valores.desde);
     const hasta = this.formatearFecha(valores.hasta);
 
@@ -394,8 +443,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       ticket_id: valores.ticket_id?.trim() || undefined
     };
 
-
-
     const motivoSeleccionado = valores.motivo_resolucion;
 
     this.atribucionSeleccionada =
@@ -409,10 +456,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // 12. LIMPIAR FILTROS
-  // ========================================================
-
   limpiarFiltros(): void {
 
     this.filtrosForm.reset({
@@ -430,20 +474,13 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
     this.filtrosActuales = {};
     this.errorFiltros = null;
-
     this.establecerFechasPorDefecto();
-
-
     this.atribucionSeleccionada = null;
-
     this.cargarDashboard();
   }
 
 
-  // ========================================================
   // 13. CARGAR DASHBOARD
-  // ========================================================
-
   cargarDashboard(): void {
 
     // Cancelar respuestas anteriores cuando cambian filtros.
@@ -472,21 +509,13 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     this.errorKpis = null;
     this.errorHallazgos = null;
     this.errorConclusiones = null;
-
-
+    this.errorExportacion = null;
 
     //this.cargarKpis(filtros);
 
-    // Atribución original y ajustada
     this.cargarAtribucion(filtros);
-
-    // Análisis de causas V3
     this.cargarAnalisisCausas(filtros);
-
-    // Top de servidores
     this.cargarTopServidores(filtros);
-
-    // Insights dentro del padre
     this.cargarPrincipalesHallazgos(filtros);
     this.cargarConclusiones(filtros);
 
@@ -496,10 +525,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // 14. CARGAR KPIS
-  // ========================================================
-
   private cargarKpis(
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
@@ -536,10 +562,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // 15. CARGAR PRINCIPALES HALLAZGOS
-  // ========================================================
-
   private cargarPrincipalesHallazgos(
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
@@ -579,10 +602,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // 16. CARGAR CONCLUSIONES
-  // ========================================================
-
   private cargarConclusiones(
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
@@ -621,45 +641,26 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     this.solicitudesDashboard.add(solicitud);
   }
 
-
-  // ========================================================
   // 17. VALOR DE UN HALLAZGO PARA LOS KPIS
-  // ========================================================
-
-
   obtenerValorHallazgo(codigo: string): number | string {
-
-    // El backend todavía está procesando
     if (this.cargandoHallazgos) {
       return '...';
     }
-
-    // La petición falló
     if (this.errorHallazgos) {
       return 'Error';
     }
-
-    // Aún no se han obtenido resultados
     if (!this.principalesHallazgos) {
       return '—';
     }
-
     const hallazgo = this.principalesHallazgos.hallazgos.find(
       item => item.codigo === codigo
     );
-
-    // Algunos hallazgos se omiten cuando su conteo es cero
     return hallazgo?.valor ?? 0;
   }
 
 
-
-  // ========================================================
   // 18. ESTADO DE AJUSTES
-  // ========================================================
-
   get estadoAjuste(): string | null {
-
     return (
       this.principalesHallazgos?.estado_ajuste ??
       this.conclusiones?.estado_ajuste ??
@@ -667,29 +668,20 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     );
   }
 
-
   get descripcionEstadoAjuste(): string {
-
     if (this.estadoAjuste === 'PENDIENTE_REGLAS_APROBADAS') {
       return 'Ajustes pendientes de reglas aprobadas';
     }
-
     return this.estadoAjuste ?? 'Sin información de ajustes';
   }
 
 
-  // ========================================================
   // 19. NAVEGACION INTERNA
-  // ========================================================
-
   irASeccion(idSeccion: string): void {
-
     const contenedor = this.elementRef.nativeElement;
-
     const seccion = contenedor.querySelector<HTMLElement>(
       `#${idSeccion}`
     );
-
     const headerMaster = contenedor.querySelector<HTMLElement>(
       '.header-master'
     );
@@ -716,37 +708,23 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
 
 
-  // ========================================================
   // CARGAR DISTRIBUCION ORIGINAL Y AJUSTADA
-  // ========================================================
-
   private cargarAtribucion(
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
 
     this.cargandoAtribucion = true;
     this.errorAtribucion = null;
-
     const solicitud = this.incidentConsolidatedService
       .obtenerDistribucionAjustadaCausas(filtros)
       .subscribe({
 
         next: (data) => {
-
-          // Datos para el grafico comparativo
           this.distribucionAjustada = data;
-
-          // Reutilizar los datos originales de la
-          // misma respuesta, sin otra consulta HTTP.
           this.atribucionIncidentes = {
             total_tickets: data.total_tickets,
-
-            total_atribuidos:
-              data.total_atribuidos_original,
-
-            sin_atribucion:
-              data.sin_atribucion_original,
-
+            total_atribuidos: data.total_atribuidos_original,
+            sin_atribucion: data.sin_atribucion_original,
             distribucion: data.distribucion_original.map(
               item => ({ ...item })
             )
@@ -763,15 +741,10 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
             'Error obteniendo distribución de atribución:',
             error
           );
-
           this.atribucionIncidentes = null;
           this.distribucionAjustada = null;
-
           this.cargandoAtribucion = false;
-
-          this.errorAtribucion =
-            'No se pudo cargar la distribución de atribución.';
-
+          this.errorAtribucion = 'No se pudo cargar la distribución de atribución.';
           this.changeDetector.markForCheck();
         }
       });
@@ -779,15 +752,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     this.solicitudesDashboard.add(solicitud);
   }
 
-
-  // ========================================================
   // FILTRO DINAMICO POR ATRIBUCION
-  // ========================================================
-
   cambiarAtribucion(atribucion: string | null): void {
-
-    // Solo permitir las dos atribuciones reconocidas
-    // por el backend.
     if (
       atribucion !== null &&
       atribucion !== 'Atribuible a Cliente' &&
@@ -802,7 +768,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
     this.atribucionSeleccionada = atribucion;
 
-    // Sincronizar con el formulario de filtros
     this.filtrosForm.patchValue(
       {
         motivo_resolucion: atribucion
@@ -822,12 +787,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-
-
-  // ========================================================
   // CARGAR ANALISIS DE CAUSAS V3
-  // ========================================================
-
   private cargarAnalisisCausas(
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
@@ -867,19 +827,12 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     this.solicitudesDashboard.add(solicitud);
   }
 
-
-  // ========================================================
   // CARGAR TOP DE SERVIDORES
-  // ========================================================
-
   private cargarTopServidores(
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
 
-    // Cancelar la consulta anterior del ranking,
-    // por ejemplo al cambiar Top 5 por Top 20.
     this.suscripcionTopServidores?.unsubscribe();
-
     this.cargandoTopServidores = true;
     this.errorTopServidores = null;
 
@@ -907,7 +860,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
           this.topServidores = null;
           this.cargandoTopServidores = false;
-
           this.errorTopServidores =
             'No se pudo cargar el ranking de servidores.';
 
@@ -921,10 +873,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // CAMBIAR LIMITE TOP SERVIDORES
-  // ========================================================
-
   cambiarLimiteTopServidores(limite: number): void {
 
     if (
@@ -944,11 +893,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-
-  // ========================================================
   // TITULO DINAMICO - PROYECTO SELECCIONADO
-  // ========================================================
-
   get proyectoTitulo(): string | null {
 
     const proyecto = this.filtrosActuales.proyecto?.trim();
@@ -956,10 +901,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     if (!proyecto) {
       return null;
     }
-
-    // Ejemplo:
-    // 105932 UNACEM PROY CL SERV INFRAESTR -> UNACEM
-    // 106255 SEDAPAL PROY CLOUD SERV HOSTING -> SEDAPAL
 
     const sinCodigo = proyecto.replace(/^\d+\s+/, '');
 
@@ -972,11 +913,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       : sinCodigo;
   }
 
-
-  // ========================================================
   // SUBTITULO DINAMICO - TIPOS DE INCIDENTE
-  // ========================================================
-
   get tiposIncidenteTitulo(): string | null {
 
     const tipos = this.filtrosActuales.tipo_incidente ?? [];
@@ -992,11 +929,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-
-
-  // ========================================================
   // BUSCADORES DE FILTROS - PROYECTO Y TIPO DE INCIDENTE
-  // ========================================================
 
   @ViewChild('buscadorProyecto')
   buscadorProyecto?: ElementRef<HTMLInputElement>;
@@ -1007,13 +940,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   busquedaProyecto = '';
   busquedaTipoIncidente = '';
 
-
-  // ========================================================
   // NORMALIZAR TEXTO PARA BUSQUEDA
-  // ========================================================
-
   private normalizarBusqueda(texto: string): string {
-
     return texto
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -1021,11 +949,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       .trim();
   }
 
-
-  // ========================================================
   // FILTRAR OPCIONES DE PROYECTO
-  // ========================================================
-
   get proyectosFiltrados(): string[] {
 
     const busqueda = this.normalizarBusqueda(
@@ -1037,12 +961,9 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
     return this.opcionesFiltros.proyectos.filter(
       proyecto => {
-
-        // Mantener visible el proyecto seleccionado.
         if (proyecto === seleccionado) {
           return true;
         }
-
         return this.normalizarBusqueda(proyecto)
           .includes(busqueda);
       }
@@ -1050,10 +971,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // FILTRAR OPCIONES DE TIPO DE INCIDENTE
-  // ========================================================
-
   get tiposIncidenteFiltrados(): string[] {
 
     const busqueda = this.normalizarBusqueda(
@@ -1071,8 +989,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       this.opcionesFiltros.tipos_incidente ?? []
     ).filter(tipo => {
 
-      // Conservar siempre las opciones seleccionadas
-      // para no perder la seleccion multiple.
       if (seleccionados.has(tipo)) {
         return true;
       }
@@ -1082,11 +998,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     });
   }
 
-
-  // ========================================================
   // ACTUALIZAR BUSQUEDA
-  // ========================================================
-
   buscarEnCombo(
     evento: Event,
     campo: 'proyecto' | 'tipo_incidente'
@@ -1104,10 +1016,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // ABRIR COMBO Y ENFOCAR BUSCADOR
-  // ========================================================
-
   alAbrirCombo(
     campo: 'proyecto' | 'tipo_incidente',
     abierto: boolean
@@ -1136,13 +1045,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // ========================================================
   // EVITAR QUE MAT-SELECT INTERCEPTE LA ESCRITURA
-  // ========================================================
-
   detenerTeclasBusqueda(evento: KeyboardEvent): void {
-
-    // Permitir cerrar el combo con Escape o Tab.
     if (
       evento.key !== 'Escape' &&
       evento.key !== 'Tab'

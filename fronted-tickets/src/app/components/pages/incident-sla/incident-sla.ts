@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IncidentSLADashboardFilters, IncidentSLAFilters, IncidentSLAKPI, IncidentSLAInsights, IncidentSLATrendItem, IncidentSLAVolumenItem, IncidentSLAProyectoItem, IncidentSLAParetoItem, IncidentSLATendencia, IncidentSLAResolutorItem, IncidentSLATicketsOut } from '../../../models/incident-sla';
 import { IncidentSlaService } from '../../../services/incident-sla.service';
@@ -75,10 +75,44 @@ export class IncidentSla {
     private changeDetector: ChangeDetectorRef
   ) { }
 
+  // PANTALLA COMPLETA DE GRÁFICOS
+  graficoExpandido: string | null = null;
+
+  async alternarPantallaCompleta(
+    elemento: HTMLElement
+  ): Promise<void> {
+
+    try {
+
+      if (document.fullscreenElement === elemento) {
+        await document.exitFullscreen();
+      } else {
+        await elemento.requestFullscreen();
+      }
+
+    } catch (error) {
+      console.error(
+        'Error al cambiar pantalla completa:',
+        error
+      );
+    }
+  }
+
+  @HostListener('document:fullscreenchange')
+  actualizarPantallaCompleta(): void {
+
+    this.graficoExpandido =
+      (document.fullscreenElement as HTMLElement | null)?.id ?? null;
+
+    this.changeDetector.markForCheck();
+  }
+
+
   ngOnInit(): void {
     this.crearFormularioFiltros();
     this.cargarOpcionesFiltros();
   }
+
 
 
 
@@ -770,7 +804,7 @@ export class IncidentSla {
   }
 
 
-  
+
   // ====================================================
   // PAGINACIÓN - EXPLORADOR DE TICKETS
   // ====================================================
@@ -795,7 +829,7 @@ export class IncidentSla {
   }
 
 
-  
+
   // ====================================================
   // FILTRO DINÁMICO POR TICKET ID
   // ====================================================

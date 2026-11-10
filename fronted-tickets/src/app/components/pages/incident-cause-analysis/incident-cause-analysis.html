@@ -1,8 +1,6 @@
 <div class="incident-cause-analysis-page">
 
-  <!-- ======================================================
-       HEADER MASTER - STICKY
-       ====================================================== -->
+  <!--HEADER MASTER - STICKY-->
 
   <div class="header-master">
 
@@ -69,6 +67,24 @@
           Conclusiones
         </button>
 
+
+        <!-- EXPORTAR REPORTE EJECUTIVO -->
+        <button mat-flat-button type="button" class="report-download-button"
+          [disabled]="!reporteListo || exportandoReporte" (click)="descargarReporte()">
+
+          <mat-icon>
+            {{ exportandoReporte ? 'hourglass_top' : 'download' }}
+          </mat-icon>
+
+          {{
+          exportandoReporte
+          ? 'Generando imagen...'
+          : 'Descargar reporte PNG'
+          }}
+
+        </button>
+
+
       </nav>
 
     </header>
@@ -131,7 +147,7 @@
         </div>
 
 
-        <!-- PRIORIDAD 
+        <!-- PRIORIDAD -->
         <div class="filter-field">
           <label>Prioridad</label>
 
@@ -146,13 +162,12 @@
             </mat-select>
 
           </mat-form-field>
-        </div> 
-        -->
+        </div>
 
 
 
-        <!-- MOTIVO ESTADO 
-           <div class="filter-field">
+        <!-- MOTIVO ESTADO  -->
+        <div class="filter-field">
           <label>Motivo de Estado</label>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -167,13 +182,11 @@
 
           </mat-form-field>
         </div>
- 
-        -->
 
 
-        <!-- MOTIVO RESOLUCION 
-         
-                <div class="filter-field">
+
+        <!-- MOTIVO RESOLUCION  -->
+        <div class="filter-field">
           <label>Motivo de Resolución</label>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -189,7 +202,6 @@
           </mat-form-field>
         </div>
 
-        -->
 
 
         <!-- GRUPO RESOLUTOR -->
@@ -211,9 +223,7 @@
 
 
 
-        <!-- ==================================================
-     PROYECTO - COMBO CON BUSCADOR
-     ================================================== -->
+        <!-- PROYECTO - COMBO CON BUSCADOR -->
 
         <div class="filter-field">
 
@@ -386,10 +396,15 @@
   </div>
 
 
-  <!-- ======================================================
-       ESTADOS GENERALES
-       ====================================================== -->
 
+  <section class="status-card error-card" *ngIf="errorExportacion" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorExportacion }}</span>
+  </section>
+
+
+
+  <!--ESTADOS GENERALES-->
 
   <section class="status-card error-card" *ngIf="errorFiltros" role="alert">
 
@@ -411,10 +426,8 @@
   </section>
 
 
-  <!-- ======================================================
-       KPIS GENERALES
-       ======================================================
-       
+  <!--KPIS GENERALES
+      
          <section class="kpis-section">
 
     <app-kpi-card titulo="Total de Incidentes" [valor]="kpis ? kpis.total_tickets : '—'" icono="confirmation_number"
@@ -437,9 +450,7 @@
 
 
 
-  <!-- ======================================================
-     SECCION 1 - ATRIBUCION
-     ====================================================== -->
+  <!--SECCION 1 - ATRIBUCION-->
 
   <section id="atribucion" class="dashboard-section">
 
@@ -480,14 +491,7 @@
 
   </section>
 
-  <!-- ======================================================
-       SECCION 2 - ANALISIS DE CAUSAS
-       ====================================================== -->
-
-
-  <!-- ======================================================
-     SECCION 2 - ANALISIS DE CAUSAS
-     ====================================================== -->
+  <!--SECCION 2 - ANALISIS DE CAUSAS-->
 
   <section id="analisis-causas" class="dashboard-section">
 
@@ -528,9 +532,7 @@
 
 
 
-  <!-- ======================================================
-     SECCION 3 - TOP DE SERVIDORES
-     ====================================================== -->
+  <!--SECCION 3 - TOP DE SERVIDORES-->
 
   <section id="servidores" class="dashboard-section">
 
@@ -557,10 +559,8 @@
   </section>
 
 
-  <!-- ======================================================
-       SECCION 4 - PRINCIPALES HALLAZGOS
-       DENTRO DEL COMPONENTE PADRE
-       ====================================================== -->
+  <!--SECCION 4 - PRINCIPALES HALLAZGOS
+       DENTRO DEL COMPONENTE PADRE-->
 
   <section id="principales-hallazgos" class="dashboard-section">
 
@@ -633,10 +633,8 @@
   </section>
 
 
-  <!-- ======================================================
-       SECCION 5 - CONCLUSIONES
-       DENTRO DEL COMPONENTE PADRE
-       ====================================================== -->
+  <!--SECCION 5 - CONCLUSIONES
+       DENTRO DEL COMPONENTE PADRE-->
 
   <section id="conclusiones" class="dashboard-section">
 
@@ -722,5 +720,19 @@
     </ng-container>
 
   </section>
+
+
+
+  <!-- REPORTE EJECUTIVO PARA EXPORTACION NO MODIFICA LOS COMPONENTES INTERACTIVOS DEL DASHBOARD-->
+  <div #reporteImagen class="report-export-stage" *ngIf="reporteListo">
+
+    <app-incident-cause-report [filtros]="filtrosActuales" [proyecto]="proyectoTitulo"
+      [tiposIncidente]="tiposIncidenteTitulo" [atribucion]="atribucionIncidentes" [ajustada]="distribucionAjustada"
+      [causas]="analisisCausas" [servidores]="topServidores" [hallazgos]="principalesHallazgos"
+      [conclusiones]="conclusiones">
+    </app-incident-cause-report>
+
+  </div>
+
 
 </div>

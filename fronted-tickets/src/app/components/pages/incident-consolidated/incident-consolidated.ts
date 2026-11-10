@@ -2,7 +2,7 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedVolumenItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedTipoItem, IncidentConsolidatedPrioridadItem, IncidentConsolidatedTopProyectos, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedDetalleEventoItem, IncidentConsolidatedTicketsOut } from '../../../models/incident-consolidated';
 import { IncidentConsolidatedService } from '../../../services/incident-consolidated.service';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ElementRef, HostListener } from '@angular/core';
 import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
 
 const FORMATOS_FECHA: MatDateFormats = {
@@ -163,6 +163,30 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
   limiteTicketsPorResolutor = 5;
   private solicitudTicketsPorResolutor = 0;
 
+
+  //09/11/2026
+  // PANTALLA COMPLETA DE GRÁFICOS
+  graficoExpandido: string | null = null;
+
+  async alternarPantallaCompleta(elemento: HTMLElement): Promise<void> {
+    try {
+      if (document.fullscreenElement === elemento) {
+        await document.exitFullscreen();
+      } else {
+        await elemento.requestFullscreen();
+      }
+    } catch (error) {
+      console.error('Error al cambiar pantalla completa:', error);
+    }
+  }
+
+  @HostListener('document:fullscreenchange')
+  actualizarPantallaCompleta(): void {
+    this.graficoExpandido =
+      (document.fullscreenElement as HTMLElement | null)?.id ?? null;
+
+    this.changeDetector.markForCheck();
+  }
 
 
 
@@ -422,19 +446,10 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
       });
   }
 
-  // ====================================================
   // CARGAR NUMERO DE INCIDENTES POR MES
-  // ====================================================
-
-  cargarVolumenMensual(
-    solicitudActual: number = this.solicitudDashboard
-  ): void {
+  cargarVolumenMensual(solicitudActual: number = this.solicitudDashboard): void {
 
     this.cargandoVolumenMensual = true;
-
-    // EXCLUIR SOLO EL FILTRO MENSUAL.
-    // CONSERVAR TIPOS, PROYECTO, RESOLUTOR,
-    // DESCRIPCION, DETALLE Y FILTROS GENERALES.
 
     const filtrosBase: IncidentConsolidatedDashboardFilters = {
       ...this.filtrosActuales,
@@ -448,24 +463,18 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
         next: (data) => {
 
           // DESCARTAR RESPUESTAS OBSOLETAS
-          if (
-            solicitudActual !== this.solicitudDashboard
-          ) {
+          if (solicitudActual !== this.solicitudDashboard) {
             return;
           }
 
           this.volumenMensual = data;
-
           this.cargandoVolumenMensual = false;
-
           this.changeDetector.markForCheck();
         },
 
         error: (error) => {
 
-          if (
-            solicitudActual !== this.solicitudDashboard
-          ) {
+          if (solicitudActual !== this.solicitudDashboard) {
             return;
           }
 
@@ -475,7 +484,6 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
           );
 
           this.cargandoVolumenMensual = false;
-
           this.changeDetector.markForCheck();
         }
       });
@@ -692,9 +700,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
           }
 
           console.error('Error obteniendo opciones de proyectos:', error);
-
           this.opcionesProyectos = [];
-
           this.changeDetector.markForCheck();
         }
       });
@@ -708,16 +714,9 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
       return;
     }
 
-    // SI SE SELECCIONA UN PROYECTO EXCLUIDO,
-    // VOLVER A INCLUIRLO EN EL ANALISIS.
     if (proyecto) {
-
       const claveProyecto = proyecto.trim().toLocaleLowerCase();
-
-      this.proyectosExcluidos = this.proyectosExcluidos.filter(
-        excluido =>
-          excluido.trim().toLocaleLowerCase() !== claveProyecto
-      );
+      this.proyectosExcluidos = this.proyectosExcluidos.filter(excluido => excluido.trim().toLocaleLowerCase() !== claveProyecto);
     }
 
     this.proyectoSeleccionado = proyecto;
@@ -739,11 +738,8 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   cargarRendimientoResolutores(solicitudActual: number = this.solicitudDashboard): void {
-
     const solicitudTabla = ++this.solicitudRendimientoResolutores;
-
     this.cargandoRendimientoResolutores = true;
-
     this.incidentConsolidatedService
       .obtenerRendimientoResolutores(
         { ...this.filtrosActuales },
@@ -763,7 +759,6 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
           this.rendimientoResolutores = data;
           this.cargandoRendimientoResolutores = false;
-
           this.changeDetector.markForCheck();
         },
 
@@ -949,35 +944,24 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
   }
 
 
-  // ====================================================
   // CARGAR TABLA DETALLE DE EVENTOS TECNICOS
-  // ====================================================
-
   cargarDetalleEventosTecnicos(
     solicitudActual: number = this.solicitudDashboard
   ): void {
 
     const solicitudTabla =
       ++this.solicitudDetalleEventosTecnicos;
-
     this.cargandoDetalleEventosTecnicos = true;
 
 
-    // ==================================================
     // EXCLUIR SOLO EL FILTRO PROPIO DE LA TABLA
-    // ==================================================
-
     const filtrosBase: IncidentConsolidatedDashboardFilters = {
       ...this.filtrosActuales,
-
       detalle_id: undefined
     };
 
 
-    // ==================================================
     // REALIZAR PETICION
-    // ==================================================
-
     this.incidentConsolidatedService
       .obtenerDetalleEventosTecnicos(
         filtrosBase,
@@ -997,9 +981,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
           }
 
           this.detalleEventosTecnicos = data;
-
           this.cargandoDetalleEventosTecnicos = false;
-
           this.changeDetector.markForCheck();
         },
 
@@ -1019,9 +1001,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
           );
 
           this.cargandoDetalleEventosTecnicos = false;
-
           this.detalleEventosTecnicos = null;
-
           this.changeDetector.markForCheck();
         }
       });
@@ -1062,11 +1042,8 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
     }
 
     this.temporizadorBusquedaDetalles = setTimeout(() => {
-
       this.temporizadorBusquedaDetalles = null;
-
       this.cargarDetalleEventosTecnicos();
-
     }, 300);
 
     this.changeDetector.markForCheck();
@@ -1136,13 +1113,11 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   cambiarLimiteIncidentesPorcentajes(limite: number): void {
-
     if (this.limiteIncidentesPorcentajes === limite) {
       return;
     }
 
     this.limiteIncidentesPorcentajes = limite;
-
     this.cargarIncidentesPorcentajes();
   }
 
@@ -1151,9 +1126,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
   ): void {
 
     const solicitudGrafico = ++this.solicitudTopDescripcionesProyectos;
-
     this.cargandoTopDescripcionesProyectos = true;
-
     this.incidentConsolidatedService
       .obtenerTopDescripcionesProyectos({
         ...this.filtrosActuales
@@ -1251,10 +1224,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
 
-  // ====================================================
   // NUMERO DE TICKETS POR RESOLUTOR
-  // ====================================================
-
   cargarTicketsPorResolutor(
     solicitudActual: number = this.solicitudDashboard
   ): void {
@@ -1356,10 +1326,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
     return new Date(anio, mes - 1, dia);
   }
 
-  // ================================================
   // ESTABLECER RANGO DISPONIBLE POR DEFECTO
-  // ================================================
-
   private establecerFechasPorDefecto(): void {
 
     const desde = this.convertirFecha(
@@ -1393,19 +1360,13 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
   cambiarTiposIncidente(tipos: string[]): void {
 
-    // ==================================================
     // VALIDAR TIPOS VISIBLES Y SELECCIONES PREVIAS
-    // ==================================================
-
     const tiposPermitidos = new Set([
       ...this.tiposGrafico.map(item => item.categoria),
       ...this.tiposIncidenteSeleccionados
     ]);
 
-    // ==================================================
     // NORMALIZAR Y ELIMINAR DUPLICADOS
-    // ==================================================
-
     const seleccion = [
       ...new Set(
         tipos
@@ -1417,10 +1378,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
       )
     ];
 
-    // ==================================================
     // EVITAR CONSULTAS INNECESARIAS
-    // ==================================================
-
     const anteriores = new Set(
       this.tiposIncidenteSeleccionados
     );
@@ -1459,10 +1417,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
   }
 
 
-  // ====================================================
   // CAMBIAR FILTRO DINAMICO MENSUAL
-  // ====================================================
-
   cambiarPeriodo(periodo: string | null): void {
 
     // VALIDAR FORMATO ANTES DE ENVIAR AL BACKEND
@@ -1498,7 +1453,6 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   // FILTRO DINAMICO - CAMBIAR DETALLE TECNICO
-
   cambiarDetalleTecnico(
     fila: IncidentConsolidatedDetalleEventoItem | null
   ): void {
@@ -1560,7 +1514,6 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   // FILTRO GLOBAL - EXCLUSION MULTIPLE DE PROYECTOS
-
   cambiarProyectosExcluidos(proyectos: string[]): void {
 
     // NORMALIZAR PROYECTOS Y ELIMINAR DUPLICADOS
@@ -1731,7 +1684,6 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   // FILTRO DINÁMICO POR TICKET ID
-
   cambiarTicketId(ticketId: string | null): void {
 
     const nuevoTicketId = ticketId?.trim() || null;
@@ -1755,9 +1707,6 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
     // RECARGAR KPIS, GRAFICOS Y TABLAS
     this.cargarDashboard();
   }
-
-
-
 
 }
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { RequirementSLAExploradorFila, RequirementSLAExploradorMetricas, RequirementSLAExploradorPeriodo, RequirementSLAExploradorTiposOut } from '../../../../models/requirement-sla';
 import { PageEvent } from '@angular/material/paginator';
 
@@ -32,6 +32,12 @@ export class RequirementSlaTypeExplorer implements OnChanges {
   paginaActual: number = 0;
   tamanoPagina: number = 5;
   opcionesPaginacion: number[] = [5, 10];
+
+
+  // PANTALLA COMPLETA
+  @Input() habilitarPantallaCompleta = false;
+  @Input() pantallaCompletaActiva = false;
+  @Output() pantallaCompletaSolicitada = new EventEmitter<void>();
 
 
   // METRICAS SIN DATOS

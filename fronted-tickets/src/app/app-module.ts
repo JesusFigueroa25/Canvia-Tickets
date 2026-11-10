@@ -71,6 +71,7 @@ import { IncidentAttributionComparison } from './components/charts/Consolidated/
 import { IncidentCauseDistributionChart } from './components/charts/Consolidated/incident-cause-distribution-chart/incident-cause-distribution-chart';
 import { IncidentCauseEvidenceTable } from './components/charts/Consolidated/incident-cause-evidence-table/incident-cause-evidence-table';
 import { IncidentTopServersChart } from './components/charts/Consolidated/incident-top-servers-chart/incident-top-servers-chart';
+import { IncidentCauseReport } from './components/charts/Consolidated/incident-cause-report/incident-cause-report';
 
 @NgModule({
   declarations: [
@@ -135,6 +136,7 @@ import { IncidentTopServersChart } from './components/charts/Consolidated/incide
     IncidentCauseDistributionChart,
     IncidentCauseEvidenceTable,
     IncidentTopServersChart,
+    IncidentCauseReport,
   ],
   imports: [
     BrowserAnimationsModule,

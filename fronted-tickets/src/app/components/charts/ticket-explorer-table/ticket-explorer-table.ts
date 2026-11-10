@@ -104,34 +104,25 @@ const COLUMNAS_SLA: ColumnaTicket[] = [
 })
 export class TicketExplorerTable implements OnChanges {
 
-  // CONFIGURACIÓN DEL DASHBOARD
   @Input() tipoDashboard: TipoDashboardTickets = 'incident-consolidated';
-
-  // DATOS PAGINADOS DEL BACKEND
   @Input() datos: TablaTicketsPaginados | null = null;
-
   @Input() cargando = false;
   @Input() error: string | null = null;
-
-  // FILTRO DINÁMICO POR TICKET ID
   @Input() ticketIdSeleccionado: string | null = null;
+  @Output() paginaChange = new EventEmitter<{ pagina: number; tamano: number }>();
+  @Output() ticketIdChange = new EventEmitter<string | null>();
 
-  // EVENTOS HACIA EL COMPONENTE PADRE
-  @Output() paginaChange =
-    new EventEmitter<{ pagina: number; tamano: number }>();
-
-  @Output() ticketIdChange =
-    new EventEmitter<string | null>();
+  // PANTALLA COMPLETA
+  @Input() habilitarPantallaCompleta = false;
+  @Input() pantallaCompletaActiva = false;
+  @Output() pantallaCompletaSolicitada = new EventEmitter<void>();
 
 
   // ESTADO LOCAL
   busquedaTicketId = '';
   mensajeBusqueda: string | null = null;
-
   columnas: ColumnaTicket[] = COLUMNAS_CONSOLIDADOS;
-
   columnasMostradas: string[] = [];
-
   ticketDetalle: object | null = null;
 
 

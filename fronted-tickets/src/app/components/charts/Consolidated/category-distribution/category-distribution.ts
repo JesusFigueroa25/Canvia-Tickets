@@ -39,6 +39,18 @@ export class CategoryDistribution implements OnChanges {
     datasets: []
   };
 
+  //09/11/2026
+  private readonly colores = [
+    '#FF620F',
+    '#FFB184',
+    '#16835B',
+    '#63B891',
+    '#D97706',
+    '#F4C95D',
+    '#12633F',
+    '#A8DCC2'
+  ];
+
   chartOptions: ChartOptions<'bar'> = {};
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -76,34 +88,37 @@ export class CategoryDistribution implements OnChanges {
       : 330;
 
     const haySeleccion = this.seleccionMultiple && this.tiposSeleccionados.length > 0;
-    const coloresBarras = this.datosOrdenados.map(item => {
+
+    //09/11/2026
+    const coloresBarras = this.datosOrdenados.map((item, index) => {
 
       if (this.coloresPorPrioridad) {
         return this.obtenerColor(item.categoria);
       }
 
       if (!haySeleccion) {
-        return '#FFB184';
+        return this.colores[index % this.colores.length];
       }
 
       if (this.tiposSeleccionados.includes(item.categoria)) {
-        return '#FF620F';
+        return this.colores[index % this.colores.length];
       }
 
       return '#FFE4D4';
 
     });
 
+    const coloresBordes = this.datosOrdenados.map((item, index) => {
 
-    const coloresBordes = this.datosOrdenados.map(item => {
       if (this.coloresPorPrioridad) {
         return this.obtenerColor(item.categoria);
       }
-      return haySeleccion &&
-        this.tiposSeleccionados.includes(item.categoria)
-        ? '#D84A00'
-        : '#FF620F';
+      if (haySeleccion && !this.tiposSeleccionados.includes(item.categoria)) {
+        return '#FFE4D4';
+      }
+      return this.colores[index % this.colores.length];
     });
+    //Fin
 
 
     this.chartData = {

@@ -264,7 +264,7 @@
   scroll-snap-align: start;
 }
 
-.chart-scroll-item > * {
+.chart-scroll-item > :not(.chart-expand-btn) {
   display: block;
   width: 100%;
   min-width: 0;
@@ -299,7 +299,7 @@
   margin-top: 24px;
 }
 
-.chart-full-width > * {
+.chart-full-width > :not(.chart-expand-btn) {
   display: block;
   width: 100%;
   min-width: 0;
@@ -399,9 +399,7 @@
 
 
 
-/* ==============================================
-   EXPLORADOR DE TICKETS - REQUERIMIENTOS CONSOLIDADOS
-   ============================================== */
+/* EXPLORADOR DE TICKETS - REQUERIMIENTOS CONSOLIDADOS*/
 
 .ticket-explorer-section {
   width: 100%;
@@ -473,6 +471,372 @@
 
   .ticket-explorer-header h2 {
     font-size: 19px;
+  }
+
+}
+
+
+/* PANTALLA COMPLETA - REQUERIMIENTOS CONSOLIDADOS*/
+
+.chart-expandable {
+  position: relative;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* COMPONENTES HIJOS */
+
+.chart-expandable > app-volume-month,
+.chart-expandable > app-category-distribution,
+.chart-expandable > app-project-monthly-top,
+.chart-expandable > app-priority-monthly-stack {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* BOTÓN PANTALLA COMPLETA*/
+
+.chart-expandable > .chart-expand-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+
+  padding: 0;
+  margin: 0;
+
+  border: 1px solid #E5E9EE;
+  border-radius: 8px;
+
+  background: #FFFFFF;
+  color: #667085;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.chart-expandable > .chart-expand-btn:hover {
+  color: #FF620F;
+  background: #FFF4ED;
+  border-color: #FF620F;
+}
+
+.chart-expandable > .chart-expand-btn:focus-visible {
+  outline: 2px solid #FF620F;
+  outline-offset: 2px;
+}
+
+.chart-expandable > .chart-expand-btn mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+/* PANTALLA COMPLETA*/
+
+.chart-expandable:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+  padding: 56px 24px 24px;
+
+  margin: 0 !important;
+
+  background: #F7F9FB;
+  overflow: hidden;
+}
+
+/* COMPONENTES HIJOS EN PANTALLA COMPLETA */
+
+.chart-expandable:fullscreen > app-volume-month,
+.chart-expandable:fullscreen > app-category-distribution,
+.chart-expandable:fullscreen > app-project-monthly-top,
+.chart-expandable:fullscreen > app-priority-monthly-stack {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+}
+
+/* TARJETAS INTERNAS*/
+
+:host ::ng-deep .chart-expandable:fullscreen .chart-card {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  height: 100% !important;
+
+  min-width: 0;
+  min-height: 0;
+}
+
+/* CONTENEDORES DIRECTOS DEL GRÁFICO */
+
+:host ::ng-deep
+.chart-expandable:fullscreen
+.chart-card > .chart-container {
+  flex: 1 1 auto;
+
+  width: 100%;
+  height: auto !important;
+
+  min-width: 0;
+  min-height: 0 !important;
+}
+
+/* CONTENEDORES CON SCROLL INTERNO */
+
+:host ::ng-deep
+.chart-expandable:fullscreen
+.chart-card > .chart-scroll {
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* GRÁFICO DENTRO DEL SCROLL */
+
+:host ::ng-deep
+.chart-expandable:fullscreen
+.chart-scroll > .chart-container {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+/* ESPACIO PARA EL BOTÓN*/
+
+:host ::ng-deep
+.chart-expandable .chart-header {
+  padding-right: 55px;
+}
+
+/* RESPONSIVE*/
+
+@media (max-width: 768px) {
+
+  .chart-expandable:fullscreen {
+    padding: 52px 12px 12px;
+  }
+
+  .chart-expandable > .chart-expand-btn {
+    top: 10px;
+    right: 10px;
+  }
+
+}
+
+
+/* ==============================================
+   CORRECCIÓN PANTALLA COMPLETA
+   DISTRIBUCIÓN POR TIPO Y PRIORIDAD
+   ============================================== */
+
+/* Permitir que la tarjeta ocupe toda la pantalla */
+:host ::ng-deep
+.chart-expandable:fullscreen app-category-distribution .chart-card {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100% !important;
+
+  min-height: 0;
+}
+
+/* Mantener el encabezado en su tamaño natural */
+:host ::ng-deep
+.chart-expandable:fullscreen app-category-distribution .chart-header {
+  flex: 0 0 auto;
+}
+
+/* Expandir el área disponible para el gráfico */
+:host ::ng-deep
+.chart-expandable:fullscreen app-category-distribution .chart-viewport {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 0;
+  width: 100%;
+
+  height: auto !important;
+  min-height: 0 !important;
+
+  overflow: hidden;
+}
+
+/* Sobrescribir la altura fija de 330px del gráfico */
+:host ::ng-deep
+.chart-expandable:fullscreen app-category-distribution .chart-viewport > .chart-container {
+  position: relative;
+
+  flex: 1 1 0;
+  width: 100%;
+
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+/* ==============================================
+   PANTALLA COMPLETA - TABLAS
+   REQUERIMIENTOS CONSOLIDADOS
+   ============================================== */
+
+.table-expandable {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* COMPONENTES HIJOS */
+
+.table-expandable > app-project-explorer-table,
+.table-expandable > app-ticket-explorer-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==============================================
+   MODO PANTALLA COMPLETA
+   ============================================== */
+
+.table-expandable:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+
+  margin: 0 !important;
+  padding: 18px;
+
+  background: #F7F9FB;
+  overflow: auto;
+}
+
+/* EXPANDIR COMPONENTES HIJOS */
+
+.table-expandable:fullscreen > app-project-explorer-table,
+.table-expandable:fullscreen > app-ticket-explorer-table {
+  display: flex !important;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ==============================================
+   TARJETAS INTERNAS
+   ============================================== */
+
+:host ::ng-deep
+.table-expandable:fullscreen .table-card {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+}
+
+/* ENCABEZADOS */
+
+:host ::ng-deep
+.table-expandable:fullscreen .table-header {
+  flex: 0 0 auto;
+}
+
+/* ==============================================
+   CONTENEDORES DE TABLAS
+   ============================================== */
+
+:host ::ng-deep
+.table-expandable:fullscreen .table-container,
+:host ::ng-deep
+.table-expandable:fullscreen .table-scroll,
+:host ::ng-deep
+.table-expandable:fullscreen .table-wrapper {
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  max-height: none !important;
+
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* ==============================================
+   PAGINACIÓN
+   ============================================== */
+
+:host ::ng-deep
+.table-expandable:fullscreen mat-paginator {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media (max-width: 768px) {
+
+  .table-expandable:fullscreen {
+    padding: 10px;
   }
 
 }

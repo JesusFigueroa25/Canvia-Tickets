@@ -1,4 +1,3 @@
-
 <section class="table-card">
 
     <div class="table-header">
@@ -30,16 +29,14 @@
                 <mat-icon matPrefix>search</mat-icon>
 
                 <mat-select placeholder="Todos los proyectos" [value]="proyectoSeleccionado"
-                    (openedChange)="abrirComboProyecto($event)"
-                    (selectionChange)="seleccionarProyecto($event.value)">
+                    (openedChange)="abrirComboProyecto($event)" (selectionChange)="seleccionarProyecto($event.value)">
 
                     <!-- BUSCADOR -->
                     <div class="project-search-container" (click)="$event.stopPropagation()"
                         (keydown)="manejarTeclaBusqueda($event)">
 
                         <input type="text" class="project-search-input" placeholder="Buscar proyecto..."
-                            [value]="busquedaProyecto" (input)="filtrarProyectos($event)"
-                            aria-label="Buscar proyecto">
+                            [value]="busquedaProyecto" (input)="filtrarProyectos($event)" aria-label="Buscar proyecto">
                     </div>
 
                     <!-- TODOS -->
@@ -76,8 +73,7 @@
             <!-- NUEVO: BOTON DE EXCLUSION MULTIPLE -->
             <button *ngIf="habilitarExclusionProyectos" type="button" class="exclusion-trigger"
                 [class.exclusion-trigger-active]="proyectosExcluidos.length > 0"
-                [attr.aria-expanded]="exclusionesAbiertas"
-                aria-controls="project-exclusion-panel"
+                [attr.aria-expanded]="exclusionesAbiertas" aria-controls="project-exclusion-panel"
                 (click)="abrirExclusiones()">
 
                 <mat-icon>filter_list</mat-icon>
@@ -96,6 +92,20 @@
 
             </button>
 
+
+            <!-- PANTALLA COMPLETA -->
+            <button *ngIf="habilitarPantallaCompleta" type="button" class="table-expand-btn"
+                (click)="pantallaCompletaSolicitada.emit()" [title]="pantallaCompletaActiva
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'" [attr.aria-label]="pantallaCompletaActiva
+        ? 'Salir de pantalla completa'
+        : 'Ampliar explorador por proyectos'">
+
+                <mat-icon>
+                    {{ pantallaCompletaActiva ? 'fullscreen_exit' : 'fullscreen' }}
+                </mat-icon>
+            </button>
+
         </div>
 
     </div>
@@ -112,8 +122,7 @@
                 <p>Marca los proyectos que deseas quitar del análisis.</p>
             </div>
 
-            <button type="button" class="exclusion-close" aria-label="Cerrar exclusiones"
-                (click)="cerrarExclusiones()">
+            <button type="button" class="exclusion-close" aria-label="Cerrar exclusiones" (click)="cerrarExclusiones()">
                 <mat-icon>close</mat-icon>
             </button>
 
@@ -125,11 +134,8 @@
 
             <mat-icon>search</mat-icon>
 
-            <input type="text" class="exclusion-search-input"
-                placeholder="Buscar proyecto para excluir..."
-                [value]="busquedaExclusion"
-                (input)="filtrarExclusiones($event)"
-                (keydown.escape)="cerrarExclusiones()"
+            <input type="text" class="exclusion-search-input" placeholder="Buscar proyecto para excluir..."
+                [value]="busquedaExclusion" (input)="filtrarExclusiones($event)" (keydown.escape)="cerrarExclusiones()"
                 aria-label="Buscar proyectos para excluir">
 
         </div>
@@ -140,10 +146,8 @@
 
             <label class="exclusion-select-all">
 
-                <input type="checkbox"
-                    [checked]="todosVisiblesExcluidos"
-                    [disabled]="proyectosFiltradosExclusion.length === 0"
-                    (change)="alternarExclusionVisibles()">
+                <input type="checkbox" [checked]="todosVisiblesExcluidos"
+                    [disabled]="proyectosFiltradosExclusion.length === 0" (change)="alternarExclusionVisibles()">
 
                 <span>
                     {{ todosVisiblesExcluidos ? 'Reincluir los visibles' : 'Excluir todos los visibles' }}
@@ -151,8 +155,7 @@
 
             </label>
 
-            <button type="button" class="exclusion-clear"
-                [disabled]="proyectosExcluidos.length === 0"
+            <button type="button" class="exclusion-clear" [disabled]="proyectosExcluidos.length === 0"
                 (click)="limpiarExclusiones()">
 
                 <mat-icon>restart_alt</mat-icon>
@@ -166,12 +169,10 @@
         <!-- LISTA DE PROYECTOS CON CHECKBOXES -->
         <div class="exclusion-list">
 
-            <label class="exclusion-item"
-                *ngFor="let proyecto of proyectosFiltradosExclusion"
+            <label class="exclusion-item" *ngFor="let proyecto of proyectosFiltradosExclusion"
                 [class.exclusion-item-selected]="estaExcluido(proyecto)">
 
-                <input type="checkbox"
-                    [checked]="estaExcluido(proyecto)"
+                <input type="checkbox" [checked]="estaExcluido(proyecto)"
                     (change)="alternarExclusionProyecto(proyecto)">
 
                 <span [title]="proyecto">
@@ -182,8 +183,7 @@
 
 
             <!-- SIN RESULTADOS -->
-            <div class="exclusion-empty"
-                *ngIf="proyectosFiltradosExclusion.length === 0">
+            <div class="exclusion-empty" *ngIf="proyectosFiltradosExclusion.length === 0">
 
                 No se encontraron proyectos.
 
@@ -350,7 +350,7 @@
     </div>
 
 
-    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5]" showFirstLastButtons>
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons>
     </mat-paginator>
 
 </section>

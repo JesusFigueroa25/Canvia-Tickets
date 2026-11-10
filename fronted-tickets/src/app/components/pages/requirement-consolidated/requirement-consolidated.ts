@@ -1,5 +1,5 @@
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RequirementConsolidatedFilters, RequirementConsolidatedDashboardFilters, RequirementConsolidatedKPI, RequirementConsolidatedProyectoItem, RequirementConsolidatedVolumenItem, RequirementConsolidatedPrioridadItem, RequirementConsolidatedTipoItem, RequirementConsolidatedTopProyectos, RequirementConsolidatedPrioridadMensualItem, RequirementConsolidatedTicketsOut } from '../../../models/requirement-consolidated';
@@ -96,6 +96,31 @@ export class RequirementConsolidated implements OnInit {
     private requirementConsolidatedService: RequirementConsolidatedService,
     private changeDetector: ChangeDetectorRef
   ) { }
+
+  // PANTALLA COMPLETA DE GRÁFICOS
+  graficoExpandido: string | null = null;
+  async alternarPantallaCompleta(elemento: HTMLElement): Promise<void> {
+    try {
+      if (document.fullscreenElement === elemento) {
+        await document.exitFullscreen();
+      } else {
+        await elemento.requestFullscreen();
+      }
+    } catch (error) {
+      console.error(
+        'Error al cambiar pantalla completa:',
+        error
+      );
+    }
+  }
+
+  @HostListener('document:fullscreenchange')
+  actualizarPantallaCompleta(): void {
+    this.graficoExpandido = (document.fullscreenElement as HTMLElement | null)?.id ?? null;
+    this.changeDetector.markForCheck();
+  }
+
+  
 
   ngOnInit(): void {
     this.crearFormularioFiltros();

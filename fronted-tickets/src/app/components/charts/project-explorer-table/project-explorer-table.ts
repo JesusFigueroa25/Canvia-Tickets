@@ -46,6 +46,12 @@ export class ProjectExplorerTable
   @Input() proyectosExcluidos: string[] = [];
   @Output() proyectosExcluidosChange = new EventEmitter<string[]>();
 
+
+  // PANTALLA COMPLETA
+  @Input() habilitarPantallaCompleta = false;
+  @Input() pantallaCompletaActiva = false;
+  @Output() pantallaCompletaSolicitada = new EventEmitter<void>();
+
   exclusionesAbiertas = false;
   busquedaExclusion = '';
 

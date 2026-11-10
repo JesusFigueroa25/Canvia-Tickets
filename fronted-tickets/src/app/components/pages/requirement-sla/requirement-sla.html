@@ -243,8 +243,9 @@
     </section>
 
 
-    <!--Gráficos Principales-->
+    <!-- GRÁFICOS PRINCIPALES -->
     <section id="graficos-principales" class="dashboard-section">
+
         <header class="section-header">
             <h1>Gráficos Principales</h1>
             <p>
@@ -253,33 +254,56 @@
             </p>
         </header>
 
-
         <div class="charts-grid">
-            <!-- Distribución por Condición Día -->
-            <div class="chart-g rid-item">
+
+            <!-- DISTRIBUCIÓN POR CONDICIÓN DÍA -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-condicion-dia" #condicionDiaFs>
+
+                <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(condicionDiaFs)"
+                    title="Ver en pantalla completa" aria-label="Ampliar distribución por condición día">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-condicion-dia'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-requirement-sla-compliance-donut modo="condicion-dia"
                     [datosCondicionDia]="distribucionCondicionDia"
                     [cargando]="cargandoNuevosGraficos['distribucionCondicionDia'] ?? false"
                     [error]="erroresNuevosGraficos['distribucionCondicionDia'] ?? null">
                 </app-requirement-sla-compliance-donut>
+
             </div>
 
-            <!--Porcentaje de Cumplimiento de SLA-->
-            <div class="chart-grid-item">
+            <!-- PORCENTAJE DE CUMPLIMIENTO SLA -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-cumplimiento-sla" #cumplimientoSlaFs>
+
+                <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(cumplimientoSlaFs)"
+                    title="Ver en pantalla completa" aria-label="Ampliar porcentaje de cumplimiento SLA">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-cumplimiento-sla'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-requirement-sla-compliance-donut [datos]="porcentajeCumplimientoSla"
                     [cargando]="cargandoNuevosGraficos['porcentajeCumplimientoSla'] ?? false"
                     [error]="erroresNuevosGraficos['porcentajeCumplimientoSla'] ?? null"
                     [seleccion]="slaSolucionSeleccionada" (seleccionChange)="seleccionarSlaSolucion($event)">
                 </app-requirement-sla-compliance-donut>
+
             </div>
+
         </div>
 
-
+        <!-- EXPLORADOR DE PROYECTOS Y PARETO -->
         <div class="project-pareto-grid">
 
-
-            <!-- Explorador por Proyectos-->
-            <div class="projects-section">
+            <!-- EXPLORADOR POR PROYECTOS -->
+            <div class="projects-section table-expandable" id="fullscreen-tabla-proyectos-req-sla"
+                #tablaProyectosReqSlaFs>
 
                 <div *ngIf="cargandoProyectos" class="projects-loading" role="status" aria-live="polite">
                     Actualizando proyectos...
@@ -289,29 +313,52 @@
                     [opcionesProyectos]="opcionesProyectos" [proyectoSeleccionado]="proyectoSeleccionado"
                     (proyectoChange)="cambiarProyecto($event)" [habilitarExclusionProyectos]="true"
                     [proyectosExcluidos]="proyectosExcluidos"
-                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)">
+                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
+                    [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-proyectos-req-sla'"
+                    (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosReqSlaFs)">
                 </app-project-explorer-table>
 
             </div>
 
+            <!-- PARETO DE TIPOS DE REQUERIMIENTO -->
+            <div class="pareto-section chart-expandable" id="fullscreen-pareto-requerimientos" #paretoReqFs>
 
+                <button *ngIf="paretoRequerimientos.length > 0" type="button" class="chart-expand-btn"
+                    (click)="alternarPantallaCompleta(paretoReqFs)" title="Ver en pantalla completa"
+                    aria-label="Ampliar Pareto de tipos de requerimiento">
 
-            <!-- Pareto de Tipos de Requerimiento-->
-            <div class="pareto-section">
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-pareto-requerimientos'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-sla-pareto *ngIf="paretoRequerimientos.length > 0" [datos]="paretoRequerimientos"
                     entidad="requerimientos" titulo="Pareto de Tipos de Requerimiento"
                     descripcion="Tipos con mayor volumen de requerimientos." [seleccionMultiple]="true"
                     [tiposSeleccionados]="tiposRequerimientoSeleccionados"
                     (tiposChange)="seleccionarTiposRequerimiento($event)">
                 </app-sla-pareto>
+
             </div>
 
         </div>
 
+        <!-- VOLUMEN Y PARTICIPACIÓN -->
         <div class="charts-grid">
 
-            <!-- Volumen de Requerimientos -->
-            <div class="chart-grid-item">
+            <!-- VOLUMEN DE REQUERIMIENTOS -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-volumen-requerimientos-sla" #volumenReqFs>
+
+                <button *ngIf="volumenRequerimientos.length > 0" type="button" class="chart-expand-btn"
+                    (click)="alternarPantallaCompleta(volumenReqFs)" title="Ver en pantalla completa"
+                    aria-label="Ampliar volumen de requerimientos">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-volumen-requerimientos-sla'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
 
                 <app-volume-month *ngIf="volumenRequerimientos.length > 0" modo="sla" entidadSla="requerimientos"
                     [datos]="volumenRequerimientos" [habilitarFiltroMes]="true"
@@ -321,19 +368,32 @@
 
             </div>
 
+            <!-- PARTICIPACIÓN POR PROYECTO -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-participacion-proyectos" #participacionFs>
 
-            <!-- Participación por Proyecto -->
-            <div class="chart-grid-item">
+                <button *ngIf="participacionProyectos.length > 0" type="button" class="chart-expand-btn"
+                    (click)="alternarPantallaCompleta(participacionFs)" title="Ver en pantalla completa"
+                    aria-label="Ampliar participación por proyecto">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-participacion-proyectos'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-project-participation *ngIf="participacionProyectos.length > 0" [datos]="participacionProyectos">
                 </app-project-participation>
+
             </div>
+
         </div>
 
     </section>
 
 
-    <!--SLA Req Gral.-->
+    <!-- SLA REQ GRAL. -->
     <section id="sla-req-gral" class="dashboard-section">
+
         <header class="section-header">
             <h1>SLA Req Gral.</h1>
             <p>
@@ -342,57 +402,112 @@
             </p>
         </header>
 
-        <!-- Explorador de Tipos de Requerimientos-->
-        <div class="chart-full-width">
+        <!-- EXPLORADOR DE TIPOS DE REQUERIMIENTOS -->
+        <div class="chart-full-width table-expandable" id="fullscreen-tabla-tipos-req-sla" #tablaTiposReqSlaFs>
+
             <app-requirement-sla-type-explorer [datos]="exploradorTipos"
-                [cargando]="cargandoNuevosGraficos['exploradorTipos'] ?? false">
+                [cargando]="cargandoNuevosGraficos['exploradorTipos'] ?? false" [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tipos-req-sla'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTiposReqSlaFs)">
             </app-requirement-sla-type-explorer>
 
             <p class="dashboard-load-error" *ngIf="erroresNuevosGraficos['exploradorTipos']">
                 No se pudo cargar el Explorador de Tipos de Requerimientos.
             </p>
+
         </div>
 
-
         <div class="charts-grid">
-            <!-- SLA Solución: Cumplidos vs Incumplidos-->
-            <div class="chart-grid-item">
+
+            <!-- SLA SOLUCIÓN: CUMPLIDOS VS INCUMPLIDOS -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-sla-solucion-req" #slaSolucionReqFs>
+
+                <button *ngIf="slaSolucionTendencia.length > 0" type="button" class="chart-expand-btn"
+                    (click)="alternarPantallaCompleta(slaSolucionReqFs)" title="Ver en pantalla completa"
+                    aria-label="Ampliar SLA solución">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-sla-solucion-req'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-requirement-sla-solution-trend *ngIf="slaSolucionTendencia.length > 0"
                     [datos]="slaSolucionTendencia">
                 </app-requirement-sla-solution-trend>
+
             </div>
 
-            <!-- Desempeño por Resolutor -->
-            <div class="chart-grid-item">
+            <!-- DESEMPEÑO POR RESOLUTOR -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-resolutores-req" #resolutoresReqFs>
+
+                <button *ngIf="resolutores.length > 0" type="button" class="chart-expand-btn"
+                    (click)="alternarPantallaCompleta(resolutoresReqFs)" title="Ver en pantalla completa"
+                    aria-label="Ampliar desempeño por resolutor">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-resolutores-req'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-resolutor-performance *ngIf="resolutores.length > 0" [datos]="resolutores"
                     entidad="requerimientos">
                 </app-resolutor-performance>
+
             </div>
+
         </div>
 
         <div class="charts-grid">
-            <!-- Cumplimiento de SLA por Horario - Condición Día -->
-            <div class="chart-grid-item">
+
+            <!-- CUMPLIMIENTO SLA POR HORARIO -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-cumplimiento-horario" #horarioFs>
+
+                <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(horarioFs)"
+                    title="Ver en pantalla completa" aria-label="Ampliar cumplimiento SLA por horario">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-cumplimiento-horario'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-requirement-sla-hourly-compliance [datos]="cumplimientoSlaHorario"
                     [cargando]="cargandoNuevosGraficos['cumplimientoSlaHorario'] ?? false"
                     [error]="erroresNuevosGraficos['cumplimientoSlaHorario'] ?? null">
                 </app-requirement-sla-hourly-compliance>
+
             </div>
 
-            <!-- Cumplimiento de SLA por Prioridad-->
-            <div class="chart-grid-item">
+            <!-- CUMPLIMIENTO SLA POR PRIORIDAD -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-cumplimiento-prioridad"
+                #cumplimientoPrioridadFs>
+
+                <button type="button" class="chart-expand-btn"
+                    (click)="alternarPantallaCompleta(cumplimientoPrioridadFs)" title="Ver en pantalla completa"
+                    aria-label="Ampliar cumplimiento SLA por prioridad">
+
+                    <mat-icon>
+                        {{ graficoExpandido === 'fullscreen-cumplimiento-prioridad'
+                        ? 'fullscreen_exit' : 'fullscreen' }}
+                    </mat-icon>
+                </button>
+
                 <app-requirement-sla-priority-compliance [datos]="cumplimientoSlaPrioridad"
                     [cargando]="cargandoNuevosGraficos['cumplimientoSlaPrioridad'] ?? false"
                     [error]="erroresNuevosGraficos['cumplimientoSlaPrioridad'] ?? null">
                 </app-requirement-sla-priority-compliance>
+
             </div>
+
         </div>
 
     </section>
 
-
-    <!-- SLA Req Categorías -->
+    <!-- SLA REQ CATEGORÍAS -->
     <section id="sla-req-categorias" class="dashboard-section">
+
         <header class="section-header">
             <h1>SLA Req Categorías</h1>
             <p>
@@ -401,32 +516,68 @@
             </p>
         </header>
 
-        <!--Top 10 - Cumplimiento de SLA por Categoría-->
-        <div class="chart-full-width">
+        <!-- TOP 10 - CUMPLIMIENTO SLA POR CATEGORÍA -->
+        <div class="chart-full-width chart-expandable" id="fullscreen-top-categorias" #topCategoriasFs>
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(topCategoriasFs)"
+                title="Ver en pantalla completa" aria-label="Ampliar Top 10 cumplimiento por categoría">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-top-categorias'
+                    ? 'fullscreen_exit' : 'fullscreen' }}
+                </mat-icon>
+            </button>
+
             <app-requirement-sla-top-categories [datos]="top10CumplimientoSlaCategoria"
                 [cargando]="cargandoNuevosGraficos['top10CumplimientoSlaCategoria'] ?? false"
                 [error]="erroresNuevosGraficos['top10CumplimientoSlaCategoria'] ?? null">
             </app-requirement-sla-top-categories>
+
         </div>
 
-        <!--Cumplimiento de SLA por Tipo-->
-        <div class="chart-full-width">
+        <!-- CUMPLIMIENTO SLA POR TIPO -->
+        <div class="chart-full-width chart-expandable" id="fullscreen-cumplimiento-tipo" #cumplimientoTipoFs>
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(cumplimientoTipoFs)"
+                title="Ver en pantalla completa" aria-label="Ampliar cumplimiento SLA por tipo">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-cumplimiento-tipo'
+                    ? 'fullscreen_exit' : 'fullscreen' }}
+                </mat-icon>
+            </button>
+
             <app-requirement-sla-type-compliance [datos]="cumplimientoSlaTipo"
                 [cargando]="cargandoNuevosGraficos['cumplimientoSlaTipo'] ?? false"
                 [error]="erroresNuevosGraficos['cumplimientoSlaTipo'] ?? null">
             </app-requirement-sla-type-compliance>
+
         </div>
 
-        <!--Tendencia de Requerimientos-->
-        <div class="chart-full-width">
+        <!-- TENDENCIA DE REQUERIMIENTOS -->
+        <div class="chart-full-width chart-expandable" id="fullscreen-tendencia-req" #tendenciaReqFs>
+
+            <button *ngIf="tendenciaRequerimientos.length > 0" type="button" class="chart-expand-btn"
+                (click)="alternarPantallaCompleta(tendenciaReqFs)" title="Ver en pantalla completa"
+                aria-label="Ampliar tendencia de requerimientos">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-tendencia-req'
+                    ? 'fullscreen_exit' : 'fullscreen' }}
+                </mat-icon>
+            </button>
+
             <app-tendencia-type-trend *ngIf="tendenciaRequerimientos.length > 0" [datos]="tendenciaRequerimientos"
                 entidad="requerimientos" (rankingChange)="cambiarRankingTendencia($event)">
             </app-tendencia-type-trend>
+
         </div>
+
     </section>
 
-    <!--  SLA Req Categorías 80/20 -->
+    <!-- SLA REQ CATEGORÍAS 80/20 -->
     <section id="sla-req-categorias-8020" class="dashboard-section">
+
         <header class="section-header">
             <h1>SLA Req Categorías 80/20</h1>
             <p>
@@ -436,23 +587,36 @@
             </p>
         </header>
 
-        <!-- Análisis de Pareto de Incumplimientos por Categoría-->
+        <!-- TABLA ANALÍTICA PARETO -->
         <div class="chart-full-width">
+
             <app-requirement-sla-pareto-table [datos]="paretoSlaCategorias"
                 [cargando]="cargandoNuevosGraficos['paretoSlaCategorias'] ?? false"
                 [error]="erroresNuevosGraficos['paretoSlaCategorias'] ?? null">
             </app-requirement-sla-pareto-table>
+
         </div>
 
-        <!-- Cant Req. No Cumplidos y % Acum. por Categorización - Categoría -->
-        <div class="chart-full-width">
+        <!-- GRÁFICO PARETO DE INCUMPLIMIENTOS -->
+        <div class="chart-full-width chart-expandable" id="fullscreen-pareto-grafico" #paretoGraficoFs>
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(paretoGraficoFs)"
+                title="Ver en pantalla completa" aria-label="Ampliar gráfico Pareto de incumplimientos">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-pareto-grafico'
+                    ? 'fullscreen_exit' : 'fullscreen' }}
+                </mat-icon>
+            </button>
+
             <app-requirement-sla-pareto-chart [datos]="paretoSlaCategoriasGrafico"
                 [cargando]="cargandoNuevosGraficos['paretoSlaCategoriasGrafico'] ?? false"
                 [error]="erroresNuevosGraficos['paretoSlaCategoriasGrafico'] ?? null">
             </app-requirement-sla-pareto-chart>
-        </div>
-    </section>
 
+        </div>
+
+    </section>
 
     <section id="explorador-tickets" class="dashboard-section">
 
@@ -466,11 +630,17 @@
 
         </header>
 
-        <div class="chart-full-width">
+        <!-- EXPLORADOR DE TICKETS -->
+        <div class="chart-full-width table-expandable" id="fullscreen-tabla-tickets-req-sla" #tablaTicketsReqSlaFs>
+
             <app-ticket-explorer-table [tipoDashboard]="'requirement-sla'" [datos]="ticketsDetalle"
                 [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
-                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
+                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)"
+                [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tickets-req-sla'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsReqSlaFs)">
             </app-ticket-explorer-table>
+
         </div>
 
     </section>

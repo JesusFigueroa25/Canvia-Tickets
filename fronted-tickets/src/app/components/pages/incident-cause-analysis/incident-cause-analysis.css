@@ -1,8 +1,5 @@
 
-/* ==========================================================
-   ANALISIS DE INCIDENTES - COMPONENTE PADRE
-   ========================================================== */
-
+/* ANALISIS DE INCIDENTES - COMPONENTE PADRE*/
 :host {
   display: block;
   width: 100%;
@@ -18,9 +15,7 @@
 }
 
 
-/* ==========================================================
-   PAGINA
-   ========================================================== */
+/* PAGINA*/
 
 .incident-cause-analysis-page {
   width: 100%;
@@ -32,9 +27,7 @@
 }
 
 
-/* ==========================================================
-   HEADER MASTER
-   ========================================================== */
+/* HEADER MASTER*/
 
 .header-master {
   position: sticky;
@@ -62,9 +55,7 @@
 }
 
 
-/* ==========================================================
-   CABECERA
-   ========================================================== */
+/* CABECERA*/
 
 .page-header {
   display: flex;
@@ -97,9 +88,7 @@
 }
 
 
-/* ==========================================================
-   NAVEGACION INTERNA
-   ========================================================== */
+/* NAVEGACION INTERNA*/
 
 .section-nav {
   display: flex;
@@ -165,9 +154,7 @@
 }
 
 
-/* ==========================================================
-   FILTROS GLOBALES
-   ========================================================== */
+/* FILTROS GLOBALES*/
 
 .filters-card {
   display: block;
@@ -224,9 +211,7 @@
 }
 
 
-/* ==========================================================
-   FORMULARIO DE FILTROS
-   ========================================================== */
+/* FORMULARIO DE FILTROS*/
 
 .filters-form {
   display: grid;
@@ -274,9 +259,7 @@
 }
 
 
-/* ==========================================================
-   BOTONES DE FILTROS
-   ========================================================== */
+/* BOTONES DE FILTROS*/
 
 .filter-actions {
   display: flex;
@@ -313,9 +296,7 @@
 }
 
 
-/* ==========================================================
-   ESTADOS
-   ========================================================== */
+/* ESTADOS*/
 
 .status-card {
   display: flex;
@@ -345,9 +326,7 @@
 }
 
 
-/* ==========================================================
-   KPIS
-   ========================================================== */
+/* KPIS*/
 
 .kpis-section {
   display: grid;
@@ -365,9 +344,7 @@
 }
 
 
-/* ==========================================================
-   ESTADO DE AJUSTES
-   ========================================================== */
+/* ESTADO DE AJUSTES*/
 
 .adjustment-status {
   display: flex;
@@ -406,9 +383,7 @@
 }
 
 
-/* ==========================================================
-   SECCIONES DEL DASHBOARD
-   ========================================================== */
+/* SECCIONES DEL DASHBOARD*/
 
 .dashboard-section {
   width: 100%;
@@ -463,9 +438,7 @@
 }
 
 
-/* ==========================================================
-   CONTENEDORES PARA GRAFICOS Y TABLAS
-   ========================================================== */
+/* CONTENEDORES PARA GRAFICOS Y TABLAS*/
 
 .charts-grid {
   display: grid;
@@ -551,9 +524,7 @@
 }
 
 
-/* ==========================================================
-   PRINCIPALES HALLAZGOS
-   ========================================================== */
+/* PRINCIPALES HALLAZGOS*/
 
 .insights-grid {
   display: grid;
@@ -657,9 +628,7 @@
 }
 
 
-/* ==========================================================
-   CONCLUSIONES
-   ========================================================== */
+/* CONCLUSIONES*/
 .conclusions-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -782,9 +751,7 @@
 }
 
 
-/* ==========================================================
-   SIN DATOS
-   ========================================================== */
+/* SIN DATOS*/
 
 .empty-state {
   display: flex;
@@ -818,9 +785,7 @@
 }
 
 
-/* ==========================================================
-   RESPONSIVE - LAPTOP
-   ========================================================== */
+/* RESPONSIVE - LAPTOP*/
 
 @media (max-width: 1450px) {
 
@@ -839,9 +804,7 @@
 }
 
 
-/* ==========================================================
-   RESPONSIVE - TABLET
-   ========================================================== */
+/* RESPONSIVE - TABLET*/
 
 @media (max-width: 1100px) {
 
@@ -862,9 +825,7 @@
 }
 
 
-/* ==========================================================
-   RESPONSIVE - MOVIL
-   ========================================================== */
+/* RESPONSIVE - MOVIL*/
 
 @media (max-width: 768px) {
 
@@ -911,9 +872,7 @@
 }
 
 
-/* ==========================================================
-   RESPONSIVE - MOVIL PEQUENO
-   ========================================================== */
+/* RESPONSIVE - MOVIL PEQUENO*/
 
 @media (max-width: 520px) {
 
@@ -955,9 +914,7 @@
 
 
 
-/* ==========================================================
-   TITULO DINAMICO - PROYECTO Y TIPO DE INCIDENTE
-   ========================================================== */
+/* TITULO DINAMICO - PROYECTO Y TIPO DE INCIDENTE*/
 
 /* Permitir que el titulo se adapte al ancho disponible */
 .page-header-content {
@@ -1007,9 +964,7 @@
 
 
 
-/* ==========================================================
-   BUSCADORES INTERNOS DE MAT-SELECT
-   ========================================================== */
+/* BUSCADORES INTERNOS DE MAT-SELECT*/
 
 .combo-search {
   position: sticky;
@@ -1087,3 +1042,101 @@
   height: 18px;
   font-size: 18px;
 }
+
+
+
+/* ==========================================================
+   REPORTE EJECUTIVO - BOTON DE DESCARGA
+   ========================================================== */
+
+.report-download-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+  min-height: 38px;
+
+  padding: 0 16px !important;
+
+  color: #ffffff !important;
+  background: #16835b !important;
+
+  border-radius: 8px !important;
+
+  font-size: 12px !important;
+  font-weight: 600 !important;
+
+  white-space: nowrap;
+
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.report-download-button:hover:not(:disabled) {
+  background: #106c4b !important;
+}
+
+.report-download-button:disabled {
+  color: #98a2b3 !important;
+  background: #e4e7ec !important;
+  cursor: not-allowed;
+}
+
+.report-download-button mat-icon {
+  width: 19px;
+  height: 19px;
+  margin-right: 6px;
+
+  font-size: 19px;
+}
+
+/* ==========================================================
+   CONTENEDOR DE EXPORTACION
+   ========================================================== */
+
+.report-export-stage {
+  position: fixed;
+
+  top: 0;
+  left: -20000px;
+
+  display: block;
+
+  width: 1400px;
+  height: auto;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: visible;
+
+  background: #f7f9fb;
+
+  pointer-events: none;
+}
+
+/* ==========================================================
+   RESPONSIVE DEL BOTON
+   ========================================================== */
+
+@media (max-width: 1450px) {
+
+  .report-download-button {
+    min-height: 36px;
+    font-size: 11px !important;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .report-download-button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+}
+
+

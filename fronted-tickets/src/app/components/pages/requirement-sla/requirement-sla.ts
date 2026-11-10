@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RequirementSLADashboardFilters, RequirementSLAFilters, RequirementSLAKPI, RequirementSLASolucionTendenciaItem, RequirementSLAVolumenItem, RequirementSLAProyectoItem, RequirementSLAParticipacionProyectoItem, RequirementSLAParetoItem, RequirementSLATendenciaItem, RequirementSLAResolutorItem, RequirementSLATicketsOut } from '../../../models/requirement-sla';
 import { RequirementSlaService } from '../../../services/requirement-sla.service';
@@ -104,7 +104,33 @@ export class RequirementSla implements OnDestroy {
   ticketIdSeleccionado: string | null = null;
   private solicitudTickets = 0;
 
+  // PANTALLA COMPLETA DE GRÁFICOS
+  graficoExpandido: string | null = null;
 
+  async alternarPantallaCompleta(
+    elemento: HTMLElement
+  ): Promise<void> {
+    try {
+      if (document.fullscreenElement === elemento) {
+        await document.exitFullscreen();
+      } else if (!document.fullscreenElement) {
+        await elemento.requestFullscreen();
+      }
+    } catch (error) {
+      console.error(
+        'Error al cambiar pantalla completa:',
+        error
+      );
+    }
+  }
+
+  @HostListener('document:fullscreenchange')
+  actualizarPantallaCompleta(): void {
+    this.graficoExpandido =
+      (document.fullscreenElement as HTMLElement | null)?.id ?? null;
+
+    this.changeDetector.markForCheck();
+  }
 
   constructor(
     private formBuilder: FormBuilder,
