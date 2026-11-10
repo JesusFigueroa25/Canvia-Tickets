@@ -1,0 +1,150 @@
+
+<section class="attribution-card">
+
+  <div class="card-header">
+    <div>
+      <h2>Distribución por Atribución del Incidente</h2>
+
+      <p>
+        Proporción de incidentes según el motivo
+        de resolución registrado en ServiceAIDE.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">donut_large</mat-icon>
+  </div>
+
+
+  <!-- FILTRO ACTIVO -->
+  <div class="selection-state" *ngIf="seleccion">
+
+    <span>
+      <mat-icon>filter_alt</mat-icon>
+      Selección: <strong>{{ seleccion }}</strong>
+    </span>
+
+    <button type="button" (click)="quitarSeleccion()">
+      <mat-icon>close</mat-icon>
+      Quitar
+    </button>
+
+  </div>
+
+
+  <!-- CARGA -->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando distribución de atribución...
+  </div>
+
+
+  <!-- ERROR -->
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <!-- LEYENDA INTERACTIVA -->
+    <div class="chart-legend">
+
+      <button
+        type="button"
+        class="legend-item"
+        *ngFor="let item of resumen"
+        [class.is-selected]="seleccion === item.atribucion"
+        [class.is-muted]="seleccion !== null && seleccion !== item.atribucion"
+        [disabled]="item.tickets === 0"
+        [attr.aria-pressed]="seleccion === item.atribucion"
+        (click)="cambiarSeleccion(item.atribucion)">
+
+        <span
+          class="legend-dot"
+          [style.backgroundColor]="item.color">
+        </span>
+
+        {{ item.nombre }}
+
+      </button>
+
+    </div>
+
+
+    <!-- GRAFICO -->
+    <div class="chart-area">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+        [plugins]="chartPlugins"
+        aria-label="Distribución por atribución original">
+      </canvas>
+
+
+      <div class="donut-center">
+
+        <strong>
+          {{ totalAtribuidos | number:'1.0-0' }}
+        </strong>
+
+        <span>Con atribución</span>
+
+      </div>
+
+    </div>
+
+
+    <!-- RESUMEN -->
+    <div class="summary-grid">
+
+      <div *ngFor="let item of resumen">
+
+        <span class="summary-label">
+          <span
+            class="legend-dot"
+            [style.backgroundColor]="item.color">
+          </span>
+          {{ item.nombre }}
+        </span>
+
+        <strong>
+          {{ item.tickets | number:'1.0-0' }}
+          <small>({{ item.porcentaje | number:'1.2-2' }}%)</small>
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-note">
+      <mat-icon>info_outline</mat-icon>
+
+      <span>
+        {{ sinAtribucion | number:'1.0-0' }}
+        incidentes sin atribución.
+        Los porcentajes se calculan sobre
+        {{ totalAtribuidos | number:'1.0-0' }}
+        incidentes atribuidos.
+      </span>
+    </div>
+
+  </ng-container>
+
+
+  <!-- SIN DATOS -->
+  <div
+    class="empty-state"
+    *ngIf="!cargando && !error && !tieneDatos">
+
+    <mat-icon>donut_large</mat-icon>
+
+   
+
+  </div>
+
+</section>

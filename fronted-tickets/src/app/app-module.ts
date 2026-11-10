@@ -65,6 +65,12 @@ import { RequirementCategorizationResolversTable } from './components/charts/Cat
 import { RequirementCategorizationMonthlyChart } from './components/charts/Categorization/requirement-categorization-monthly-chart/requirement-categorization-monthly-chart';
 import { RequirementCategorizationMonthlyTable } from './components/charts/Categorization/requirement-categorization-monthly-table/requirement-categorization-monthly-table';
 import { TicketExplorerTable } from './components/charts/ticket-explorer-table/ticket-explorer-table';
+import { IncidentCauseAnalysis } from './components/pages/incident-cause-analysis/incident-cause-analysis';
+import { IncidentAttributionDonut } from './components/charts/Consolidated/incident-attribution-donut/incident-attribution-donut';
+import { IncidentAttributionComparison } from './components/charts/Consolidated/incident-attribution-comparison/incident-attribution-comparison';
+import { IncidentCauseDistributionChart } from './components/charts/Consolidated/incident-cause-distribution-chart/incident-cause-distribution-chart';
+import { IncidentCauseEvidenceTable } from './components/charts/Consolidated/incident-cause-evidence-table/incident-cause-evidence-table';
+import { IncidentTopServersChart } from './components/charts/Consolidated/incident-top-servers-chart/incident-top-servers-chart';
 
 @NgModule({
   declarations: [
@@ -123,6 +129,12 @@ import { TicketExplorerTable } from './components/charts/ticket-explorer-table/t
     RequirementCategorizationMonthlyChart,
     RequirementCategorizationMonthlyTable,
     TicketExplorerTable,
+    IncidentCauseAnalysis,
+    IncidentAttributionDonut,
+    IncidentAttributionComparison,
+    IncidentCauseDistributionChart,
+    IncidentCauseEvidenceTable,
+    IncidentTopServersChart,
   ],
   imports: [
     BrowserAnimationsModule,

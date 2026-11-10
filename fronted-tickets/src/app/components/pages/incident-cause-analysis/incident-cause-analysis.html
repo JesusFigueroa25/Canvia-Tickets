@@ -1,0 +1,726 @@
+<div class="incident-cause-analysis-page">
+
+  <!-- ======================================================
+       HEADER MASTER - STICKY
+       ====================================================== -->
+
+  <div class="header-master">
+
+    <header class="page-header">
+
+
+      <!-- TITULO DINAMICO DEL DASHBOARD -->
+      <div class="page-header-content">
+
+        <h1>
+          Análisis de Incidentes
+
+          <!-- PROYECTO SELECCIONADO -->
+          <span class="title-project" *ngIf="proyectoTitulo">
+
+            - {{ proyectoTitulo }}
+
+          </span>
+
+        </h1>
+
+
+        <!-- TIPO DE INCIDENTE SELECCIONADO -->
+        <p class="incident-type-subtitle" *ngIf="tiposIncidenteTitulo; else descripcionGeneral">
+
+          {{ tiposIncidenteTitulo }}
+
+        </p>
+
+
+        <!-- DESCRIPCION POR DEFECTO -->
+        <ng-template #descripcionGeneral>
+
+          <p class="page-description">
+            Análisis de atribución, factores técnicos,
+            servidores y conclusiones de los incidentes.
+          </p>
+
+        </ng-template>
+
+      </div>
+
+
+      <!-- NAVEGACION INTERNA -->
+      <nav class="section-nav" aria-label="Navegación del análisis">
+
+        <button type="button" (click)="irASeccion('atribucion')">
+          Atribución
+        </button>
+
+        <button type="button" (click)="irASeccion('analisis-causas')">
+          Análisis de Causas
+        </button>
+
+        <button type="button" (click)="irASeccion('servidores')">
+          Servidores
+        </button>
+
+        <button type="button" (click)="irASeccion('principales-hallazgos')">
+          Principales Hallazgos
+        </button>
+
+        <button type="button" (click)="irASeccion('conclusiones')">
+          Conclusiones
+        </button>
+
+      </nav>
+
+    </header>
+
+
+    <!-- ==================================================
+         FILTROS GLOBALES
+         ================================================== -->
+
+    <details class="filters-card" open>
+
+      <summary class="filters-toggle">
+        <mat-icon>tune</mat-icon>
+        <span>Filtros globales</span>
+      </summary>
+
+      <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+
+        <!-- FECHAS -->
+        <div class="date-range-fields">
+
+          <div class="filter-field">
+            <label>Desde</label>
+
+            <mat-form-field appearance="outline" class="full-width">
+
+              <input matInput [matDatepicker]="pickerDesde" formControlName="desde" placeholder="Seleccionar fecha">
+
+              <mat-datepicker-toggle matIconSuffix [for]="pickerDesde">
+              </mat-datepicker-toggle>
+
+              <mat-datepicker #pickerDesde></mat-datepicker>
+
+              <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
+                Este campo es obligatorio.
+              </mat-error>
+
+            </mat-form-field>
+          </div>
+
+          <div class="filter-field">
+            <label>Hasta</label>
+
+            <mat-form-field appearance="outline" class="full-width">
+
+              <input matInput [matDatepicker]="pickerHasta" formControlName="hasta" placeholder="Seleccionar fecha">
+
+              <mat-datepicker-toggle matIconSuffix [for]="pickerHasta">
+              </mat-datepicker-toggle>
+
+              <mat-datepicker #pickerHasta></mat-datepicker>
+
+              <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
+                Este campo es obligatorio.
+              </mat-error>
+
+            </mat-form-field>
+          </div>
+
+        </div>
+
+
+        <!-- PRIORIDAD 
+        <div class="filter-field">
+          <label>Prioridad</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <mat-select formControlName="prioridad" placeholder="Todas">
+              <mat-option [value]="null">Todas</mat-option>
+
+              <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">
+                {{ prioridad }}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div> 
+        -->
+
+
+
+        <!-- MOTIVO ESTADO 
+           <div class="filter-field">
+          <label>Motivo de Estado</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <mat-select formControlName="motivo_estado" placeholder="Todos">
+              <mat-option [value]="null">Todos</mat-option>
+
+              <mat-option *ngFor="let motivo of opcionesFiltros.motivos_estado" [value]="motivo">
+                {{ motivo }}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+ 
+        -->
+
+
+        <!-- MOTIVO RESOLUCION 
+         
+                <div class="filter-field">
+          <label>Motivo de Resolución</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <mat-select formControlName="motivo_resolucion" placeholder="Todos">
+              <mat-option [value]="null">Todos</mat-option>
+
+              <mat-option *ngFor="let motivo of opcionesFiltros.motivos_resolucion" [value]="motivo">
+                {{ motivo }}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+
+        -->
+
+
+        <!-- GRUPO RESOLUTOR -->
+        <div class="filter-field">
+          <label>Grupo Resolutor</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <mat-select formControlName="grupo_resolutor" placeholder="Todos">
+              <mat-option [value]="null">Todos</mat-option>
+
+              <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
+                {{ grupo }}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+
+
+
+        <!-- ==================================================
+     PROYECTO - COMBO CON BUSCADOR
+     ================================================== -->
+
+        <div class="filter-field">
+
+          <label>Proyecto</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <mat-select formControlName="proyecto" placeholder="Todos"
+              (openedChange)="alAbrirCombo('proyecto', $event)">
+
+              <!-- BUSCADOR INTERNO -->
+              <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
+
+                <mat-icon>search</mat-icon>
+
+                <input #buscadorProyecto type="text" placeholder="Buscar proyecto..." aria-label="Buscar proyecto"
+                  [value]="busquedaProyecto" (input)="buscarEnCombo($event, 'proyecto')"
+                  (click)="$event.stopPropagation()">
+
+                <button *ngIf="busquedaProyecto" type="button" class="combo-clear"
+                  aria-label="Limpiar búsqueda de proyecto" (click)="busquedaProyecto = ''; $event.stopPropagation()">
+
+                  <mat-icon>close</mat-icon>
+
+                </button>
+
+              </div>
+
+
+              <!-- TODOS -->
+              <mat-option [value]="null">
+                Todos
+              </mat-option>
+
+
+              <!-- PROYECTOS FILTRADOS -->
+              <mat-option *ngFor="let proyecto of proyectosFiltrados" [value]="proyecto">
+
+                {{ proyecto }}
+
+              </mat-option>
+
+
+              <!-- SIN COINCIDENCIAS -->
+              <mat-option *ngIf="proyectosFiltrados.length === 0" disabled>
+
+                No se encontraron proyectos
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
+
+
+        <!-- NOMBRE RESOLUTOR 
+          <div class="filter-field">
+          <label>Nombre Resolutor</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <mat-select formControlName="nombre_resolutor" placeholder="Todos">
+              <mat-option [value]="null">Todos</mat-option>
+
+              <mat-option *ngFor="let resolutor of opcionesFiltros.nombres_resolutores" [value]="resolutor">
+                {{ resolutor }}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+      -->
+
+
+        <!-- ==================================================
+     TIPO DE INCIDENTE - BUSCADOR Y SELECCION MULTIPLE
+     ================================================== -->
+
+        <div class="filter-field">
+
+          <label>Tipo de Incidente</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <mat-select formControlName="tipo_incidente" multiple placeholder="Todos"
+              (openedChange)="alAbrirCombo('tipo_incidente', $event)">
+
+              <!-- BUSCADOR INTERNO -->
+              <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
+
+                <mat-icon>search</mat-icon>
+
+                <input #buscadorTipoIncidente type="text" placeholder="Buscar tipo de incidente..."
+                  aria-label="Buscar tipo de incidente" [value]="busquedaTipoIncidente"
+                  (input)="buscarEnCombo($event, 'tipo_incidente')" (click)="$event.stopPropagation()">
+
+                <button *ngIf="busquedaTipoIncidente" type="button" class="combo-clear"
+                  aria-label="Limpiar búsqueda de tipo de incidente"
+                  (click)="busquedaTipoIncidente = ''; $event.stopPropagation()">
+
+                  <mat-icon>close</mat-icon>
+
+                </button>
+
+              </div>
+
+
+              <!-- TIPOS DE INCIDENTE FILTRADOS -->
+              <mat-option *ngFor="let tipo of tiposIncidenteFiltrados" [value]="tipo">
+
+                {{ tipo }}
+
+              </mat-option>
+
+
+              <!-- SIN COINCIDENCIAS -->
+              <mat-option *ngIf="tiposIncidenteFiltrados.length === 0" disabled>
+
+                No se encontraron tipos de incidente
+
+              </mat-option>
+
+            </mat-select>
+
+          </mat-form-field>
+
+        </div>
+
+
+        <!-- TICKET ID
+        <div class="filter-field">
+          <label>Ticket ID</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+
+            <input matInput formControlName="ticket_id" maxlength="20" placeholder="Ej. 300-324900">
+
+          </mat-form-field>
+        </div> 
+        -->
+
+
+
+        <!-- ACCIONES -->
+        <div class="filter-actions">
+
+          <button mat-button type="button" class="clear-button" (click)="limpiarFiltros()">
+
+            <mat-icon>restart_alt</mat-icon>
+            Limpiar
+
+          </button>
+
+          <button mat-flat-button type="submit" class="apply-button"
+            [disabled]="filtrosForm.invalid || cargandoFiltros">
+
+            <mat-icon>filter_alt</mat-icon>
+            Aplicar
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </details>
+
+  </div>
+
+
+  <!-- ======================================================
+       ESTADOS GENERALES
+       ====================================================== -->
+
+
+  <section class="status-card error-card" *ngIf="errorFiltros" role="alert">
+
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorFiltros }}</span>
+
+    <button *ngIf="!cargandoFiltros && !opcionesFiltros.fecha_min" mat-button type="button"
+      (click)="cargarOpcionesFiltros()">
+      Reintentar
+    </button>
+
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorKpis" role="alert">
+
+    <mat-icon>error_outline</mat-icon>
+    {{ errorKpis }}
+
+  </section>
+
+
+  <!-- ======================================================
+       KPIS GENERALES
+       ======================================================
+       
+         <section class="kpis-section">
+
+    <app-kpi-card titulo="Total de Incidentes" [valor]="kpis ? kpis.total_tickets : '—'" icono="confirmation_number"
+      color="orange">
+    </app-kpi-card>
+
+    <app-kpi-card titulo="Con Factor Técnico" [valor]="obtenerValorHallazgo('H03')" icono="fact_check" color="green">
+    </app-kpi-card>
+
+    <app-kpi-card titulo="Casos Multifactor" [valor]="obtenerValorHallazgo('H05')" icono="account_tree" color="orange">
+    </app-kpi-card>
+
+    <app-kpi-card titulo="Sin Evidencia Suficiente" [valor]="obtenerValorHallazgo('H06')" icono="manage_search"
+      color="green">
+    </app-kpi-card>
+
+  </section>
+       -->
+
+
+
+
+  <!-- ======================================================
+     SECCION 1 - ATRIBUCION
+     ====================================================== -->
+
+  <section id="atribucion" class="dashboard-section">
+
+    <header class="section-header">
+
+      <h1>Atribución de Incidentes</h1>
+
+      <p>
+        Comparación de la atribución original registrada
+        en ServiceAIDE y la distribución ajustada.
+      </p>
+
+    </header>
+
+
+    <div class="charts-grid">
+
+      <!-- GRAFICO 1: DISTRIBUCION ORIGINAL -->
+      <div class="chart-grid-item">
+
+        <app-incident-attribution-donut [datos]="atribucionIncidentes" [cargando]="cargandoAtribucion"
+          [error]="errorAtribucion" [seleccion]="atribucionSeleccionada" (atribucionChange)="cambiarAtribucion($event)">
+        </app-incident-attribution-donut>
+
+      </div>
+
+
+      <!-- GRAFICO 2: DISTRIBUCION AJUSTADA -->
+      <div class="chart-grid-item">
+
+        <app-incident-attribution-comparison [datos]="distribucionAjustada" [cargando]="cargandoAtribucion"
+          [error]="errorAtribucion">
+        </app-incident-attribution-comparison>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================
+       SECCION 2 - ANALISIS DE CAUSAS
+       ====================================================== -->
+
+
+  <!-- ======================================================
+     SECCION 2 - ANALISIS DE CAUSAS
+     ====================================================== -->
+
+  <section id="analisis-causas" class="dashboard-section">
+
+    <header class="section-header">
+
+      <h1>Análisis de las Causas de los Incidentes</h1>
+
+      <p>
+        Clasificación técnica preliminar basada en
+        la evidencia documentada en los tickets.
+      </p>
+
+    </header>
+
+
+    <!-- GRAFICO: DISTRIBUCION DE FACTORES TECNICOS 
+        <div class="chart-full-width">
+
+      <app-incident-cause-distribution-chart [datos]="analisisCausas" [cargando]="cargandoAnalisisCausas"
+        [error]="errorAnalisisCausas">
+      </app-incident-cause-distribution-chart>
+
+    </div>
+ 
+    -->
+
+
+    <!-- TABLA: CAUSAS, RECOMENDACIONES Y EVIDENCIAS -->
+    <div class="chart-full-width">
+
+      <app-incident-cause-evidence-table [datos]="analisisCausas" [cargando]="cargandoAnalisisCausas"
+        [error]="errorAnalisisCausas">
+      </app-incident-cause-evidence-table>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ======================================================
+     SECCION 3 - TOP DE SERVIDORES
+     ====================================================== -->
+
+  <section id="servidores" class="dashboard-section">
+
+    <header class="section-header">
+
+      <h1>Top de Servidores con más Incidentes</h1>
+
+      <p>
+        Identificadores de servidores asociados
+        a los incidentes registrados.
+      </p>
+
+    </header>
+
+
+    <div class="chart-full-width">
+
+      <app-incident-top-servers-chart [datos]="topServidores" [cargando]="cargandoTopServidores"
+        [error]="errorTopServidores" [limite]="limiteTopServidores" (limiteChange)="cambiarLimiteTopServidores($event)">
+      </app-incident-top-servers-chart>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================
+       SECCION 4 - PRINCIPALES HALLAZGOS
+       DENTRO DEL COMPONENTE PADRE
+       ====================================================== -->
+
+  <section id="principales-hallazgos" class="dashboard-section">
+
+    <header class="section-header">
+      <h1>Principales Hallazgos</h1>
+      <p>
+        Observaciones automáticas basadas en los indicadores
+        y factores técnicos documentados.
+      </p>
+    </header>
+
+
+    <div class="status-card" *ngIf="cargandoHallazgos" role="status">
+      <mat-icon>hourglass_top</mat-icon>
+      Analizando los principales hallazgos...
+    </div>
+
+
+    <div class="status-card error-card" *ngIf="!cargandoHallazgos && errorHallazgos" role="alert">
+
+      <mat-icon>error_outline</mat-icon>
+      {{ errorHallazgos }}
+
+    </div>
+
+
+    <ng-container *ngIf="!cargandoHallazgos && !errorHallazgos">
+
+      <div class="insights-grid" *ngIf="principalesHallazgos && principalesHallazgos.hallazgos.length > 0">
+
+        <article class="insight-card" *ngFor="let hallazgo of principalesHallazgos.hallazgos">
+
+          <div class="insight-card-header">
+
+            <span class="insight-code">{{ hallazgo.codigo }}</span>
+
+
+          </div>
+
+          <h2>{{ hallazgo.titulo }}</h2>
+
+          <p>{{ hallazgo.descripcion }}</p>
+
+          <div class="insight-metrics">
+
+            <strong>
+              {{ hallazgo.valor | number:'1.0-0' }}
+            </strong>
+
+            <span *ngIf="hallazgo.porcentaje !== null">
+              {{ hallazgo.porcentaje | number:'1.0-2' }}%
+            </span>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <div class="empty-state" *ngIf="principalesHallazgos && principalesHallazgos.hallazgos.length === 0">
+
+        <mat-icon>info_outline</mat-icon>
+        <p>No hay hallazgos para los filtros seleccionados.</p>
+
+      </div>
+
+    </ng-container>
+
+  </section>
+
+
+  <!-- ======================================================
+       SECCION 5 - CONCLUSIONES
+       DENTRO DEL COMPONENTE PADRE
+       ====================================================== -->
+
+  <section id="conclusiones" class="dashboard-section">
+
+    <header class="section-header">
+      <h1>Conclusiones y Recomendaciones</h1>
+      <p>
+        Interpretación descriptiva de los resultados
+        y acciones sugeridas para revisión técnica.
+      </p>
+    </header>
+
+
+    <div class="status-card" *ngIf="cargandoConclusiones" role="status">
+      <mat-icon>hourglass_top</mat-icon>
+      Generando conclusiones...
+    </div>
+
+
+    <div class="status-card error-card" *ngIf="!cargandoConclusiones && errorConclusiones" role="alert">
+
+      <mat-icon>error_outline</mat-icon>
+      {{ errorConclusiones }}
+
+    </div>
+
+
+    <ng-container *ngIf="!cargandoConclusiones && !errorConclusiones">
+
+      <div class="conclusions-list" *ngIf="conclusiones && conclusiones.conclusiones.length > 0">
+
+        <article class="conclusion-card" *ngFor="let item of conclusiones.conclusiones">
+
+          <div class="conclusion-card-header">
+
+            <span class="insight-code">{{ item.codigo }}</span>
+
+            <h2>{{ item.titulo }}</h2>
+
+
+          </div>
+
+
+          <div class="conclusion-body">
+
+            <div class="conclusion-content">
+              <h3>Conclusión</h3>
+              <p>{{ item.conclusion }}</p>
+            </div>
+
+            <div class="recommendation-content">
+              <h3>Recomendación</h3>
+              <p>{{ item.recomendacion }}</p>
+            </div>
+
+          </div>
+
+
+          <div class="conclusion-references" *ngIf="item.hallazgos_referencia.length > 0">
+
+            <span>Hallazgos relacionados:</span>
+
+            <span class="reference-chip" *ngFor="let referencia of item.hallazgos_referencia">
+              {{ referencia }}
+            </span>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <div class="empty-state" *ngIf="conclusiones && conclusiones.conclusiones.length === 0">
+
+        <mat-icon>info_outline</mat-icon>
+
+        <p>
+          No hay conclusiones para los filtros seleccionados.
+        </p>
+
+      </div>
+
+    </ng-container>
+
+  </section>
+
+</div>

@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import (case, delete, func,insert,select,)
+from sqlalchemy import (case, delete, func,insert,select,or_)
 from sqlalchemy.orm import Session, aliased
 from app.models.incident_consolidated_model import (IncidentConsolidated,stg_incident_consolidated_table,)
 from sqlalchemy import (func,cast,Integer,UnicodeText,)
@@ -360,10 +360,10 @@ def obtener_opciones_filtros(db: Session):
         "grupos_resolutores": obtener_opciones(IncidentConsolidated.Grupo_Resolutor),
         "proyectos": obtener_opciones(IncidentConsolidated.Proyecto),
         "nombres_resolutores": nombres_resolutores,
+        "tipos_incidente": obtener_opciones(IncidentConsolidated.Categorizacion_Nivel_3),
     }
   
 #KPIs  
-
 def obtener_kpis(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters
@@ -441,7 +441,6 @@ def obtener_volumen_mensual(
     return db.execute(consulta).all()
 
 
-
 def obtener_proyectos(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters
@@ -477,7 +476,6 @@ def obtener_proyectos(
     )
 
     return db.execute(consulta).mappings().all()
-
 
 
 def obtener_tipos(
@@ -517,7 +515,6 @@ def obtener_tipos(
     )
 
     return db.execute(consulta).mappings().all()
-
 
 
 def obtener_prioridades(
@@ -561,7 +558,6 @@ def obtener_prioridades(
     )
 
     return db.execute(consulta).mappings().all()
-
 
 
 def obtener_top_proyectos_mensual(
@@ -619,8 +615,6 @@ def obtener_top_proyectos_mensual(
     )
 
     return db.execute(consulta).mappings().all()
-
-
 
 
 def obtener_prioridad_mensual(
@@ -686,8 +680,6 @@ def obtener_prioridad_mensual(
     return db.execute(consulta).mappings().all()
 
 
-
-
 def obtener_rendimiento_resolutores(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters
@@ -750,7 +742,6 @@ def obtener_rendimiento_resolutores(
 
     return db.execute(consulta).mappings().all()
 
-    
 
 def obtener_explorador_descripciones(
     db: Session,
@@ -1023,7 +1014,6 @@ def obtener_detalle_eventos_tecnicos(
     }
 
 
-
 def obtener_incidentes_porcentajes(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters,
@@ -1161,8 +1151,6 @@ def obtener_top_descripciones_proyectos(
     }
 
 
-
-
 def obtener_top_detalles(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters
@@ -1226,7 +1214,6 @@ def obtener_top_detalles(
         "total_general": total_general,
         "resultados": resultados
     }
-
 
 
 # TABLA PAGINADA - DETALLE DE TICKETS
@@ -1293,3 +1280,147 @@ def obtener_tickets(
         "tickets": tickets,
         "total": total
     }
+
+
+
+# ANÁLISIS DE INCIDENTES -  DISTRIBUCIÓN POR ATRIBUCIÓN ORIGINAL
+
+def obtener_atribucion_incidentes(
+    db: Session,
+    filtros: IncidentConsolidatedDashboardFilters
+):
+
+    # 1. Normalizar Motivo_Resolucion.
+    # No modifica los valores almacenados en SQL Server.
+    atribucion_col = func.nullif(
+        func.trim(
+            IncidentConsolidated.Motivo_Resolucion
+        ),
+        ""
+    )
+
+    # 2. Construir consulta base.
+    consulta_base = (
+        select(
+            atribucion_col.label("atribucion")
+        )
+        .select_from(IncidentConsolidated)
+    )
+
+    # 3. Aplicar todos los filtros existentes.
+    consulta_base = aplicar_filtros_dashboard(
+        consulta_base,
+        filtros
+    )
+
+    # 4. Crear subconsulta.
+    # Evita el error 8120 de SQL Server.
+    datos = consulta_base.subquery()
+
+    # 5. Agrupar por la columna de la subconsulta.
+    consulta = (
+        select(
+            datos.c.atribucion,
+            func.count().label("tickets")
+        )
+        .select_from(datos)
+        .group_by(datos.c.atribucion)
+        .order_by(datos.c.atribucion)
+    )
+
+    # 6. Ejecutar consulta de solo lectura.
+    return db.execute(
+        consulta
+    ).mappings().all()
+
+
+
+# ANÁLISIS DE INCIDENTES - TOP DE SERVIDORES
+def obtener_tickets_para_top_servidores(
+    db: Session,
+    filtros: IncidentConsolidatedDashboardFilters
+):
+    # Columnas donde podría encontrarse un servidor.
+    columnas = [
+        IncidentConsolidated.Descripcion,
+        IncidentConsolidated.Detalle,
+        IncidentConsolidated.Causa,
+        IncidentConsolidated.Solucion
+    ]
+
+    # Prefijos que podemos identificar con el extractor.
+    patrones = [
+        "%SRV%",
+        "%UNHOS%",
+        "%PC-%",
+        "%IP-%"
+    ]
+
+    condiciones = [
+        func.upper(columna).like(patron)
+        for columna in columnas
+        for patron in patrones
+    ]
+
+    consulta = (
+        select(
+            IncidentConsolidated.Ticket_ID,
+            IncidentConsolidated.Descripcion,
+            IncidentConsolidated.Detalle,
+            IncidentConsolidated.Causa,
+            IncidentConsolidated.Solucion
+        )
+        .select_from(IncidentConsolidated)
+        .where(or_(*condiciones))
+    )
+
+    # Reutilizar TODOS los filtros existentes.
+    consulta = aplicar_filtros_dashboard(
+        consulta,
+        filtros
+    )
+
+    # Procesar las filas por lotes para reducir memoria.
+    resultado = db.execute(
+        consulta.execution_options(
+            stream_results=True
+        )
+    )
+
+    return resultado.mappings().yield_per(500)
+
+
+
+
+# ANÁLISIS DE INCIDENTES - CONSULTAR INFORMACIÓN PARA ANÁLISIS DE CAUSAS
+
+def obtener_tickets_para_analisis_causas(
+    db: Session,
+    filtros: IncidentConsolidatedDashboardFilters
+):
+    consulta = (
+        select(
+            IncidentConsolidated.Ticket_ID,
+            IncidentConsolidated.Causa,
+            IncidentConsolidated.Solucion,
+            IncidentConsolidated.Detalle,
+            IncidentConsolidated.Descripcion
+        )
+        .select_from(IncidentConsolidated)
+    )
+
+    # Reutiliza todos los filtros del backend actual.
+    consulta = aplicar_filtros_dashboard(
+        consulta,
+        filtros
+    )
+
+    # Lectura de registros por lotes.
+    resultado = db.execute(
+        consulta.execution_options(
+            stream_results=True
+        )
+    )
+
+    return resultado.mappings().yield_per(300)
+

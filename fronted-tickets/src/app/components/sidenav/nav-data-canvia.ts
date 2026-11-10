@@ -10,6 +10,11 @@ export const navbarDataCanvia = [
     label: 'Incidentes Consolidados'
   },
   {
+    routeLink: 'incident-cause-analysis',
+    icon: 'analytics',
+    label: 'Análisis de Incidentes'
+  },
+  {
     routeLink: 'incidentes-sla',
     icon: 'schedule',
     label: 'Incidentes SLA'

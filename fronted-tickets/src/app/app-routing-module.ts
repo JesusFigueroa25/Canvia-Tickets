@@ -11,6 +11,7 @@ import { RequirementConsolidated } from './components/pages/requirement-consolid
 import { ImportacionesComponent } from './components/pages/importaciones/importaciones.component';
 import { AiChat } from './components/pages/ai-chat/ai-chat';
 import { RequirementCategorizationAudit } from './components/pages/requirement-categorization-audit/requirement-categorization-audit';
+import { IncidentCauseAnalysis } from './components/pages/incident-cause-analysis/incident-cause-analysis';
 
 const routes: Routes = [
   { path: "", component: Landing },
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: "importaciones", component: ImportacionesComponent },
   { path: "centro-ia", component: AiChat },
   { path: "category", component: RequirementCategorizationAudit },
+  { path: "incident-cause-analysis", component: IncidentCauseAnalysis },
 ];
 
 @NgModule({

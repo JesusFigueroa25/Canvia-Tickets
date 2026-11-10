@@ -3,10 +3,14 @@ from datetime import date
 from fastapi import (APIRouter,Depends,File,HTTPException, Query,UploadFile,)
 from sqlalchemy.orm import Session
 from app.database.sqlserver import get_sqlserver_db
-from app.schemas.consolidated_import_schema import (ConsolidatedImportOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedFiltersOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedKPIOut, IncidentConsolidatedPrioridadItem, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedTipoItem, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTopProyectosOut, IncidentConsolidatedVolumenItem,)
+from app.schemas.consolidated_import_schema import (ConsolidatedImportOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedFiltersOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedKPIOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedPrioridadItem, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedTipoItem, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTopProyectosOut, IncidentConsolidatedVolumenItem,)
 from app.schemas.consolidated_import_schema import (IncidentConsolidatedDashboardFilters, IncidentConsolidatedTicketsOut)
 from app.services import (incident_consolidated_service,)
+from app.schemas.consolidated_import_schema import (
+    IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut
+)
 
+    
 router = APIRouter(prefix="/incident-consolidated", tags=["Incident Consolidated"])
 
 
@@ -65,9 +69,7 @@ def _obtener_filtros_dashboard(
 
 
 
-#--------------------------------------------------------------------
 #KPIs
-#--------------------------------------------------------------------
 
 @router.get("/kpis",response_model=IncidentConsolidatedKPIOut)
 def obtener_kpis(
@@ -254,11 +256,7 @@ def obtener_top_detalles(
 
 
 # TABLA PAGINADA - DETALLE DE TICKETS
-
-@router.get(
-    "/tickets",
-    response_model=IncidentConsolidatedTicketsOut
-)
+@router.get("/tickets",response_model=IncidentConsolidatedTicketsOut)
 def obtener_tickets(
     pagina: int = Query(1, ge=1),
     tamano: int = Query(10, ge=1, le=100),
@@ -271,4 +269,118 @@ def obtener_tickets(
         filtros,
         pagina=pagina,
         tamano=tamano
+    )
+
+
+
+# ANÁLISIS DE INCIDENTES
+# DISTRIBUCIÓN POR ATRIBUCIÓN ORIGINAL
+@router.get("/atribucion-incidentes", response_model=IncidentConsolidatedAtribucionOut)
+def obtener_atribucion_incidentes(
+    filtros: IncidentConsolidatedDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db)
+):
+    return incident_consolidated_service.obtener_atribucion_incidentes(
+        db,
+        filtros
+    )
+
+
+# ANÁLISIS DE INCIDENTES
+# TOP DE SERVIDORES CON MÁS INCIDENTES
+@router.get("/top-servidores", response_model=IncidentConsolidatedTopServidoresOut)
+def obtener_top_servidores(
+    limite: int = Query(10, ge=1, le=50),
+    filtros: IncidentConsolidatedDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db)
+):
+    return incident_consolidated_service.obtener_top_servidores(
+        db=db,
+        filtros=filtros,
+        limite=limite
+    )
+
+
+
+# ANÁLISIS DE INCIDENTES
+# ANÁLISIS DE LAS CAUSAS DE LOS INCIDENTES
+@router.get("/analisis-causas", response_model=IncidentConsolidatedAnalisisCausasOut)
+def obtener_analisis_causas(
+    filtros: IncidentConsolidatedDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db)
+):
+    return incident_consolidated_service.obtener_analisis_causas(
+        db=db,
+        filtros=filtros
+    )
+
+
+
+
+# ANALISIS DE INCIDENTES
+# DISTRIBUCION AJUSTADA POR ANALISIS DE CAUSA
+
+@router.get(
+    "/distribucion-ajustada-causas",
+    response_model=IncidentConsolidatedDistribucionAjustadaOut
+)
+def obtener_distribucion_ajustada_causas(
+    filtros: IncidentConsolidatedDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db)
+):
+    return (
+        incident_consolidated_service
+        .obtener_distribucion_ajustada_causas(
+            db=db,
+            filtros=filtros
+        )
+    )
+
+
+
+# ANALISIS DE INCIDENTES - PRINCIPALES HALLAZGOS
+@router.get("/principales-hallazgos",response_model=IncidentConsolidatedPrincipalesHallazgosOut)
+def obtener_principales_hallazgos(
+    incluir_servidores: bool = Query(False),
+    filtros: IncidentConsolidatedDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db)
+):
+    return (
+        incident_consolidated_service
+        .obtener_principales_hallazgos(
+            db=db,
+            filtros=filtros,
+            incluir_servidores=incluir_servidores
+        )
+    )
+
+
+
+# ANALISIS DE INCIDENTES - CONCLUSIONES
+
+@router.get(
+    "/conclusiones",
+    response_model=IncidentConsolidatedConclusionesOut
+)
+def obtener_conclusiones(
+    incluir_servidores: bool = Query(False),
+    filtros: IncidentConsolidatedDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db)
+):
+    return incident_consolidated_service.obtener_conclusiones(
+        db=db,
+        filtros=filtros,
+        incluir_servidores=incluir_servidores
     )

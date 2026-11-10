@@ -7,6 +7,7 @@ export interface IncidentConsolidatedFilters {
   grupos_resolutores: string[];
   proyectos: string[];
   nombres_resolutores: string[];
+  tipos_incidente?: string[];
 }
 
 
@@ -250,4 +251,141 @@ export interface IncidentConsolidatedTicketsPorResolutorOut {
   limite: number;
   periodos: IncidentConsolidatedRendimientoPeriodoItem[];
   resolutores: IncidentConsolidatedRendimientoResolutorItem[];
+}
+
+
+
+
+/* ANALISIS DE INCIDENTES - ATRIBUCION ORIGINAL*/
+export interface IncidentConsolidatedAtribucionItem {
+  atribucion: string;
+  tickets: number;
+  porcentaje: number;
+}
+
+export interface IncidentConsolidatedAtribucionOut {
+  total_tickets: number;
+  total_atribuidos: number;
+  sin_atribucion: number;
+  distribucion: IncidentConsolidatedAtribucionItem[];
+}
+
+
+/* ANALISIS DE INCIDENTES - TOP DE SERVIDORES*/
+export interface IncidentConsolidatedServidorItem {
+  servidor: string;
+  incidentes: number;
+  porcentaje: number;
+  tickets_ejemplo: string[];
+}
+
+export interface IncidentConsolidatedTopServidoresOut {
+  total_incidentes: number;
+  incidentes_con_servidor: number;
+  incidentes_sin_servidor: number;
+  total_servidores_identificados: number;
+  total_asociaciones: number;
+  limite: number;
+  servidores: IncidentConsolidatedServidorItem[];
+}
+
+
+/* ANALISIS DE INCIDENTES - ANALISIS DE CAUSAS*/
+export interface IncidentConsolidatedCausaEvidenciaItem {
+  ticket_id: string;
+  campo: string;
+  texto: string;
+}
+
+export interface IncidentConsolidatedCausaAnalisisItem {
+  categoria: string;
+  incidentes: number;
+  porcentaje: number;
+  es_causa_identificada: boolean;
+  accion_recomendada: string;
+  evidencias: IncidentConsolidatedCausaEvidenciaItem[];
+}
+
+export interface IncidentConsolidatedAnalisisCausasOut {
+  total_incidentes: number;
+  con_factor_tecnico: number;
+  sin_causa_determinada: number;
+  casos_multifactor: number;
+  metodologia: string;
+  causas: IncidentConsolidatedCausaAnalisisItem[];
+  tickets_para_revision: string[];
+}
+
+
+/* ANALISIS DE INCIDENTES - DISTRIBUCION AJUSTADA*/
+export interface IncidentConsolidatedComparacionAtribucionItem {
+  atribucion: string;
+  tickets_originales: number;
+  tickets_ajustados: number;
+  variacion_tickets: number;
+  porcentaje_original: number;
+  porcentaje_ajustado: number;
+}
+
+export interface IncidentConsolidatedDistribucionAjustadaOut {
+  total_tickets: number;
+
+  total_atribuidos_original: number;
+  total_atribuidos_ajustado: number;
+
+  sin_atribucion_original: number;
+  sin_atribucion_ajustado: number;
+
+  reglas_aprobadas: number;
+  ajustes_aplicados: number;
+  ajustes_habilitados: boolean;
+
+  estado_ajuste: string;
+  metodologia: string;
+
+  distribucion_original: IncidentConsolidatedAtribucionItem[];
+  distribucion_ajustada: IncidentConsolidatedAtribucionItem[];
+
+  comparacion: IncidentConsolidatedComparacionAtribucionItem[];
+}
+
+
+/* ANALISIS DE INCIDENTES - PRINCIPALES HALLAZGOS*/
+export interface IncidentConsolidatedHallazgoItem {
+  codigo: string;
+  tipo: string;
+  titulo: string;
+  descripcion: string;
+  valor: number;
+  porcentaje: number | null;
+  denominador: number | null;
+  requiere_validacion: boolean;
+}
+
+export interface IncidentConsolidatedPrincipalesHallazgosOut {
+  total_incidentes: number;
+  total_hallazgos: number;
+  estado_ajuste: string;
+  metodologia: string;
+  hallazgos: IncidentConsolidatedHallazgoItem[];
+}
+
+
+/* ANALISIS DE INCIDENTES - CONCLUSIONES*/
+export interface IncidentConsolidatedConclusionItem {
+  codigo: string;
+  tipo: string;
+  titulo: string;
+  conclusion: string;
+  recomendacion: string;
+  hallazgos_referencia: string[];
+  requiere_validacion: boolean;
+}
+
+export interface IncidentConsolidatedConclusionesOut {
+  total_incidentes: number;
+  total_conclusiones: number;
+  estado_ajuste: string;
+  metodologia: string;
+  conclusiones: IncidentConsolidatedConclusionItem[];
 }

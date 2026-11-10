@@ -1,0 +1,111 @@
+
+<section class="comparison-card">
+
+  <div class="card-header">
+
+    <div>
+      <h2>Distribución ajustada por análisis de causa</h2>
+
+      <p>
+        Comparación entre la atribución original de
+        ServiceAIDE y los ajustes validados.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">bar_chart</mat-icon>
+
+  </div>
+
+
+  <!-- CARGANDO -->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando comparación de atribuciones...
+  </div>
+
+
+  <!-- ERROR -->
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <!-- LEYENDA -->
+    <div class="chart-legend">
+
+      <div class="legend-item">
+        <span class="legend-dot original"></span>
+        Atribución original
+      </div>
+
+      <div class="legend-item">
+        <span class="legend-dot ajustada"></span>
+        Atribución ajustada
+      </div>
+
+    </div>
+
+
+    <!-- GRAFICO COMPARATIVO -->
+    <div class="chart-area">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+        [plugins]="chartPlugins"
+        aria-label="Comparación de atribución original y ajustada">
+      </canvas>
+
+    </div>
+
+
+    <!-- RESUMEN -->
+    <div class="summary-grid">
+
+      <div>
+        <span>Incidentes analizados</span>
+
+        <strong>
+          {{ datos!.total_tickets | number:'1.0-0' }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Ajustes aplicados</span>
+
+        <strong>
+          {{ datos!.ajustes_aplicados | number:'1.0-0' }}
+        </strong>
+      </div>
+
+    </div>
+
+
+    <div
+      class="adjustment-note"
+      *ngIf="!ajustesPendientes && datos?.estado_ajuste">
+
+      <mat-icon>info_outline</mat-icon>
+      <span>Estado: {{ datos?.estado_ajuste }}</span>
+
+    </div>
+
+  </ng-container>
+
+
+  <!-- SIN DATOS -->
+  <div
+    class="empty-state"
+    *ngIf="!cargando && !error && !tieneDatos">
+
+    <mat-icon>bar_chart</mat-icon>
+
+
+  </div>
+
+</section>
