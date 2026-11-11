@@ -8,14 +8,19 @@ import { IncidentConsolidatedService } from '../../../services/incident-consolid
 import { IncidentSlaService } from '../../../services/incident-sla.service';
 import { RequirementConsolidatedService } from '../../../services/requirement-consolidated.service';
 import { RequirementSlaService } from '../../../services/requirement-sla.service';
+import { TaskConsolidatedService } from '../../../services/task-consolidated.service';
 
-import { ArchivoImportacion, ImportResultado } from '../../../models/import-result';
+import {
+    ArchivoImportacion,
+    ImportResultado
+} from '../../../models/import-result';
 
 type TipoImportacion =
     | 'incident-sla'
     | 'incident-consolidated'
     | 'requirement-consolidated'
-    | 'requirement-sla';
+    | 'requirement-sla'
+    | 'task-consolidated';
 
 interface ModuloImportacion {
     id: TipoImportacion;
@@ -56,6 +61,11 @@ export class ImportacionesComponent {
             id: 'requirement-sla',
             titulo: 'Requerimiento SLA',
             descripcion: 'Importación de requerimientos y mediciones de cumplimiento SLA.'
+        },
+        {
+            id: 'task-consolidated',
+            titulo: 'Tareas Consolidadas',
+            descripcion: 'Importación y actualización del consolidado de tareas, con validación de duplicados por ALP y proyecto.'
         }
     ];
 
@@ -63,7 +73,8 @@ export class ImportacionesComponent {
         'incident-sla': this.crearEstado(),
         'incident-consolidated': this.crearEstado(),
         'requirement-consolidated': this.crearEstado(),
-        'requirement-sla': this.crearEstado()
+        'requirement-sla': this.crearEstado(),
+        'task-consolidated': this.crearEstado()
     };
 
     private siguienteArchivoId = 1;
@@ -73,6 +84,7 @@ export class ImportacionesComponent {
         private incidentSlaService: IncidentSlaService,
         private requirementConsolidatedService: RequirementConsolidatedService,
         private requirementSlaService: RequirementSlaService,
+        private taskConsolidatedService: TaskConsolidatedService,
         private cdr: ChangeDetectorRef
     ) {}
 
@@ -84,6 +96,7 @@ export class ImportacionesComponent {
     }
 
     agregarArchivos(id: TipoImportacion, archivos: File[]): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -91,12 +104,15 @@ export class ImportacionesComponent {
         }
 
         const existentes = new Set(
-            estado.archivos.map(item => this.obtenerClaveArchivo(item.archivo))
+            estado.archivos.map(
+                item => this.obtenerClaveArchivo(item.archivo)
+            )
         );
 
         const nuevos: ArchivoImportacion[] = [];
 
         for (const archivo of archivos) {
+
             const clave = this.obtenerClaveArchivo(archivo);
 
             if (existentes.has(clave)) {
@@ -122,7 +138,11 @@ export class ImportacionesComponent {
         this.cdr.markForCheck();
     }
 
-    quitarArchivo(id: TipoImportacion, archivoId: number): void {
+    quitarArchivo(
+        id: TipoImportacion,
+        archivoId: number
+    ): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -137,6 +157,7 @@ export class ImportacionesComponent {
     }
 
     limpiarLista(id: TipoImportacion): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -149,6 +170,7 @@ export class ImportacionesComponent {
     }
 
     importarExcel(id: TipoImportacion): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -156,7 +178,9 @@ export class ImportacionesComponent {
         }
 
         const pendientes = estado.archivos.filter(
-            item => item.estado === 'pendiente' || item.estado === 'error'
+            item =>
+                item.estado === 'pendiente' ||
+                item.estado === 'error'
         );
 
         if (!pendientes.length) {
@@ -164,37 +188,51 @@ export class ImportacionesComponent {
         }
 
         estado.cargando = true;
+
         this.cdr.markForCheck();
 
         from(pendientes)
             .pipe(
                 concatMap(item => {
+
                     item.estado = 'procesando';
                     item.error = null;
                     item.resultado = null;
 
                     this.cdr.markForCheck();
 
-                    return this.ejecutarImportacion(id, item.archivo)
-                        .pipe(
-                            tap(resultado => {
-                                item.resultado = resultado;
-                                item.estado = 'completado';
+                    return this.ejecutarImportacion(
+                        id,
+                        item.archivo
+                    ).pipe(
 
-                                this.cdr.markForCheck();
-                            }),
-                            catchError(error => {
-                                item.estado = 'error';
-                                item.error = this.obtenerMensajeError(error);
+                        tap(resultado => {
 
-                                this.cdr.markForCheck();
+                            item.resultado = resultado;
+                            item.estado = 'completado';
 
-                                return EMPTY;
-                            })
-                        );
+                            this.cdr.markForCheck();
+                        }),
+
+                        catchError(error => {
+
+                            item.estado = 'error';
+
+                            item.error = this.obtenerMensajeError(
+                                error
+                            );
+
+                            this.cdr.markForCheck();
+
+                            return EMPTY;
+                        })
+                    );
                 }),
+
                 finalize(() => {
+
                     estado.cargando = false;
+
                     this.cdr.markForCheck();
                 })
             )
@@ -202,7 +240,12 @@ export class ImportacionesComponent {
     }
 
     private obtenerClaveArchivo(archivo: File): string {
-        return `${archivo.name}|${archivo.size}|${archivo.lastModified}`;
+
+        return (
+            `${archivo.name}|` +
+            `${archivo.size}|` +
+            `${archivo.lastModified}`
+        );
     }
 
     private ejecutarImportacion(
@@ -211,21 +254,36 @@ export class ImportacionesComponent {
     ): Observable<ImportResultado> {
 
         switch (id) {
+
             case 'incident-sla':
-                return this.incidentSlaService.importarExcel(archivo);
+                return this.incidentSlaService.importarExcel(
+                    archivo
+                );
 
             case 'incident-consolidated':
-                return this.incidentConsolidatedService.importarExcel(archivo);
+                return this.incidentConsolidatedService.importarExcel(
+                    archivo
+                );
 
             case 'requirement-consolidated':
-                return this.requirementConsolidatedService.importarExcel(archivo);
+                return this.requirementConsolidatedService.importarExcel(
+                    archivo
+                );
 
             case 'requirement-sla':
-                return this.requirementSlaService.importarExcel(archivo);
+                return this.requirementSlaService.importarExcel(
+                    archivo
+                );
+
+            case 'task-consolidated':
+                return this.taskConsolidatedService.importarExcel(
+                    archivo
+                );
         }
     }
 
     private obtenerMensajeError(error: unknown): string {
+
         if (!(error instanceof HttpErrorResponse)) {
             return 'Se produjo un error inesperado durante la importación.';
         }
@@ -242,7 +300,9 @@ export class ImportacionesComponent {
 
         if (Array.isArray(detalle)) {
             return detalle
-                .map(item => item.msg || 'Error de validación')
+                .map(
+                    item => item.msg || 'Error de validación'
+                )
                 .join('. ');
         }
 
@@ -257,6 +317,7 @@ export class ImportacionesComponent {
         index: number,
         modulo: ModuloImportacion
     ): TipoImportacion {
+
         return modulo.id;
     }
 }

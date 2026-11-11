@@ -9,7 +9,9 @@ from app.controllers import (etl_test_controller,
                              auth_controller,
                              home_controller, 
                              ai_chat_controller,
-                             requirement_categorization_audit_controller
+                             requirement_categorization_audit_controller,
+                             task_consolidated_controller,
+                             daily_report_controller,
                              )
 from app.database.database import Base, engine
 from app.models.import_run_model import ImportRun
@@ -25,6 +27,8 @@ app.include_router(auth_controller.router)
 app.include_router(home_controller.router)
 app.include_router(ai_chat_controller.router)
 app.include_router(requirement_categorization_audit_controller.router)
+app.include_router(task_consolidated_controller.router)
+app.include_router(daily_report_controller.router)
 
 @app.get("/")
 def root():

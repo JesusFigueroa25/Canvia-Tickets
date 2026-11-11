@@ -5,6 +5,11 @@ export const navbarDataCanvia = [
     label: 'Home'
   },
   {
+    routeLink: 'report-diary',
+    icon: 'menu_book', 
+    label: 'Reporte Diario' 
+  },
+  {
     routeLink: 'incidentes-consolidados',
     icon: 'warning',
     label: 'Incidentes Consolidados'

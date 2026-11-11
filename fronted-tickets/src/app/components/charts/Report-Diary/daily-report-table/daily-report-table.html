@@ -1,0 +1,103 @@
+<section class="table-card" aria-label="Tabla del Reporte Diario">
+
+  <div class="table-header">
+    <div class="table-header-content">
+      <h2>Detalle Diario de Tickets</h2>
+      <p>Incidentes, requerimientos y tareas registrados por Fecha Acción.</p>
+    </div>
+
+    <div class="table-header-actions">
+      <span class="days-counter" *ngIf="cantidadDias > 0">
+        {{ cantidadDias }} {{ cantidadDias === 1 ? 'día' : 'días' }}
+      </span>
+
+      <button
+        *ngIf="habilitarPantallaCompleta"
+        type="button"
+        class="table-expand-btn"
+        (click)="pantallaCompletaSolicitada.emit()"
+        [title]="pantallaCompletaActiva ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+        [attr.aria-label]="pantallaCompletaActiva ? 'Salir de pantalla completa de la tabla' : 'Ampliar tabla diaria'">
+        <mat-icon aria-hidden="true">
+          {{ pantallaCompletaActiva ? 'fullscreen_exit' : 'fullscreen' }}
+        </mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container" *ngIf="cantidadDias > 0; else estadoVacio">
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      matSort
+      matSortActive="fecha_accion"
+      matSortDirection="asc"
+      matSortDisableClear
+      aria-label="Cantidad diaria de incidentes, requerimientos y tareas">
+
+      <!-- FECHA ACCIÓN -->
+      <ng-container matColumnDef="fecha_accion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Acción</th>
+        <td mat-cell *matCellDef="let fila" class="date-cell">
+          {{ formatearFecha(fila.fecha_accion) }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef class="total-label">Total</td>
+      </ng-container>
+
+      <!-- TOTAL DE TICKETS -->
+      <ng-container matColumnDef="total_tickets">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric">Tickets</th>
+        <td mat-cell *matCellDef="let fila" class="numeric main-total">
+          {{ fila.total_tickets | number:'1.0-0' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef class="numeric">
+          {{ totales.total_tickets | number:'1.0-0' }}
+        </td>
+      </ng-container>
+
+      <!-- INCIDENTES -->
+      <ng-container matColumnDef="incidentes">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric">Incidentes</th>
+        <td mat-cell *matCellDef="let fila" class="numeric">
+          {{ fila.incidentes | number:'1.0-0' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef class="numeric">
+          {{ totales.incidentes | number:'1.0-0' }}
+        </td>
+      </ng-container>
+
+      <!-- REQUERIMIENTOS -->
+      <ng-container matColumnDef="requerimientos">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric">Requerimientos</th>
+        <td mat-cell *matCellDef="let fila" class="numeric">
+          {{ fila.requerimientos | number:'1.0-0' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef class="numeric">
+          {{ totales.requerimientos | number:'1.0-0' }}
+        </td>
+      </ng-container>
+
+      <!-- TAREAS -->
+      <ng-container matColumnDef="tareas">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric">Tareas</th>
+        <td mat-cell *matCellDef="let fila" class="numeric">
+          {{ fila.tareas | number:'1.0-0' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef class="numeric">
+          {{ totales.tareas | number:'1.0-0' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let fila; columns: displayedColumns"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
+    </table>
+  </div>
+
+  <ng-template #estadoVacio>
+    <div class="table-empty" role="status">
+      {{ cargando ? 'Cargando tabla diaria...' : 'No hay tickets para el período seleccionado.' }}
+    </div>
+  </ng-template>
+
+</section>

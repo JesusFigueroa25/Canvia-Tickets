@@ -1,0 +1,234 @@
+<div class="daily-report-page">
+
+  <!-- CABECERA -->
+  <header class="page-header">
+    <div class="page-header-content">
+      <h1>Reporte Diario INC / REQ / Tareas</h1>
+      <p>
+        Seguimiento de tickets aperturados por día, grupo resolutor y proyecto.
+        Fecha Acción corresponde a Fecha de Apertura.
+      </p>
+    </div>
+  </header>
+
+  <!-- FILTROS GLOBALES -->
+  <section class="filters-card" aria-label="Filtros del Reporte Diario">
+    <div class="section-heading">
+      <div>
+        <h2>Filtros del reporte</h2>
+        <p>Selecciona el período y el alcance operativo de la consulta.</p>
+      </div>
+      <mat-icon aria-hidden="true">tune</mat-icon>
+    </div>
+
+    <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      <div class="filter-field">
+        <label for="daily-report-desde">Desde</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input id="daily-report-desde" matInput [matDatepicker]="pickerDesde" formControlName="desde"
+            [min]="fechaMinima" [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+          <mat-datepicker #pickerDesde></mat-datepicker>
+          <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
+            La fecha Desde es obligatoria.
+          </mat-error>
+          <mat-error
+            *ngIf="filtrosForm.get('desde')?.hasError('matDatepickerMin') || filtrosForm.get('desde')?.hasError('matDatepickerMax')">
+            Fecha fuera del rango disponible.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="daily-report-hasta">Hasta</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input id="daily-report-hasta" matInput [matDatepicker]="pickerHasta" formControlName="hasta"
+            [min]="fechaMinima" [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
+          <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+          <mat-datepicker #pickerHasta></mat-datepicker>
+          <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
+            La fecha Hasta es obligatoria.
+          </mat-error>
+          <mat-error
+            *ngIf="filtrosForm.get('hasta')?.hasError('matDatepickerMin') || filtrosForm.get('hasta')?.hasError('matDatepickerMax')">
+            Fecha fuera del rango disponible.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="daily-report-grupo">Grupo Resolutor</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="daily-report-grupo" formControlName="grupo_resolutor" placeholder="Todos los grupos">
+            <mat-option [value]="null">Todos los grupos</mat-option>
+            <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo" [title]="grupo">
+              {{ grupo }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
+      <div class="filter-field">
+
+        <label for="daily-report-proyecto">Proyecto</label>
+
+        <mat-form-field appearance="outline" class="full-width">
+
+          <mat-select id="daily-report-proyecto" formControlName="proyecto" placeholder="Todos los proyectos"
+            panelClass="daily-report-project-panel" (openedChange)="alAbrirComboProyecto($event)">
+
+            <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
+
+              <mat-icon>search</mat-icon>
+
+              <input type="text" placeholder="Buscar proyecto..." aria-label="Buscar proyecto"
+                [value]="busquedaProyecto" (input)="buscarProyecto($event)" (click)="$event.stopPropagation()">
+
+              <button *ngIf="busquedaProyecto" type="button" class="combo-clear"
+                aria-label="Limpiar búsqueda de proyecto" (click)="limpiarBusquedaProyecto($event)">
+
+                <mat-icon>close</mat-icon>
+
+              </button>
+
+            </div>
+
+            <mat-option [value]="null">
+              Todos los proyectos
+            </mat-option>
+
+            <mat-option *ngFor="let proyecto of proyectosFiltrados" [value]="proyecto" [title]="proyecto">
+
+              {{ proyecto }}
+
+            </mat-option>
+
+            <mat-option *ngIf="proyectosFiltrados.length === 0" disabled>
+
+              No se encontraron proyectos
+
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+
+      </div>
+
+
+
+
+
+      <div class="filter-actions">
+        <button mat-stroked-button type="button" class="clear-button" (click)="limpiarFiltros()"
+          [disabled]="!filtrosListos || cargandoFiltros">
+          <mat-icon>restart_alt</mat-icon>
+          Limpiar
+        </button>
+
+        <button mat-flat-button type="submit" class="apply-button"
+          [disabled]="!filtrosListos || cargandoFiltros || filtrosForm.invalid">
+          <mat-icon>filter_alt</mat-icon>
+          Aplicar
+        </button>
+      </div>
+    </form>
+
+    <p class="range-error" *ngIf="filtrosForm.hasError('rangoFechasInvalido') && filtrosForm.touched" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      La fecha Desde no puede ser posterior a Hasta.
+    </p>
+
+    <div class="available-range" *ngIf="opcionesFiltros.fecha_min && opcionesFiltros.fecha_max">
+      <mat-icon aria-hidden="true">info_outline</mat-icon>
+      <span>
+        Datos disponibles: {{ opcionesFiltros.fecha_min }} al {{ opcionesFiltros.fecha_max }}
+      </span>
+    </div>
+  </section>
+
+  <!-- ESTADOS DE CARGA Y ERROR -->
+  <section class="status-card loading-card" *ngIf="cargandoFiltros" role="status" aria-live="polite">
+    <span class="loading-indicator" aria-hidden="true"></span>
+    Cargando filtros del Reporte Diario...
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorFiltros" role="alert">
+    <mat-icon aria-hidden="true">error_outline</mat-icon>
+    <span>{{ errorFiltros }}</span>
+    <button mat-stroked-button type="button" (click)="cargarOpcionesFiltros()">
+      Reintentar
+    </button>
+  </section>
+
+  <section class="status-card loading-card" *ngIf="cargandoDashboard" role="status" aria-live="polite">
+    <span class="loading-indicator" aria-hidden="true"></span>
+    Actualizando indicadores del Reporte Diario...
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorDashboard" role="alert">
+    <mat-icon aria-hidden="true">error_outline</mat-icon>
+    {{ errorDashboard }}
+  </section>
+
+  <!-- KPIs: se reutiliza el componente existente app-kpi-card -->
+  <section class="kpis-wrapper" *ngIf="kpis as indicadores" aria-label="Indicadores del Reporte Diario">
+   
+
+    <div class="kpis-section">
+      <app-kpi-card titulo="N.º de Tickets" [valor]="indicadores.total_tickets" icono="confirmation_number"
+        color="orange"></app-kpi-card>
+
+      <app-kpi-card titulo="Incidentes" [valor]="indicadores.total_incidentes" icono="report_problem"
+        color="orange"></app-kpi-card>
+
+      <app-kpi-card titulo="Requerimientos" [valor]="indicadores.total_requerimientos" icono="assignment"
+        color="green"></app-kpi-card>
+
+      <app-kpi-card titulo="Tareas" [valor]="indicadores.total_tareas" icono="task_alt" color="green"></app-kpi-card>
+    </div>
+  </section>
+
+  <section class="status-card empty-card" *ngIf="!cargandoDashboard && !errorDashboard && kpis?.total_tickets === 0"
+    role="status">
+    <mat-icon aria-hidden="true">info_outline</mat-icon>
+    No se encontraron tickets para los filtros seleccionados.
+  </section>
+
+
+
+  <!-- TABLA Y GRÁFICO DEL REPORTE DIARIO -->
+  <section class="daily-report-visuals" *ngIf="kpis && !errorDashboard">
+
+    <!-- TABLA DIARIA -->
+    <div class="daily-report-fullscreen" id="fullscreen-tabla-diaria" #tablaDiariaFs>
+
+      <app-daily-report-table [datos]="datosDiarios" [cargando]="cargandoDashboard" [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="
+        graficoExpandido === 'fullscreen-tabla-diaria'
+      " (pantallaCompletaSolicitada)="
+        alternarPantallaCompleta(tablaDiariaFs)
+      ">
+      </app-daily-report-table>
+
+    </div>
+
+    <!-- GRÁFICO DIARIO -->
+    <div class="daily-report-fullscreen" id="fullscreen-grafico-diario" #graficoDiarioFs>
+
+      <app-daily-report-chart [datos]="datosDiarios" [cargando]="cargandoDashboard" [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="
+        graficoExpandido === 'fullscreen-grafico-diario'
+      " (pantallaCompletaSolicitada)="
+        alternarPantallaCompleta(graficoDiarioFs)
+      ">
+      </app-daily-report-chart>
+
+    </div>
+
+  </section>
+
+
+
+</div>

@@ -1,0 +1,45 @@
+<section class="chart-card" aria-label="Volumen diario de tickets">
+
+  <div class="chart-header">
+    <div class="chart-header-content">
+      <h2>Incidentes, Requerimientos y Tareas por Fecha Acción</h2>
+      <p>Comparación diaria de tickets aperturados en los tres consolidados.</p>
+    </div>
+
+    <!-- PANTALLA COMPLETA: evento controlado por el componente padre -->
+    <button
+      *ngIf="habilitarPantallaCompleta"
+      type="button"
+      class="chart-expand-btn"
+      (click)="pantallaCompletaSolicitada.emit()"
+      [title]="pantallaCompletaActiva ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+      [attr.aria-label]="pantallaCompletaActiva ? 'Salir de pantalla completa del gráfico' : 'Ampliar gráfico diario'">
+      <mat-icon aria-hidden="true">
+        {{ pantallaCompletaActiva ? 'fullscreen_exit' : 'fullscreen' }}
+      </mat-icon>
+    </button>
+  </div>
+
+  <ng-container *ngIf="registrosOrdenados.length > 0; else estadoVacio">
+    <div class="chart-scroll" tabindex="0" aria-label="Desplazar las fechas del gráfico">
+      <div class="chart-container" [style.min-width.px]="anchoMinimoGrafico">
+        <canvas
+          baseChart
+          [data]="chartData"
+          [options]="chartOptions"
+          [plugins]="chartPlugins"
+          [type]="'bar'"
+          role="img"
+          aria-label="Gráfico de barras agrupadas de incidentes, requerimientos y tareas por fecha">
+        </canvas>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #estadoVacio>
+    <div class="chart-empty" role="status">
+      {{ cargando ? 'Cargando gráfico diario...' : 'No hay datos para el período seleccionado.' }}
+    </div>
+  </ng-template>
+
+</section>

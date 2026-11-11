@@ -72,6 +72,9 @@ import { IncidentCauseDistributionChart } from './components/charts/Consolidated
 import { IncidentCauseEvidenceTable } from './components/charts/Consolidated/incident-cause-evidence-table/incident-cause-evidence-table';
 import { IncidentTopServersChart } from './components/charts/Consolidated/incident-top-servers-chart/incident-top-servers-chart';
 import { IncidentCauseReport } from './components/charts/Consolidated/incident-cause-report/incident-cause-report';
+import { DailyReport } from './components/pages/daily-report/daily-report';
+import { DailyReportTable } from './components/charts/Report-Diary/daily-report-table/daily-report-table';
+import { DailyReportChart } from './components/charts/Report-Diary/daily-report-chart/daily-report-chart';
 
 @NgModule({
   declarations: [
@@ -137,6 +140,9 @@ import { IncidentCauseReport } from './components/charts/Consolidated/incident-c
     IncidentCauseEvidenceTable,
     IncidentTopServersChart,
     IncidentCauseReport,
+    DailyReport,
+    DailyReportTable,
+    DailyReportChart,
   ],
   imports: [
     BrowserAnimationsModule,
