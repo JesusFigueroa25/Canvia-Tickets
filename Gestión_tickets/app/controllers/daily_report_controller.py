@@ -42,6 +42,33 @@ class DailyReportSummaryOut(BaseModel):
     diario: list[DailyReportDayOut]
 
 
+class DailyReportProyectoItem(BaseModel):
+    proyecto: str
+    cantidad: int
+
+
+class DailyReportTopPeriodoItem(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+
+
+class DailyReportTopMesItem(BaseModel):
+    periodo: str
+    tickets: int
+
+
+class DailyReportTopProyectoItem(BaseModel):
+    proyecto: str
+    total_tickets: int
+    mensual: list[DailyReportTopMesItem]
+
+
+class DailyReportTopProyectosOut(BaseModel):
+    periodos: list[DailyReportTopPeriodoItem]
+    proyectos: list[DailyReportTopProyectoItem]
+
+
 # FILTROS COMPARTIDOS
 def _obtener_filtros_dashboard(
     desde: date | None = None,
@@ -104,3 +131,36 @@ def obtener_diario(
     db: Session = Depends(get_sqlserver_db),
 ):
     return _consultar_resumen(db, filtros)["diario"]
+
+
+
+@router.get("/proyectos",response_model=list[DailyReportProyectoItem])
+def obtener_proyectos(
+    filtros: DailyReportDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return daily_report_service.obtener_proyectos(
+        db,
+        desde=filtros.desde,
+        hasta=filtros.hasta,
+        grupo_resolutor=filtros.grupo_resolutor,
+        proyecto=filtros.proyecto,
+    )
+
+
+@router.get("/top-proyectos",response_model=DailyReportTopProyectosOut)
+def obtener_top_proyectos(
+    filtros: DailyReportDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return daily_report_service.obtener_top_proyectos(
+        db,
+        desde=filtros.desde,
+        hasta=filtros.hasta,
+        grupo_resolutor=filtros.grupo_resolutor,
+        proyecto=filtros.proyecto,
+    )

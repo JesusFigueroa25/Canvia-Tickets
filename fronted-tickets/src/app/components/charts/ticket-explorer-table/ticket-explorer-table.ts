@@ -12,11 +12,14 @@ import {
 import { PageEvent } from '@angular/material/paginator';
 
 
+
 export type TipoDashboardTickets =
   | 'incident-consolidated'
   | 'incident-sla'
   | 'requirement-consolidated'
-  | 'requirement-sla';
+  | 'requirement-sla'
+  | 'task-consolidated';
+
 
 
 export interface TablaTicketsPaginados {
@@ -70,6 +73,32 @@ const COLUMNAS_REQUERIMIENTOS_CONSOLIDADOS =
   COLUMNAS_CONSOLIDADOS.filter(
     columna => columna.clave !== 'Causa'
   );
+
+const COLUMNAS_TAREAS_CONSOLIDADAS: ColumnaTicket[] = [
+  { clave: 'Ticket_ID', titulo: 'Ticket ID' },
+  { clave: 'Ticket_Padre', titulo: 'Ticket Padre' },
+  { clave: 'Fecha_Apertura', titulo: 'Fecha Apertura', fecha: true },
+  { clave: 'Fecha_Resolucion', titulo: 'Fecha Resolución', fecha: true },
+  { clave: 'Fecha_Cierre', titulo: 'Fecha Cierre', fecha: true },
+  { clave: 'Fecha_Ultima_Modificacion', titulo: 'Última Modificación', fecha: true },
+  { clave: 'Proyecto', titulo: 'Proyecto' },
+  { clave: 'ALP', titulo: 'ALP' },
+  { clave: 'BU', titulo: 'BU' },
+  { clave: 'Grupo_Resolutor', titulo: 'Grupo Resolutor' },
+  { clave: 'Nombre_Resolutor', titulo: 'Nombre Resolutor' },
+  { clave: 'Categorizacion_Nivel_1', titulo: 'Categorización Nivel 1' },
+  { clave: 'Categorizacion_Nivel_2', titulo: 'Categorización Nivel 2' },
+  { clave: 'Categorizacion_Nivel_3', titulo: 'Categorización Nivel 3' },
+  { clave: 'Prioridad', titulo: 'Prioridad' },
+  { clave: 'Urgencia', titulo: 'Urgencia' },
+  { clave: 'Impacto', titulo: 'Impacto' },
+  { clave: 'Estado', titulo: 'Estado' },
+  { clave: 'Motivo_Estado', titulo: 'Motivo Estado' },
+  { clave: 'Descripcion', titulo: 'Descripción', larga: true },
+  { clave: 'Detalle', titulo: 'Detalle', larga: true },
+  { clave: 'Fuente_Reportada', titulo: 'Fuente Reportada' }
+];
+
 
 
 // COLUMNAS DE INCIDENTES SLA Y REQUERIMIENTOS SLA
@@ -168,9 +197,15 @@ export class TicketExplorerTable implements OnChanges {
         break;
 
       case 'incident-sla':
+
       case 'requirement-sla':
         this.columnas = COLUMNAS_SLA;
         break;
+
+      case 'task-consolidated':
+        this.columnas = COLUMNAS_TAREAS_CONSOLIDADAS;
+        break;
+
 
       default:
         this.columnas = COLUMNAS_CONSOLIDADOS;
@@ -199,6 +234,10 @@ export class TicketExplorerTable implements OnChanges {
 
       case 'requirement-sla':
         return 'Requerimientos SLA';
+
+      case 'task-consolidated':
+        return 'Tareas Consolidadas';
+
     }
   }
 

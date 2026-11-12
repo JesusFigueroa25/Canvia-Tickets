@@ -49,11 +49,7 @@ def _bloquear_importacion(db: Session) -> None:
         )
 
 
-# ============================================================
 # ACTUALIZACION DE AUDITORIA PARA TAREAS
-# ============================================================
-
-
 def _actualizar_auditoria_task(
     db: Session,
     ejecucion: ImportRun,
@@ -75,7 +71,6 @@ def _actualizar_auditoria_task(
     La lectura posterior verifica el registro por su clave primaria,
     sin confiar en el número de filas reportado por el driver.
     """
-    # Garantizar que el registro inicial existe y tiene identificador.
     db.flush()
     ejecucion_id = ejecucion.Eir_ID
     if ejecucion_id is None:
@@ -96,8 +91,6 @@ def _actualizar_auditoria_task(
         "Eir_Error_Mensaje": error_mensaje,
     }
 
-    # Se usa Connection.execute con una tabla Core, no se modifica
-    # el objeto ORM para evitar su UPDATE durante un db.flush().
     conexion = db.connection()
     conexion.execute(
         update(tabla)
@@ -115,11 +108,7 @@ def _actualizar_auditoria_task(
         )
 
 
-# ============================================================
 # IMPORTACION CON AUDITORIA Y TRANSACCION SQL SERVER
-# ============================================================
-
-
 def importar(db: Session, archivo, nombre_archivo: str | None = None) -> dict:
     fecha_inicio = datetime.now()
 
@@ -147,12 +136,10 @@ def importar(db: Session, archivo, nombre_archivo: str | None = None) -> dict:
         df, filas_excel, duplicados = procesar_task_consolidated(archivo)
         filas_procesadas = len(df)
 
-        # STAGING: todos los registros son únicos tras el ETL (ALP/Proyecto).
         task_consolidated_repository.limpiar_staging(db)
         filas_staging = task_consolidated_repository.cargar_staging(db, df)
         db.flush()
 
-        # Comparación de los 22 campos frente a los tickets ya existentes.
         df_staging = task_consolidated_repository.obtener_staging(db)
         df_oficial = task_consolidated_repository.obtener_oficial(db)
         clasificacion = detectar_cambios(df_staging, df_oficial)
@@ -186,8 +173,6 @@ def importar(db: Session, archivo, nombre_archivo: str | None = None) -> dict:
         db.rollback()
         logger.exception("Falló la importación de Tareas Consolidadas")
 
-        # El registro del intento anterior se revierte junto con la transacción;
-        # por ello se crea una auditoría de error en una transacción nueva.
         try:
             intento_fallido = import_run_repository.crear(
                 db=db,
@@ -225,11 +210,7 @@ def importar(db: Session, archivo, nombre_archivo: str | None = None) -> dict:
     }
 
 
-# ============================================================
 # OPCIONES DE FILTROS
-# ============================================================
-
-
 def obtener_opciones_filtros(db: Session) -> dict:
     datos = task_consolidated_repository.obtener_opciones_filtros(db)
     fecha_min, fecha_max = datos["fecha_min"], datos["fecha_max"]
@@ -244,11 +225,7 @@ def obtener_opciones_filtros(db: Session) -> dict:
     }
 
 
-# ============================================================
 # KPIS
-# ============================================================
-
-
 def obtener_kpis(db: Session, filtros: TaskConsolidatedDashboardFilters) -> dict:
     datos = task_consolidated_repository.obtener_kpis(db, filtros)
     total = int(datos["total_tickets"] or 0)
@@ -261,11 +238,7 @@ def obtener_kpis(db: Session, filtros: TaskConsolidatedDashboardFilters) -> dict
     }
 
 
-# ============================================================
 # VOLUMEN MENSUAL / PROYECTOS / TIPOS / PRIORIDADES
-# ============================================================
-
-
 def obtener_volumen_mensual(db: Session, filtros: TaskConsolidatedDashboardFilters):
     return [
         {
@@ -301,11 +274,7 @@ def obtener_prioridades(db: Session, filtros: TaskConsolidatedDashboardFilters):
     ]
 
 
-# ============================================================
 # TOP 10: PROYECTOS POR MES
-# ============================================================
-
-
 def obtener_top_proyectos(db: Session, filtros: TaskConsolidatedDashboardFilters):
     filas = task_consolidated_repository.obtener_top_proyectos_mensual(db, filtros)
     if not filas:
@@ -371,11 +340,7 @@ def obtener_top_proyectos(db: Session, filtros: TaskConsolidatedDashboardFilters
     }
 
 
-# ============================================================
 # PRIORIDADES POR MES
-# ============================================================
-
-
 def obtener_prioridad_mensual(db: Session, filtros: TaskConsolidatedDashboardFilters):
     filas = task_consolidated_repository.obtener_prioridad_mensual(db, filtros)
     resumen = {}
@@ -417,11 +382,7 @@ def obtener_prioridad_mensual(db: Session, filtros: TaskConsolidatedDashboardFil
     return respuesta
 
 
-# ============================================================
 # TABLA PAGINADA DE TICKETS
-# ============================================================
-
-
 def obtener_tickets(
     db: Session,
     filtros: TaskConsolidatedDashboardFilters,

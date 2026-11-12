@@ -1,3 +1,4 @@
+
 export interface DailyReportDashboardFilters {
   desde?: string;
   hasta?: string;
@@ -30,4 +31,31 @@ export interface DailyReportDiaItem {
 export interface DailyReportResumen {
   kpis: DailyReportKPI;
   diario: DailyReportDiaItem[];
+}
+
+export interface DailyReportProyectoItem {
+  proyecto: string;
+  cantidad: number;
+}
+
+export interface DailyReportTopPeriodoItem {
+  anio: number;
+  mes: number;
+  periodo: string;
+}
+
+export interface DailyReportTopMesItem {
+  periodo: string;
+  tickets: number;
+}
+
+export interface DailyReportTopProyectoItem {
+  proyecto: string;
+  total_tickets: number;
+  mensual: DailyReportTopMesItem[];
+}
+
+export interface DailyReportTopProyectos {
+  periodos: DailyReportTopPeriodoItem[];
+  proyectos: DailyReportTopProyectoItem[];
 }

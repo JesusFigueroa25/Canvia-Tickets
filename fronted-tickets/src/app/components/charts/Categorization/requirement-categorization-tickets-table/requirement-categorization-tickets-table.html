@@ -296,12 +296,14 @@
         <p>{{ obtenerRutaOriginal(ticket) }}</p>
       </div>
 
+
       <div class="detail-field">
         <label>Categorización Sugerida</label>
         <p>
-          {{ ticket.suggested_catalog_id !== null ? obtenerRutaSugerida(ticket) : 'Sin sugerencia' }}
+          {{ tieneCategoriaSugerida(ticket) ? obtenerRutaSugerida(ticket) : 'Sin sugerencia' }}
         </p>
       </div>
+
 
       <div class="detail-field full-width">
         <label>Descripción</label>

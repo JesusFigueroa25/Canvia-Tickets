@@ -9,15 +9,18 @@
 
             <p>
                 {{
-                modo === 'consolidado'
-                ? (
-                entidadConsolidado === 'requerimientos'
+                modo === 'sla'
+                ? 'Volumen y cumplimiento SLA por proyecto.'
+                : entidadConsolidado === 'diario'
+                ? 'Cantidad total de incidentes, requerimientos y tareas registrados por proyecto.'
+                : entidadConsolidado === 'tareas'
+                ? 'Cantidad de tareas registradas por proyecto.'
+                : entidadConsolidado === 'requerimientos'
                 ? 'Cantidad de requerimientos registrados por proyecto.'
                 : 'Cantidad de incidentes registrados por proyecto.'
-                )
-                : 'Volumen y cumplimiento SLA por proyecto.'
                 }}
             </p>
+
         </div>
 
         <div class="project-filters-controls">

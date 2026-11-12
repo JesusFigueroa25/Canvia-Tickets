@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { IncidentSLAProyectoItem } from '../../../models/incident-sla';
 import { IncidentConsolidatedProyectoItem } from '../../../models/incident-consolidated';
+import { DailyReportProyectoItem } from '../../../models/daily-report';
 
 interface ProyectoTablaFila {
   proyecto: string | null;
@@ -31,10 +32,10 @@ interface ProyectoTablaFila {
 export class ProjectExplorerTable
   implements OnChanges, AfterViewInit {
 
-  @Input() datosConsolidados: IncidentConsolidatedProyectoItem[] = [];
+  @Input() datosConsolidados: IncidentConsolidatedProyectoItem[] | DailyReportProyectoItem[] = [];
+  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'diario' | 'tareas' = 'incidentes';
   @Input() modo: 'sla' | 'consolidado' = 'sla';
   @Input() datos: IncidentSLAProyectoItem[] = [];
-  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' = 'incidentes';
 
   @Input() opcionesProyectos: string[] = [];
   @Input() proyectoSeleccionado: string | null = null;
@@ -51,6 +52,11 @@ export class ProjectExplorerTable
   @Input() habilitarPantallaCompleta = false;
   @Input() pantallaCompletaActiva = false;
   @Output() pantallaCompletaSolicitada = new EventEmitter<void>();
+
+
+
+
+
 
   exclusionesAbiertas = false;
   busquedaExclusion = '';

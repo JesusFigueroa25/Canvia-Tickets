@@ -86,7 +86,7 @@ def _obtener_filtros_dashboard(
         ticket_id=ticket_id,
     )
 
-
+# KPIS
 @router.get("/kpis", response_model=TaskConsolidatedKPIOut)
 def obtener_kpis(
     filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -94,7 +94,7 @@ def obtener_kpis(
 ):
     return task_consolidated_service.obtener_kpis(db, filtros)
 
-
+# Volumen Mensual de Tickets Tareas 
 @router.get("/volumen-mensual", response_model=list[TaskConsolidatedVolumenItem])
 def obtener_volumen_mensual(
     filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -102,7 +102,7 @@ def obtener_volumen_mensual(
 ):
     return task_consolidated_service.obtener_volumen_mensual(db, filtros)
 
-
+# Explorador por Proyectos
 @router.get("/proyectos", response_model=list[TaskConsolidatedProyectoItem])
 def obtener_proyectos(
     filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -110,7 +110,7 @@ def obtener_proyectos(
 ):
     return task_consolidated_service.obtener_proyectos(db, filtros)
 
-
+# Distribución por Tipo de Tareas
 @router.get("/tipos", response_model=list[TaskConsolidatedTipoItem])
 def obtener_tipos(
     limite: int = Query(10, ge=1, le=100),
@@ -119,7 +119,7 @@ def obtener_tipos(
 ):
     return task_consolidated_service.obtener_tipos(db, filtros, limite=limite)
 
-
+# Distribución por Prioridad
 @router.get("/prioridades", response_model=list[TaskConsolidatedPrioridadItem])
 def obtener_prioridades(
     filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -127,7 +127,7 @@ def obtener_prioridades(
 ):
     return task_consolidated_service.obtener_prioridades(db, filtros)
 
-
+# Top 10: Tickets por Proyecto y Mes
 @router.get("/top-proyectos", response_model=TaskConsolidatedTopProyectosOut)
 def obtener_top_proyectos(
     filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -135,7 +135,7 @@ def obtener_top_proyectos(
 ):
     return task_consolidated_service.obtener_top_proyectos(db, filtros)
 
-
+# N.º de Tareas por Prioridad
 @router.get("/prioridad-mensual", response_model=list[TaskConsolidatedPrioridadMensualItem])
 def obtener_prioridad_mensual(
     filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -143,7 +143,7 @@ def obtener_prioridad_mensual(
 ):
     return task_consolidated_service.obtener_prioridad_mensual(db, filtros)
 
-
+# Tabla Tickets
 @router.get("/tickets", response_model=TaskConsolidatedTicketsOut)
 def obtener_tickets(
     pagina: int = Query(1, ge=1),

@@ -75,6 +75,7 @@ import { IncidentCauseReport } from './components/charts/Consolidated/incident-c
 import { DailyReport } from './components/pages/daily-report/daily-report';
 import { DailyReportTable } from './components/charts/Report-Diary/daily-report-table/daily-report-table';
 import { DailyReportChart } from './components/charts/Report-Diary/daily-report-chart/daily-report-chart';
+import { TaskConsolidated } from './components/pages/task-consolidated/task-consolidated';
 
 @NgModule({
   declarations: [
@@ -143,6 +144,7 @@ import { DailyReportChart } from './components/charts/Report-Diary/daily-report-
     DailyReport,
     DailyReportTable,
     DailyReportChart,
+    TaskConsolidated,
   ],
   imports: [
     BrowserAnimationsModule,

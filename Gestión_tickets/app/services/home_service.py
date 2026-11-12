@@ -1,5 +1,7 @@
 from time import perf_counter
 
+from app.schemas.task_consolidated_schema import TaskConsolidatedDashboardFilters
+from app.repositories import task_consolidated_repository
 from sqlalchemy.orm import Session
 from app.schemas.consolidated_import_schema import IncidentConsolidatedDashboardFilters, RequirementConsolidatedDashboardFilters
 from app.services import (incident_sla_service,requirement_sla_service,)
@@ -41,6 +43,8 @@ def obtener_resumen(db: Session):
 
     incidentes_consolidados = medir("KPI Incidentes Consolidados",incident_consolidated_repository.contar_total,db)
     requerimientos_consolidados = medir("KPI Requerimientos Consolidados",requirement_consolidated_repository.contar_total,db)
+    tareas_consolidadas = medir("KPI Tareas Consolidadas",task_consolidated_repository.obtener_kpis,db,TaskConsolidatedDashboardFilters())["total_tickets"]
+
 
     incumplimientos_incidentes = medir("Incumplimientos Incidentes",incident_sla_repository.contar_incumplimientos,db)
     incumplimientos_requerimientos = medir("Incumplimientos Requerimientos",requirement_sla_repository.contar_incumplimientos,db)
@@ -59,6 +63,7 @@ def obtener_resumen(db: Session):
             "incidentes_sla": incidentes_sla["total_tickets"],
             "requerimientos_consolidados": requerimientos_consolidados,
             "requerimientos_sla": requerimientos_sla["total_tickets"],
+            "tareas_consolidadas": tareas_consolidadas,
         },
         "indicadores_clave": {
             "sla_solucion_incidentes": incidentes_sla["sla_solucion"],
@@ -76,8 +81,10 @@ def obtener_resumen(db: Session):
             "foco_atencion": foco_atencion,
         },
     }
-    
+
+
 def obtener_volumen_mensual(db: Session):
+
     incidentes = incident_consolidated_repository.obtener_volumen_mensual(
         db,
         IncidentConsolidatedDashboardFilters()
@@ -88,27 +95,45 @@ def obtener_volumen_mensual(db: Session):
         RequirementConsolidatedDashboardFilters()
     )
 
+    tareas = task_consolidated_repository.obtener_volumen_mensual(
+        db,
+        TaskConsolidatedDashboardFilters()
+    )
+
     meses = {}
 
-    for tipo,rows in (("incidentes",incidentes),("requerimientos",requerimientos)):
+    fuentes = (
+        ("incidentes", incidentes),
+        ("requerimientos", requerimientos),
+        ("tareas", tareas)
+    )
+
+    for tipo, rows in fuentes:
+
         for row in rows:
+
             if row.anio is None or row.mes is None:
                 continue
 
-            clave = (row.anio,row.mes)
+            clave = (row.anio, row.mes)
 
             if clave not in meses:
+
                 meses[clave] = {
                     "anio": row.anio,
                     "mes": row.mes,
                     "periodo": f"{MESES[row.mes]}-{str(row.anio)[-2:]}",
                     "incidentes": None,
                     "requerimientos": None,
+                    "tareas": None,
                 }
 
-            meses[clave][tipo] = row.tickets
+            meses[clave][tipo] = int(row.tickets or 0)
 
-    return [meses[clave] for clave in sorted(meses)]
+    return [
+        meses[clave]
+        for clave in sorted(meses)
+    ]
 
 
 

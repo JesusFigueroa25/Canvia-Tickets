@@ -13,11 +13,7 @@ from app.models.task_consolidated_model import (
 from app.schemas.task_consolidated_schema import TaskConsolidatedDashboardFilters
 
 
-# ============================================================
 # IMPORTACION - STAGING / NEW / CHANGED
-# ============================================================
-
-
 def _dataframe_a_registros(df: pd.DataFrame) -> list[dict]:
     """Convertir los nulos de pandas a NULL para pyodbc/SQL Server."""
     limpio = df.copy().astype(object).where(pd.notna(df), None)
@@ -79,11 +75,7 @@ def actualizar_modificados(db: Session, df: pd.DataFrame) -> int:
     return len(registros)
 
 
-# ============================================================
 # FILTROS REUTILIZABLES
-# ============================================================
-
-
 def normalizar_proyecto():
     return func.coalesce(
         func.nullif(func.trim(TaskConsolidated.Proyecto), ""),
@@ -183,11 +175,7 @@ def aplicar_filtros_dashboard(consulta, filtros: TaskConsolidatedDashboardFilter
     return consulta
 
 
-# ============================================================
 # OPCIONES DE FILTROS
-# ============================================================
-
-
 def obtener_opciones_filtros(db: Session) -> dict:
     fechas = db.execute(
         select(
@@ -217,11 +205,7 @@ def obtener_opciones_filtros(db: Session) -> dict:
     }
 
 
-# ============================================================
 # KPIS
-# ============================================================
-
-
 def obtener_kpis(db: Session, filtros: TaskConsolidatedDashboardFilters):
     proyecto_distinto = func.nullif(func.trim(TaskConsolidated.Proyecto), "")
     consulta = select(
@@ -235,11 +219,7 @@ def obtener_kpis(db: Session, filtros: TaskConsolidatedDashboardFilters):
     return db.execute(consulta).mappings().one()
 
 
-# ============================================================
 # VOLUMEN MENSUAL
-# ============================================================
-
-
 def obtener_volumen_mensual(db: Session, filtros: TaskConsolidatedDashboardFilters):
     anio = func.year(TaskConsolidated.Fecha_Apertura)
     mes = func.month(TaskConsolidated.Fecha_Apertura)
@@ -253,11 +233,7 @@ def obtener_volumen_mensual(db: Session, filtros: TaskConsolidatedDashboardFilte
     return db.execute(consulta).all()
 
 
-# ============================================================
 # EXPLORADOR POR PROYECTOS
-# ============================================================
-
-
 def obtener_proyectos(db: Session, filtros: TaskConsolidatedDashboardFilters):
     base = select(normalizar_proyecto().label("proyecto")).select_from(TaskConsolidated)
     datos = aplicar_filtros_dashboard(base, filtros).subquery()
@@ -270,11 +246,7 @@ def obtener_proyectos(db: Session, filtros: TaskConsolidatedDashboardFilters):
     return db.execute(consulta).mappings().all()
 
 
-# ============================================================
 # DISTRIBUCION POR TIPO (CATEGORIZACION NIVEL 3)
-# ============================================================
-
-
 def obtener_tipos(db: Session, filtros: TaskConsolidatedDashboardFilters, limite: int = 10):
     base = select(normalizar_tipo_tarea().label("tipo")).select_from(TaskConsolidated)
     datos = aplicar_filtros_dashboard(base, filtros).subquery()
@@ -291,11 +263,7 @@ def obtener_tipos(db: Session, filtros: TaskConsolidatedDashboardFilters, limite
     return db.execute(consulta).mappings().all()
 
 
-# ============================================================
 # DISTRIBUCION POR PRIORIDAD
-# ============================================================
-
-
 def obtener_prioridades(db: Session, filtros: TaskConsolidatedDashboardFilters):
     base = select(normalizar_prioridad().label("prioridad")).select_from(TaskConsolidated)
     datos = aplicar_filtros_dashboard(base, filtros).subquery()
@@ -308,11 +276,7 @@ def obtener_prioridades(db: Session, filtros: TaskConsolidatedDashboardFilters):
     return db.execute(consulta).mappings().all()
 
 
-# ============================================================
 # TOP PROYECTOS POR MES
-# ============================================================
-
-
 def obtener_top_proyectos_mensual(db: Session, filtros: TaskConsolidatedDashboardFilters):
     base = (
         select(
@@ -337,11 +301,7 @@ def obtener_top_proyectos_mensual(db: Session, filtros: TaskConsolidatedDashboar
     return db.execute(consulta).mappings().all()
 
 
-# ============================================================
 # PRIORIDAD MENSUAL
-# ============================================================
-
-
 def obtener_prioridad_mensual(db: Session, filtros: TaskConsolidatedDashboardFilters):
     base = (
         select(
@@ -366,11 +326,7 @@ def obtener_prioridad_mensual(db: Session, filtros: TaskConsolidatedDashboardFil
     return db.execute(consulta).mappings().all()
 
 
-# ============================================================
 # EXPLORADOR PAGINADO DE TICKETS
-# ============================================================
-
-
 def obtener_tickets(
     db: Session,
     filtros: TaskConsolidatedDashboardFilters,

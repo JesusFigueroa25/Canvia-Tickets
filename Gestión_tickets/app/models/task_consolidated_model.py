@@ -7,7 +7,7 @@ from app.database.database import Base
 
 class TaskConsolidated(Base):
 
-    __tablename__ = "task_consolidated"
+    __tablename__ = "task_consolidated" 
 
     Ticket_ID = Column(String(20), primary_key=True, nullable=False)
     Ticket_Padre = Column(String(20), nullable=True)

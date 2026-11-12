@@ -13,15 +13,12 @@ import {
   DailyReportDashboardFilters,
   DailyReportDiaItem,
   DailyReportFilters,
-  DailyReportKPI
+  DailyReportKPI,
+  DailyReportProyectoItem,
+  DailyReportTopProyectos
 } from '../../../models/daily-report';
 import { DailyReportService } from '../../../services/daily-report.service';
 
-/**
- * Página principal del Reporte Diario.
- * Centraliza filtros y estado, y entrega `datosDiarios` a los futuros
- * componentes hijos de tabla y gráfico (sin repetir llamadas HTTP).
- */
 @Component({
   selector: 'app-daily-report',
   standalone: false,
@@ -47,6 +44,15 @@ export class DailyReport implements OnInit, OnDestroy {
   kpis: DailyReportKPI | null = null;
   datosDiarios: DailyReportDiaItem[] = [];
 
+  proyectos: DailyReportProyectoItem[] = [];
+  topProyectos: DailyReportTopProyectos = { periodos: [], proyectos: [] };
+  proyectoSeleccionado: string | null = null;
+
+  cargandoProyectos = false;
+  cargandoTopProyectos = false;
+  errorProyectos: string | null = null;
+  errorTopProyectos: string | null = null;
+
   cargandoFiltros = false;
   cargandoDashboard = false;
   filtrosListos = false;
@@ -58,10 +64,6 @@ export class DailyReport implements OnInit, OnDestroy {
   private readonly cancelarResumen$ = new Subject<void>();
   private readonly destruir$ = new Subject<void>();
 
-
-
-
-  // PANTALLA COMPLETA - REPORTE DIARIO
   graficoExpandido: string | null = null;
 
   async alternarPantallaCompleta(
@@ -92,7 +94,6 @@ export class DailyReport implements OnInit, OnDestroy {
 
     this.changeDetector.markForCheck();
   }
-
 
   busquedaProyecto = '';
   get proyectosFiltrados(): string[] {
@@ -132,9 +133,7 @@ export class DailyReport implements OnInit, OnDestroy {
     this.busquedaProyecto = '';
   }
 
-
-
-  /** Comprueba la relación entre los dos datepickers. */
+  
   private readonly validarRangoFechas: ValidatorFn = (
     control: AbstractControl
   ): ValidationErrors | null => {
@@ -185,10 +184,7 @@ export class DailyReport implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Obtiene el rango de fechas disponible y las opciones consolidadas
-   * de las tres fuentes: incidentes, requerimientos y tareas.
-   */
+  
   cargarOpcionesFiltros(): void {
     this.cargandoFiltros = true;
     this.filtrosListos = false;
@@ -209,7 +205,7 @@ export class DailyReport implements OnInit, OnDestroy {
           if (this.fechaMinima && this.fechaMaxima) {
             this.aplicarFiltros();
           } else {
-            // Si aún no existen registros, mostrar KPIs en cero.
+
             this.filtrosActuales = {};
             this.kpis = {
               total_tickets: 0,
@@ -218,6 +214,9 @@ export class DailyReport implements OnInit, OnDestroy {
               total_tareas: 0
             };
             this.datosDiarios = [];
+            this.proyectos = [];
+            this.topProyectos = { periodos: [], proyectos: [] };
+            this.proyectoSeleccionado = null;
           }
 
           this.changeDetector.markForCheck();
@@ -229,6 +228,9 @@ export class DailyReport implements OnInit, OnDestroy {
           this.errorFiltros = 'No se pudieron obtener los filtros del Reporte Diario.';
           this.kpis = null;
           this.datosDiarios = [];
+          this.proyectos = [];
+          this.topProyectos = { periodos: [], proyectos: [] };
+          this.proyectoSeleccionado = null;
           this.changeDetector.markForCheck();
         }
       });
@@ -250,10 +252,14 @@ export class DailyReport implements OnInit, OnDestroy {
       proyecto: valores.proyecto?.trim() || undefined
     };
 
+    this.proyectoSeleccionado = this.filtrosActuales.proyecto ?? null;
+
     this.cargarResumen();
+    this.cargarProyectos();
+    this.cargarTopProyectos();
   }
 
-  /** Vuelve al rango completo disponible y elimina los filtros opcionales. */
+  
   limpiarFiltros(): void {
     if (!this.filtrosListos || this.cargandoFiltros) {
       return;
@@ -279,9 +285,10 @@ export class DailyReport implements OnInit, OnDestroy {
     this.filtrosForm.markAsPristine();
     this.filtrosForm.markAsUntouched();
     this.filtrosForm.updateValueAndValidity({ emitEvent: false });
+    this.busquedaProyecto = '';
   }
 
-  /** Una petición obtiene KPIs y serie diaria bajo exactamente los mismos filtros. */
+  
   private cargarResumen(): void {
     this.cancelarResumen$.next();
     const solicitudActual = ++this.solicitudResumen;
@@ -324,7 +331,100 @@ export class DailyReport implements OnInit, OnDestroy {
     this.changeDetector.markForCheck();
   }
 
-  /** Parseo local para evitar desajustes de fecha por zona horaria. */
+  cargarProyectos(): void {
+    const solicitudActual = this.solicitudResumen;
+    const filtrosBase: DailyReportDashboardFilters = {
+      ...this.filtrosActuales,
+      proyecto: undefined
+    };
+
+    this.cargandoProyectos = true;
+    this.errorProyectos = null;
+
+    this.dailyReportService.obtenerProyectos(filtrosBase)
+      .pipe(
+        takeUntil(this.cancelarResumen$),
+        takeUntil(this.destruir$)
+      )
+      .subscribe({
+        next: (datos) => {
+          if (solicitudActual !== this.solicitudResumen) {
+            return;
+          }
+
+          this.proyectos = datos;
+          this.cargandoProyectos = false;
+          this.changeDetector.markForCheck();
+        },
+        error: (error) => {
+          if (solicitudActual !== this.solicitudResumen) {
+            return;
+          }
+
+          console.error('Error obteniendo proyectos del Reporte Diario:', error);
+          this.errorProyectos = 'No se pudo cargar el Explorador de Proyectos.';
+          this.cargandoProyectos = false;
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.changeDetector.markForCheck();
+  }
+
+  cargarTopProyectos(): void {
+    const solicitudActual = this.solicitudResumen;
+
+    this.cargandoTopProyectos = true;
+    this.errorTopProyectos = null;
+    this.topProyectos = { periodos: [], proyectos: [] };
+
+    this.dailyReportService.obtenerTopProyectos({ ...this.filtrosActuales })
+      .pipe(
+        takeUntil(this.cancelarResumen$),
+        takeUntil(this.destruir$)
+      )
+      .subscribe({
+        next: (datos) => {
+          if (solicitudActual !== this.solicitudResumen) {
+            return;
+          }
+
+          this.topProyectos = datos;
+          this.cargandoTopProyectos = false;
+          this.changeDetector.markForCheck();
+        },
+        error: (error) => {
+          if (solicitudActual !== this.solicitudResumen) {
+            return;
+          }
+
+          console.error('Error obteniendo Top 10 del Reporte Diario:', error);
+          this.errorTopProyectos = 'No se pudo cargar el Top 10 por Proyecto y Mes.';
+          this.topProyectos = { periodos: [], proyectos: [] };
+          this.cargandoTopProyectos = false;
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.changeDetector.markForCheck();
+  }
+
+  cambiarProyecto(proyecto: string | null): void {
+    const seleccion = proyecto?.trim() || null;
+
+    if (this.proyectoSeleccionado === seleccion) {
+      return;
+    }
+
+    this.filtrosForm.patchValue(
+      { proyecto: seleccion },
+      { emitEvent: false }
+    );
+
+    this.aplicarFiltros();
+  }
+
+  
   private convertirFecha(valor: string | null): Date | null {
     if (!valor || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
       return null;

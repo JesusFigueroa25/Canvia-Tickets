@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
 import { IncidentConsolidatedTopProyectos } from '../../../../models/incident-consolidated';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { DailyReportTopProyectos } from '../../../../models/daily-report';
 
 @Component({
   selector: 'app-project-monthly-top',
@@ -12,14 +13,14 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 })
 export class ProjectMonthlyTop implements OnChanges {
 
-  @Input() datos: IncidentConsolidatedTopProyectos = { periodos: [], proyectos: [] };
-  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' = 'incidentes';
   anchoGrafico = 900;
   readonly chartPlugins = [ChartDataLabels];
 
   @Input() proyectoSeleccionado: string | null = null;
-
   @Input() periodoSeleccionado: string | null = null;
+  @Input() datos: IncidentConsolidatedTopProyectos | DailyReportTopProyectos = { periodos: [], proyectos: [] };
+  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'diario' | 'tareas' = 'incidentes';
+
 
   vistaMensual = false;
   proyectoVistaMensual: string | null = null;

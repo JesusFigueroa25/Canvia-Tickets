@@ -117,3 +117,172 @@ def obtener_kpis(db: Session, **filtros) -> dict:
 
 def obtener_diario(db: Session, **filtros) -> list[dict]:
     return obtener_resumen(db, **filtros)["diario"]
+
+
+def obtener_proyectos(
+    db: Session,
+    *,
+    desde: date | None = None,
+    hasta: date | None = None,
+    grupo_resolutor: str | None = None,
+    proyecto: str | None = None,
+) -> list[dict]:
+
+    return daily_report_repository.obtener_proyectos(
+        db,
+        desde=desde,
+        hasta=hasta,
+        grupo_resolutor=grupo_resolutor,
+        proyecto=proyecto,
+    )
+
+
+
+def obtener_top_proyectos(
+    db: Session,
+    *,
+    desde: date | None = None,
+    hasta: date | None = None,
+    grupo_resolutor: str | None = None,
+    proyecto: str | None = None,
+) -> dict:
+
+    resultados = (
+        daily_report_repository.obtener_top_proyectos_mensual(
+            db,
+            desde=desde,
+            hasta=hasta,
+            grupo_resolutor=grupo_resolutor,
+            proyecto=proyecto,
+        )
+    )
+
+    if not resultados:
+        return {
+            "periodos": [],
+            "proyectos": []
+        }
+
+    meses = {
+        1: "ENE",
+        2: "FEB",
+        3: "MAR",
+        4: "ABR",
+        5: "MAY",
+        6: "JUN",
+        7: "JUL",
+        8: "AGO",
+        9: "SEP",
+        10: "OCT",
+        11: "NOV",
+        12: "DIC"
+    }
+
+    def indice(anio: int, mes: int) -> int:
+        return int(anio) * 12 + int(mes) - 1
+
+    indices = [
+        indice(
+            registro["anio"],
+            registro["mes"]
+        )
+        for registro in resultados
+    ]
+
+    fin = (
+        indice(hasta.year, hasta.month)
+        if hasta
+        else max(indices)
+    )
+
+    inicio = (
+        indice(desde.year, desde.month)
+        if desde
+        else (
+            min(indices)
+            if hasta
+            else max(min(indices), fin - 3)
+        )
+    )
+
+    if inicio > fin:
+        return {
+            "periodos": [],
+            "proyectos": []
+        }
+
+    periodos = []
+
+    for valor in range(inicio, fin + 1):
+
+        anio, mes_indice = divmod(valor, 12)
+        mes = mes_indice + 1
+
+        periodos.append({
+            "anio": anio,
+            "mes": mes,
+            "periodo": f"{meses[mes]}-{str(anio)[-2:]}"
+        })
+
+    proyectos = {}
+
+    for registro in resultados:
+
+        clave_mes = indice(
+            registro["anio"],
+            registro["mes"]
+        )
+
+        if not inicio <= clave_mes <= fin:
+            continue
+
+        nombre = registro["proyecto"]
+        cantidad = int(registro["tickets"] or 0)
+
+        if nombre not in proyectos:
+            proyectos[nombre] = {
+                "total_tickets": 0,
+                "mensual": {}
+            }
+
+        proyectos[nombre]["total_tickets"] += cantidad
+
+        conteos = proyectos[nombre]["mensual"]
+
+        conteos[clave_mes] = (
+            conteos.get(clave_mes, 0) + cantidad
+        )
+
+    ranking = sorted(
+        proyectos.items(),
+        key=lambda item: (
+            -item[1]["total_tickets"],
+            item[0].casefold()
+        )
+    )[:10]
+
+    return {
+        "periodos": periodos,
+        "proyectos": [
+            {
+                "proyecto": nombre,
+                "total_tickets": datos["total_tickets"],
+                "mensual": [
+                    {
+                        "periodo": periodo["periodo"],
+                        "tickets": datos["mensual"].get(
+                            indice(
+                                periodo["anio"],
+                                periodo["mes"]
+                            ),
+                            0
+                        )
+                    }
+                    for periodo in periodos
+                ]
+            }
+            for nombre, datos in ranking
+        ]
+    }
+
+

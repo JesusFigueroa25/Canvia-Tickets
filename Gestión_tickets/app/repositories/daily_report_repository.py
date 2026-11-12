@@ -173,3 +173,156 @@ def obtener_opciones_filtros(db: Session) -> dict:
         "grupos_resolutores": _obtener_opciones(db, "Grupo_Resolutor"),
         "proyectos": _obtener_opciones(db, "Proyecto"),
     }
+
+
+
+def obtener_proyectos(
+    db: Session,
+    *,
+    desde: date | None = None,
+    hasta: date | None = None,
+    grupo_resolutor: str | None = None,
+    proyecto: str | None = None,
+) -> list[dict]:
+
+    filtros = {
+        "desde": desde,
+        "hasta": hasta,
+        "grupo_resolutor": grupo_resolutor,
+        "proyecto": proyecto,
+    }
+
+    consultas = []
+
+    for modelo in MODELOS:
+
+        nombre = _normalizar_texto(modelo.Proyecto)
+
+        consulta = (
+            select(
+                nombre.label("proyecto"),
+                func.count().label("cantidad")
+            )
+            .select_from(modelo)
+        )
+
+
+        consulta = _aplicar_filtros(
+            consulta,
+            modelo,
+            **filtros
+        ).group_by(modelo.Proyecto)
+
+
+        consultas.append(consulta)
+
+    fuentes = union_all(*consultas).subquery(
+        "fuentes_proyectos"
+    )
+
+    nombre = func.min(fuentes.c.proyecto)
+    cantidad = func.sum(fuentes.c.cantidad)
+
+    consulta = (
+        select(
+            nombre.label("proyecto"),
+            cantidad.label("cantidad")
+        )
+        .select_from(fuentes)
+        .group_by(
+            func.lower(fuentes.c.proyecto)
+        )
+        .order_by(
+            cantidad.desc(),
+            nombre.asc()
+        )
+    )
+
+    return [
+        dict(fila)
+        for fila in db.execute(consulta).mappings().all()
+    ]
+
+
+def obtener_top_proyectos_mensual(
+    db: Session,
+    *,
+    desde: date | None = None,
+    hasta: date | None = None,
+    grupo_resolutor: str | None = None,
+    proyecto: str | None = None,
+) -> list[dict]:
+
+    filtros = {
+        "desde": desde,
+        "hasta": hasta,
+        "grupo_resolutor": grupo_resolutor,
+        "proyecto": proyecto,
+    }
+
+    consultas = []
+
+    for modelo in MODELOS:
+
+        nombre = _normalizar_texto(modelo.Proyecto)
+        anio = func.year(modelo.Fecha_Apertura)
+        mes = func.month(modelo.Fecha_Apertura)
+
+        consulta = (
+            select(
+                nombre.label("proyecto"),
+                anio.label("anio"),
+                mes.label("mes"),
+                func.count().label("tickets")
+            )
+            .select_from(modelo)
+            .where(
+                modelo.Fecha_Apertura.isnot(None)
+            )
+        )
+
+
+        consulta = _aplicar_filtros(
+            consulta,
+            modelo,
+            **filtros
+        ).group_by(
+            modelo.Proyecto,
+            anio,
+            mes
+        )
+
+
+        consultas.append(consulta)
+
+    fuentes = union_all(*consultas).subquery(
+        "fuentes_proyectos_mensuales"
+    )
+
+    nombre = func.min(fuentes.c.proyecto)
+    total = func.sum(fuentes.c.tickets)
+
+    consulta = (
+        select(
+            nombre.label("proyecto"),
+            fuentes.c.anio,
+            fuentes.c.mes,
+            total.label("tickets")
+        )
+        .select_from(fuentes)
+        .group_by(
+            func.lower(fuentes.c.proyecto),
+            fuentes.c.anio,
+            fuentes.c.mes
+        )
+        .order_by(
+            fuentes.c.anio,
+            fuentes.c.mes,
+            nombre
+        )
+    )
+
+    return [
+        dict(fila)
+        for fila in db.execute(consulta).mappings().all()
+    ]

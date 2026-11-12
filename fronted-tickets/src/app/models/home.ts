@@ -4,7 +4,9 @@ export interface HomeKPIs {
   incidentes_sla: number;
   requerimientos_consolidados: number;
   requerimientos_sla: number;
+  tareas_consolidadas: number;
 }
+
 
 /* HOME - INDICADORES CLAVE */
 export interface HomeIndicadoresClave {
@@ -21,7 +23,9 @@ export interface HomeVolumenMensualItem {
   periodo: string;
   incidentes: number | null;
   requerimientos: number | null;
+  tareas: number | null;
 }
+
 
 /* HOME - EVOLUCIÓN SLA */
 export interface HomeEvolucionSLAItem {

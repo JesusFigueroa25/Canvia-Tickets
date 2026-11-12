@@ -116,6 +116,7 @@ export class HomeMonthlyVolume implements OnChanges {
       (a, b) => a.anio - b.anio || a.mes - b.mes
     );
 
+
     this.chartData = {
       labels: registros.map(
         item => item.periodo
@@ -126,8 +127,8 @@ export class HomeMonthlyVolume implements OnChanges {
           data: registros.map(
             item => item.incidentes
           ),
-          backgroundColor: '#ffb184',
-          borderColor: '#ff620f',
+          backgroundColor: '#FFB184',
+          borderColor: '#FF620F',
           borderWidth: 1,
           borderRadius: 5,
           borderSkipped: false,
@@ -140,8 +141,22 @@ export class HomeMonthlyVolume implements OnChanges {
           data: registros.map(
             item => item.requerimientos
           ),
-          backgroundColor: '#63b891',
-          borderColor: '#16835b',
+          backgroundColor: '#63B891',
+          borderColor: '#16835B',
+          borderWidth: 1,
+          borderRadius: 5,
+          borderSkipped: false,
+          barPercentage: 0.8,
+          categoryPercentage: 0.75,
+          maxBarThickness: 34
+        },
+        {
+          label: 'Tareas',
+          data: registros.map(
+            item => item.tareas
+          ),
+          backgroundColor: '#F4C95D',
+          borderColor: '#D97706',
           borderWidth: 1,
           borderRadius: 5,
           borderSkipped: false,
@@ -151,5 +166,9 @@ export class HomeMonthlyVolume implements OnChanges {
         }
       ]
     };
+
+
+
+
   }
 }

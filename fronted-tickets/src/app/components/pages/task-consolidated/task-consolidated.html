@@ -1,0 +1,337 @@
+<div class="task-consolidated-page">
+
+  <header class="page-header">
+    <div class="page-header-content">
+      <h1>Tareas Consolidadas</h1>
+      <p>Análisis del volumen operativo, distribución de tareas y comportamiento de proyectos.</p>
+    </div>
+  </header>
+
+  <section class="filters-card" aria-label="Filtros de Tareas Consolidadas">
+    <div class="filters-heading">
+      <div>
+        <h2>Filtros del dashboard</h2>
+        <p>Consulta los tickets según su fecha de apertura y criterios operativos.</p>
+      </div>
+      <mat-icon aria-hidden="true">tune</mat-icon>
+    </div>
+
+    <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      <div class="date-range-fields">
+        <div class="filter-field">
+          <label for="task-desde">Desde</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input id="task-desde" matInput [matDatepicker]="pickerDesde" formControlName="desde" [min]="fechaMinima"
+              [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDesde></mat-datepicker>
+            <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">Selecciona la fecha Desde.</mat-error>
+            <mat-error
+              *ngIf="filtrosForm.get('desde')?.hasError('matDatepickerMin') || filtrosForm.get('desde')?.hasError('matDatepickerMax')">Fecha
+              fuera del rango disponible.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-field">
+          <label for="task-hasta">Hasta</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input id="task-hasta" matInput [matDatepicker]="pickerHasta" formControlName="hasta" [min]="fechaMinima"
+              [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+            <mat-datepicker #pickerHasta></mat-datepicker>
+            <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">Selecciona la fecha Hasta.</mat-error>
+            <mat-error
+              *ngIf="filtrosForm.get('hasta')?.hasError('matDatepickerMin') || filtrosForm.get('hasta')?.hasError('matDatepickerMax')">Fecha
+              fuera del rango disponible.</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="filter-field">
+        <label for="task-prioridad">Prioridad</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="task-prioridad" formControlName="prioridad" placeholder="Todas">
+            <mat-option [value]="null">Todas</mat-option>
+            <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">{{ prioridad
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="task-motivo-estado">Motivo de Estado</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="task-motivo-estado" formControlName="motivo_estado" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let motivo of opcionesFiltros.motivos_estado" [value]="motivo" [title]="motivo">{{
+              motivo }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="task-grupo-resolutor">Grupo Resolutor</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="task-grupo-resolutor" formControlName="grupo_resolutor" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo" [title]="grupo">{{
+              grupo }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="task-proyecto">Proyecto</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="task-proyecto" formControlName="proyecto" placeholder="Todos los proyectos"
+            panelClass="task-project-panel" (openedChange)="alAbrirComboProyecto($event)">
+            <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
+              <mat-icon aria-hidden="true">search</mat-icon>
+              <input type="text" placeholder="Buscar proyecto..." aria-label="Buscar proyecto"
+                [value]="busquedaProyecto" (input)="buscarProyecto($event)" (click)="$event.stopPropagation()">
+              <button *ngIf="busquedaProyecto" type="button" class="combo-clear"
+                (click)="limpiarBusquedaProyecto($event)" aria-label="Limpiar búsqueda">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            <mat-option [value]="null">Todos los proyectos</mat-option>
+            <mat-option *ngFor="let proyecto of proyectosFiltrados" [value]="proyecto" [title]="proyecto">
+              {{ proyecto }}
+            </mat-option>
+            <mat-option *ngIf="proyectosFiltrados.length === 0" disabled>No se encontraron proyectos</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-stroked-button type="button" class="clear-button" (click)="limpiarFiltros()"
+          [disabled]="!filtrosListos || cargandoFiltros">
+          <mat-icon>restart_alt</mat-icon>
+          Limpiar
+        </button>
+        <button mat-flat-button type="submit" class="apply-button"
+          [disabled]="!filtrosListos || cargandoFiltros || filtrosForm.invalid">
+          <mat-icon>filter_alt</mat-icon>
+          Aplicar
+        </button>
+      </div>
+    </form>
+
+    <p class="range-error" role="alert" *ngIf="filtrosForm.hasError('rangoFechasInvalido') && filtrosForm.touched">
+      <mat-icon>error_outline</mat-icon>
+      La fecha Desde no puede ser posterior a Hasta.
+    </p>
+
+    <div class="available-range" *ngIf="opcionesFiltros.fecha_min && opcionesFiltros.fecha_max">
+      <mat-icon>info_outline</mat-icon>
+      Datos disponibles: {{ opcionesFiltros.fecha_min }} al {{ opcionesFiltros.fecha_max }}
+    </div>
+  </section>
+
+  <section class="status-card loading-card" *ngIf="cargandoFiltros" role="status">
+    <span class="loading-indicator"></span>
+    Cargando filtros de Tareas Consolidadas...
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorFiltros" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorFiltros }}</span>
+    <button mat-stroked-button type="button" (click)="cargarOpcionesFiltros()">Reintentar</button>
+  </section>
+
+  <section class="status-card empty-card" *ngIf="!cargandoFiltros && !errorFiltros && !filtrosListos" role="status">
+    <mat-icon>info_outline</mat-icon>
+    No se encontraron fechas disponibles para consultar tareas.
+  </section>
+
+  <section class="status-card loading-card" *ngIf="cargandoDashboard" role="status" aria-live="polite">
+    <span class="loading-indicator"></span>
+    Actualizando información del dashboard de Tareas...
+  </section>
+
+  <section class="status-card error-card" *ngFor="let mensaje of mensajesErrores" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ mensaje }}</span>
+  </section>
+
+  <section class="kpis-wrapper" *ngIf="kpis as indicadores" aria-label="Indicadores de Tareas Consolidadas">
+    <div class="section-heading">
+      <div>
+        <h2>Indicadores generales</h2>
+        <p>Resumen de los tickets de tareas bajo los filtros seleccionados.</p>
+      </div>
+    </div>
+
+    <div class="kpis-section">
+      <app-kpi-card titulo="Total de Tareas" [valor]="indicadores.total_tickets" icono="confirmation_number"
+        color="orange"></app-kpi-card>
+      <app-kpi-card titulo="Total de Proyectos" [valor]="indicadores.total_proyectos" icono="business"
+        color="green"></app-kpi-card>
+      <app-kpi-card titulo="Alta Criticidad" [valor]="indicadores.alta_criticidad" icono="priority_high"
+        color="orange"></app-kpi-card>
+      <app-kpi-card titulo="% Alta Criticidad" [valor]="indicadores.porcentaje_alta_criticidad + '%'" icono="percent"
+        color="orange"></app-kpi-card>
+    </div>
+  </section>
+
+  <section class="status-card empty-card" *ngIf="kpis?.total_tickets === 0 && !cargandoKpis" role="status">
+    <mat-icon>info_outline</mat-icon>
+    No se encontraron tareas para los filtros seleccionados.
+  </section>
+
+
+
+  <section class="charts-scroll" *ngIf="filtrosListos">
+
+    <div class="chart-scroll-item table-expandable" id="fullscreen-tabla-proyectos-task" #tablaProyectosTaskFs>
+
+      <app-project-explorer-table modo="consolidado" entidadConsolidado="tareas" modoBusqueda="combo"
+        [datosConsolidados]="proyectos" [opcionesProyectos]="opcionesProyectos"
+        [proyectoSeleccionado]="proyectoSeleccionado" (proyectoChange)="cambiarProyecto($event)"
+        [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
+        (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-proyectos-task'"
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosTaskFs)">
+      </app-project-explorer-table>
+
+    </div>
+
+    <div class="chart-scroll-item chart-expandable" id="fullscreen-volumen-task" #volumenTaskFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenTaskFs)" [title]="graficoExpandido === 'fullscreen-volumen-task'
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'" aria-label="Ampliar o reducir volumen mensual de tareas">
+
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-volumen-task'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+
+      </button>
+
+      <app-volume-month modo="consolidado" entidadConsolidado="tareas" [datosConsolidados]="volumenMensual"
+        [habilitarFiltroMes]="true" [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenMensual"
+        (periodoChange)="cambiarPeriodo($event)">
+      </app-volume-month>
+
+    </div>
+
+  </section>
+
+  <section class="charts-scroll" *ngIf="filtrosListos">
+
+    <div class="chart-scroll-item chart-expandable" id="fullscreen-tipos-task" #tiposTaskFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tiposTaskFs)" [title]="graficoExpandido === 'fullscreen-tipos-task'
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'" aria-label="Ampliar distribución por tipo de tareas">
+
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-tipos-task'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+
+      </button>
+
+      <app-category-distribution titulo="Distribución por Tipo de Tareas"
+        descripcion="Tipos de tareas según su categorización de nivel 3, ordenados por volumen." orientacion="vertical"
+        [datos]="tiposGrafico" [seleccionMultiple]="true" [tiposSeleccionados]="tiposTareaSeleccionados"
+        [cargando]="cargandoTipos" textoSeleccionMultiple="tipos de tarea" (tiposChange)="cambiarTiposTarea($event)">
+      </app-category-distribution>
+
+    </div>
+
+    <div class="chart-scroll-item chart-expandable" id="fullscreen-prioridades-task" #prioridadesTaskFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadesTaskFs)" [title]="graficoExpandido === 'fullscreen-prioridades-task'
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'" aria-label="Ampliar distribución por prioridad de tareas">
+
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-prioridades-task'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+
+      </button>
+
+      <app-category-distribution titulo="Distribución por Prioridad"
+        descripcion="Cantidad de tareas registradas según su nivel de criticidad." orientacion="vertical"
+        [coloresPorPrioridad]="true" [datos]="prioridadesGrafico" [cargando]="cargandoPrioridades">
+      </app-category-distribution>
+
+    </div>
+
+  </section>
+
+  <section class="chart-full-width chart-expandable" id="fullscreen-top-proyectos-task" #topProyectosTaskFs
+    *ngIf="filtrosListos">
+
+    <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(topProyectosTaskFs)" [title]="graficoExpandido === 'fullscreen-top-proyectos-task'
+      ? 'Salir de pantalla completa'
+      : 'Ver en pantalla completa'" aria-label="Ampliar Top 10 de tareas por proyecto y mes">
+
+      <mat-icon>
+        {{ graficoExpandido === 'fullscreen-top-proyectos-task'
+        ? 'fullscreen_exit'
+        : 'fullscreen' }}
+      </mat-icon>
+
+    </button>
+
+    <app-project-monthly-top entidadConsolidado="tareas" [datos]="topProyectos"
+      [proyectoSeleccionado]="proyectoSeleccionado" [periodoSeleccionado]="periodoSeleccionado">
+    </app-project-monthly-top>
+
+  </section>
+
+  <section class="chart-full-width chart-expandable" id="fullscreen-prioridad-mensual-task" #prioridadMensualTaskFs
+    *ngIf="filtrosListos">
+
+    <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadMensualTaskFs)" [title]="graficoExpandido === 'fullscreen-prioridad-mensual-task'
+      ? 'Salir de pantalla completa'
+      : 'Ver en pantalla completa'" aria-label="Ampliar tareas por prioridad mensual">
+
+      <mat-icon>
+        {{ graficoExpandido === 'fullscreen-prioridad-mensual-task'
+        ? 'fullscreen_exit'
+        : 'fullscreen' }}
+      </mat-icon>
+
+    </button>
+
+    <app-priority-monthly-stack entidadConsolidado="tareas" [datos]="prioridadMensual">
+    </app-priority-monthly-stack>
+
+  </section>
+
+  <section class="chart-full-width ticket-explorer-section" *ngIf="filtrosListos">
+
+    <header class="ticket-explorer-header">
+      <h2>Explorador de Tickets</h2>
+      <p>
+        Consulta los registros de Tareas Consolidadas,
+        revisa sus 22 campos y filtra el dashboard por Ticket ID.
+      </p>
+    </header>
+
+    <div class="table-expandable" id="fullscreen-tabla-tickets-task" #tablaTicketsTaskFs>
+
+      <app-ticket-explorer-table tipoDashboard="task-consolidated" [datos]="ticketsDetalle" [cargando]="cargandoTickets"
+        [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
+        (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)"
+        [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tickets-task'"
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsTaskFs)">
+      </app-ticket-explorer-table>
+
+    </div>
+
+  </section>
+
+
+
+
+</div>

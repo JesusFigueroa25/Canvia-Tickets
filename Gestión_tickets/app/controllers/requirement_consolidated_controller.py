@@ -76,10 +76,7 @@ def obtener_kpis(
 
 
 # Volumen Mensual de Requerimientos
-@router.get(
-    "/volumen-mensual",
-    response_model=list[RequirementConsolidatedVolumenItem]
-)
+@router.get("/volumen-mensual", response_model=list[RequirementConsolidatedVolumenItem])
 def obtener_volumen_mensual(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -91,10 +88,7 @@ def obtener_volumen_mensual(
 
 
 # Explorador por Proyectos
-@router.get(
-    "/proyectos",
-    response_model=list[RequirementConsolidatedProyectoItem]
-)
+@router.get("/proyectos", response_model=list[RequirementConsolidatedProyectoItem])
 def obtener_proyectos(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -106,10 +100,7 @@ def obtener_proyectos(
 
 
 # Distribución por Tipo de Requerimiento
-@router.get(
-    "/tipos",
-    response_model=list[RequirementConsolidatedTipoItem]
-)
+@router.get("/tipos", response_model=list[RequirementConsolidatedTipoItem])
 def obtener_tipos(
     limite: int = Query(10, ge=1, le=100),
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -123,10 +114,7 @@ def obtener_tipos(
 
 
 # Distribución por Prioridad
-@router.get(
-    "/prioridades",
-    response_model=list[RequirementConsolidatedPrioridadItem]
-)
+@router.get("/prioridades", response_model=list[RequirementConsolidatedPrioridadItem])
 def obtener_prioridades(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -138,10 +126,7 @@ def obtener_prioridades(
 
 
 # Top 10: Tickets por Proyecto y Mes
-@router.get(
-    "/top-proyectos",
-    response_model=RequirementConsolidatedTopProyectosOut
-)
+@router.get("/top-proyectos", response_model=RequirementConsolidatedTopProyectosOut)
 def obtener_top_proyectos(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -153,10 +138,7 @@ def obtener_top_proyectos(
 
 
 # N.º de Requerimientos por Prioridad
-@router.get(
-    "/prioridad-mensual",
-    response_model=list[RequirementConsolidatedPrioridadMensualItem]
-)
+@router.get("/prioridad-mensual", response_model=list[RequirementConsolidatedPrioridadMensualItem])
 def obtener_prioridad_mensual(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -168,11 +150,8 @@ def obtener_prioridad_mensual(
 
 
 
-# TABLA PAGINADA - DETALLE DE TICKETS REQUERIMIENTOS CONSOLIDADOS
-@router.get(
-    "/tickets",
-    response_model=RequirementConsolidatedTicketsOut
-)
+# Tabla Tickets
+@router.get("/tickets", response_model=RequirementConsolidatedTicketsOut)
 def obtener_tickets(
     pagina: int = Query(1, ge=1),
     tamano: int = Query(10, ge=1, le=100),

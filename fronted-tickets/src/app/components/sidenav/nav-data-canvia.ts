@@ -6,18 +6,23 @@ export const navbarDataCanvia = [
   },
   {
     routeLink: 'report-diary',
-    icon: 'menu_book', 
-    label: 'Reporte Diario' 
-  },
-  {
-    routeLink: 'incidentes-consolidados',
-    icon: 'warning',
-    label: 'Incidentes Consolidados'
+    icon: 'menu_book',
+    label: 'Reporte Diario'
   },
   {
     routeLink: 'incident-cause-analysis',
     icon: 'analytics',
     label: 'Análisis de Incidentes'
+  },
+  {
+    routeLink: 'tareas-consolidados',
+    icon: 'assignment',
+    label: 'Taras Consolidados'
+  },
+  {
+    routeLink: 'incidentes-consolidados',
+    icon: 'warning',
+    label: 'Incidentes Consolidados'
   },
   {
     routeLink: 'incidentes-sla',
@@ -34,11 +39,7 @@ export const navbarDataCanvia = [
     icon: 'check_circle',
     label: 'Requerimientos SLA'
   },
-  {
-    routeLink: 'importaciones',
-    icon: 'upload_file',
-    label: 'Importaciones'
-  },
+
   {
     routeLink: 'centro-ia',
     icon: 'psychology',
@@ -48,6 +49,11 @@ export const navbarDataCanvia = [
     routeLink: 'category',
     icon: 'analytics',
     label: 'Categorización'
+  },
+  {
+    routeLink: 'importaciones',
+    icon: 'upload_file',
+    label: 'Importaciones'
   },
   {
     routeLink: 'login',

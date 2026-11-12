@@ -174,7 +174,7 @@
 
   <!-- KPIs: se reutiliza el componente existente app-kpi-card -->
   <section class="kpis-wrapper" *ngIf="kpis as indicadores" aria-label="Indicadores del Reporte Diario">
-   
+
 
     <div class="kpis-section">
       <app-kpi-card titulo="N.º de Tickets" [valor]="indicadores.total_tickets" icono="confirmation_number"
@@ -228,6 +228,71 @@
     </div>
 
   </section>
+
+
+
+  <section class="daily-report-projects" *ngIf="filtrosListos">
+
+    <div class="daily-report-project-item">
+
+      <div class="project-status" *ngIf="cargandoProyectos">
+        Actualizando Explorador de Proyectos...
+      </div>
+
+      <div class="project-status project-error" *ngIf="errorProyectos">
+        {{ errorProyectos }}
+      </div>
+
+      <div class="daily-report-fullscreen" id="fullscreen-proyectos-diario" #tablaProyectosDiarioFs>
+
+        <app-project-explorer-table modo="consolidado" entidadConsolidado="diario" modoBusqueda="combo"
+          [datosConsolidados]="proyectos" [opcionesProyectos]="opcionesFiltros.proyectos"
+          [proyectoSeleccionado]="proyectoSeleccionado" (proyectoChange)="cambiarProyecto($event)"
+          [habilitarPantallaCompleta]="true"
+          [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-proyectos-diario'"
+          (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosDiarioFs)">
+        </app-project-explorer-table>
+
+      </div>
+
+    </div>
+
+    <div class="daily-report-project-item">
+
+      <div class="project-status" *ngIf="cargandoTopProyectos">
+        Actualizando Top 10 por Proyecto y Mes...
+      </div>
+
+      <div class="project-status project-error" *ngIf="errorTopProyectos">
+        {{ errorTopProyectos }}
+      </div>
+
+      <div class="daily-report-fullscreen project-chart-fullscreen" id="fullscreen-top-proyectos-diario"
+        #topProyectosDiarioFs>
+
+        <button type="button" class="project-expand-btn" (click)="alternarPantallaCompleta(topProyectosDiarioFs)"
+          [title]="graficoExpandido === 'fullscreen-top-proyectos-diario'
+          ? 'Salir de pantalla completa'
+          : 'Ver en pantalla completa'" aria-label="Ampliar o reducir Top 10 de Proyectos">
+
+          <mat-icon>
+            {{ graficoExpandido === 'fullscreen-top-proyectos-diario'
+            ? 'fullscreen_exit'
+            : 'fullscreen' }}
+          </mat-icon>
+
+        </button>
+
+        <app-project-monthly-top entidadConsolidado="diario" [datos]="topProyectos"
+          [proyectoSeleccionado]="proyectoSeleccionado">
+        </app-project-monthly-top>
+
+      </div>
+
+    </div>
+
+  </section>
+
 
 
 
