@@ -1140,3 +1140,205 @@
 }
 
 
+
+
+
+/* ==============================================
+   CLIENTE Y RESOLUTOR
+   CONTENEDORES EXPANDIBLES
+   ============================================== */
+
+.chart-expandable,
+.table-expandable {
+  position: relative;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* BOTÓN DE PANTALLA COMPLETA PARA GRÁFICOS */
+
+.chart-expandable > .chart-expand-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+
+  border: 1px solid #E5E9EE;
+  border-radius: 8px;
+
+  background: #FFFFFF;
+  color: #667085;
+
+  cursor: pointer;
+}
+
+.chart-expandable > .chart-expand-btn:hover {
+  color: #FF620F;
+  border-color: #FF620F;
+  background: #FFF4ED;
+}
+
+.chart-expandable > .chart-expand-btn mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+/* EVITAR SUPERPOSICIÓN DEL BOTÓN CON EL ENCABEZADO */
+
+:host ::ng-deep .chart-expandable .chart-header {
+  padding-right: 60px;
+}
+
+/* ==============================================
+   PANTALLA COMPLETA - CONTENEDORES
+   ============================================== */
+
+.chart-expandable:fullscreen,
+.table-expandable:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+
+  margin: 0 !important;
+  padding: 56px 18px 18px;
+
+  background: #F7F9FB;
+  overflow: auto;
+}
+
+.table-expandable:fullscreen {
+  padding: 18px;
+}
+
+/* COMPONENTES DE GRÁFICOS */
+
+.chart-expandable:fullscreen > app-project-monthly-top,
+.chart-expandable:fullscreen > app-resolver-monthly-tickets {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* TARJETAS DE GRÁFICOS */
+
+:host ::ng-deep .chart-expandable:fullscreen .chart-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ZONA DESPLAZABLE DEL GRÁFICO */
+
+:host ::ng-deep .chart-expandable:fullscreen .chart-scroll,
+:host ::ng-deep .chart-expandable:fullscreen .chart-viewport {
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* CONTENEDOR INTERNO CHART.JS */
+
+:host ::ng-deep .chart-expandable:fullscreen .chart-container,
+:host ::ng-deep .chart-expandable:fullscreen .chart-content {
+  flex: 1 1 auto;
+  min-height: 350px;
+  height: 100% !important;
+}
+
+/* ==============================================
+   PANTALLA COMPLETA - TABLAS
+   ============================================== */
+
+.table-expandable > app-project-explorer-table,
+.table-expandable > app-resolutor-performance-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.table-expandable:fullscreen > app-project-explorer-table,
+.table-expandable:fullscreen > app-resolutor-performance-table {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* TARJETA INTERNA */
+
+:host ::ng-deep .table-expandable:fullscreen .table-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ÁREA DE TABLA */
+
+:host ::ng-deep .table-expandable:fullscreen .table-container {
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  max-height: none !important;
+
+  overflow: auto;
+}
+
+/* PAGINACIÓN */
+
+:host ::ng-deep .table-expandable:fullscreen mat-paginator {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .chart-expandable:fullscreen,
+  .table-expandable:fullscreen {
+    padding: 12px;
+  }
+
+  .chart-expandable:fullscreen {
+    padding-top: 50px;
+  }
+}

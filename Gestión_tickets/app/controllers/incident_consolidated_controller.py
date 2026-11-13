@@ -345,7 +345,7 @@ def obtener_distribucion_ajustada_causas(
     )
 
 
-
+ 
 # ANALISIS DE INCIDENTES - PRINCIPALES HALLAZGOS
 @router.get("/principales-hallazgos",response_model=IncidentConsolidatedPrincipalesHallazgosOut)
 def obtener_principales_hallazgos(

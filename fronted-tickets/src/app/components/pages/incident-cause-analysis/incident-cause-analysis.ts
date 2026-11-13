@@ -1,9 +1,9 @@
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
 import { Subscription } from 'rxjs';
-import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut } from '../../../models/incident-consolidated';
+import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTopProyectos, IncidentConsolidatedProyectoItem } from '../../../models/incident-consolidated';
 import { IncidentConsolidatedService } from '../../../services/incident-consolidated.service';
 import { toPng } from 'html-to-image';
 
@@ -83,6 +83,15 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   distribucionAjustada: IncidentConsolidatedDistribucionAjustadaOut | null = null;
   analisisCausas: IncidentConsolidatedAnalisisCausasOut | null = null;
   topServidores: IncidentConsolidatedTopServidoresOut | null = null;
+  // VERIFICAR SI EXISTEN SERVIDORES CON INCIDENTES
+  get hayServidores(): boolean {
+    return (this.topServidores?.servidores ?? []).some(
+      item =>
+        typeof item.servidor === 'string' &&
+        item.servidor.trim().length > 0 &&
+        item.incidentes > 0
+    );
+  }
 
   // ANALISIS DE CAUSAS V3
   cargandoAnalisisCausas = false;
@@ -114,6 +123,88 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   private suscripcionFiltros: Subscription | null = null;
   private solicitudesDashboard = new Subscription();
 
+  // CLIENTE - PROYECTOS
+  proyectos: IncidentConsolidatedProyectoItem[] = [];
+  cargandoProyectos = false;
+  errorProyectos: string | null = null;
+
+  topProyectos: IncidentConsolidatedTopProyectos = {
+    periodos: [],
+    proyectos: []
+  };
+
+  cargandoTopProyectos = false;
+  errorTopProyectos: string | null = null;
+
+  opcionesProyectos: string[] = [];
+  proyectosExcluidos: string[] = [];
+
+  private suscripcionOpcionesProyectos: Subscription | null = null;
+
+
+  // RESOLUTOR
+  rendimientoResolutores: IncidentConsolidatedRendimientoOut | null = null;
+  cargandoRendimientoResolutores = false;
+  errorRendimientoResolutores: string | null = null;
+  paginaResolutores = 1;
+  tamanoResolutores = 5;
+  private suscripcionRendimientoResolutores: Subscription | null = null;
+  ticketsPorResolutor: IncidentConsolidatedTicketsPorResolutorOut | null = null;
+  cargandoTicketsPorResolutor = false;
+  errorTicketsPorResolutor: string | null = null;
+  limiteTicketsPorResolutor = 5;
+  private suscripcionTicketsPorResolutor: Subscription | null = null;
+
+
+  // PANTALLA COMPLETA
+  graficoExpandido: string | null = null;
+
+  async alternarPantallaCompleta(elemento: HTMLElement): Promise<void> {
+    try {
+      if (document.fullscreenElement === elemento) {
+        await document.exitFullscreen();
+      } else if (!document.fullscreenElement) {
+        await elemento.requestFullscreen();
+      }
+    } catch (error) {
+      console.error('Error al cambiar pantalla completa:', error);
+    }
+  }
+
+  @HostListener('document:fullscreenchange')
+  actualizarPantallaCompleta(): void {
+    this.graficoExpandido =
+      (document.fullscreenElement as HTMLElement | null)?.id ?? null;
+
+    this.changeDetector.markForCheck();
+  }
+
+
+  // MISMO CRITERIO UTILIZADO EN INCIDENTES CONSOLIDADOS
+  get mostrarMesesEnEjeXResolutores(): boolean {
+    const f = this.filtrosActuales;
+
+    const fechasPersonalizadas =
+      (!!f.desde && f.desde !== this.opcionesFiltros.fecha_min) ||
+      (!!f.hasta && f.hasta !== this.opcionesFiltros.fecha_max);
+
+    return Boolean(
+      fechasPersonalizadas ||
+      f.prioridad ||
+      f.motivo_estado ||
+      f.motivo_resolucion ||
+      f.grupo_resolutor ||
+      f.proyecto ||
+      f.nombre_resolutor ||
+      f.descripcion ||
+      f.periodo ||
+      f.tipo_incidente?.length ||
+      f.detalle_id ||
+      f.proyectos_excluidos?.length ||
+      f.ticket_id
+    );
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private incidentConsolidatedService: IncidentConsolidatedService,
@@ -123,7 +214,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
 
   // REPORTE EJECUTIVO - EXPORTACION PNG
-
   @ViewChild('reporteImagen')
   private reporteImagen?: ElementRef<HTMLElement>;
 
@@ -149,7 +239,6 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       this.atribucionIncidentes !== null &&
       this.distribucionAjustada !== null &&
       this.analisisCausas !== null &&
-      this.topServidores !== null &&
       this.principalesHallazgos !== null &&
       this.conclusiones !== null
     );
@@ -297,6 +386,9 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.suscripcionFiltros?.unsubscribe();
+    this.suscripcionOpcionesProyectos?.unsubscribe();
+    this.suscripcionRendimientoResolutores?.unsubscribe();
+    this.suscripcionTicketsPorResolutor?.unsubscribe();
     this.solicitudesDashboard.unsubscribe();
   }
 
@@ -448,7 +540,11 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
       tipo_incidente: tipos.length ? tipos : undefined,
 
-      ticket_id: valores.ticket_id?.trim() || undefined
+      ticket_id: valores.ticket_id?.trim() || undefined,
+
+      proyectos_excluidos: this.proyectosExcluidos.length > 0
+        ? [...this.proyectosExcluidos]
+        : undefined
     };
 
     const motivoSeleccionado = valores.motivo_resolucion;
@@ -487,43 +583,76 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     this.errorFiltros = null;
     this.establecerFechasPorDefecto();
     this.atribucionSeleccionada = null;
+    // RESTABLECER FILTROS DE LAS NUEVAS SECCIONES
+    this.proyectosExcluidos = [];
+
+    this.paginaResolutores = 1;
+    this.tamanoResolutores = 5;
+    this.limiteTicketsPorResolutor = 5;
+
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+      proyecto: undefined,
+      nombre_resolutor: undefined,
+      proyectos_excluidos: undefined
+    };
     this.cargarDashboard();
 
   }
 
 
   // 13. CARGAR DASHBOARD
+
   cargarDashboard(): void {
 
-    // Cancelar respuestas anteriores cuando cambian filtros.
+    // CANCELAR CONSULTAS DE LOS FILTROS ANTERIORES
     this.solicitudesDashboard.unsubscribe();
     this.solicitudesDashboard = new Subscription();
 
-    // Copia de filtros aplicada a todas las consultas.
     const filtros: IncidentConsolidatedDashboardFilters = {
       ...this.filtrosActuales,
+
       tipo_incidente: this.filtrosActuales.tipo_incidente
         ? [...this.filtrosActuales.tipo_incidente]
+        : undefined,
+
+      proyectos_excluidos: this.filtrosActuales.proyectos_excluidos
+        ? [...this.filtrosActuales.proyectos_excluidos]
         : undefined
     };
 
-    // Limpiar los resultados anteriores.
+    // RESTABLECER PAGINACIÓN
+    this.paginaResolutores = 1;
+
+    // LIMPIAR DATOS PREVIOS
     this.kpis = null;
     this.principalesHallazgos = null;
     this.conclusiones = null;
 
-    // Invalidar datos de futuros gráficos y tablas.
     this.atribucionIncidentes = null;
     this.distribucionAjustada = null;
     this.analisisCausas = null;
     this.topServidores = null;
 
+    // NUEVAS SECCIONES
+    this.proyectos = [];
+    this.topProyectos = { periodos: [], proyectos: [] };
+    this.rendimientoResolutores = null;
+    this.ticketsPorResolutor = null;
+
+    // LIMPIAR ERRORES
     this.errorKpis = null;
     this.errorHallazgos = null;
     this.errorConclusiones = null;
     this.errorExportacion = null;
 
-    //this.cargarKpis(filtros);
+    this.errorProyectos = null;
+    this.errorTopProyectos = null;
+    this.errorRendimientoResolutores = null;
+    this.errorTicketsPorResolutor = null;
+
+    // MÓDULOS EXISTENTES
+    // this.cargarKpis(filtros);
 
     this.cargarAtribucion(filtros);
     this.cargarAnalisisCausas(filtros);
@@ -531,7 +660,14 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     this.cargarPrincipalesHallazgos(filtros);
     this.cargarConclusiones(filtros);
 
+    // NUEVO: CLIENTE
+    this.cargarOpcionesProyectos();
+    this.cargarProyectos(filtros);
+    this.cargarTopProyectos(filtros);
 
+    // NUEVO: RESOLUTOR
+    this.cargarRendimientoResolutores(filtros);
+    this.cargarTicketsPorResolutor(filtros);
 
     this.changeDetector.markForCheck();
   }
@@ -1067,6 +1203,350 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     }
   }
 
+
+  // CLIENTE - OPCIONES DE PROYECTOS
+  private cargarOpcionesProyectos(): void {
+
+    this.suscripcionOpcionesProyectos?.unsubscribe();
+
+    const filtros: IncidentConsolidatedDashboardFilters = {
+      ...this.filtrosActuales,
+      proyecto: undefined,
+      proyectos_excluidos: undefined
+    };
+
+    this.suscripcionOpcionesProyectos = this.incidentConsolidatedService
+      .obtenerProyectos(filtros)
+      .subscribe({
+        next: (datos) => {
+          this.opcionesProyectos = [
+            ...new Set(datos.map(item => item.proyecto))
+          ];
+
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+          console.error('Error cargando opciones de proyectos:', error);
+
+          this.opcionesProyectos = [
+            ...this.opcionesFiltros.proyectos
+          ];
+
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+
+  // CLIENTE - EXPLORADOR POR PROYECTOS
+  private cargarProyectos(
+    filtros: IncidentConsolidatedDashboardFilters
+  ): void {
+
+    this.cargandoProyectos = true;
+    this.errorProyectos = null;
+
+    const solicitud = this.incidentConsolidatedService
+      .obtenerProyectos(filtros)
+      .subscribe({
+        next: (datos) => {
+          this.proyectos = datos;
+          this.cargandoProyectos = false;
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+          console.error('Error cargando proyectos:', error);
+
+          this.proyectos = [];
+          this.cargandoProyectos = false;
+          this.errorProyectos = 'No se pudo cargar el Explorador por Proyectos.';
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.solicitudesDashboard.add(solicitud);
+  }
+
+
+  // CLIENTE - TOP 10 PROYECTOS
+  private cargarTopProyectos(
+    filtros: IncidentConsolidatedDashboardFilters
+  ): void {
+
+    this.cargandoTopProyectos = true;
+    this.errorTopProyectos = null;
+
+    const solicitud = this.incidentConsolidatedService
+      .obtenerTopProyectos(filtros)
+      .subscribe({
+        next: (datos) => {
+          this.topProyectos = datos;
+          this.cargandoTopProyectos = false;
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+          console.error('Error cargando Top de Proyectos:', error);
+
+          this.topProyectos = { periodos: [], proyectos: [] };
+          this.cargandoTopProyectos = false;
+          this.errorTopProyectos = 'No se pudo cargar el Top 10 de Proyectos.';
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.solicitudesDashboard.add(solicitud);
+  }
+
+
+  // CLIENTE - FILTRO DINÁMICO POR PROYECTO
+  cambiarProyecto(proyecto: string | null): void {
+
+    const nuevoProyecto = proyecto?.trim() || null;
+
+    if ((this.filtrosActuales.proyecto ?? null) === nuevoProyecto) {
+      return;
+    }
+
+    // UN PROYECTO SELECCIONADO NO DEBE ESTAR EXCLUIDO
+    if (nuevoProyecto) {
+      this.proyectosExcluidos = this.proyectosExcluidos.filter(
+        item => item.trim().toLowerCase() !== nuevoProyecto.toLowerCase()
+      );
+    }
+
+    // SINCRONIZAR EL FORMULARIO SUPERIOR
+    this.filtrosForm.patchValue(
+      { proyecto: nuevoProyecto },
+      { emitEvent: false }
+    );
+
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+
+      proyecto: nuevoProyecto ?? undefined,
+
+      proyectos_excluidos: this.proyectosExcluidos.length > 0
+        ? [...this.proyectosExcluidos]
+        : undefined
+    };
+
+    this.cargarDashboard();
+  }
+
+
+  // CLIENTE - EXCLUSIÓN MÚLTIPLE
+  cambiarProyectosExcluidos(proyectos: string[]): void {
+
+    const vistos = new Set<string>();
+    const seleccion: string[] = [];
+
+    for (const proyecto of proyectos) {
+
+      const nombre = proyecto.trim();
+      const clave = nombre.toLowerCase();
+
+      if (!nombre || vistos.has(clave)) {
+        continue;
+      }
+
+      vistos.add(clave);
+      seleccion.push(nombre);
+    }
+
+    const anteriores = new Set(
+      this.proyectosExcluidos.map(
+        item => item.trim().toLowerCase()
+      )
+    );
+
+    if (
+      anteriores.size === seleccion.length &&
+      seleccion.every(item => anteriores.has(item.toLowerCase()))
+    ) {
+      return;
+    }
+
+    this.proyectosExcluidos = seleccion;
+
+    let proyectoActual = this.filtrosActuales.proyecto;
+
+    if (
+      proyectoActual &&
+      seleccion.some(
+        item => item.toLowerCase() === proyectoActual!.toLowerCase()
+      )
+    ) {
+      proyectoActual = undefined;
+
+      this.filtrosForm.patchValue(
+        { proyecto: null },
+        { emitEvent: false }
+      );
+    }
+
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+
+      proyecto: proyectoActual,
+
+      proyectos_excluidos: seleccion.length > 0
+        ? [...seleccion]
+        : undefined
+    };
+
+    this.cargarDashboard();
+  }
+
+
+  // RESOLUTOR - RENDIMIENTO MENSUAL
+  private cargarRendimientoResolutores(
+    filtros: IncidentConsolidatedDashboardFilters
+  ): void {
+
+    this.suscripcionRendimientoResolutores?.unsubscribe();
+
+    this.cargandoRendimientoResolutores = true;
+    this.errorRendimientoResolutores = null;
+
+    const solicitud = this.incidentConsolidatedService
+      .obtenerRendimientoResolutores(
+        filtros,
+        this.paginaResolutores,
+        this.tamanoResolutores
+      )
+      .subscribe({
+        next: (datos) => {
+          this.rendimientoResolutores = datos;
+          this.cargandoRendimientoResolutores = false;
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+          console.error('Error cargando rendimiento de resolutores:', error);
+
+          this.rendimientoResolutores = null;
+          this.cargandoRendimientoResolutores = false;
+          this.errorRendimientoResolutores =
+            'No se pudo cargar el Rendimiento por Resolutor.';
+
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.suscripcionRendimientoResolutores = solicitud;
+    this.solicitudesDashboard.add(solicitud);
+  }
+
+
+  // RESOLUTOR - PAGINACIÓN
+  cambiarPaginaResolutores(evento: {
+    pagina: number;
+    tamano: number;
+  }): void {
+
+    if (
+      this.cargandoRendimientoResolutores ||
+      (
+        this.paginaResolutores === evento.pagina &&
+        this.tamanoResolutores === evento.tamano
+      )
+    ) {
+      return;
+    }
+
+    this.paginaResolutores = evento.pagina;
+    this.tamanoResolutores = evento.tamano;
+
+    // RECARGAR ÚNICAMENTE LA TABLA
+    this.cargarRendimientoResolutores({
+      ...this.filtrosActuales
+    });
+  }
+
+
+  // RESOLUTOR - FILTRO DINÁMICO
+  cambiarResolutor(resolutor: string | null): void {
+
+    const nuevoResolutor = resolutor?.trim() || null;
+
+    if ((this.filtrosActuales.nombre_resolutor ?? null) === nuevoResolutor) {
+      return;
+    }
+
+    this.filtrosForm.patchValue(
+      { nombre_resolutor: nuevoResolutor },
+      { emitEvent: false }
+    );
+
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+      nombre_resolutor: nuevoResolutor ?? undefined
+    };
+
+    // SE ACTUALIZAN TODAS LAS SECCIONES
+    this.cargarDashboard();
+  }
+
+
+  // RESOLUTOR - NÚMERO DE TICKETS
+  private cargarTicketsPorResolutor(
+    filtros: IncidentConsolidatedDashboardFilters
+  ): void {
+
+    this.suscripcionTicketsPorResolutor?.unsubscribe();
+
+    this.cargandoTicketsPorResolutor = true;
+    this.errorTicketsPorResolutor = null;
+
+    const solicitud = this.incidentConsolidatedService
+      .obtenerTicketsPorResolutor(
+        filtros,
+        this.limiteTicketsPorResolutor
+      )
+      .subscribe({
+        next: (datos) => {
+          this.ticketsPorResolutor = datos;
+          this.cargandoTicketsPorResolutor = false;
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+          console.error('Error cargando tickets por resolutor:', error);
+
+          this.ticketsPorResolutor = null;
+          this.cargandoTicketsPorResolutor = false;
+          this.errorTicketsPorResolutor =
+            'No se pudo cargar el gráfico de Tickets por Resolutor.';
+
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.suscripcionTicketsPorResolutor = solicitud;
+    this.solicitudesDashboard.add(solicitud);
+  }
+
+
+  // RESOLUTOR - CAMBIAR TOP
+  cambiarLimiteTicketsPorResolutor(limite: number): void {
+
+    if (
+      ![5, 10, 15, 20].includes(limite) ||
+      this.limiteTicketsPorResolutor === limite
+    ) {
+      return;
+    }
+
+    this.limiteTicketsPorResolutor = limite;
+
+    // RECARGAR ÚNICAMENTE EL GRÁFICO
+    this.cargarTicketsPorResolutor({
+      ...this.filtrosActuales
+    });
+  }
 
 
 

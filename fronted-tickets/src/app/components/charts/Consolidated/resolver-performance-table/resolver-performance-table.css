@@ -372,3 +372,46 @@ mat-paginator {
         max-width: 250px;
     }
 }
+
+/* PANTALLA COMPLETA - BOTÓN EN CABECERA */
+
+.table-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  border: 1px solid #E5E9EE;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #667085;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-expand-btn:hover {
+  color: #FF620F;
+  border-color: #FF620F;
+  background: #FFF4ED;
+}
+
+.table-expand-btn:focus-visible {
+  outline: 2px solid #FF620F;
+  outline-offset: 2px;
+}
+
+.table-expand-btn mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+@media (max-width: 850px) {
+  .table-actions {
+    justify-content: flex-end;
+  }
+}

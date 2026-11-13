@@ -16,6 +16,10 @@ export class ResolverPerformanceTable implements OnChanges {
   @Input() cargando: boolean = false;
   @Output() resolutorChange = new EventEmitter<string | null>();
   @Output() paginaChange = new EventEmitter<{ pagina: number; tamano: number; }>();
+  // PANTALLA COMPLETA
+  @Input() habilitarPantallaCompleta = false;
+  @Input() pantallaCompletaActiva = false;
+  @Output() pantallaCompletaSolicitada = new EventEmitter<void>();
 
   columnasMostradas: string[] = [
     'nombre_resolutor',

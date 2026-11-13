@@ -1533,17 +1533,6 @@ def obtener_principales_hallazgos(
     filtros: IncidentConsolidatedDashboardFilters,
     incluir_servidores: bool = False
 ):
-    """
-    Genera hallazgos descriptivos y verificables.
-
-    Reutiliza:
-    - Distribucion ajustada de atribucion.
-    - Analisis de causas V3.
-    - Top de servidores (opcional).
-
-    No determina causas raiz ni responsabilidades.
-    """
-
     atribucion = obtener_distribucion_ajustada_causas(
         db=db,
         filtros=filtros
@@ -1841,14 +1830,6 @@ def obtener_conclusiones(
     filtros: IncidentConsolidatedDashboardFilters,
     incluir_servidores: bool = False
 ):
-    """
-    Genera conclusiones descriptivas y recomendaciones
-    utilizando los hallazgos del dashboard.
-
-    No confirma causas raiz.
-    No asigna responsabilidades automaticamente.
-    No modifica registros.
-    """
 
     resultado = obtener_principales_hallazgos(
         db=db,

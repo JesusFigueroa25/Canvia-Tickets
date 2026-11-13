@@ -32,9 +32,7 @@ export interface IncidentConsolidatedDashboardFilters {
 
 
 
-/* ====================================================
-   TABLA PAGINADA - DETALLE DE TICKETS
-   ==================================================== */
+/*  TABLA PAGINADA - DETALLE DE TICKETS*/
 
 export interface IncidentConsolidatedTicketItem {
   Ticket_ID: string;

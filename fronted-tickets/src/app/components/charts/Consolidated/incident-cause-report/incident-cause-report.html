@@ -1,33 +1,45 @@
-
 <section class="report-document">
+
+
 
   <!-- CABECERA EJECUTIVA -->
   <header class="report-header">
 
-    <div class="report-header-title">
-      <span class="report-eyebrow">
-        CANVIA · REPORTE EJECUTIVO
-      </span>
+    <!-- INFORMACIÓN PRINCIPAL -->
+    <div class="report-header-main">
 
-      <h1>
-        Análisis de Incidentes
-        <span *ngIf="proyecto">— {{ proyecto }}</span>
+  
+
+      <!-- TÍTULO Y PROYECTO EN LA MISMA LÍNEA -->
+      <h1 class="report-main-title">
+        Análisis de Incidentes<span *ngIf="proyecto"> - {{ proyecto }}</span>
       </h1>
 
-      <p>
+      <!-- SUBTÍTULO -->
+      <p class="report-header-subtitle">
         {{ tiposIncidente || 'Análisis general de incidentes' }}
       </p>
+
     </div>
 
+    <!-- TOTAL DE INCIDENTES -->
     <div class="report-header-kpi">
-      <span>Total de incidentes analizados</span>
+
+      <span>
+        Total de incidentes
+      </span>
+
       <strong>
         {{ totalIncidentes | number:'1.0-0' }}
       </strong>
-      <small>Incidentes</small>
+
+    
+
     </div>
 
   </header>
+
+
 
   <!-- METADATOS -->
   <div class="report-meta">
@@ -50,10 +62,11 @@
   </div>
 
   <!-- FILA SUPERIOR -->
-  <div class="report-top-grid">
+  <div class="report-top-grid" [class.report-top-grid--without-servers]="!hayServidores">
 
-    <!-- 1. TOP SERVIDORES -->
-    <article class="report-panel">
+    <!-- TOP DE SERVIDORES -->
+
+    <article class="report-panel" *ngIf="hayServidores">
 
       <h2>
         <span class="report-number">1</span>
@@ -65,9 +78,7 @@
         <span>Incidentes</span>
       </div>
 
-      <div
-        class="server-row"
-        *ngFor="let item of servidoresOrdenados; let i = index">
+      <div class="server-row" *ngFor="let item of servidoresOrdenados; let i = index">
 
         <span class="server-name">
           <b>{{ i + 1 }}.</b>
@@ -75,10 +86,7 @@
         </span>
 
         <div class="server-bar">
-          <div
-            class="server-bar-fill"
-            [class.first]="i === 0"
-            [style.width.%]="anchoServidor(item.incidentes)">
+          <div class="server-bar-fill" [class.first]="i === 0" [style.width.%]="anchoServidor(item.incidentes)">
           </div>
         </div>
 
@@ -88,13 +96,8 @@
 
       </div>
 
-      <div
-        class="report-empty"
-        *ngIf="servidoresOrdenados.length === 0">
-        No se identificaron servidores.
-      </div>
-
       <div class="server-summary" *ngIf="servidores">
+
         <span>
           Servidores únicos:
           <strong>
@@ -108,6 +111,7 @@
             {{ servidores.incidentes_sin_servidor }}
           </strong>
         </span>
+
       </div>
 
       <p class="report-note">
@@ -121,15 +125,13 @@
     <article class="report-panel">
 
       <h2>
-        <span class="report-number">2</span>
+        <span class="report-number">{{ hayServidores ? 2 : 1 }}</span>
         Distribución por atribución original
       </h2>
 
       <div class="donut-wrapper">
 
-        <div
-          class="report-donut"
-          [style.background]="fondoDona">
+        <div class="report-donut" [style.background]="fondoDona">
 
           <div class="donut-hole">
             <strong>
@@ -157,8 +159,8 @@
 
           <small>
             {{
-              obtenerAtribucion('Atribuible a Cliente').porcentaje
-              | number:'1.1-2'
+            obtenerAtribucion('Atribuible a Cliente').porcentaje
+            | number:'1.1-2'
             }}%
           </small>
         </div>
@@ -175,8 +177,8 @@
 
           <small>
             {{
-              obtenerAtribucion('Atribuible a Canvia').porcentaje
-              | number:'1.1-2'
+            obtenerAtribucion('Atribuible a Canvia').porcentaje
+            | number:'1.1-2'
             }}%
           </small>
         </div>
@@ -196,7 +198,7 @@
     <article class="report-panel">
 
       <h2>
-        <span class="report-number">3</span>
+        <span class="report-number">{{ hayServidores ? 3 : 2 }}</span>
         Distribución ajustada por análisis de causa
       </h2>
 
@@ -212,9 +214,7 @@
         </span>
       </div>
 
-      <div
-        class="comparison-group"
-        *ngFor="let item of ajustada?.comparacion ?? []">
+      <div class="comparison-group" *ngFor="let item of ajustada?.comparacion ?? []">
 
         <h3>
           {{ nombreAtribucion(item.atribucion) }}
@@ -225,9 +225,7 @@
           <span>Original</span>
 
           <div class="comparison-track">
-            <div
-              class="comparison-fill original"
-              [style.width.%]="anchoComparacion(
+            <div class="comparison-fill original" [style.width.%]="anchoComparacion(
                 item.tickets_originales
               )">
             </div>
@@ -244,9 +242,7 @@
           <span>Ajustada</span>
 
           <div class="comparison-track">
-            <div
-              class="comparison-fill ajustada"
-              [style.width.%]="anchoComparacion(
+            <div class="comparison-fill ajustada" [style.width.%]="anchoComparacion(
                 item.tickets_ajustados
               )">
             </div>
@@ -268,9 +264,7 @@
 
       </div>
 
-      <div
-        class="report-empty"
-        *ngIf="(ajustada?.comparacion?.length ?? 0) === 0">
+      <div class="report-empty" *ngIf="(ajustada?.comparacion?.length ?? 0) === 0">
         Sin información comparativa.
       </div>
 
@@ -293,7 +287,7 @@
   <article class="report-panel report-wide">
 
     <h2>
-      <span class="report-number">4</span>
+      <span class="report-number">{{ hayServidores ? 4 : 3 }}</span>
       Análisis de las causas de los incidentes
     </h2>
 
@@ -320,9 +314,7 @@
         <tr *ngFor="let item of causas?.causas ?? []">
 
           <td>
-            <span
-              class="cause-indicator"
-              [class.unidentified]="!item.es_causa_identificada">
+            <span class="cause-indicator" [class.unidentified]="!item.es_causa_identificada">
             </span>
 
             {{ item.categoria }}
@@ -378,87 +370,75 @@
 
   </article>
 
-  
+
 
 
   <!-- FILA INFERIOR -->
-<div class="report-bottom-grid">
+  <div class="report-bottom-grid">
 
-  <!-- 5. HALLAZGOS -->
-  <article class="report-panel findings-summary-panel">
+    <!-- 5. HALLAZGOS -->
+    <article class="report-panel findings-summary-panel">
 
-    <h2>
-      <span class="report-number">5</span>
-      Principales hallazgos
-    </h2>
+      <h2>
+        <span class="report-number">{{ hayServidores ? 5 : 4 }}</span>
+        Principales hallazgos
+      </h2>
 
-    <div
-      class="findings-summary-list"
-      *ngIf="(hallazgos?.hallazgos?.length ?? 0) > 0">
+      <div class="findings-summary-list" *ngIf="(hallazgos?.hallazgos?.length ?? 0) > 0">
 
-      <div
-        class="finding-summary-row"
-        *ngFor="let item of hallazgos?.hallazgos ?? []; let i = index">
+        <div class="finding-summary-row" *ngFor="let item of hallazgos?.hallazgos ?? []; let i = index">
 
-        <span class="finding-summary-index">
-          {{ i + 1 }}
-        </span>
-
-        <p>
-          {{ item.descripcion }}
-        </p>
-
-      </div>
-
-    </div>
-
-    <div
-      class="report-empty compact-empty"
-      *ngIf="(hallazgos?.hallazgos?.length ?? 0) === 0">
-      No hay hallazgos para los filtros seleccionados.
-    </div>
-
-  </article>
-
-  <!-- 6. CONCLUSIONES -->
-  <article class="report-panel conclusions-summary-panel">
-
-    <h2>
-      <span class="report-number">6</span>
-      Conclusiones
-    </h2>
-
-    <div
-      class="conclusions-summary-list"
-      *ngIf="(conclusiones?.conclusiones?.length ?? 0) > 0">
-
-      <div
-        class="conclusion-summary-row"
-        *ngFor="let item of conclusiones?.conclusiones ?? []">
-
-        <span class="conclusion-summary-bullet">◆</span>
-
-        <p>
-          <strong>{{ item.titulo }}:</strong>
-          {{ item.conclusion }}
-          <span *ngIf="item.recomendacion">
-            {{ item.recomendacion }}
+          <span class="finding-summary-index">
+            {{ i + 1 }}
           </span>
-        </p>
+
+          <p>
+            {{ item.descripcion }}
+          </p>
+
+        </div>
 
       </div>
 
-    </div>
+      <div class="report-empty compact-empty" *ngIf="(hallazgos?.hallazgos?.length ?? 0) === 0">
+        No hay hallazgos para los filtros seleccionados.
+      </div>
 
-    <div
-      class="report-empty compact-empty"
-      *ngIf="(conclusiones?.conclusiones?.length ?? 0) === 0">
-      No hay conclusiones para los filtros seleccionados.
-    </div>
+    </article>
 
-  </article>
+    <!-- 6. CONCLUSIONES -->
+    <article class="report-panel conclusions-summary-panel">
 
-</div>
+      <h2>
+        <span class="report-number">{{ hayServidores ? 6 : 5 }}</span>
+        Conclusiones
+      </h2>
+
+      <div class="conclusions-summary-list" *ngIf="(conclusiones?.conclusiones?.length ?? 0) > 0">
+
+        <div class="conclusion-summary-row" *ngFor="let item of conclusiones?.conclusiones ?? []">
+
+          <span class="conclusion-summary-bullet">◆</span>
+
+          <p>
+            <strong>{{ item.titulo }}:</strong>
+            {{ item.conclusion }}
+            <span *ngIf="item.recomendacion">
+              {{ item.recomendacion }}
+            </span>
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="report-empty compact-empty" *ngIf="(conclusiones?.conclusiones?.length ?? 0) === 0">
+        No hay conclusiones para los filtros seleccionados.
+      </div>
+
+    </article>
+
+  </div>
 
 
 

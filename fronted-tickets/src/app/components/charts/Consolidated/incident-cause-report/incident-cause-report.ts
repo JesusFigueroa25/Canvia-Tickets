@@ -21,20 +21,13 @@ import {
 export class IncidentCauseReport {
 
   @Input() filtros: IncidentConsolidatedDashboardFilters = {};
-
   @Input() proyecto: string | null = null;
   @Input() tiposIncidente: string | null = null;
-
   @Input() atribucion: IncidentConsolidatedAtribucionOut | null = null;
-
   @Input() ajustada: IncidentConsolidatedDistribucionAjustadaOut | null = null;
-
   @Input() causas: IncidentConsolidatedAnalisisCausasOut | null = null;
-
   @Input() servidores: IncidentConsolidatedTopServidoresOut | null = null;
-
   @Input() hallazgos: IncidentConsolidatedPrincipalesHallazgosOut | null = null;
-
   @Input() conclusiones: IncidentConsolidatedConclusionesOut | null = null;
 
   // TOTAL DE INCIDENTES
@@ -90,11 +83,23 @@ export class IncidentCauseReport {
 
   // RANKING DE SERVIDORES
   get servidoresOrdenados(): IncidentConsolidatedServidorItem[] {
+
     return [...(this.servidores?.servidores ?? [])]
+      .filter(item =>
+        typeof item.servidor === 'string' &&
+        item.servidor.trim().length > 0 &&
+        item.incidentes > 0
+      )
       .sort((a, b) =>
         b.incidentes - a.incidentes ||
         a.servidor.localeCompare(b.servidor)
       );
+
+  }
+
+  // MOSTRAR SECCIÓN SOLO CUANDO EXISTAN SERVIDORES
+  get hayServidores(): boolean {
+    return this.servidoresOrdenados.length > 0;
   }
 
   get maxServidor(): number {

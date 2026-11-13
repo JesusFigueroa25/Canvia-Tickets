@@ -180,3 +180,43 @@
         height: 390px;
     }
 }
+
+
+/* SELECTOR TOP DE RESOLUTORES */
+
+.resolver-limit-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.resolver-limit-control label {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.resolver-limit-control select {
+  min-width: 100px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid #D0D5DD;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #344054;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.resolver-limit-control select:focus-visible {
+  outline: 2px solid #FF620F;
+  outline-offset: 2px;
+}
+
+@media (max-width: 850px) {
+  .resolver-limit-control {
+    align-self: flex-end;
+  }
+}

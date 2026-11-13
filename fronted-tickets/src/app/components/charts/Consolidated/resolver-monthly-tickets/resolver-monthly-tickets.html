@@ -12,22 +12,30 @@
             </p>
 
         </div>
+        <!-- SELECCIONAR CANTIDAD DE RESOLUTORES -->
+        <div class="resolver-limit-control">
+            <label for="resolver-top-limit">Mostrar</label>
+
+            <select id="resolver-top-limit" [value]="limite" [disabled]="cargando"
+                (change)="cambiarLimite(+$any($event.target).value)">
+
+                <option *ngFor="let opcion of opcionesLimite" [value]="opcion">
+                    Top {{ opcion }}
+                </option>
+
+            </select>
+        </div>
     </div>
 
     <!-- LEYENDA SOLO CON FILTROS -->
 
     <div class="chart-legend" *ngIf="datos && datos.periodos.length > 0">
-
-
         <div class="legend-item" *ngFor="let periodo of datos.periodos; let i = index">
-
             <span class="legend-color" [style.background-color]="colorPeriodo(i)">
             </span>
-
             <span>
                 {{ periodo.periodo.replace('-', '/') }}
             </span>
-
         </div>
     </div>
 

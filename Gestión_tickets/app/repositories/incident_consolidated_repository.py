@@ -19,7 +19,7 @@ def _dataframe_a_registros(df: pd.DataFrame):
 def limpiar_staging(db: Session):
     db.execute(delete(stg_incident_consolidated_table))
 
-
+ 
 def cargar_staging(db: Session,df: pd.DataFrame):
     columnas_staging = [
         columna.name

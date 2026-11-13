@@ -51,8 +51,16 @@
           Análisis de Causas
         </button>
 
-        <button type="button" (click)="irASeccion('servidores')">
+        <button *ngIf="hayServidores" type="button" (click)="irASeccion('servidores')">
           Servidores
+        </button>
+
+        <button type="button" (click)="irASeccion('cliente')">
+          Cliente
+        </button>
+
+        <button type="button" (click)="irASeccion('resolutor')">
+          Resolutor
         </button>
 
         <button type="button" (click)="irASeccion('principales-hallazgos')">
@@ -488,75 +496,188 @@
   </section>
 
   <!--SECCION 2 - ANALISIS DE CAUSAS-->
-
   <section id="analisis-causas" class="dashboard-section">
 
     <header class="section-header">
-
       <h1>Análisis de las Causas de los Incidentes</h1>
-
       <p>
         Clasificación técnica preliminar basada en
         la evidencia documentada en los tickets.
       </p>
-
     </header>
 
 
     <!-- GRAFICO: DISTRIBUCION DE FACTORES TECNICOS 
         <div class="chart-full-width">
-
       <app-incident-cause-distribution-chart [datos]="analisisCausas" [cargando]="cargandoAnalisisCausas"
         [error]="errorAnalisisCausas">
       </app-incident-cause-distribution-chart>
-
     </div>
- 
     -->
 
 
     <!-- TABLA: CAUSAS, RECOMENDACIONES Y EVIDENCIAS -->
     <div class="chart-full-width">
-
       <app-incident-cause-evidence-table [datos]="analisisCausas" [cargando]="cargandoAnalisisCausas"
         [error]="errorAnalisisCausas">
       </app-incident-cause-evidence-table>
-
     </div>
 
   </section>
 
 
 
-  <!--SECCION 3 - TOP DE SERVIDORES-->
-
-  <section id="servidores" class="dashboard-section">
+  <!-- SECCIÓN 3 - TOP DE SERVIDORES -->
+  <section id="servidores" class="dashboard-section" *ngIf="hayServidores">
 
     <header class="section-header">
-
       <h1>Top de Servidores con más Incidentes</h1>
-
       <p>
         Identificadores de servidores asociados
         a los incidentes registrados.
       </p>
-
     </header>
 
-
     <div class="chart-full-width">
-
       <app-incident-top-servers-chart [datos]="topServidores" [cargando]="cargandoTopServidores"
         [error]="errorTopServidores" [limite]="limiteTopServidores" (limiteChange)="cambiarLimiteTopServidores($event)">
       </app-incident-top-servers-chart>
-
     </div>
 
   </section>
 
 
-  <!--SECCION 4 - PRINCIPALES HALLAZGOS
-       DENTRO DEL COMPONENTE PADRE-->
+
+  <!--  SECCIÓN CLIENTE -->
+
+  <section id="cliente" class="dashboard-section">
+
+    <header class="section-header">
+      <h1>Cliente</h1>
+      <p>
+        Distribución de incidentes por proyecto y evolución
+        mensual de los clientes con mayor volumen de tickets.
+      </p>
+    </header>
+
+    <div class="charts-grid">
+
+      <!-- EXPLORADOR POR PROYECTOS -->
+      <div class="chart-grid-item table-expandable" id="fullscreen-cliente-proyectos" #tablaProyectosFs>
+
+        <app-project-explorer-table modo="consolidado" entidadConsolidado="incidentes" modoBusqueda="combo"
+          [datosConsolidados]="proyectos" [opcionesProyectos]="opcionesProyectos"
+          [proyectoSeleccionado]="filtrosActuales.proyecto ?? null" (proyectoChange)="cambiarProyecto($event)"
+          [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
+          (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
+          [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-cliente-proyectos'"
+          (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosFs)">
+        </app-project-explorer-table>
+
+      </div>
+
+      <!-- TOP 10: TICKETS POR PROYECTO Y MES -->
+      <div class="chart-grid-item chart-expandable" id="fullscreen-cliente-top-proyectos" #topProyectosFs>
+
+        <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(topProyectosFs)" [title]="graficoExpandido === 'fullscreen-cliente-top-proyectos'
+          ? 'Salir de pantalla completa'
+          : 'Ver en pantalla completa'" aria-label="Ampliar gráfico de tickets por proyecto y mes">
+
+          <mat-icon>
+            {{ graficoExpandido === 'fullscreen-cliente-top-proyectos'
+            ? 'fullscreen_exit'
+            : 'fullscreen' }}
+          </mat-icon>
+
+        </button>
+
+        <app-project-monthly-top entidadConsolidado="incidentes" [datos]="topProyectos"
+          [proyectoSeleccionado]="filtrosActuales.proyecto ?? null" [periodoSeleccionado]="null">
+        </app-project-monthly-top>
+
+      </div>
+
+    </div>
+
+    <div class="status-card" *ngIf="cargandoProyectos || cargandoTopProyectos" role="status">
+      <mat-icon>hourglass_top</mat-icon>
+      Actualizando datos de clientes y proyectos...
+    </div>
+
+    <div class="status-card error-card" *ngIf="errorProyectos">
+      <mat-icon>error_outline</mat-icon>
+      {{ errorProyectos }}
+    </div>
+
+    <div class="status-card error-card" *ngIf="errorTopProyectos">
+      <mat-icon>error_outline</mat-icon>
+      {{ errorTopProyectos }}
+    </div>
+
+  </section>
+
+
+
+  <section id="resolutor" class="dashboard-section">
+
+    <header class="section-header">
+      <h1>Resolutor</h1>
+      <p>
+        Rendimiento mensual de los resolutores y comparación
+        de la cantidad de incidentes asignados.
+      </p>
+    </header>
+
+    <!-- TABLA: RENDIMIENTO POR RESOLUTOR -->
+    <div class="chart-full-width table-expandable" id="fullscreen-rendimiento-resolutores" #rendimientoFs>
+
+      <app-resolutor-performance-table [datos]="rendimientoResolutores"
+        [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
+        [resolutorSeleccionado]="filtrosActuales.nombre_resolutor ?? null" [cargando]="cargandoRendimientoResolutores"
+        (resolutorChange)="cambiarResolutor($event)" (paginaChange)="cambiarPaginaResolutores($event)"
+        [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-rendimiento-resolutores'"
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(rendimientoFs)">
+      </app-resolutor-performance-table>
+
+    </div>
+
+    <!-- GRÁFICO: NÚMERO DE TICKETS POR RESOLUTOR -->
+    <div class="chart-full-width chart-expandable" id="fullscreen-tickets-resolutor" #ticketsResolutorFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(ticketsResolutorFs)" [title]="graficoExpandido === 'fullscreen-tickets-resolutor'
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'" aria-label="Ampliar gráfico de tickets por resolutor">
+
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-tickets-resolutor'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+
+      </button>
+
+      <app-resolver-monthly-tickets [datos]="ticketsPorResolutor" [cargando]="cargandoTicketsPorResolutor"
+        [limite]="limiteTicketsPorResolutor" [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
+        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+      </app-resolver-monthly-tickets>
+
+    </div>
+
+    <div class="status-card error-card" *ngIf="errorRendimientoResolutores">
+      <mat-icon>error_outline</mat-icon>
+      {{ errorRendimientoResolutores }}
+    </div>
+
+    <div class="status-card error-card" *ngIf="errorTicketsPorResolutor">
+      <mat-icon>error_outline</mat-icon>
+      {{ errorTicketsPorResolutor }}
+    </div>
+
+  </section>
+
+
+  <!--SECCION 4 - PRINCIPALES HALLAZGOS-->
 
   <section id="principales-hallazgos" class="dashboard-section">
 
@@ -584,32 +705,24 @@
 
 
     <ng-container *ngIf="!cargandoHallazgos && !errorHallazgos">
-
       <div class="insights-grid" *ngIf="principalesHallazgos && principalesHallazgos.hallazgos.length > 0">
 
         <article class="insight-card" *ngFor="let hallazgo of principalesHallazgos.hallazgos">
 
           <div class="insight-card-header">
-
             <span class="insight-code">{{ hallazgo.codigo }}</span>
-
-
           </div>
 
           <h2>{{ hallazgo.titulo }}</h2>
-
           <p>{{ hallazgo.descripcion }}</p>
 
           <div class="insight-metrics">
-
             <strong>
               {{ hallazgo.valor | number:'1.0-0' }}
             </strong>
-
             <span *ngIf="hallazgo.porcentaje !== null">
               {{ hallazgo.porcentaje | number:'1.0-2' }}%
             </span>
-
           </div>
 
         </article>
@@ -629,8 +742,7 @@
   </section>
 
 
-  <!--SECCION 5 - CONCLUSIONES
-       DENTRO DEL COMPONENTE PADRE-->
+  <!--SECCION 5 - CONCLUSIONES -->
 
   <section id="conclusiones" class="dashboard-section">
 
@@ -658,18 +770,12 @@
 
 
     <ng-container *ngIf="!cargandoConclusiones && !errorConclusiones">
-
       <div class="conclusions-list" *ngIf="conclusiones && conclusiones.conclusiones.length > 0">
-
         <article class="conclusion-card" *ngFor="let item of conclusiones.conclusiones">
 
           <div class="conclusion-card-header">
-
             <span class="insight-code">{{ item.codigo }}</span>
-
             <h2>{{ item.titulo }}</h2>
-
-
           </div>
 
 
@@ -689,13 +795,10 @@
 
 
           <div class="conclusion-references" *ngIf="item.hallazgos_referencia.length > 0">
-
             <span>Hallazgos relacionados:</span>
-
             <span class="reference-chip" *ngFor="let referencia of item.hallazgos_referencia">
               {{ referencia }}
             </span>
-
           </div>
 
         </article>
@@ -704,13 +807,10 @@
 
 
       <div class="empty-state" *ngIf="conclusiones && conclusiones.conclusiones.length === 0">
-
         <mat-icon>info_outline</mat-icon>
-
         <p>
           No hay conclusiones para los filtros seleccionados.
         </p>
-
       </div>
 
     </ng-container>

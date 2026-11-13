@@ -667,7 +667,7 @@ class RequirementActualizacionManualTabla(BaseModel):
     tamano: int
     total_paginas: int
 
-
+ 
 class RequirementActualizacionesManualesOut(BaseModel):
     resumen: RequirementActualizacionManualResumen
     grafico: list[RequirementActualizacionManualItem]
