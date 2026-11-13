@@ -35,6 +35,11 @@ export class IncidentCauseReport {
   @Input() servidores: IncidentConsolidatedTopServidoresOut | null = null;
   @Input() hallazgos: IncidentConsolidatedPrincipalesHallazgosOut | null = null;
   @Input() conclusiones: IncidentConsolidatedConclusionesOut | null = null;
+
+  // PROCEDENCIA DEL ANÁLISIS EJECUTIVO
+  @Input() origenAnalisis: 'ia' | 'reglas' | 'sin_datos' = 'reglas';
+  @Input() modeloAnalisis: string | null = null;
+
   // NUEVAS VISUALIZACIONES DEL REPORTE
   @Input() proyectos: IncidentConsolidatedProyectoItem[] = [];
   @Input() topProyectos: IncidentConsolidatedTopProyectos | null = null;

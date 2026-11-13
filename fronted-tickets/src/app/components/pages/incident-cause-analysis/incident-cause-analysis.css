@@ -1342,3 +1342,35 @@
     padding-top: 50px;
   }
 }
+
+
+
+/* ============================================
+   PROCEDENCIA DEL ANÁLISIS IA
+   ============================================ */
+
+.ai-origin-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  margin-bottom: 16px;
+
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ai-origin-info mat-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+
+  color: #16835B;
+  font-size: 18px;
+}
+
+.ai-origin-info span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

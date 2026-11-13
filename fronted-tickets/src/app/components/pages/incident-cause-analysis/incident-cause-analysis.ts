@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild,
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
 import { Subscription } from 'rxjs';
-import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTopProyectos, IncidentConsolidatedProyectoItem } from '../../../models/incident-consolidated';
+import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTopProyectos, IncidentConsolidatedProyectoItem, IncidentConsolidatedAnalisisEjecutivoIAOut } from '../../../models/incident-consolidated';
 import { IncidentConsolidatedService } from '../../../services/incident-consolidated.service';
 import { toPng } from 'html-to-image';
 
@@ -118,6 +118,13 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   conclusiones: IncidentConsolidatedConclusionesOut | null = null;
   cargandoConclusiones = false;
   errorConclusiones: string | null = null;
+
+
+  // ANÁLISIS EJECUTIVO CON INTELIGENCIA ARTIFICIAL
+  resultadoAnalisisIA: IncidentConsolidatedAnalisisEjecutivoIAOut | null = null;
+  cargandoAnalisisIA = false;
+  errorAnalisisIA: string | null = null;
+
 
   // 6. CONTROL DE PETICIONES
   private suscripcionFiltros: Subscription | null = null;
@@ -235,6 +242,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       !this.cargandoTopServidores &&
       !this.cargandoHallazgos &&
       !this.cargandoConclusiones &&
+      !this.cargandoAnalisisIA &&
+
 
       // NUEVAS CONSULTAS
       !this.cargandoProyectos &&
@@ -645,11 +654,15 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
     // RESTABLECER PAGINACIÓN
     this.paginaResolutores = 1;
-
-    // LIMPIAR DATOS PREVIOS
     this.kpis = null;
     this.principalesHallazgos = null;
     this.conclusiones = null;
+
+    // INVALIDAR EL ANÁLISIS IA DEL FILTRO ANTERIOR
+    this.resultadoAnalisisIA = null;
+    this.cargandoAnalisisIA = false;
+    this.errorAnalisisIA = null;
+
 
     this.atribucionIncidentes = null;
     this.distribucionAjustada = null;
@@ -678,11 +691,13 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     // MÓDULOS EXISTENTES
     // this.cargarKpis(filtros);
 
+    // MÓDULOS EXISTENTES
     this.cargarAtribucion(filtros);
     this.cargarAnalisisCausas(filtros);
     this.cargarTopServidores(filtros);
-    this.cargarPrincipalesHallazgos(filtros);
-    this.cargarConclusiones(filtros);
+
+    this.cargarAnalisisEjecutivoIA(filtros);
+
 
     // NUEVO: CLIENTE
     this.cargarOpcionesProyectos();
@@ -735,101 +750,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
 
-  // 15. CARGAR PRINCIPALES HALLAZGOS
-  private cargarPrincipalesHallazgos(
-    filtros: IncidentConsolidatedDashboardFilters
-  ): void {
 
-    this.cargandoHallazgos = true;
-
-    const solicitud = this.incidentConsolidatedService
-      .obtenerPrincipalesHallazgos(filtros, false)
-      .subscribe({
-
-        next: (data) => {
-
-          this.principalesHallazgos = data;
-          this.cargandoHallazgos = false;
-
-          this.changeDetector.markForCheck();
-        },
-
-        error: (error) => {
-
-          console.error(
-            'Error cargando principales hallazgos:',
-            error
-          );
-
-          this.principalesHallazgos = null;
-          this.cargandoHallazgos = false;
-
-          this.errorHallazgos =
-            'No se pudieron cargar los principales hallazgos.';
-
-          this.changeDetector.markForCheck();
-        }
-      });
-
-    this.solicitudesDashboard.add(solicitud);
-  }
-
-
-  // 16. CARGAR CONCLUSIONES
-  private cargarConclusiones(
-    filtros: IncidentConsolidatedDashboardFilters
-  ): void {
-
-    this.cargandoConclusiones = true;
-
-    const solicitud = this.incidentConsolidatedService
-      .obtenerConclusiones(filtros, false)
-      .subscribe({
-
-        next: (data) => {
-
-          this.conclusiones = data;
-          this.cargandoConclusiones = false;
-
-          this.changeDetector.markForCheck();
-        },
-
-        error: (error) => {
-
-          console.error(
-            'Error cargando conclusiones:',
-            error
-          );
-
-          this.conclusiones = null;
-          this.cargandoConclusiones = false;
-
-          this.errorConclusiones =
-            'No se pudieron cargar las conclusiones.';
-
-          this.changeDetector.markForCheck();
-        }
-      });
-
-    this.solicitudesDashboard.add(solicitud);
-  }
-
-  // 17. VALOR DE UN HALLAZGO PARA LOS KPIS
-  obtenerValorHallazgo(codigo: string): number | string {
-    if (this.cargandoHallazgos) {
-      return '...';
-    }
-    if (this.errorHallazgos) {
-      return 'Error';
-    }
-    if (!this.principalesHallazgos) {
-      return '—';
-    }
-    const hallazgo = this.principalesHallazgos.hallazgos.find(
-      item => item.codigo === codigo
-    );
-    return hallazgo?.valor ?? 0;
-  }
 
 
   // 18. ESTADO DE AJUSTES
@@ -1607,6 +1528,90 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
         }
       });
 
+    this.solicitudesDashboard.add(solicitud);
+  }
+
+
+
+  // ANÁLISIS EJECUTIVO IA - CARGA AUTOMÁTICA
+  private cargarAnalisisEjecutivoIA(
+    filtros: IncidentConsolidatedDashboardFilters
+  ): void {
+
+    this.cargandoAnalisisIA = true;
+    this.cargandoHallazgos = true;
+    this.cargandoConclusiones = true;
+
+    this.errorAnalisisIA = null;
+    this.errorHallazgos = null;
+    this.errorConclusiones = null;
+
+    this.resultadoAnalisisIA = null;
+    this.principalesHallazgos = null;
+    this.conclusiones = null;
+
+    // El backend incorpora el hallazgo de servidores
+    // cuando existen asociaciones en el conjunto filtrado.
+    // No depende de que el gráfico termine de cargar.
+    const incluirServidores = true;
+
+    const solicitud = this.incidentConsolidatedService
+      .generarAnalisisEjecutivoIA(
+        filtros,
+        incluirServidores
+      )
+      .subscribe({
+
+        next: (resultado) => {
+
+          // RESPUESTA ÚNICA DEL BACKEND
+          this.resultadoAnalisisIA = resultado;
+
+          // ACTUALIZAR LOS DOS APARTADOS
+          this.principalesHallazgos = resultado.hallazgos;
+          this.conclusiones = resultado.conclusiones;
+
+          // FINALIZAR CARGA
+          this.cargandoAnalisisIA = false;
+          this.cargandoHallazgos = false;
+          this.cargandoConclusiones = false;
+
+          this.errorAnalisisIA = null;
+          this.errorHallazgos = null;
+          this.errorConclusiones = null;
+
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Error cargando análisis ejecutivo IA:',
+            error
+          );
+
+          this.resultadoAnalisisIA = null;
+          this.principalesHallazgos = null;
+          this.conclusiones = null;
+
+          this.cargandoAnalisisIA = false;
+          this.cargandoHallazgos = false;
+          this.cargandoConclusiones = false;
+
+          const mensaje =
+            'No se pudo obtener el análisis ejecutivo ' +
+            'con inteligencia artificial.';
+
+          this.errorAnalisisIA = mensaje;
+          this.errorHallazgos = mensaje;
+          this.errorConclusiones = mensaje;
+
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    // CANCELAR SI CAMBIAN LOS FILTROS
+    // O SI SE DESTRUYE EL COMPONENTE
     this.solicitudesDashboard.add(solicitud);
   }
 

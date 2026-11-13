@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedVolumenItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedTipoItem, IncidentConsolidatedPrioridadItem, IncidentConsolidatedTopProyectos, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedTicketsOut } from '../models/incident-consolidated';
+import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedVolumenItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedTipoItem, IncidentConsolidatedPrioridadItem, IncidentConsolidatedTopProyectos, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedTicketsOut, IncidentConsolidatedAnalisisEjecutivoIAOut } from '../models/incident-consolidated';
 import { ImportResultado } from '../models/import-result';
 
 import {
@@ -472,6 +472,24 @@ export class IncidentConsolidatedService {
     }
 
 
+
+    // 7. ANÁLISIS EJECUTIVO CON INTELIGENCIA ARTIFICIAL
+    generarAnalisisEjecutivoIA(
+        filtros: IncidentConsolidatedDashboardFilters = {},
+        incluirServidores: boolean = false
+    ): Observable<IncidentConsolidatedAnalisisEjecutivoIAOut> {
+
+        const params = new HttpParams().set(
+            'incluir_servidores',
+            incluirServidores.toString()
+        );
+
+        return this.http.post<IncidentConsolidatedAnalisisEjecutivoIAOut>(
+            `${this.apiUrl}/analisis-ejecutivo-ia`,
+            filtros,
+            { params }
+        );
+    }
 
 
 }

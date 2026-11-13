@@ -1,4 +1,3 @@
-
 from datetime import date
 from fastapi import (APIRouter,Depends,File,HTTPException, Query,UploadFile,)
 from sqlalchemy.orm import Session
@@ -6,6 +5,8 @@ from app.database.sqlserver import get_sqlserver_db
 from app.schemas.consolidated_import_schema import (ConsolidatedImportOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedFiltersOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedKPIOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedPrioridadItem, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedTipoItem, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTopProyectosOut, IncidentConsolidatedVolumenItem,)
 from app.schemas.consolidated_import_schema import (IncidentConsolidatedDashboardFilters, IncidentConsolidatedTicketsOut)
 from app.services import (incident_consolidated_service,)
+from app.services.incident_analysis_ai_service import generar_analisis_ejecutivo_ia
+from app.schemas.consolidated_import_schema import IncidentConsolidatedAnalisisEjecutivoIAOut
 from app.schemas.consolidated_import_schema import (
     IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut
 )
@@ -321,11 +322,8 @@ def obtener_analisis_causas(
     )
 
 
-
-
 # ANALISIS DE INCIDENTES
 # DISTRIBUCION AJUSTADA POR ANALISIS DE CAUSA
-
 @router.get(
     "/distribucion-ajustada-causas",
     response_model=IncidentConsolidatedDistribucionAjustadaOut
@@ -367,7 +365,6 @@ def obtener_principales_hallazgos(
 
 
 # ANALISIS DE INCIDENTES - CONCLUSIONES
-
 @router.get(
     "/conclusiones",
     response_model=IncidentConsolidatedConclusionesOut
@@ -380,6 +377,29 @@ def obtener_conclusiones(
     db: Session = Depends(get_sqlserver_db)
 ):
     return incident_consolidated_service.obtener_conclusiones(
+        db=db,
+        filtros=filtros,
+        incluir_servidores=incluir_servidores
+    )
+
+
+# ANÁLISIS DE INCIDENTES - INFORME EJECUTIVO INTERPRETADO POR IA
+# Solicitud explícita para controlar coste y frecuencia de llamadas al modelo.
+@router.post(
+    "/analisis-ejecutivo-ia",
+    response_model=IncidentConsolidatedAnalisisEjecutivoIAOut
+)
+def generar_analisis_ejecutivo_incidentes_ia(
+    filtros: IncidentConsolidatedDashboardFilters,
+    incluir_servidores: bool = Query(False),
+    db: Session = Depends(get_sqlserver_db)
+):
+    if filtros.desde and filtros.hasta and filtros.desde > filtros.hasta:
+        raise HTTPException(
+            status_code=422,
+            detail="La fecha 'desde' no puede ser posterior a 'hasta'."
+        )
+    return generar_analisis_ejecutivo_ia(
         db=db,
         filtros=filtros,
         incluir_servidores=incluir_servidores

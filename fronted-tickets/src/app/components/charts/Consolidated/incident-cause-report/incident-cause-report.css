@@ -982,3 +982,53 @@
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+
+/* ANÁLISIS IA - HALLAZGOS Y CONCLUSIONES */
+
+.summary-title {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #101828;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.summary-paragraph {
+  display: block;
+  margin-bottom: 7px;
+
+  color: #344054;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.summary-evidence {
+  display: block;
+  margin-top: 8px;
+
+  color: #C45110;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.summary-recommendation {
+  display: block;
+  margin-top: 10px;
+  padding-top: 8px;
+
+  border-top: 1px solid rgba(22, 131, 91, 0.16);
+
+  color: #344054;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.summary-recommendation strong {
+  color: #16835B !important;
+  font-weight: 700;
+}

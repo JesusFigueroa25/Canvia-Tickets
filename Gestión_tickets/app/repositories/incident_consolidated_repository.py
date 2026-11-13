@@ -1289,7 +1289,7 @@ def obtener_atribucion_incidentes(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters
 ):
-
+ 
     # 1. Normalizar Motivo_Resolucion.
     # No modifica los valores almacenados en SQL Server.
     atribucion_col = func.nullif(
@@ -1424,3 +1424,95 @@ def obtener_tickets_para_analisis_causas(
 
     return resultado.mappings().yield_per(300)
 
+
+
+# ============================================================
+# IA EJECUTIVA ETAPA 2.3 - AGREGACIONES CRUZADAS (SOLO LECTURA)
+# ============================================================
+
+def obtener_cruces_tipo_prioridad_ia(
+    db: Session,
+    filtros: IncidentConsolidatedDashboardFilters,
+    limite: int = 15,
+):
+    """Cuenta la intersección real Tipo x Prioridad sobre los mismos Ticket_ID.
+
+    Una fila de incident_consolidated representa un Ticket_ID único (PK).
+    'altos' es subconjunto de 'tickets', NO una estimación de dos KPIs.
+    """
+    prioridad = func.coalesce(
+        func.nullif(func.trim(IncidentConsolidated.Prioridad), ""),
+        "Sin especificar",
+    )
+    consulta_base = select(
+        IncidentConsolidated.Ticket_ID.label("ticket_id"),
+        normalizar_tipo_incidente().label("tipo_incidente"),
+        prioridad.label("prioridad"),
+    ).select_from(IncidentConsolidated)
+    datos = aplicar_filtros_dashboard(consulta_base, filtros).subquery()
+    es_alta = case((datos.c.prioridad.in_(("1-Critical", "2-High")), 1), else_=0)
+    altos = func.sum(es_alta)
+    consulta = (
+        select(
+            datos.c.tipo_incidente,
+            func.count(datos.c.ticket_id).label("tickets"),
+            altos.label("altos"),
+        )
+        .select_from(datos)
+        .group_by(datos.c.tipo_incidente)
+        .order_by(altos.desc(), func.count(datos.c.ticket_id).desc(), datos.c.tipo_incidente)
+        .limit(max(1, min(limite, 30)))
+    )
+    return [dict(fila) for fila in db.execute(consulta).mappings().all()]
+
+
+def obtener_cruces_proyecto_tipo_ia(
+    db: Session,
+    filtros: IncidentConsolidatedDashboardFilters,
+    limite: int = 15,
+):
+    """Intersecciones reales Proyecto x Tipo sobre los mismos tickets filtrados."""
+    consulta_base = select(
+        IncidentConsolidated.Ticket_ID.label("ticket_id"),
+        normalizar_proyecto().label("proyecto"),
+        normalizar_tipo_incidente().label("tipo_incidente"),
+    ).select_from(IncidentConsolidated)
+    datos = aplicar_filtros_dashboard(consulta_base, filtros).subquery()
+    cantidad = func.count(datos.c.ticket_id)
+    consulta = (
+        select(datos.c.proyecto, datos.c.tipo_incidente, cantidad.label("tickets"))
+        .select_from(datos)
+        .group_by(datos.c.proyecto, datos.c.tipo_incidente)
+        .order_by(cantidad.desc(), datos.c.proyecto, datos.c.tipo_incidente)
+        .limit(max(1, min(limite, 30)))
+    )
+    return [dict(fila) for fila in db.execute(consulta).mappings().all()]
+
+
+def obtener_tickets_para_patrones_ia(
+    db: Session,
+    filtros: IncidentConsolidatedDashboardFilters,
+    limite: int = 4000,
+):
+    """Lee una muestra determinista limitada, sin devolver textos fuera del backend.
+
+    Los campos NVARCHAR(MAX) se recortan EN SQL antes de transferirse a Python.
+    El orden es por apertura descendente + Ticket_ID, de modo que si hay
+    muestreo se trata de los tickets más recientes, no de una muestra aleatoria.
+    """
+    consulta = select(
+        IncidentConsolidated.Ticket_ID.label("ticket_id"),
+        IncidentConsolidated.Prioridad.label("prioridad"),
+        func.substring(IncidentConsolidated.Descripcion, 1, 800).label("descripcion"),
+        func.substring(IncidentConsolidated.Detalle, 1, 800).label("detalle"),
+        func.substring(IncidentConsolidated.Causa, 1, 800).label("causa"),
+        func.substring(IncidentConsolidated.Solucion, 1, 800).label("solucion"),
+    ).select_from(IncidentConsolidated)
+    consulta = aplicar_filtros_dashboard(consulta, filtros)
+    consulta = (
+        consulta.order_by(
+            IncidentConsolidated.Fecha_Apertura.desc(),
+            IncidentConsolidated.Ticket_ID.desc(),
+        ).limit(max(1, min(limite, 4000)))
+    )
+    return db.execute(consulta).mappings().all()

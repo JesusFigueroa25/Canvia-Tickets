@@ -59,7 +59,26 @@
       {{ filtro }}
     </span>
 
+
+    <span>
+      Interpretación:
+      {{
+      origenAnalisis === 'ia'
+      ? 'Inteligencia Artificial'
+      : origenAnalisis === 'sin_datos'
+      ? 'Sin datos'
+      : 'Reglas tradicionales'
+      }}
+
+      <ng-container *ngIf="origenAnalisis === 'ia' && modeloAnalisis">
+        ({{ modeloAnalisis }})
+      </ng-container>
+    </span>
+
+
   </div>
+
+
 
   <!-- FILA SUPERIOR -->
   <div class="report-top-grid" [class.report-top-grid--without-servers]="!hayServidores">
@@ -709,10 +728,35 @@
           </span>
 
           <p>
-            {{ item.descripcion }}
+
+            <strong class="summary-title">
+              {{ item.titulo }}
+            </strong>
+
+            <span class="summary-paragraph">
+              {{ item.descripcion }}
+            </span>
+
+            <span class="summary-evidence">
+
+              {{ item.valor | number:'1.0-0' }} incidentes
+
+              <ng-container *ngIf="item.porcentaje !== null">
+
+                · {{ item.porcentaje | number:'1.0-2' }}%
+
+                <ng-container *ngIf="item.denominador !== null">
+                  (sobre {{ item.denominador | number:'1.0-0' }})
+                </ng-container>
+
+              </ng-container>
+
+            </span>
+
           </p>
 
         </div>
+
 
       </div>
 
@@ -732,19 +776,33 @@
 
       <div class="conclusions-summary-list" *ngIf="(conclusiones?.conclusiones?.length ?? 0) > 0">
 
+
         <div class="conclusion-summary-row" *ngFor="let item of conclusiones?.conclusiones ?? []">
 
           <span class="conclusion-summary-bullet">◆</span>
 
           <p>
-            <strong>{{ item.titulo }}:</strong>
-            {{ item.conclusion }}
-            <span *ngIf="item.recomendacion">
-              {{ item.recomendacion }}
+
+            <strong class="summary-title">
+              {{ item.titulo }}
+            </strong>
+
+            <span class="summary-paragraph">
+              {{ item.conclusion }}
             </span>
+
+            <span class="summary-recommendation" *ngIf="item.recomendacion">
+
+              <strong>Recomendación:</strong>
+
+              {{ item.recomendacion }}
+
+            </span>
+
           </p>
 
         </div>
+
 
       </div>
 

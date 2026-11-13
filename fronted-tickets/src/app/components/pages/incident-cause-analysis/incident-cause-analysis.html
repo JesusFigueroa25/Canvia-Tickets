@@ -681,13 +681,58 @@
 
   <section id="principales-hallazgos" class="dashboard-section">
 
+
     <header class="section-header">
+
       <h1>Principales Hallazgos</h1>
+
       <p>
-        Observaciones automáticas basadas en los indicadores
-        y factores técnicos documentados.
+        Análisis ejecutivo generado automáticamente
+        mediante inteligencia artificial, utilizando
+        los filtros seleccionados.
       </p>
+
     </header>
+
+
+
+    <!-- PROCEDENCIA DEL ANÁLISIS -->
+    <div class="ai-origin-info" *ngIf="!cargandoAnalisisIA && resultadoAnalisisIA" aria-live="polite">
+
+      <ng-container *ngIf="resultadoAnalisisIA?.origen === 'ia'">
+
+        <mat-icon>auto_awesome</mat-icon>
+
+        <span>
+          Análisis generado mediante inteligencia artificial
+          ({{ resultadoAnalisisIA?.modelo }}).
+          Los resultados están sujetos a validación técnica.
+        </span>
+
+      </ng-container>
+
+      <ng-container *ngIf="resultadoAnalisisIA?.origen === 'reglas'">
+
+        <mat-icon>info_outline</mat-icon>
+
+        <span>
+          {{ resultadoAnalisisIA?.advertencia ||
+          'Se utilizaron resultados de respaldo basados en reglas.' }}
+        </span>
+
+      </ng-container>
+
+      <ng-container *ngIf="resultadoAnalisisIA?.origen === 'sin_datos'">
+
+        <mat-icon>info_outline</mat-icon>
+
+        <span>
+          No existen incidentes para los filtros seleccionados.
+        </span>
+
+      </ng-container>
+
+    </div>
 
 
     <div class="status-card" *ngIf="cargandoHallazgos" role="status">
@@ -826,7 +871,8 @@
       [tiposIncidente]="tiposIncidenteTitulo" [atribucion]="atribucionIncidentes" [ajustada]="distribucionAjustada"
       [causas]="analisisCausas" [servidores]="topServidores" [proyectos]="proyectos" [topProyectos]="topProyectos"
       [rendimiento]="rendimientoReporte" [ticketsPorResolutor]="ticketsPorResolutor" [hallazgos]="principalesHallazgos"
-      [conclusiones]="conclusiones">
+      [conclusiones]="conclusiones" [origenAnalisis]="resultadoAnalisisIA?.origen ?? 'reglas'"
+      [modeloAnalisis]="resultadoAnalisisIA?.modelo ?? null">
     </app-incident-cause-report>
 
   </div>

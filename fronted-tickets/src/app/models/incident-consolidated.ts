@@ -387,3 +387,19 @@ export interface IncidentConsolidatedConclusionesOut {
   metodologia: string;
   conclusiones: IncidentConsolidatedConclusionItem[];
 }
+
+
+/* ANÁLISIS DE INCIDENTES - INTELIGENCIA ARTIFICIAL */
+export type IncidentConsolidatedOrigenAnalisisIA =
+  | 'ia'
+  | 'reglas'
+  | 'sin_datos';
+
+export interface IncidentConsolidatedAnalisisEjecutivoIAOut {
+  origen: IncidentConsolidatedOrigenAnalisisIA;
+  modelo: string | null;
+  advertencia: string | null;
+
+  hallazgos: IncidentConsolidatedPrincipalesHallazgosOut;
+  conclusiones: IncidentConsolidatedConclusionesOut;
+}

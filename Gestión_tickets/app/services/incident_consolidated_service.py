@@ -944,7 +944,7 @@ def obtener_atribucion_incidentes(
             filtros
         )
     )
-
+ 
     # Valores originales establecidos en ServiceAIDE.
     # No se realizan reclasificaciones.
     conteos = {
@@ -1531,16 +1531,19 @@ def obtener_distribucion_ajustada_causas(
 def obtener_principales_hallazgos(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters,
-    incluir_servidores: bool = False
+    incluir_servidores: bool = False,
+    atribucion_precalculada: dict | None = None,
+    analisis_precalculado: dict | None = None
 ):
-    atribucion = obtener_distribucion_ajustada_causas(
-        db=db,
-        filtros=filtros
+    # Los endpoints existentes siguen funcionando sin enviar los parámetros opcionales.
+    atribucion = (
+        atribucion_precalculada if atribucion_precalculada is not None
+        else obtener_distribucion_ajustada_causas(db=db, filtros=filtros)
     )
 
-    analisis = obtener_analisis_causas(
-        db=db,
-        filtros=filtros
+    analisis = (
+        analisis_precalculado if analisis_precalculado is not None
+        else obtener_analisis_causas(db=db, filtros=filtros)
     )
 
     total = int(atribucion["total_tickets"])
@@ -1828,13 +1831,17 @@ def obtener_principales_hallazgos(
 def obtener_conclusiones(
     db: Session,
     filtros: IncidentConsolidatedDashboardFilters,
-    incluir_servidores: bool = False
+    incluir_servidores: bool = False,
+    hallazgos_precalculados: dict | None = None
 ):
 
-    resultado = obtener_principales_hallazgos(
-        db=db,
-        filtros=filtros,
-        incluir_servidores=incluir_servidores
+    resultado = (
+        hallazgos_precalculados if hallazgos_precalculados is not None
+        else obtener_principales_hallazgos(
+            db=db,
+            filtros=filtros,
+            incluir_servidores=incluir_servidores
+        )
     )
 
     total = int(resultado["total_incidentes"])

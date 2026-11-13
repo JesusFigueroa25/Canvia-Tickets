@@ -376,6 +376,18 @@ class IncidentConsolidatedConclusionesOut(BaseModel):
 
 
 
+# ANÁLISIS EJECUTIVO CON IA (sin modificar los contratos existentes).
+from typing import Literal
+
+
+class IncidentConsolidatedAnalisisEjecutivoIAOut(BaseModel):
+    origen: Literal["ia", "reglas", "sin_datos"]
+    modelo: str | None = None
+    advertencia: str | None = None
+    hallazgos: IncidentConsolidatedPrincipalesHallazgosOut
+    conclusiones: IncidentConsolidatedConclusionesOut
+
+
 #--------------------------------------------------------------------
 # Requerimientos Consolidado
 #--------------------------------------------------------------------
@@ -667,7 +679,7 @@ class RequirementActualizacionManualTabla(BaseModel):
     tamano: int
     total_paginas: int
 
- 
+  
 class RequirementActualizacionesManualesOut(BaseModel):
     resumen: RequirementActualizacionManualResumen
     grafico: list[RequirementActualizacionManualItem]

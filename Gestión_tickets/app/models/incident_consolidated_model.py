@@ -30,7 +30,7 @@ class IncidentConsolidated(Base):
     Solucion = Column(NVARCHAR(None), nullable=True)
     Causa = Column(NVARCHAR(None), nullable=True)
     Motivo_Resolucion = Column(Unicode(100), nullable=True)
-
+ 
 
 stg_incident_consolidated_table = Table("stg_incident_consolidated", Base.metadata,
 
