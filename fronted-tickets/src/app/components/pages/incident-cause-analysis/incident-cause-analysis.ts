@@ -144,6 +144,11 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
   // RESOLUTOR
   rendimientoResolutores: IncidentConsolidatedRendimientoOut | null = null;
+
+  rendimientoReporte: IncidentConsolidatedRendimientoOut | null = null;
+  cargandoRendimientoReporte = false;
+  errorRendimientoReporte: string | null = null;
+
   cargandoRendimientoResolutores = false;
   errorRendimientoResolutores: string | null = null;
   paginaResolutores = 1;
@@ -222,6 +227,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
   // VALIDAR QUE TODOS LOS DATOS ESTEN LISTOS
   get reporteListo(): boolean {
+
     return (
       !this.cargandoFiltros &&
       !this.cargandoAtribucion &&
@@ -230,17 +236,33 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       !this.cargandoHallazgos &&
       !this.cargandoConclusiones &&
 
+      // NUEVAS CONSULTAS
+      !this.cargandoProyectos &&
+      !this.cargandoTopProyectos &&
+      !this.cargandoRendimientoReporte &&
+      !this.cargandoTicketsPorResolutor &&
+
       !this.errorAtribucion &&
       !this.errorAnalisisCausas &&
       !this.errorTopServidores &&
       !this.errorHallazgos &&
       !this.errorConclusiones &&
 
+      // NUEVOS ERRORES
+      !this.errorProyectos &&
+      !this.errorTopProyectos &&
+      !this.errorRendimientoReporte &&
+      !this.errorTicketsPorResolutor &&
+
       this.atribucionIncidentes !== null &&
       this.distribucionAjustada !== null &&
       this.analisisCausas !== null &&
       this.principalesHallazgos !== null &&
-      this.conclusiones !== null
+      this.conclusiones !== null &&
+
+      // DATOS NECESARIOS PARA EL REPORTE
+      this.rendimientoReporte !== null &&
+      this.ticketsPorResolutor !== null
     );
   }
 
@@ -638,7 +660,9 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     this.proyectos = [];
     this.topProyectos = { periodos: [], proyectos: [] };
     this.rendimientoResolutores = null;
+    this.rendimientoReporte = null;
     this.ticketsPorResolutor = null;
+    this.errorRendimientoReporte = null;
 
     // LIMPIAR ERRORES
     this.errorKpis = null;
@@ -668,6 +692,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     // NUEVO: RESOLUTOR
     this.cargarRendimientoResolutores(filtros);
     this.cargarTicketsPorResolutor(filtros);
+    this.cargarRendimientoReporte(filtros);
 
     this.changeDetector.markForCheck();
   }
@@ -1548,6 +1573,41 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     });
   }
 
+  // RENDIMIENTO DE RESOLUTORES PARA EXPORTACIÓN PNG
+  private cargarRendimientoReporte(
+    filtros: IncidentConsolidatedDashboardFilters
+  ): void {
 
+    this.cargandoRendimientoReporte = true;
+    this.errorRendimientoReporte = null;
+    this.rendimientoReporte = null;
+
+    const solicitud = this.incidentConsolidatedService
+      .obtenerRendimientoResolutores(filtros, 1, 20)
+      .subscribe({
+
+        next: (datos) => {
+          this.rendimientoReporte = datos;
+          this.cargandoRendimientoReporte = false;
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+          console.error(
+            'Error cargando resolutores del reporte:',
+            error
+          );
+
+          this.rendimientoReporte = null;
+          this.cargandoRendimientoReporte = false;
+          this.errorRendimientoReporte =
+            'No se pudo preparar el rendimiento de resolutores del reporte.';
+
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.solicitudesDashboard.add(solicitud);
+  }
 
 }

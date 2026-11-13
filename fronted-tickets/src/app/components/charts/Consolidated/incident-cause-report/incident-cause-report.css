@@ -660,3 +660,325 @@
   background: rgba(255, 255, 255, 0.45);
   border-radius: 8px;
 }
+
+
+/* ==============================================
+   REPORTE EJECUTIVO - CLIENTE Y RESOLUTOR
+   ============================================== */
+
+/* ENCABEZADOS DE LAS NUEVAS SECCIONES */
+
+.report-section-heading {
+  margin: 24px 0 12px;
+  padding: 0 0 10px 12px;
+
+  border-left: 4px solid #FF620F;
+  border-bottom: 1px solid #E5E9EE;
+}
+
+.report-section-heading h2 {
+  margin: 0;
+  color: #101828;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.report-section-heading p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.report-chart-description {
+  margin: -4px 0 16px;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+
+/* ==============================================
+   TABLAS DEL REPORTE
+   ============================================== */
+
+.report-data-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.report-data-table th {
+  padding: 11px 12px;
+  background: #24486E;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.report-data-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #E5E9EE;
+  color: #344054;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.report-data-table tbody tr:nth-child(even) {
+  background: #F7F9FB;
+}
+
+.report-data-table .rank-column {
+  width: 65px;
+  text-align: center;
+}
+
+.report-data-table .numeric-column {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-data-table .important-number {
+  color: #FF620F;
+  font-weight: 700;
+}
+
+.report-data-table:not(.report-monthly-table)
+  th:last-child {
+  width: 145px;
+}
+
+.report-data-table tfoot td {
+  padding: 12px;
+  background: #E9F5EE;
+  border-top: 2px solid #16835B;
+  color: #12633F;
+  font-weight: 700;
+}
+
+
+/* TABLA MENSUAL DE RESOLUTORES */
+
+.report-monthly-table th,
+.report-monthly-table td {
+  padding: 9px 7px;
+  font-size: 10px;
+}
+
+.report-monthly-table .resolver-name-column {
+  width: 25%;
+  text-align: left;
+}
+
+.report-monthly-table .resolver-name-cell {
+  color: #253047;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.report-monthly-table th:not(:first-child),
+.report-monthly-table td:not(:first-child) {
+  text-align: right;
+}
+
+.report-monthly-table th:last-child {
+  width: 8%;
+}
+
+
+/* ==============================================
+   MAPA DE CALOR - TOP 10 PROYECTOS
+   ============================================== */
+
+.report-heatmap-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 4px 6px;
+}
+
+.report-heatmap-table th {
+  padding: 9px 4px;
+  color: #475467;
+  background: #EEF2F6;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.report-heatmap-table .heatmap-name-column {
+  width: 23%;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.report-heatmap-table .heatmap-total-column {
+  width: 8%;
+}
+
+.report-heatmap-table td {
+  padding: 0;
+  vertical-align: middle;
+}
+
+.report-heatmap-table .heatmap-project-name {
+  padding: 8px 10px;
+  color: #344054;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.heatmap-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 2px;
+
+  border-radius: 5px;
+  color: #101828;
+
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-heatmap-table .heatmap-total {
+  padding: 8px 5px;
+  background: #E9F5EE;
+  border-radius: 5px;
+
+  color: #12633F;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+
+/* ==============================================
+   GRÁFICO - TICKETS POR RESOLUTOR
+   ============================================== */
+
+/* LEYENDA */
+
+.report-resolver-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 10px 20px;
+  margin-bottom: 20px;
+  padding: 14px;
+
+  border-bottom: 1px solid #E5E9EE;
+}
+
+.resolver-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+
+  color: #000000;
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.resolver-legend-color {
+  display: inline-block;
+  flex-shrink: 0;
+
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* CONTENEDOR */
+
+.report-resolver-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+/* CADA RESOLUTOR */
+
+.report-resolver-row {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 85px;
+  align-items: center;
+
+  gap: 14px;
+  min-height: 42px;
+  padding: 8px 10px;
+
+  border-bottom: 1px solid #EDF0F2;
+}
+
+.report-resolver-row:nth-child(even) {
+  background: #FAFBFC;
+}
+
+/* NOMBRE */
+
+.report-resolver-name {
+  min-width: 0;
+  color: #344054;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.report-resolver-name b {
+  color: #FF620F;
+  margin-right: 5px;
+}
+
+/* PISTA DE LAS BARRAS */
+
+.report-resolver-track {
+  display: flex;
+  align-items: stretch;
+
+  width: 100%;
+  min-width: 0;
+  height: 19px;
+
+  overflow: hidden;
+  background: #EEF2F6;
+  border-radius: 4px;
+}
+
+/* SEGMENTOS MENSUALES */
+
+.report-resolver-bar {
+  display: block;
+  flex-shrink: 0;
+  height: 100%;
+  min-width: 0;
+}
+
+/* TOTAL */
+
+.report-resolver-value {
+  color: #101828;
+  font-size: 12px;
+  font-weight: 700;
+
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

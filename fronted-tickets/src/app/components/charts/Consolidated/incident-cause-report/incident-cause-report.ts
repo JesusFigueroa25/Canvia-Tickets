@@ -9,7 +9,13 @@ import {
   IncidentConsolidatedTopServidoresOut,
   IncidentConsolidatedPrincipalesHallazgosOut,
   IncidentConsolidatedConclusionesOut,
-  IncidentConsolidatedServidorItem
+  IncidentConsolidatedServidorItem,
+  IncidentConsolidatedProyectoItem,
+  IncidentConsolidatedTopProyectos,
+  IncidentConsolidatedRendimientoOut,
+  IncidentConsolidatedTicketsPorResolutorOut,
+  IncidentConsolidatedRendimientoResolutorItem,
+  IncidentConsolidatedTopProyectoItem
 } from '../../../../models/incident-consolidated';
 
 @Component({
@@ -29,6 +35,11 @@ export class IncidentCauseReport {
   @Input() servidores: IncidentConsolidatedTopServidoresOut | null = null;
   @Input() hallazgos: IncidentConsolidatedPrincipalesHallazgosOut | null = null;
   @Input() conclusiones: IncidentConsolidatedConclusionesOut | null = null;
+  // NUEVAS VISUALIZACIONES DEL REPORTE
+  @Input() proyectos: IncidentConsolidatedProyectoItem[] = [];
+  @Input() topProyectos: IncidentConsolidatedTopProyectos | null = null;
+  @Input() rendimiento: IncidentConsolidatedRendimientoOut | null = null;
+  @Input() ticketsPorResolutor: IncidentConsolidatedTicketsPorResolutorOut | null = null;
 
   // TOTAL DE INCIDENTES
   get totalIncidentes(): number {
@@ -204,4 +215,169 @@ export class IncidentCauseReport {
     return this.ajustada?.estado_ajuste ??
       'Sin información del estado de ajustes';
   }
+
+
+  // REPORTE - CLIENTE
+  get proyectosTabla(): IncidentConsolidatedProyectoItem[] {
+    return [...this.proyectos]
+      .sort((a, b) =>
+        b.cantidad - a.cantidad ||
+        a.proyecto.localeCompare(b.proyecto)
+      )
+      .slice(0, 20);
+  }
+
+  get proyectosGrafico(): IncidentConsolidatedTopProyectoItem[] {
+    return [...(this.topProyectos?.proyectos ?? [])]
+      .sort((a, b) =>
+        b.total_tickets - a.total_tickets ||
+        a.proyecto.localeCompare(b.proyecto)
+      )
+      .slice(0, 10);
+  }
+
+  get periodosProyectosGrafico() {
+    return [...(this.topProyectos?.periodos ?? [])]
+      .sort((a, b) =>
+        a.anio - b.anio || a.mes - b.mes
+      )
+      .slice(-12);
+  }
+
+  get maximoTopProyectos(): number {
+    const valores = this.proyectosGrafico.flatMap(
+      proyecto => this.periodosProyectosGrafico.map(
+        periodo => this.obtenerTicketsMes(
+          proyecto.mensual,
+          periodo.periodo
+        )
+      )
+    );
+
+    return Math.max(1, ...valores);
+  }
+
+  limpiarNombreProyecto(nombre: string): string {
+    return nombre
+      .replace(/^\s*\d{6}\s*[-–:]?\s*/, '')
+      .trim() || 'Sin proyecto';
+  }
+
+  obtenerTicketsMes(
+    mensual: { periodo: string; tickets: number }[],
+    periodo: string
+  ): number {
+    return mensual.find(
+      item => item.periodo === periodo
+    )?.tickets ?? 0;
+  }
+
+  colorCalorProyecto(cantidad: number): string {
+    if (cantidad <= 0) {
+      return '#F2F4F7';
+    }
+
+    const intensidad = cantidad / this.maximoTopProyectos;
+
+    const opacidad = Math.min(
+      0.65,
+      0.15 + intensidad * 0.50
+    );
+
+    return `rgba(255, 98, 15, ${opacidad})`;
+  }
+
+  // REPORTE - RENDIMIENTO POR RESOLUTOR
+  get resolutoresTabla(): IncidentConsolidatedRendimientoResolutorItem[] {
+    return (this.rendimiento?.resolutores ?? []).slice(0, 5);
+  }
+
+  get periodosRendimientoReporte() {
+    return (this.rendimiento?.periodos ?? []).slice(-12);
+  }
+
+  get totalResolutoresReporte(): number {
+    return this.rendimiento?.total_resolutores ?? 0;
+  }
+
+  totalMesResolutores(periodo: string): number {
+    return this.rendimiento?.totales_mensuales.find(
+      item => item.periodo === periodo
+    )?.tickets ?? 0;
+  }
+
+  // REPORTE - GRÁFICO TICKETS POR RESOLUTOR
+  private readonly coloresReporte: string[] = [
+    '#FF620F',
+    '#FFB184',
+    '#16835B',
+    '#63B891',
+    '#D97706',
+    '#F4C95D',
+    '#12633F',
+    '#A8DCC2'
+  ];
+
+  get resolutoresGrafico(): IncidentConsolidatedRendimientoResolutorItem[] {
+    return this.ticketsPorResolutor?.resolutores ?? [];
+  }
+
+  get periodosResolutorGrafico() {
+    return (this.ticketsPorResolutor?.periodos ?? []).slice(-12);
+  }
+
+  get maximoGraficoResolutor(): number {
+    const totales = this.resolutoresGrafico.map(
+      resolutor => this.periodosResolutorGrafico.reduce(
+        (acumulado, periodo) =>
+          acumulado + this.obtenerTicketsMes(
+            resolutor.mensual,
+            periodo.periodo
+          ),
+        0
+      )
+    );
+
+    return Math.max(1, ...totales);
+  }
+
+  anchoBarraResolutor(
+    resolutor: IncidentConsolidatedRendimientoResolutorItem,
+    periodo: string
+  ): number {
+
+    const tickets = this.obtenerTicketsMes(
+      resolutor.mensual,
+      periodo
+    );
+
+    return Math.max(
+      0,
+      Math.min(
+        100,
+        tickets / this.maximoGraficoResolutor * 100
+      )
+    );
+  }
+
+  colorPeriodoResolutor(indice: number): string {
+    return this.coloresReporte[
+      indice % this.coloresReporte.length
+    ];
+  }
+
+  // PERIODOS MOSTRADOS EN EL PNG
+
+  get proyectosMesesLimitados(): boolean {
+    return (this.topProyectos?.periodos.length ?? 0) > 12;
+  }
+
+  get rendimientoMesesLimitados(): boolean {
+    return (this.rendimiento?.periodos.length ?? 0) > 12;
+  }
+
+  get resolutorMesesLimitados(): boolean {
+    return (this.ticketsPorResolutor?.periodos.length ?? 0) > 12;
+  }
+
 }

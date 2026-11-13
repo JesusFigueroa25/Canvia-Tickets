@@ -8,7 +8,7 @@
     <!-- INFORMACIÓN PRINCIPAL -->
     <div class="report-header-main">
 
-  
+
 
       <!-- TÍTULO Y PROYECTO EN LA MISMA LÍNEA -->
       <h1 class="report-main-title">
@@ -33,7 +33,7 @@
         {{ totalIncidentes | number:'1.0-0' }}
       </strong>
 
-    
+
 
     </div>
 
@@ -372,6 +372,322 @@
 
 
 
+  <!-- CLIENTE - REPORTE EJECUTIVO -->
+
+  <div class="report-section-heading">
+    <h2>Cliente</h2>
+    <p>
+      Distribución por proyecto y evolución mensual del volumen de incidentes.
+    </p>
+  </div>
+
+  <!-- TABLA: EXPLORADOR POR PROYECTOS
+   <article class="report-panel report-wide">
+
+    <h2>
+      <span class="report-number">
+        {{ hayServidores ? 5 : 4 }}
+      </span>
+      Explorador por Proyectos
+    </h2>
+
+    <table class="report-data-table">
+
+      <thead>
+        <tr>
+          <th class="rank-column">N.º</th>
+          <th>Proyecto</th>
+          <th class="numeric-column">Incidentes</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let item of proyectosTabla; let i = index">
+
+          <td class="rank-column">{{ i + 1 }}</td>
+
+          <td>
+            {{ limpiarNombreProyecto(item.proyecto) }}
+          </td>
+
+          <td class="numeric-column important-number">
+            {{ item.cantidad | number:'1.0-0' }}
+          </td>
+
+        </tr>
+
+        <tr *ngIf="proyectosTabla.length === 0">
+          <td colspan="3" class="report-empty">
+            No hay proyectos para los filtros seleccionados.
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+    <p class="report-note">
+      Se muestran {{ proyectosTabla.length }} de
+      {{ proyectos.length }} proyectos,
+      ordenados por cantidad de incidentes.
+    </p>
+
+  </article>
+  -->
+
+  <!-- GRÁFICO: TOP 10 TICKETS POR PROYECTO Y MES -->
+  <article class="report-panel report-wide">
+
+    <h2>
+      <span class="report-number">
+        {{ hayServidores ? 5 : 4 }}
+      </span>
+      Top 10: Tickets por Proyecto y Mes
+    </h2>
+
+    <p class="report-chart-description">
+      Comparación mensual mediante un mapa de calor.
+      Las celdas más intensas representan mayor cantidad de tickets.
+    </p>
+
+    <table class="report-heatmap-table" *ngIf="proyectosGrafico.length > 0 &&
+           periodosProyectosGrafico.length > 0">
+
+      <thead>
+        <tr>
+          <th class="heatmap-name-column">Proyecto</th>
+
+          <th *ngFor="let periodo of periodosProyectosGrafico" class="heatmap-month-column">
+            {{ periodo.periodo }}
+          </th>
+
+          <th class="heatmap-total-column">Total</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let proyecto of proyectosGrafico">
+
+          <td class="heatmap-project-name">
+            {{ limpiarNombreProyecto(proyecto.proyecto) }}
+          </td>
+
+          <td *ngFor="let periodo of periodosProyectosGrafico">
+
+            <span class="heatmap-cell" [style.backgroundColor]="colorCalorProyecto(
+              obtenerTicketsMes(proyecto.mensual, periodo.periodo)
+            )">
+
+              {{
+              obtenerTicketsMes(
+              proyecto.mensual,
+              periodo.periodo
+              ) | number:'1.0-0'
+              }}
+
+            </span>
+
+          </td>
+
+          <td class="heatmap-total">
+            {{ proyecto.total_tickets | number:'1.0-0' }}
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+
+    <div class="report-empty" *ngIf="proyectosGrafico.length === 0 ||
+           periodosProyectosGrafico.length === 0">
+      No hay datos mensuales de proyectos.
+    </div>
+
+    <p class="report-note" *ngIf="proyectosMesesLimitados">
+      Se muestran los 12 periodos más recientes.
+      Los totales incluyen todo el periodo consultado.
+    </p>
+
+  </article>
+
+
+  <!-- ==============================================
+     RESOLUTOR - REPORTE EJECUTIVO
+     ============================================== -->
+
+  <div class="report-section-heading">
+    <h2>Resolutor</h2>
+    <p>
+      Rendimiento mensual y comparación del número de tickets
+      gestionados por cada resolutor.
+    </p>
+  </div>
+
+  <!-- TABLA: RENDIMIENTO POR RESOLUTOR -->
+  <article class="report-panel report-wide">
+
+    <h2>
+      <span class="report-number">
+        {{ hayServidores ? 7 : 6 }}
+      </span>
+      Rendimiento por Resolutor
+    </h2>
+
+    <table class="report-data-table report-monthly-table">
+
+      <thead>
+        <tr>
+          <th class="resolver-name-column">
+            Resolutor
+          </th>
+
+          <th *ngFor="let periodo of periodosRendimientoReporte" class="numeric-column">
+            {{ periodo.periodo }}
+          </th>
+
+          <th class="numeric-column">
+            Total
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let resolutor of resolutoresTabla">
+
+          <td class="resolver-name-cell">
+            {{ resolutor.nombre_resolutor }}
+          </td>
+
+          <td *ngFor="let periodo of periodosRendimientoReporte" class="numeric-column">
+
+            {{
+            obtenerTicketsMes(
+            resolutor.mensual,
+            periodo.periodo
+            ) | number:'1.0-0'
+            }}
+
+          </td>
+
+          <td class="numeric-column important-number">
+            {{ resolutor.total_tickets | number:'1.0-0' }}
+          </td>
+
+        </tr>
+
+        <tr *ngIf="resolutoresTabla.length === 0">
+          <td [attr.colspan]="periodosRendimientoReporte.length + 2" class="report-empty">
+            No hay resolutores para los filtros seleccionados.
+          </td>
+        </tr>
+
+      </tbody>
+
+      <tfoot *ngIf="rendimiento && resolutoresTabla.length > 0">
+        <tr>
+
+          <td>Total general</td>
+
+          <td *ngFor="let periodo of periodosRendimientoReporte" class="numeric-column">
+
+            {{
+            totalMesResolutores(periodo.periodo)
+            | number:'1.0-0'
+            }}
+
+          </td>
+
+          <td class="numeric-column">
+            {{ rendimiento.total_general | number:'1.0-0' }}
+          </td>
+
+        </tr>
+      </tfoot>
+
+    </table>
+
+    <p class="report-note">
+      Se muestran {{ resolutoresTabla.length }} de
+      {{ totalResolutoresReporte }} resolutores.
+      La fila Total general considera todos los resolutores,
+      no solamente los mostrados.
+      <span *ngIf="rendimientoMesesLimitados">
+        Las columnas corresponden a los 12 periodos más recientes.
+      </span>
+    </p>
+
+  </article>
+
+
+  <!-- GRÁFICO: NÚMERO DE TICKETS POR RESOLUTOR -->
+  <article class="report-panel report-wide">
+
+    <h2>
+      <span class="report-number">
+        {{ hayServidores ? 8 : 7 }}
+      </span>
+      Número de Tickets por Resolutor
+    </h2>
+
+    <div class="report-resolver-legend" *ngIf="resolutoresGrafico.length > 0">
+
+      <span *ngFor="let periodo of periodosResolutorGrafico; let i = index" class="resolver-legend-item">
+
+        <i class="resolver-legend-color" [style.backgroundColor]="colorPeriodoResolutor(i)">
+        </i>
+
+        {{ periodo.periodo }}
+
+      </span>
+
+    </div>
+
+    <div class="report-resolver-chart" *ngIf="resolutoresGrafico.length > 0 &&
+           periodosResolutorGrafico.length > 0">
+
+      <div class="report-resolver-row" *ngFor="let resolutor of resolutoresGrafico; let i = index">
+
+        <span class="report-resolver-name">
+          <b>{{ i + 1 }}.</b>
+          {{ resolutor.nombre_resolutor }}
+        </span>
+
+        <div class="report-resolver-track">
+
+          <span *ngFor="let periodo of periodosResolutorGrafico; let j = index" class="report-resolver-bar"
+            [style.width.%]="anchoBarraResolutor(
+            resolutor,
+            periodo.periodo
+          )" [style.backgroundColor]="colorPeriodoResolutor(j)">
+          </span>
+
+        </div>
+
+        <strong class="report-resolver-value">
+          {{ resolutor.total_tickets | number:'1.0-0' }}
+        </strong>
+
+      </div>
+
+    </div>
+
+    <div class="report-empty" *ngIf="resolutoresGrafico.length === 0 ||
+           periodosResolutorGrafico.length === 0">
+      No hay tickets por resolutor para los filtros seleccionados.
+    </div>
+
+    <p class="report-note">
+      Se muestran los {{ resolutoresGrafico.length }}
+      resolutores devueltos por el ranking.
+      Cada color representa un mes.
+      <span *ngIf="resolutorMesesLimitados">
+        Las barras representan los 12 periodos más recientes;
+        los totales incluyen el periodo completo.
+      </span>
+    </p>
+
+  </article>
+
 
   <!-- FILA INFERIOR -->
   <div class="report-bottom-grid">
@@ -380,7 +696,7 @@
     <article class="report-panel findings-summary-panel">
 
       <h2>
-        <span class="report-number">{{ hayServidores ? 5 : 4 }}</span>
+        <span class="report-number">{{ hayServidores ? 9 : 8 }}</span>
         Principales hallazgos
       </h2>
 
@@ -410,7 +726,7 @@
     <article class="report-panel conclusions-summary-panel">
 
       <h2>
-        <span class="report-number">{{ hayServidores ? 6 : 5 }}</span>
+        <span class="report-number">{{ hayServidores ? 10 : 9 }}</span>
         Conclusiones
       </h2>
 
