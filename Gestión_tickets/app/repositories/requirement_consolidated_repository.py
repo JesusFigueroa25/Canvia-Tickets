@@ -1,10 +1,11 @@
 from datetime import date, timedelta
 
 import pandas as pd
-from sqlalchemy import (Integer, case, cast, delete, func,insert,select,)
+from sqlalchemy import (Date, Integer, case, cast, delete, func,insert,select,)
 from sqlalchemy.orm import Session
 from app.models.requirement_consolidated_model import (RequirementConsolidated,stg_requirement_consolidated_table,)
 from app.schemas.consolidated_import_schema import RequirementConsolidatedDashboardFilters
+from app.models.tickets_manual_updates import TicketsManualUpdate
 
 # UTILIDAD
 def _dataframe_a_registros(df: pd.DataFrame):
@@ -638,8 +639,6 @@ def obtener_prioridad_mensual(
     return db.execute(consulta).mappings().all()
 
 
-
-
 # TABLA PAGINADA - DETALLE DE TICKETS REQUERIMIENTOS CONSOLIDADOS
 
 def obtener_tickets(
@@ -702,5 +701,377 @@ def obtener_tickets(
 
     return {
         "tickets": tickets,
+        "total": total
+    }
+
+
+
+# INDICADORES PRODUCTIVIDAD - REQUERIMIENTOS CONSOLIDADOS
+
+def obtener_productividad_proyectos(db: Session, filtros: RequirementConsolidatedDashboardFilters, limite_grafico: int = 10):
+    proyecto = normalizar_proyecto()
+    resolutor = func.nullif(func.trim(RequirementConsolidated.Nombre_Resolutor), "")
+    consulta_base = select(
+        RequirementConsolidated.Ticket_ID.label("ticket_id"),
+        proyecto.label("proyecto"),
+        resolutor.label("resolutor"),
+        cast(RequirementConsolidated.Fecha_Apertura, Date).label("fecha"),
+    ).select_from(RequirementConsolidated)
+    datos = aplicar_filtros_dashboard(consulta_base, filtros).subquery()
+
+    consulta_resumen = (
+        select(
+            datos.c.proyecto,
+            func.count(func.distinct(datos.c.ticket_id)).label("total_tickets"),
+            func.count(func.distinct(datos.c.resolutor)).label("resolutores_distintos"),
+        )
+        .group_by(datos.c.proyecto)
+        .order_by(func.count(func.distinct(datos.c.ticket_id)).desc(), datos.c.proyecto)
+    )
+    proyectos = [dict(fila) for fila in db.execute(consulta_resumen).mappings().all()]
+    rango = db.execute(select(func.min(datos.c.fecha), func.max(datos.c.fecha))).one()
+
+    seleccionados = [fila["proyecto"] for fila in proyectos[:limite_grafico]]
+    diarios = []
+    if seleccionados:
+        consulta_diaria = (
+            select(
+                datos.c.proyecto,
+                datos.c.fecha,
+                func.count(func.distinct(datos.c.ticket_id)).label("tickets"),
+            )
+            .where(datos.c.proyecto.in_(seleccionados))
+            .group_by(datos.c.proyecto, datos.c.fecha)
+            .order_by(datos.c.fecha, datos.c.proyecto)
+        )
+        diarios = [dict(fila) for fila in db.execute(consulta_diaria).mappings().all()]
+
+    return {
+        "proyectos": proyectos,
+        "diarios": diarios,
+        "fecha_min": rango[0],
+        "fecha_max": rango[1],
+    }
+
+
+def obtener_dotacion_resolutores(db: Session, filtros: RequirementConsolidatedDashboardFilters):
+    modelo = RequirementConsolidated
+    resolutor = func.nullif(func.trim(modelo.Nombre_Resolutor), "")
+    base = select(
+        modelo.Ticket_ID.label("ticket_id"),
+        normalizar_proyecto().label("proyecto"),
+        resolutor.label("resolutor"),
+        func.year(modelo.Fecha_Apertura).label("anio"),
+        func.month(modelo.Fecha_Apertura).label("mes"),
+    ).select_from(modelo)
+    datos = aplicar_filtros_dashboard(base, filtros).subquery()
+
+    consulta = (
+        select(
+            datos.c.anio,
+            datos.c.mes,
+            datos.c.proyecto,
+            datos.c.resolutor,
+            func.count(func.distinct(datos.c.ticket_id)).label("tickets"),
+        )
+        .group_by(datos.c.anio, datos.c.mes, datos.c.proyecto, datos.c.resolutor)
+        .order_by(datos.c.anio, datos.c.mes, datos.c.proyecto, datos.c.resolutor)
+    )
+    return [dict(fila) for fila in db.execute(consulta).mappings().all()]
+
+
+# ===============================================================
+# ALCANCE 3 - ATENCIÓN PARALELA (SOLO CONSOLIDADOS)
+# ===============================================================
+def obtener_atencion_paralela(
+    db: Session,
+    filtros: RequirementConsolidatedDashboardFilters,
+    fecha_inicio=None,
+    fecha_fin_exclusiva=None,
+    resolutor: str | None = None,
+):
+    """Obtiene intervalos válidos que intersectan el período solicitado.
+
+    Las fechas y ticket_id no se aplican como filtros de apertura:
+    necesitamos incluir tickets abiertos antes del período y otros
+    tickets del mismo resolutor para comprobar coincidencias.
+    """
+    modelo = RequirementConsolidated
+    resolutor_limpio = func.nullif(func.trim(modelo.Nombre_Resolutor), "")
+    proyecto_limpio = normalizar_proyecto()
+
+    consulta = select(
+        modelo.Ticket_ID.label("ticket_id"),
+        proyecto_limpio.label("proyecto"),
+        resolutor_limpio.label("resolutor"),
+        modelo.Fecha_Apertura.label("fecha_apertura"),
+        modelo.Fecha_Resolucion.label("fecha_resolucion"),
+    ).select_from(modelo)
+
+    filtros_sin_fechas = filtros.model_copy(update={
+        "desde": None,
+        "hasta": None,
+        "periodo": None,
+        "ticket_id": None,
+    })
+    consulta = aplicar_filtros_dashboard(consulta, filtros_sin_fechas)
+    consulta = consulta.where(
+        resolutor_limpio.isnot(None),
+        modelo.Fecha_Resolucion.isnot(None),
+        modelo.Fecha_Resolucion > modelo.Fecha_Apertura,
+    )
+
+    if fecha_inicio is not None:
+        consulta = consulta.where(modelo.Fecha_Resolucion > fecha_inicio)
+    if fecha_fin_exclusiva is not None:
+        consulta = consulta.where(modelo.Fecha_Apertura < fecha_fin_exclusiva)
+    if resolutor and resolutor.strip():
+        consulta = consulta.where(
+            func.lower(resolutor_limpio) == resolutor.strip().lower()
+        )
+
+    consulta = consulta.order_by(
+        resolutor_limpio, modelo.Fecha_Apertura, modelo.Ticket_ID
+    )
+    return db.execute(consulta).mappings().all()
+
+
+
+# ============================================================
+# ALCANCE 4 - ACTUALIZACIONES MANUALES
+# ============================================================
+
+
+
+def obtener_actualizaciones_manuales(
+    db: Session,
+    filtros: RequirementConsolidatedDashboardFilters,
+    pagina: int = 1,
+    tamano: int = 25,
+    limite_grafico: int = 10,
+    resolutor: str | None = None
+):
+    """
+    Obtiene el ranking de resolutores asignados a tickets
+    presentes en el reporte de modificaciones manuales.
+
+    - Solo Service Request.
+    - JOIN por Ticket_ID con requirement_consolidated.
+    - Filtros globales sobre requirement_consolidated.
+    - Datos de resolutor y grupo desde tickets_manual_updates.
+    - Conteos de Ticket_ID distintos.
+    - Paginación ejecutada en SQL Server.
+    """
+
+    manual = TicketsManualUpdate
+    consolidado = RequirementConsolidated
+
+    nombre_original = func.nullif(
+        func.trim(manual.Nombre_Resolutor),
+        ""
+    )
+
+    grupo_original = func.nullif(
+        func.trim(manual.Grupo_Resolutor),
+        ""
+    )
+
+    # --------------------------------------------------------
+    # 1. BASE DE TICKETS RELACIONADOS
+    # --------------------------------------------------------
+
+    consulta_base = (
+        select(
+            manual.Ticket_ID.label("ticket_id"),
+            nombre_original.label("resolutor_original"),
+            grupo_original.label("grupo_original"),
+            normalizar_proyecto().label("proyecto")
+        )
+        .select_from(manual)
+        .join(
+            consolidado,
+            consolidado.Ticket_ID == manual.Ticket_ID
+        )
+        .where(
+            func.lower(
+                func.trim(manual.Ticket_type)
+            ) == "service request"
+        )
+    )
+
+    # Reutilizamos todos los filtros del dashboard:
+    # fechas, prioridad, motivo_estado, motivo_resolucion,
+    # grupo_resolutor, proyecto, período, tipos y exclusiones.
+    consulta_base = aplicar_filtros_dashboard(
+        consulta_base,
+        filtros
+    )
+
+    # --------------------------------------------------------
+    # 2. FILTRO OPCIONAL POR RESOLUTOR DEL EXCEL
+    # --------------------------------------------------------
+
+    if resolutor and resolutor.strip():
+
+        nombre_filtro = resolutor.strip()
+
+        if nombre_filtro.casefold() == "sin especificar":
+            consulta_base = consulta_base.where(
+                nombre_original.is_(None)
+            )
+        else:
+            consulta_base = consulta_base.where(
+                func.lower(nombre_original)
+                == nombre_filtro.lower()
+            )
+
+    datos = consulta_base.subquery()
+
+    resolutor_normalizado = func.coalesce(
+        datos.c.resolutor_original,
+        "Sin especificar"
+    )
+
+    grupo_normalizado = func.coalesce(
+        datos.c.grupo_original,
+        "Sin especificar"
+    )
+
+    # --------------------------------------------------------
+    # 3. RESUMEN GENERAL
+    # --------------------------------------------------------
+
+    consulta_resumen = select(
+
+        func.count(
+            func.distinct(datos.c.ticket_id)
+        ).label("total_tickets"),
+
+        func.count(
+            func.distinct(
+                func.lower(datos.c.resolutor_original)
+            )
+        ).label("total_resolutores"),
+
+        func.count(
+            func.distinct(
+                func.lower(datos.c.grupo_original)
+            )
+        ).label("total_grupos"),
+
+        func.count(
+            func.distinct(datos.c.proyecto)
+        ).label("total_proyectos"),
+
+        func.count(
+            func.distinct(
+                case(
+                    (
+                        datos.c.resolutor_original.is_(None),
+                        datos.c.ticket_id
+                    ),
+                    else_=None
+                )
+            )
+        ).label("tickets_sin_resolutor")
+    )
+
+    resumen = dict(
+        db.execute(
+            consulta_resumen
+        ).mappings().one()
+    )
+
+    # --------------------------------------------------------
+    # 4. AGRUPAR POR GRUPO Y RESOLUTOR
+    # --------------------------------------------------------
+
+    agrupacion = (
+        select(
+            grupo_normalizado.label("grupo_resolutor"),
+            resolutor_normalizado.label("resolutor"),
+
+            func.count(
+                func.distinct(datos.c.ticket_id)
+            ).label("tickets"),
+
+            func.count(
+                func.distinct(datos.c.proyecto)
+            ).label("proyectos")
+        )
+        .group_by(
+            datos.c.grupo_original,
+            datos.c.resolutor_original
+        )
+        .subquery()
+    )
+
+
+    # --------------------------------------------------------
+    # 5. TOTAL DE FILAS PARA PAGINACIÓN
+    # --------------------------------------------------------
+
+    total = int(
+        db.execute(
+            select(func.count())
+            .select_from(agrupacion)
+        ).scalar_one()
+    )
+
+    # --------------------------------------------------------
+    # 6. ORDENAMIENTO COMPARTIDO
+    # --------------------------------------------------------
+
+    orden = (
+        agrupacion.c.tickets.desc(),
+        agrupacion.c.grupo_resolutor.asc(),
+        agrupacion.c.resolutor.asc()
+    )
+
+    # --------------------------------------------------------
+    # 7. GRÁFICO TOP N
+    # --------------------------------------------------------
+
+    consulta_grafico = (
+        select(agrupacion)
+        .order_by(*orden)
+        .limit(limite_grafico)
+    )
+
+    grafico = [
+        dict(fila)
+        for fila in db.execute(
+            consulta_grafico
+        ).mappings().all()
+    ]
+
+    # --------------------------------------------------------
+    # 8. TABLA PAGINADA
+    # --------------------------------------------------------
+
+    desplazamiento = (pagina - 1) * tamano
+
+    consulta_tabla = (
+        select(agrupacion)
+        .order_by(*orden)
+        .offset(desplazamiento)
+        .limit(tamano)
+    )
+
+    items = [
+        dict(fila)
+        for fila in db.execute(
+            consulta_tabla
+        ).mappings().all()
+    ]
+
+    # --------------------------------------------------------
+    # 9. RESULTADO
+    # --------------------------------------------------------
+
+    return {
+        "resumen": resumen,
+        "grafico": grafico,
+        "items": items,
         "total": total
     }

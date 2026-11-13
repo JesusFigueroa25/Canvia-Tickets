@@ -500,3 +500,175 @@ class RequirementConsolidatedTicketsOut(BaseModel):
     pagina: int
     tamano: int
     total_paginas: int
+
+
+# ===============================================================
+# INDICADORES PRODUCTIVIDAD - REQUERIMIENTOS CONSOLIDADOS
+# ===============================================================
+class RequirementProductividadProyectoItem(BaseModel):
+    proyecto: str
+    total_tickets: int
+    promedio_diario: float
+    promedio_semanal: float
+    promedio_mensual: float
+    resolutores_distintos: int
+
+class RequirementProductividadResumen(BaseModel):
+    total_tickets: int
+    total_proyectos: int
+    fecha_desde: date | None = None
+    fecha_hasta: date | None = None
+    dias_calendario: int
+    semanas_calendario: int
+    meses_calendario: int
+
+class RequirementProductividadPunto(BaseModel):
+    periodo: str
+    tickets: int
+
+class RequirementProductividadSerie(BaseModel):
+    proyecto: str
+    total_tickets: int
+    puntos: list[RequirementProductividadPunto]
+
+class RequirementProductividadGrafico(BaseModel):
+    granularidad: str
+    periodos: list[str]
+    proyectos: list[RequirementProductividadSerie]
+
+class RequirementProductividadTabla(BaseModel):
+    items: list[RequirementProductividadProyectoItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+class RequirementProductividadOut(BaseModel):
+    resumen: RequirementProductividadResumen
+    grafico: RequirementProductividadGrafico
+    tabla: RequirementProductividadTabla
+
+class RequirementDotacionResolutorItem(BaseModel):
+    nombre: str
+    tickets: int
+
+class RequirementDotacionFila(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+    proyecto: str
+    total_tickets: int
+    resolutores_distintos: int
+    tickets_sin_resolutor: int
+    resolutores: list[RequirementDotacionResolutorItem]
+
+class RequirementDotacionResumen(BaseModel):
+    total_tickets: int
+    total_proyectos: int
+    total_resolutores_distintos: int
+    total_proyecto_meses: int
+
+class RequirementDotacionPunto(BaseModel):
+    periodo: str
+    resolutores: int
+
+class RequirementDotacionSerie(BaseModel):
+    proyecto: str
+    puntos: list[RequirementDotacionPunto]
+
+class RequirementDotacionGrafico(BaseModel):
+    periodos: list[str]
+    proyectos: list[RequirementDotacionSerie]
+
+class RequirementDotacionTabla(BaseModel):
+    items: list[RequirementDotacionFila]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+class RequirementDotacionOut(BaseModel):
+    resumen: RequirementDotacionResumen
+    grafico: RequirementDotacionGrafico
+    tabla: RequirementDotacionTabla
+
+
+# ===============================================================
+# ALCANCE 3 - ATENCIÓN PARALELA DE REQUERIMIENTOS
+# ===============================================================
+class RequirementAtencionParalelaResumen(BaseModel):
+    tickets_evaluados: int
+    tickets_con_superposicion: int
+    resolutores_con_superposicion: int
+    total_eventos: int
+    maximo_simultaneos: int
+    fecha_desde: date | None = None
+    fecha_hasta: date | None = None
+    metodologia: str
+
+
+class RequirementAtencionParalelaGraficoItem(BaseModel):
+    resolutor: str
+    eventos: int
+    tickets_con_superposicion: int
+    maximo_simultaneos: int
+
+
+class RequirementAtencionParalelaDetalleItem(BaseModel):
+    ticket_id: str
+    proyecto: str
+    resolutor: str
+    fecha_apertura: datetime
+    fecha_resolucion: datetime
+    inicio_coincidencia: datetime
+    fin_coincidencia: datetime
+    tickets_simultaneos: int
+    tickets_coincidentes: list[str]
+
+
+class RequirementAtencionParalelaTabla(BaseModel):
+    items: list[RequirementAtencionParalelaDetalleItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+
+class RequirementAtencionParalelaOut(BaseModel):
+    resumen: RequirementAtencionParalelaResumen
+    grafico: list[RequirementAtencionParalelaGraficoItem]
+    tabla: RequirementAtencionParalelaTabla
+
+
+
+
+# ALCANCE 4 - TICKETS CON MODIFICACIONES MANUALES
+
+class RequirementActualizacionManualResumen(BaseModel):
+    total_tickets: int
+    total_resolutores: int
+    total_grupos: int
+    total_proyectos: int
+    tickets_sin_resolutor: int
+
+
+class RequirementActualizacionManualItem(BaseModel):
+    grupo_resolutor: str
+    resolutor: str
+    tickets: int
+    proyectos: int
+    porcentaje: float
+
+
+class RequirementActualizacionManualTabla(BaseModel):
+    items: list[RequirementActualizacionManualItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+
+class RequirementActualizacionesManualesOut(BaseModel):
+    resumen: RequirementActualizacionManualResumen
+    grafico: list[RequirementActualizacionManualItem]
+    tabla: RequirementActualizacionManualTabla

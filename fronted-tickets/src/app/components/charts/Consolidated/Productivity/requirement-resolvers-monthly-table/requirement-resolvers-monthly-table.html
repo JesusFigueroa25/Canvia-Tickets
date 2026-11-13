@@ -1,0 +1,574 @@
+
+<article class="table-card">
+
+  <!-- ENCABEZADO -->
+  <header class="table-header">
+
+    <div class="header-content">
+
+      <div class="title-row">
+
+        <span class="title-accent"></span>
+
+        <div>
+          <h3>Dotación Mensual de Resolutores</h3>
+
+          <p>
+            Consulta la cantidad de resolutores por proyecto,
+            período y distribución de tickets asignados.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- BÚSQUEDA LOCAL -->
+    <div class="table-actions">
+
+      <label class="search-control">
+
+        <span class="search-icon" aria-hidden="true">⌕</span>
+
+        <input
+          type="search"
+          placeholder="Buscar en esta página..."
+          aria-label="Buscar proyecto, período o resolutor"
+          [value]="busqueda"
+          (input)="buscar($event)">
+
+      </label>
+
+      <button
+        type="button"
+        class="clear-search"
+        *ngIf="busqueda"
+        (click)="limpiarBusqueda()">
+
+        Limpiar
+
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- RESUMEN -->
+  <div class="table-summary">
+
+    <div class="summary-left">
+
+      <span class="summary-indicator"></span>
+
+      <span>
+        <strong>
+          {{ formatearNumero(totalRegistros) }}
+        </strong>
+
+        registros proyecto-mes
+      </span>
+
+    </div>
+
+    <span class="summary-note">
+      Despliega una fila para ver sus resolutores.
+    </span>
+
+  </div>
+
+
+  <!-- TABLA -->
+  <div
+    class="table-wrapper"
+    tabindex="0"
+    aria-label="Tabla de dotación mensual de resolutores">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <!-- PERÍODO -->
+          <th scope="col">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('periodo')">
+
+              Período
+
+              <span class="sort-icon">
+                {{ indicadorOrden('periodo') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- PROYECTO -->
+          <th scope="col" class="project-column">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('proyecto')">
+
+              Proyecto
+
+              <span class="sort-icon">
+                {{ indicadorOrden('proyecto') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- TOTAL TICKETS -->
+          <th scope="col" class="number-column">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('total_tickets')">
+
+              Total Tickets
+
+              <span class="sort-icon">
+                {{ indicadorOrden('total_tickets') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- RESOLUTORES -->
+          <th scope="col" class="number-column">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('resolutores_distintos')">
+
+              Resolutores
+
+              <span class="sort-icon">
+                {{ indicadorOrden('resolutores_distintos') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- SIN RESOLUTOR -->
+          <th scope="col" class="number-column">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('tickets_sin_resolutor')">
+
+              Sin Resolutor
+
+              <span class="sort-icon">
+                {{ indicadorOrden('tickets_sin_resolutor') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- DETALLE -->
+          <th scope="col" class="detail-column">
+            Detalle
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <ng-container
+          *ngFor="let fila of filasVisibles; trackBy: identificarFila">
+
+          <!-- FILA PRINCIPAL -->
+          <tr [class.expanded]="estaExpandida(fila)">
+
+            <!-- PERÍODO -->
+            <td>
+
+              <span class="period-badge">
+                {{ formatearPeriodo(fila.periodo) }}
+              </span>
+
+            </td>
+
+
+            <!-- PROYECTO -->
+            <td class="project-cell">
+
+              <span
+                class="project-name"
+                [title]="fila.proyecto">
+
+                {{ nombreVisibleProyecto(fila.proyecto) }}
+
+              </span>
+
+            </td>
+
+
+            <!-- TOTAL TICKETS -->
+            <td class="number-cell total-cell">
+
+              <strong>
+                {{ formatearNumero(fila.total_tickets) }}
+              </strong>
+
+            </td>
+
+
+            <!-- RESOLUTORES -->
+            <td class="number-cell">
+
+              <span class="resolvers-badge">
+                {{ formatearNumero(fila.resolutores_distintos) }}
+              </span>
+
+            </td>
+
+
+            <!-- SIN RESOLUTOR -->
+            <td class="number-cell">
+
+              <span
+                class="unassigned-value"
+                [class.has-unassigned]="fila.tickets_sin_resolutor > 0">
+
+                {{ formatearNumero(fila.tickets_sin_resolutor) }}
+
+              </span>
+
+            </td>
+
+
+            <!-- EXPANDIR -->
+            <td class="detail-cell">
+
+              <button
+                type="button"
+                class="expand-button"
+                [class.active]="estaExpandida(fila)"
+                [attr.aria-expanded]="estaExpandida(fila)"
+                [attr.aria-label]="estaExpandida(fila) ? 'Ocultar resolutores' : 'Ver resolutores'"
+                (click)="alternarDetalle(fila)">
+
+                <span>
+                  {{ estaExpandida(fila) ? 'Ocultar' : 'Ver detalle' }}
+                </span>
+
+                <span class="expand-icon">
+                  {{ estaExpandida(fila) ? '⌃' : '⌄' }}
+                </span>
+
+              </button>
+
+            </td>
+
+          </tr>
+
+
+          <!-- DETALLE DESPLEGABLE -->
+          <tr
+            *ngIf="estaExpandida(fila)"
+            class="detail-row">
+
+            <td colspan="6">
+
+              <div class="detail-panel">
+
+                <div class="detail-header">
+
+                  <div>
+                    <h4>Detalle de Resolutores</h4>
+
+                    <p>
+                      {{ nombreVisibleProyecto(fila.proyecto) }}
+                      ·
+                      {{ formatearPeriodo(fila.periodo) }}
+                    </p>
+                  </div>
+
+                  <span class="detail-counter">
+                    {{ fila.resolutores_distintos }}
+                    resolutores
+                  </span>
+
+                </div>
+
+
+                <!-- RESUMEN INTERNO -->
+                <div class="detail-summary">
+
+                  <div class="detail-summary-item">
+
+                    <span>Total tickets</span>
+
+                    <strong>
+                      {{ formatearNumero(fila.total_tickets) }}
+                    </strong>
+
+                  </div>
+
+                  <div class="detail-summary-item">
+
+                    <span>Resolutores distintos</span>
+
+                    <strong>
+                      {{ formatearNumero(fila.resolutores_distintos) }}
+                    </strong>
+
+                  </div>
+
+                  <div class="detail-summary-item">
+
+                    <span>Tickets sin resolutor</span>
+
+                    <strong>
+                      {{ formatearNumero(fila.tickets_sin_resolutor) }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                <!-- LISTA DE RESOLUTORES -->
+                <div
+                  class="resolvers-list"
+                  *ngIf="fila.resolutores.length > 0">
+
+                  <div
+                    class="resolver-item"
+                    *ngFor="let resolutor of fila.resolutores">
+
+                    <div class="resolver-identity">
+
+                      <span class="resolver-avatar">
+                        {{ resolutor.nombre.charAt(0).toUpperCase() }}
+                      </span>
+
+                      <span class="resolver-name" [title]="resolutor.nombre">
+                        {{ resolutor.nombre }}
+                      </span>
+
+                    </div>
+
+                    <span class="resolver-tickets">
+
+                      {{ formatearNumero(resolutor.tickets) }}
+
+                      <small>tickets</small>
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <!-- SIN RESOLUTORES -->
+                <div
+                  class="no-resolvers"
+                  *ngIf="fila.resolutores.length === 0">
+
+                  No se registraron nombres de resolutores
+                  para este proyecto y período.
+
+                </div>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </ng-container>
+
+
+        <!-- SIN RESULTADOS -->
+        <tr
+          *ngIf="!cargando && !error && filasVisibles.length === 0">
+
+          <td colspan="6" class="empty-cell">
+
+            <div class="empty-content">
+
+              <span class="empty-icon">▤</span>
+
+              <strong>Sin resultados</strong>
+
+              <span *ngIf="busqueda">
+                No hay coincidencias en la página actual.
+              </span>
+
+              <span *ngIf="!busqueda">
+                No existen registros para los filtros seleccionados.
+              </span>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- CARGANDO -->
+  <div
+    class="table-status loading-status"
+    *ngIf="cargando"
+    role="status">
+
+    <span class="loading-spinner"></span>
+
+    Actualizando dotación mensual...
+
+  </div>
+
+
+  <!-- ERROR -->
+  <div
+    class="table-status error-status"
+    *ngIf="!cargando && error"
+    role="alert">
+
+    {{ error }}
+
+  </div>
+
+
+  <!-- PAGINACIÓN -->
+  <footer class="table-footer">
+
+    <div class="pagination-info">
+
+      Mostrando
+
+      <strong>{{ primerRegistro }}</strong>
+
+      -
+
+      <strong>{{ ultimoRegistro }}</strong>
+
+      de
+
+      <strong>
+        {{ formatearNumero(totalRegistros) }}
+      </strong>
+
+    </div>
+
+
+    <div class="pagination-controls">
+
+      <!-- FILAS POR PÁGINA -->
+      <label class="page-size-control">
+
+        <span>Filas</span>
+
+        <select
+          [value]="tamanoActual"
+          [disabled]="cargando"
+          (change)="cambiarTamanoPagina($event)">
+
+          <option
+            *ngFor="let tamano of tamanosPagina"
+            [value]="tamano">
+
+            {{ tamano }}
+
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <!-- ANTERIOR -->
+      <button
+        type="button"
+        class="page-button"
+        [disabled]="cargando || paginaActual <= 1"
+        (click)="cambiarPagina(paginaActual - 1)"
+        aria-label="Página anterior">
+
+        ‹
+
+      </button>
+
+
+      <!-- PÁGINA ACTUAL -->
+      <span class="page-indicator">
+
+        Página
+
+        <strong>
+          {{ totalPaginas === 0 ? 0 : paginaActual }}
+        </strong>
+
+        de
+
+        <strong>{{ totalPaginas }}</strong>
+
+      </span>
+
+
+      <!-- SIGUIENTE -->
+      <button
+        type="button"
+        class="page-button"
+        [disabled]="cargando || paginaActual >= totalPaginas"
+        (click)="cambiarPagina(paginaActual + 1)"
+        aria-label="Página siguiente">
+
+        ›
+
+      </button>
+
+    </div>
+
+  </footer>
+
+
+  <!-- NOTA -->
+  <div class="methodology-note">
+
+    <span>
+      Los resolutores se contabilizan por nombre distinto
+      dentro de cada proyecto y mes.
+    </span>
+
+    <span>
+      La búsqueda y el ordenamiento operan
+      sobre la página cargada.
+    </span>
+
+  </div>
+
+</article>

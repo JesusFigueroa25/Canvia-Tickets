@@ -76,6 +76,14 @@ import { DailyReport } from './components/pages/daily-report/daily-report';
 import { DailyReportTable } from './components/charts/Report-Diary/daily-report-table/daily-report-table';
 import { DailyReportChart } from './components/charts/Report-Diary/daily-report-chart/daily-report-chart';
 import { TaskConsolidated } from './components/pages/task-consolidated/task-consolidated';
+import { RequirementProductivityEvolution } from './components/charts/Consolidated/Productivity/requirement-productivity-evolution/requirement-productivity-evolution';
+import { RequirementProductivityTable } from './components/charts/Consolidated/Productivity/requirement-productivity-table/requirement-productivity-table';
+import { RequirementResolversMonthlyChart } from './components/charts/Consolidated/Productivity/requirement-resolvers-monthly-chart/requirement-resolvers-monthly-chart';
+import { RequirementResolversMonthlyTable } from './components/charts/Consolidated/Productivity/requirement-resolvers-monthly-table/requirement-resolvers-monthly-table';
+import { RequirementParallelAttentionChart } from './components/charts/Consolidated/Productivity/requirement-parallel-attention-chart/requirement-parallel-attention-chart';
+import { RequirementParallelDetailsTable } from './components/charts/Consolidated/Productivity/requirement-parallel-details-table/requirement-parallel-details-table';
+import { RequirementManualUpdatesChart } from './components/charts/Consolidated/Productivity/requirement-manual-updates-chart/requirement-manual-updates-chart';
+import { RequirementManualUpdatesTable } from './components/charts/Consolidated/Productivity/requirement-manual-updates-table/requirement-manual-updates-table';
 
 @NgModule({
   declarations: [
@@ -145,6 +153,14 @@ import { TaskConsolidated } from './components/pages/task-consolidated/task-cons
     DailyReportTable,
     DailyReportChart,
     TaskConsolidated,
+    RequirementProductivityEvolution,
+    RequirementProductivityTable,
+    RequirementResolversMonthlyChart,
+    RequirementResolversMonthlyTable,
+    RequirementParallelAttentionChart,
+    RequirementParallelDetailsTable,
+    RequirementManualUpdatesChart,
+    RequirementManualUpdatesTable,
   ],
   imports: [
     BrowserAnimationsModule,

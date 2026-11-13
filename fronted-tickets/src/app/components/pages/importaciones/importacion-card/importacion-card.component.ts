@@ -1,6 +1,7 @@
-
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ArchivoImportacion, EstadoArchivoImportacion } from '../../../../models/import-result';
+import { ImportResultado } from '../../../../models/import-result';
+import { TicketsManualUpdatesImportOut } from '../../../../models/tickets-manual-updates';
 
 interface ResumenImportacion {
     filas_procesadas: number;
@@ -32,6 +33,18 @@ export class ImportacionCardComponent {
 
     arrastrando = false;
     errorLocal: string | null = null;
+
+    get formatosPermitidos(): string {
+        return this.idModulo === 'tickets-manual-updates'
+            ? '.xlsx,.xls'
+            : '.xlsx';
+    }
+
+    get descripcionFormatos(): string {
+        return this.idModulo === 'tickets-manual-updates'
+            ? 'Formatos admitidos: XLSX o XLS · Máximo 50 MB por archivo'
+            : 'Formato admitido: XLSX';
+    }
 
     get procesables(): number {
         return this.archivos.filter(
@@ -94,12 +107,13 @@ export class ImportacionCardComponent {
         const rechazados: string[] = [];
 
         for (const archivo of archivos) {
-            if (!archivo.name.toLowerCase().endsWith('.xlsx')) {
-                rechazados.push(archivo.name);
-                continue;
-            }
+            const esModuloManual = this.idModulo === 'tickets-manual-updates';
+            const extensionValida = esModuloManual
+                ? /\.(xlsx|xls)$/i.test(archivo.name)
+                : /\.xlsx$/i.test(archivo.name);
+            const excedeLimite = esModuloManual && archivo.size > 50 * 1024 * 1024;
 
-            if (archivo.size === 0) {
+            if (!extensionValida || archivo.size === 0 || excedeLimite) {
                 rechazados.push(archivo.name);
                 continue;
             }
@@ -108,7 +122,7 @@ export class ImportacionCardComponent {
         }
 
         this.errorLocal = rechazados.length
-            ? `Se rechazaron ${rechazados.length} archivos por formato no permitido o tamaño vacío.`
+            ? `Se rechazaron ${rechazados.length} archivos por formato no permitido, tamaño vacío o límite de tamaño.`
             : null;
 
         if (validos.length) {
@@ -176,6 +190,24 @@ export class ImportacionCardComponent {
             case 'error':
                 return 'Error';
         }
+    }
+
+    obtenerDetalleManual(resultado: ImportResultado): TicketsManualUpdatesImportOut | null {
+        if (this.idModulo !== 'tickets-manual-updates') {
+            return null;
+        }
+
+        const detalle = resultado as Partial<TicketsManualUpdatesImportOut>;
+        if (
+            typeof detalle.filas_excel !== 'number' ||
+            typeof detalle.duplicados !== 'number' ||
+            typeof detalle.tickets_distintos !== 'number' ||
+            typeof detalle.filas_ticket_repetido !== 'number'
+        ) {
+            return null;
+        }
+
+        return resultado as TicketsManualUpdatesImportOut;
     }
 
     formatearTamano(bytes: number): string {

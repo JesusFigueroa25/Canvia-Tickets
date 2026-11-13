@@ -1,4 +1,3 @@
-
 <article class="import-card">
 
     <div class="card-heading">
@@ -38,7 +37,7 @@
         <input
             class="file-input"
             type="file"
-            accept=".xlsx"
+            [attr.accept]="formatosPermitidos"
             multiple
             [id]="'archivo-' + idModulo"
             [disabled]="cargando"
@@ -73,7 +72,7 @@
             </span>
 
             <span class="file-format">
-                Formato admitido: XLSX
+                {{ descripcionFormatos }}
             </span>
 
         </label>
@@ -203,6 +202,29 @@
                             <strong>{{ resultado.sin_cambios | number }}</strong>
                         </div>
 
+                    </div>
+
+                    <!-- Datos adicionales exclusivos del importador manual. -->
+                    <div class="manual-import-details" *ngIf="obtenerDetalleManual(resultado) as detalleManual">
+                        <div class="manual-import-details-title">Conciliación de tickets</div>
+                        <div class="file-result-grid">
+                            <div>
+                                <span>Filas originales del Excel</span>
+                                <strong>{{ detalleManual.filas_excel | number }}</strong>
+                            </div>
+                            <div>
+                                <span>Tickets distintos</span>
+                                <strong>{{ detalleManual.tickets_distintos | number }}</strong>
+                            </div>
+                            <div>
+                                <span>Duplicados omitidos</span>
+                                <strong>{{ detalleManual.duplicados | number }}</strong>
+                            </div>
+                            <div>
+                                <span>Repetidos dentro del Excel</span>
+                                <strong>{{ detalleManual.filas_ticket_repetido | number }}</strong>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="technical-row">

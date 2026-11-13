@@ -1,0 +1,690 @@
+
+<article class="table-card">
+
+  <!-- ENCABEZADO -->
+  <header class="table-header">
+
+    <div class="header-content">
+
+      <div class="title-row">
+
+        <span class="title-accent"></span>
+
+        <div>
+          <h3>Detalle de Tickets con Superposición</h3>
+
+          <p>
+            Consulta los requerimientos que presentan
+            intervalos coincidentes para un mismo resolutor.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- FILTROS -->
+  <div class="table-toolbar">
+
+    <!-- FILTRO BACKEND POR RESOLUTOR -->
+    <div class="filter-group resolver-filter">
+
+      <label for="parallel-resolver-input">
+        Filtrar por resolutor
+      </label>
+
+      <div class="filter-row">
+
+        <input
+          id="parallel-resolver-input"
+          type="text"
+          list="parallel-resolver-suggestions"
+          placeholder="Nombre exacto del resolutor"
+          [value]="textoResolutor"
+          [disabled]="cargando"
+          (input)="capturarResolutor($event)"
+          (keydown.enter)="aplicarFiltroResolutor()">
+
+        <datalist id="parallel-resolver-suggestions">
+
+          <option
+            *ngFor="let nombre of resolutoresSugeridos"
+            [value]="nombre">
+          </option>
+
+        </datalist>
+
+        <button
+          type="button"
+          class="apply-filter-button"
+          [disabled]="cargando"
+          (click)="aplicarFiltroResolutor()">
+
+          Aplicar
+
+        </button>
+
+        <button
+          type="button"
+          class="clear-filter-button"
+          [disabled]="cargando"
+          (click)="limpiarFiltroResolutor()">
+
+          Limpiar
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- BÚSQUEDA LOCAL -->
+    <div class="filter-group local-filter">
+
+      <label for="parallel-local-search">
+        Buscar en esta página
+      </label>
+
+      <div class="filter-row">
+
+        <input
+          id="parallel-local-search"
+          type="search"
+          placeholder="Ticket, proyecto o resolutor..."
+          [value]="busquedaLocal"
+          (input)="buscarLocal($event)">
+
+        <button
+          type="button"
+          class="clear-filter-button"
+          *ngIf="busquedaLocal"
+          (click)="limpiarBusquedaLocal()">
+
+          Limpiar
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- FILTRO APLICADO -->
+  <div
+    class="active-filter"
+    *ngIf="resolutorSeleccionado">
+
+    <span>Resolutor seleccionado:</span>
+
+    <strong>{{ resolutorSeleccionado }}</strong>
+
+    <button
+      type="button"
+      [disabled]="cargando"
+      (click)="limpiarFiltroResolutor()"
+      aria-label="Quitar filtro por resolutor">
+
+      ×
+
+    </button>
+
+  </div>
+
+
+  <!-- INFORMACIÓN -->
+  <div class="table-summary">
+
+    <div class="summary-left">
+
+      <span class="summary-indicator"></span>
+
+      <span>
+        <strong>
+          {{ formatearNumero(totalRegistros) }}
+        </strong>
+        registros de superposición
+      </span>
+
+    </div>
+
+    <span class="summary-note">
+      Despliega una fila para visualizar los tickets coincidentes.
+    </span>
+
+  </div>
+
+
+  <!-- TABLA -->
+  <div
+    class="table-wrapper"
+    tabindex="0"
+    aria-label="Detalle de tickets con intervalos superpuestos">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <!-- TICKET -->
+          <th scope="col">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('ticket_id')">
+
+              Ticket ID
+
+              <span class="sort-icon">
+                {{ indicadorOrden('ticket_id') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- PROYECTO -->
+          <th scope="col" class="project-column">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('proyecto')">
+
+              Proyecto
+
+              <span class="sort-icon">
+                {{ indicadorOrden('proyecto') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- RESOLUTOR -->
+          <th scope="col" class="resolver-column">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('resolutor')">
+
+              Resolutor
+
+              <span class="sort-icon">
+                {{ indicadorOrden('resolutor') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- APERTURA -->
+          <th scope="col">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('fecha_apertura')">
+
+              Fecha Apertura
+
+              <span class="sort-icon">
+                {{ indicadorOrden('fecha_apertura') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- RESOLUCIÓN -->
+          <th scope="col">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('fecha_resolucion')">
+
+              Fecha Resolución
+
+              <span class="sort-icon">
+                {{ indicadorOrden('fecha_resolucion') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- SIMULTÁNEOS -->
+          <th scope="col" class="number-column">
+
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('tickets_simultaneos')">
+
+              Tickets Simultáneos
+
+              <span class="sort-icon">
+                {{ indicadorOrden('tickets_simultaneos') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- DETALLE -->
+          <th scope="col" class="detail-column">
+            Detalle
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <ng-container
+          *ngFor="let fila of filasVisibles; trackBy: identificarFila">
+
+          <!-- FILA PRINCIPAL -->
+          <tr [class.expanded]="estaExpandida(fila)">
+
+            <!-- TICKET ID -->
+            <td>
+
+              <span class="ticket-badge">
+                {{ fila.ticket_id }}
+              </span>
+
+            </td>
+
+
+            <!-- PROYECTO -->
+            <td class="project-cell">
+
+              <span
+                class="project-name"
+                [title]="fila.proyecto">
+
+                {{ nombreVisibleProyecto(fila.proyecto) }}
+
+              </span>
+
+            </td>
+
+
+            <!-- RESOLUTOR -->
+            <td class="resolver-cell">
+
+              <span
+                class="resolver-name"
+                [title]="fila.resolutor">
+
+                {{ fila.resolutor }}
+
+              </span>
+
+            </td>
+
+
+            <!-- FECHA APERTURA -->
+            <td class="date-cell">
+
+              {{ formatearFecha(fila.fecha_apertura) }}
+
+            </td>
+
+
+            <!-- FECHA RESOLUCIÓN -->
+            <td class="date-cell">
+
+              {{ formatearFecha(fila.fecha_resolucion) }}
+
+            </td>
+
+
+            <!-- TICKETS SIMULTÁNEOS -->
+            <td class="number-cell">
+
+              <span class="simultaneous-badge">
+                {{ formatearNumero(fila.tickets_simultaneos) }}
+              </span>
+
+            </td>
+
+
+            <!-- DETALLE -->
+            <td class="detail-cell">
+
+              <button
+                type="button"
+                class="expand-button"
+                [class.active]="estaExpandida(fila)"
+                [attr.aria-expanded]="estaExpandida(fila)"
+                [attr.aria-label]="estaExpandida(fila) ? 'Ocultar coincidencias' : 'Ver coincidencias'"
+                (click)="alternarDetalle(fila)">
+
+                {{ estaExpandida(fila) ? 'Ocultar' : 'Ver detalle' }}
+
+                <span class="expand-icon">
+                  {{ estaExpandida(fila) ? '⌃' : '⌄' }}
+                </span>
+
+              </button>
+
+            </td>
+
+          </tr>
+
+
+          <!-- DETALLE DESPLEGABLE -->
+          <tr
+            *ngIf="estaExpandida(fila)"
+            class="detail-row">
+
+            <td colspan="7">
+
+              <div class="detail-panel">
+
+                <!-- ENCABEZADO -->
+                <div class="detail-header">
+
+                  <div>
+
+                    <h4>Detalle de Superposición</h4>
+
+                    <p>
+                      Ticket {{ fila.ticket_id }}
+                      ·
+                      {{ fila.resolutor }}
+                    </p>
+
+                  </div>
+
+                  <span class="detail-counter">
+
+                    {{ fila.tickets_simultaneos }}
+                    simultáneos
+
+                  </span>
+
+                </div>
+
+
+                <!-- DATOS DEL INTERVALO -->
+                <div class="detail-summary">
+
+                  <div class="detail-summary-item">
+
+                    <span>Apertura del ticket</span>
+
+                    <strong>
+                      {{ formatearFecha(fila.fecha_apertura) }}
+                    </strong>
+
+                  </div>
+
+                  <div class="detail-summary-item">
+
+                    <span>Resolución del ticket</span>
+
+                    <strong>
+                      {{ formatearFecha(fila.fecha_resolucion) }}
+                    </strong>
+
+                  </div>
+
+                  <div class="detail-summary-item">
+
+                    <span>Inicio de coincidencia</span>
+
+                    <strong class="orange-value">
+                      {{ formatearFecha(fila.inicio_coincidencia) }}
+                    </strong>
+
+                  </div>
+
+                  <div class="detail-summary-item">
+
+                    <span>Fin de coincidencia</span>
+
+                    <strong class="green-value">
+                      {{ formatearFecha(fila.fin_coincidencia) }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                <!-- TICKETS COINCIDENTES -->
+                <div class="coincidences-section">
+
+                  <h5>Tickets Coincidentes</h5>
+
+                  <p>
+                    Requerimientos con intervalos superpuestos
+                    al ticket seleccionado.
+                  </p>
+
+                  <div
+                    class="coincidences-list"
+                    *ngIf="fila.tickets_coincidentes.length > 0">
+
+                    <span
+                      class="coincidence-badge"
+                      *ngFor="let ticket of fila.tickets_coincidentes">
+
+                      {{ ticket }}
+
+                    </span>
+
+                  </div>
+
+
+                  <div
+                    class="empty-coincidences"
+                    *ngIf="fila.tickets_coincidentes.length === 0">
+
+                    No se registraron identificadores
+                    de tickets coincidentes.
+
+                  </div>
+
+                </div>
+
+
+                
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </ng-container>
+
+
+        <!-- SIN RESULTADOS -->
+        <tr
+          *ngIf="!cargando && !error && filasVisibles.length === 0">
+
+          <td colspan="7" class="empty-cell">
+
+            <div class="empty-content">
+
+              <span class="empty-icon">▤</span>
+
+              <strong>Sin resultados</strong>
+
+              <span *ngIf="busquedaLocal">
+                No se encontraron coincidencias
+                dentro de la página actual.
+              </span>
+
+              <span *ngIf="!busquedaLocal">
+                No existen registros de superposición
+                para los filtros seleccionados.
+              </span>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- CARGANDO -->
+  <div
+    class="table-status loading-status"
+    *ngIf="cargando"
+    role="status">
+
+    <span class="loading-spinner"></span>
+
+    Actualizando detalle de superposiciones...
+
+  </div>
+
+
+  <!-- ERROR -->
+  <div
+    class="table-status error-status"
+    *ngIf="!cargando && error"
+    role="alert">
+
+    {{ error }}
+
+  </div>
+
+
+  <!-- PAGINACIÓN -->
+  <footer class="table-footer">
+
+    <div class="pagination-info">
+
+      Mostrando
+
+      <strong>{{ primerRegistro }}</strong>
+
+      -
+
+      <strong>{{ ultimoRegistro }}</strong>
+
+      de
+
+      <strong>
+        {{ formatearNumero(totalRegistros) }}
+      </strong>
+
+    </div>
+
+
+    <div class="pagination-controls">
+
+      <!-- TAMAÑO DE PÁGINA -->
+      <label class="page-size-control">
+
+        <span>Filas</span>
+
+        <select
+          [value]="tamanoActual"
+          [disabled]="cargando"
+          (change)="cambiarTamanoPagina($event)">
+
+          <option
+            *ngFor="let tamano of tamanosPagina"
+            [value]="tamano">
+
+            {{ tamano }}
+
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <!-- ANTERIOR -->
+      <button
+        type="button"
+        class="page-button"
+        [disabled]="cargando || paginaActual <= 1"
+        (click)="cambiarPagina(paginaActual - 1)"
+        aria-label="Página anterior">
+
+        ‹
+
+      </button>
+
+
+      <!-- INDICADOR -->
+      <span class="page-indicator">
+
+        Página
+
+        <strong>
+          {{ totalPaginas === 0 ? 0 : paginaActual }}
+        </strong>
+
+        de
+
+        <strong>{{ totalPaginas }}</strong>
+
+      </span>
+
+
+      <!-- SIGUIENTE -->
+      <button
+        type="button"
+        class="page-button"
+        [disabled]="cargando || paginaActual >= totalPaginas"
+        (click)="cambiarPagina(paginaActual + 1)"
+        aria-label="Página siguiente">
+
+        ›
+
+      </button>
+
+    </div>
+
+  </footer>
+
+
+  <!-- PIE -->
+  <div class="methodology-note">
+
+    <span>
+      Información derivada de intervalos temporales
+      de Requerimientos Consolidados.
+    </span>
+
+    <span>
+      La búsqueda y el ordenamiento son locales;
+      la paginación consulta al backend.
+    </span>
+
+  </div>
+
+</article>

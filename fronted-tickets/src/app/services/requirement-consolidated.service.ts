@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RequirementConsolidatedFilters, RequirementConsolidatedDashboardFilters, RequirementConsolidatedKPI, RequirementConsolidatedVolumenItem, RequirementConsolidatedProyectoItem, RequirementConsolidatedTipoItem, RequirementConsolidatedPrioridadItem, RequirementConsolidatedTopProyectos, RequirementConsolidatedPrioridadMensualItem, RequirementConsolidatedTicketsOut } from '../models/requirement-consolidated';
+import { RequirementConsolidatedFilters, RequirementConsolidatedDashboardFilters, RequirementConsolidatedKPI, RequirementConsolidatedVolumenItem, RequirementConsolidatedProyectoItem, RequirementConsolidatedTipoItem, RequirementConsolidatedPrioridadItem, RequirementConsolidatedTopProyectos, RequirementConsolidatedPrioridadMensualItem, RequirementConsolidatedTicketsOut, RequirementProductividadGranularidad, RequirementProductividadOut, RequirementDotacionOut, RequirementAtencionParalelaOut, RequirementActualizacionesManualesOut } from '../models/requirement-consolidated';
 import { ImportResultado } from '../models/import-result';
 
 @Injectable({ providedIn: 'root' })
@@ -217,7 +217,7 @@ export class RequirementConsolidatedService {
     }
 
 
-    
+
     obtenerTickets(
         filtros: RequirementConsolidatedDashboardFilters = {},
         pagina: number = 1,
@@ -235,4 +235,99 @@ export class RequirementConsolidatedService {
     }
 
 
+    // ALCANCE 1 - PRODUCTIVIDAD PROMEDIO POR PROYECTO
+    obtenerProductividadProyectos(
+        filtros: RequirementConsolidatedDashboardFilters = {},
+        granularidad: RequirementProductividadGranularidad = 'mes',
+        pagina: number = 1,
+        tamano: number = 25,
+        limiteGrafico: number = 10
+    ): Observable<RequirementProductividadOut> {
+
+        const params = this.construirParametros(filtros)
+            .set('granularidad', granularidad)
+            .set('pagina', pagina.toString())
+            .set('tamano', tamano.toString())
+            .set('limite_grafico', limiteGrafico.toString());
+
+        return this.http.get<RequirementProductividadOut>(
+            `${this.apiUrl}/productividad-proyectos`,
+            { params }
+        );
+    }
+
+
+    // ALCANCE 2 - DOTACIÓN MENSUAL DE RESOLUTORES
+    obtenerDotacionResolutores(
+        filtros: RequirementConsolidatedDashboardFilters = {},
+        pagina: number = 1,
+        tamano: number = 25,
+        limiteGrafico: number = 10
+    ): Observable<RequirementDotacionOut> {
+
+        const params = this.construirParametros(filtros)
+            .set('pagina', pagina.toString())
+            .set('tamano', tamano.toString())
+            .set('limite_grafico', limiteGrafico.toString());
+
+        return this.http.get<RequirementDotacionOut>(
+            `${this.apiUrl}/dotacion-resolutores`,
+            { params }
+        );
+    }
+
+
+    // ALCANCE 3 - ATENCIÓN PARALELA DE REQUERIMIENTOS
+    obtenerAtencionParalela(
+        filtros: RequirementConsolidatedDashboardFilters = {},
+        pagina: number = 1,
+        tamano: number = 25,
+        limiteGrafico: number = 10,
+        resolutor?: string
+    ): Observable<RequirementAtencionParalelaOut> {
+
+        let params = this.construirParametros(filtros)
+            .set('pagina', pagina.toString())
+            .set('tamano', tamano.toString())
+            .set('limite_grafico', limiteGrafico.toString());
+
+        if (resolutor?.trim()) {
+            params = params.set(
+                'resolutor',
+                resolutor.trim()
+            );
+        }
+
+        return this.http.get<RequirementAtencionParalelaOut>(
+            `${this.apiUrl}/atencion-paralela`,
+            { params }
+        );
+    }
+
+
+
+
+    // ALCANCE 4 - TICKETS CON REGISTROS DE ACTUALIZACIÓN MANUAL
+    obtenerActualizacionesManuales(
+        filtros: RequirementConsolidatedDashboardFilters = {},
+        pagina: number = 1,
+        tamano: number = 25,
+        limiteGrafico: number = 10,
+        resolutor?: string
+    ): Observable<RequirementActualizacionesManualesOut> {
+
+        let params = this.construirParametros(filtros)
+            .set('pagina', pagina.toString())
+            .set('tamano', tamano.toString())
+            .set('limite_grafico', limiteGrafico.toString());
+
+        if (resolutor?.trim()) {
+            params = params.set('resolutor', resolutor.trim());
+        }
+
+        return this.http.get<RequirementActualizacionesManualesOut>(
+            `${this.apiUrl}/actualizaciones-manuales`,
+            { params }
+        );
+    }
 }

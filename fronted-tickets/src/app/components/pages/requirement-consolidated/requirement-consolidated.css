@@ -840,3 +840,186 @@
   }
 
 }
+
+
+/* ===========================================================
+   PRODUCTIVIDAD DE REQUERIMIENTOS - ALCANCES 1, 2 y 3
+   =========================================================== */
+.productivity-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 34px;
+  box-sizing: border-box;
+}
+
+.productivity-section-header {
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--req-border);
+}
+
+.productivity-section-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0 4px;
+  color: var(--req-text);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.productivity-section-header h2::before {
+  content: '';
+  flex-shrink: 0;
+  width: 4px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--req-orange);
+}
+
+.productivity-section-header p {
+  margin: 4px 0 0;
+  color: var(--req-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.productivity-section-label {
+  color: #16835B;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.productivity-section-header .productivity-methodology {
+  font-style: italic;
+}
+
+.productivity-section .productivity-chart,
+.productivity-section .productivity-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin-top: 0;
+  box-sizing: border-box;
+}
+
+.productivity-chart > app-requirement-productivity-evolution,
+.productivity-chart > app-requirement-resolvers-monthly-chart,
+.productivity-chart > app-requirement-parallel-attention-chart,
+.productivity-table > app-requirement-productivity-table,
+.productivity-table > app-requirement-resolvers-monthly-table,
+.productivity-table > app-requirement-parallel-details-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Botón de pantalla completa de las tres tablas nuevas. */
+.productivity-table-expand-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--req-border);
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: var(--req-muted);
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.productivity-table-expand-btn:hover {
+  color: var(--req-orange);
+  background: #FFF4ED;
+  border-color: var(--req-orange);
+}
+
+.productivity-table-expand-btn:focus-visible {
+  outline: 2px solid var(--req-orange);
+  outline-offset: 2px;
+}
+
+.productivity-table-expand-btn mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+/* Estos componentes ocupan toda el área disponible en pantalla completa. */
+.productivity-chart.chart-expandable:fullscreen > app-requirement-productivity-evolution,
+.productivity-chart.chart-expandable:fullscreen > app-requirement-resolvers-monthly-chart,
+.productivity-chart.chart-expandable:fullscreen > app-requirement-parallel-attention-chart,
+.productivity-table.table-expandable:fullscreen > app-requirement-productivity-table,
+.productivity-table.table-expandable:fullscreen > app-requirement-resolvers-monthly-table,
+.productivity-table.table-expandable:fullscreen > app-requirement-parallel-details-table {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Dejar espacio libre para los botones de expansión en las tarjetas. */
+:host ::ng-deep .productivity-table .table-header {
+  padding-right: 55px;
+}
+
+@media (max-width: 768px) {
+  .productivity-section { margin-top: 26px; gap: 12px; }
+  .productivity-section-header h2 { font-size: 19px; }
+  .productivity-section-header h2::before { height: 19px; }
+  .productivity-table-expand-btn { top: 10px; right: 10px; }
+}
+
+
+/* ==========================================================
+   ALCANCE 4 - COMPONENTES DE ACTUALIZACIONES MANUALES
+   ========================================================== */
+.productivity-chart > app-requirement-manual-updates-chart,
+.productivity-table > app-requirement-manual-updates-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.productivity-chart.chart-expandable:fullscreen > app-requirement-manual-updates-chart,
+.productivity-table.table-expandable:fullscreen > app-requirement-manual-updates-table {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+:host ::ng-deep .productivity-chart.chart-expandable:fullscreen app-requirement-manual-updates-chart .chart-card,
+:host ::ng-deep .productivity-table.table-expandable:fullscreen app-requirement-manual-updates-table .table-card {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+:host ::ng-deep .productivity-chart.chart-expandable:fullscreen app-requirement-manual-updates-chart .chart-container {
+  flex: 1 1 auto;
+  height: auto !important;
+  min-height: 0 !important;
+}

@@ -1,4 +1,3 @@
-
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EMPTY, from, Observable } from 'rxjs';
@@ -9,6 +8,7 @@ import { IncidentSlaService } from '../../../services/incident-sla.service';
 import { RequirementConsolidatedService } from '../../../services/requirement-consolidated.service';
 import { RequirementSlaService } from '../../../services/requirement-sla.service';
 import { TaskConsolidatedService } from '../../../services/task-consolidated.service';
+import { TicketsManualUpdatesService } from '../../../services/tickets-manual-updates.service';
 
 import {
     ArchivoImportacion,
@@ -20,7 +20,8 @@ type TipoImportacion =
     | 'incident-consolidated'
     | 'requirement-consolidated'
     | 'requirement-sla'
-    | 'task-consolidated';
+    | 'task-consolidated'
+    | 'tickets-manual-updates';
 
 interface ModuloImportacion {
     id: TipoImportacion;
@@ -66,6 +67,11 @@ export class ImportacionesComponent {
             id: 'task-consolidated',
             titulo: 'Tareas Consolidadas',
             descripcion: 'Importación y actualización del consolidado de tareas, con validación de duplicados por ALP y proyecto.'
+        },
+        {
+            id: 'tickets-manual-updates',
+            titulo: 'Tickets Modificados Manualmente',
+            descripcion: 'Importación de tickets con registros de actualización manual. Conserva el primer registro de cada Ticket ID y omite tickets previamente importados.'
         }
     ];
 
@@ -74,7 +80,8 @@ export class ImportacionesComponent {
         'incident-consolidated': this.crearEstado(),
         'requirement-consolidated': this.crearEstado(),
         'requirement-sla': this.crearEstado(),
-        'task-consolidated': this.crearEstado()
+        'task-consolidated': this.crearEstado(),
+        'tickets-manual-updates': this.crearEstado()
     };
 
     private siguienteArchivoId = 1;
@@ -85,6 +92,7 @@ export class ImportacionesComponent {
         private requirementConsolidatedService: RequirementConsolidatedService,
         private requirementSlaService: RequirementSlaService,
         private taskConsolidatedService: TaskConsolidatedService,
+        private ticketsManualUpdatesService: TicketsManualUpdatesService,
         private cdr: ChangeDetectorRef
     ) {}
 
@@ -277,6 +285,11 @@ export class ImportacionesComponent {
 
             case 'task-consolidated':
                 return this.taskConsolidatedService.importarExcel(
+                    archivo
+                );
+
+            case 'tickets-manual-updates':
+                return this.ticketsManualUpdatesService.importarExcel(
                     archivo
                 );
         }

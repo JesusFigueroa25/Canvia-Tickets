@@ -1,0 +1,41 @@
+<section class="chart-card" aria-label="Ranking de tickets con actualización manual">
+  <header class="chart-header">
+    <h2>Tickets con registros manuales por resolutor asignado</h2>
+    <p>Top de resolutores asignados en los tickets del reporte manual que también existen en Requerimientos
+      Consolidados.</p>
+  </header>
+
+  <div class="summary-grid" *ngIf="datos?.resumen as resumen">
+    <div class="summary-item">
+      <span>Tickets relacionados</span>
+      <strong>{{ resumen.total_tickets | number:'1.0-0' }}</strong>
+    </div>
+    <div class="summary-item">
+      <span>Resolutores distintos</span>
+      <strong>{{ resumen.total_resolutores | number:'1.0-0' }}</strong>
+    </div>
+    <div class="summary-item">
+      <span>Grupos resolutores</span>
+      <strong>{{ resumen.total_grupos | number:'1.0-0' }}</strong>
+    </div>
+    <div class="summary-item">
+      <span>Proyectos</span>
+      <strong>{{ resumen.total_proyectos | number:'1.0-0' }}</strong>
+    </div>
+    <div class="summary-item">
+      <span>Sin resolutor</span>
+      <strong>{{ resumen.tickets_sin_resolutor | number:'1.0-0' }}</strong>
+    </div>
+  </div>
+
+
+  <div class="chart-status" *ngIf="cargando" role="status">Cargando actualizaciones manuales...</div>
+  <div class="chart-status error" *ngIf="!cargando && error" role="alert">{{ error }}</div>
+  <div class="chart-status" *ngIf="!cargando && !error && !registros.length">No hay tickets con registros de
+    actualización manual para los filtros actuales.</div>
+
+  <div class="chart-container" *ngIf="!cargando && !error && registros.length" [style.height.px]="alturaGrafico">
+    <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'">
+    </canvas>
+  </div>
+</section>
