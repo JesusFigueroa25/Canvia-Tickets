@@ -1,22 +1,7 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ValidationErrors,
-  ValidatorFn,
-  Validators
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-
-import {
-  DailyReportDashboardFilters,
-  DailyReportDiaItem,
-  DailyReportFilters,
-  DailyReportKPI,
-  DailyReportProyectoItem,
-  DailyReportTopProyectos
-} from '../../../models/daily-report';
+import { DailyReportDashboardFilters, DailyReportDiaItem, DailyReportFilters, DailyReportKPI, DailyReportProyectoItem, DailyReportTopProyectos } from '../../../models/daily-report';
 import { DailyReportService } from '../../../services/daily-report.service';
 
 @Component({
@@ -27,6 +12,8 @@ import { DailyReportService } from '../../../services/daily-report.service';
 })
 export class DailyReport implements OnInit, OnDestroy {
 
+  // feat/mejoras-analisis-incidentes-gpt
+  private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
   filtrosForm!: FormGroup;
 
   opcionesFiltros: DailyReportFilters = {
@@ -133,7 +120,7 @@ export class DailyReport implements OnInit, OnDestroy {
     this.busquedaProyecto = '';
   }
 
-  
+
   private readonly validarRangoFechas: ValidatorFn = (
     control: AbstractControl
   ): ValidationErrors | null => {
@@ -173,18 +160,21 @@ export class DailyReport implements OnInit, OnDestroy {
   }
 
   private crearFormularioFiltros(): void {
+
     this.filtrosForm = this.formBuilder.group(
       {
         desde: [null, Validators.required],
         hasta: [null, Validators.required],
-        grupo_resolutor: [null],
+        // feat/mejoras-analisis-incidentes-gpt
+        grupo_resolutor: [this.grupoResolutorPorDefecto],
         proyecto: [null]
       },
       { validators: this.validarRangoFechas }
     );
+
   }
 
-  
+
   cargarOpcionesFiltros(): void {
     this.cargandoFiltros = true;
     this.filtrosListos = false;
@@ -259,7 +249,7 @@ export class DailyReport implements OnInit, OnDestroy {
     this.cargarTopProyectos();
   }
 
-  
+
   limpiarFiltros(): void {
     if (!this.filtrosListos || this.cargandoFiltros) {
       return;
@@ -273,22 +263,27 @@ export class DailyReport implements OnInit, OnDestroy {
   }
 
   private restablecerFormulario(): void {
+
     this.filtrosForm.reset(
       {
         desde: this.fechaMinima,
         hasta: this.fechaMaxima,
-        grupo_resolutor: null,
+        // feat/mejoras-analisis-incidentes-gpt
+        grupo_resolutor: this.grupoResolutorPorDefecto,
         proyecto: null
       },
       { emitEvent: false }
     );
+
     this.filtrosForm.markAsPristine();
     this.filtrosForm.markAsUntouched();
-    this.filtrosForm.updateValueAndValidity({ emitEvent: false });
+    this.filtrosForm.updateValueAndValidity({
+      emitEvent: false
+    });
     this.busquedaProyecto = '';
   }
 
-  
+
   private cargarResumen(): void {
     this.cancelarResumen$.next();
     const solicitudActual = ++this.solicitudResumen;
@@ -415,7 +410,6 @@ export class DailyReport implements OnInit, OnDestroy {
     if (this.proyectoSeleccionado === seleccion) {
       return;
     }
-
     this.filtrosForm.patchValue(
       { proyecto: seleccion },
       { emitEvent: false }
@@ -424,15 +418,13 @@ export class DailyReport implements OnInit, OnDestroy {
     this.aplicarFiltros();
   }
 
-  
+
   private convertirFecha(valor: string | null): Date | null {
     if (!valor || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
       return null;
     }
-
     const [anio, mes, dia] = valor.split('-').map(Number);
     const fecha = new Date(anio, mes - 1, dia);
-
     if (
       fecha.getFullYear() !== anio ||
       fecha.getMonth() !== mes - 1 ||
@@ -440,7 +432,6 @@ export class DailyReport implements OnInit, OnDestroy {
     ) {
       return null;
     }
-
     return fecha;
   }
 
@@ -448,11 +439,9 @@ export class DailyReport implements OnInit, OnDestroy {
     if (!(valor instanceof Date) || Number.isNaN(valor.getTime())) {
       return undefined;
     }
-
     const anio = valor.getFullYear();
     const mes = String(valor.getMonth() + 1).padStart(2, '0');
     const dia = String(valor.getDate()).padStart(2, '0');
-
     return `${anio}-${mes}-${dia}`;
   }
 }

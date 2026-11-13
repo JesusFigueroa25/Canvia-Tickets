@@ -8,7 +8,7 @@ import {
   OnDestroy,
   ViewChild
 } from '@angular/core';
-
+import type { Plugin } from 'chart.js';
 import Chart from 'chart.js/auto';
 import type { ChartDataset, ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -306,7 +306,7 @@ export class RequirementResolversMonthlyChart
 
         options: opciones,
 
-        plugins: [ChartDataLabels]
+        plugins: [ChartDataLabels as unknown as Plugin<'bar'>]
       }
     );
 

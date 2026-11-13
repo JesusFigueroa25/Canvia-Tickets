@@ -8,7 +8,7 @@ import {
   OnDestroy,
   ViewChild
 } from '@angular/core';
-
+import type { Plugin } from 'chart.js';
 import Chart from 'chart.js/auto';
 import type { ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -337,25 +337,19 @@ export class RequirementParallelAttentionChart
       this.parallelCanvas.nativeElement,
       {
         type: 'bar',
-
         data: {
           labels: [],
           datasets: []
         },
-
         options: opciones,
-
-        plugins: [ChartDataLabels]
+        plugins: [ChartDataLabels as unknown as Plugin<'bar'>]
       }
     );
 
     this.actualizarGrafico();
   }
 
-  // ==========================================================
   // ACTUALIZAR GRÁFICO
-  // ==========================================================
-
   private actualizarGrafico(): void {
 
     if (!this.chart) {

@@ -2,23 +2,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-  RequirementConsolidatedFilters,
-  RequirementConsolidatedDashboardFilters,
-  RequirementConsolidatedKPI,
-  RequirementConsolidatedProyectoItem,
-  RequirementConsolidatedVolumenItem,
-  RequirementConsolidatedPrioridadItem,
-  RequirementConsolidatedTipoItem,
-  RequirementConsolidatedTopProyectos,
-  RequirementConsolidatedPrioridadMensualItem,
-  RequirementConsolidatedTicketsOut,
-  RequirementProductividadGranularidad,
-  RequirementProductividadOut,
-  RequirementDotacionOut,
-  RequirementAtencionParalelaOut,
-  RequirementActualizacionesManualesOut
-} from '../../../models/requirement-consolidated';
+import { RequirementConsolidatedFilters, RequirementConsolidatedDashboardFilters, RequirementConsolidatedKPI, RequirementConsolidatedProyectoItem, RequirementConsolidatedVolumenItem, RequirementConsolidatedPrioridadItem, RequirementConsolidatedTipoItem, RequirementConsolidatedTopProyectos, RequirementConsolidatedPrioridadMensualItem, RequirementConsolidatedTicketsOut, RequirementProductividadGranularidad, RequirementProductividadOut, RequirementDotacionOut, RequirementAtencionParalelaOut, RequirementActualizacionesManualesOut } from '../../../models/requirement-consolidated';
 import { RequirementConsolidatedService } from '../../../services/requirement-consolidated.service';
 
 @Component({
@@ -29,8 +13,12 @@ import { RequirementConsolidatedService } from '../../../services/requirement-co
 })
 export class RequirementConsolidated implements OnInit, OnDestroy {
 
+  // feat/mejoras-analisis-incidentes-gpt
+  private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
   filtrosForm!: FormGroup;
-  filtrosActuales: RequirementConsolidatedDashboardFilters = {};
+  filtrosActuales: RequirementConsolidatedDashboardFilters = {
+    grupo_resolutor: this.grupoResolutorPorDefecto
+  };
 
   // Filtros dinámicos
   periodoSeleccionado: string | null = null;
@@ -78,44 +66,36 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
   cargandoPrioridadMensual = false;
   private solicitudDashboard = 0;
 
-  // ====================================================
   // PRODUCTIVIDAD - ALCANCE 1
-  // ====================================================
   productividad: RequirementProductividadOut | null = null;
   cargandoProductividad = false;
   errorProductividad: string | null = null;
   granularidadProductividad: RequirementProductividadGranularidad = 'mes';
   paginaProductividad = 1;
-  tamanoProductividad = 25;
+  tamanoProductividad = 10;
   limiteGraficoProductividad = 10;
   private readonly cancelarProductividad$ = new Subject<void>();
 
-  // ====================================================
   // DOTACIÓN MENSUAL - ALCANCE 2
-  // ====================================================
   dotacion: RequirementDotacionOut | null = null;
   cargandoDotacion = false;
   errorDotacion: string | null = null;
   paginaDotacion = 1;
-  tamanoDotacion = 25;
+  tamanoDotacion = 10;
   limiteGraficoDotacion = 10;
   private readonly cancelarDotacion$ = new Subject<void>();
 
-  // ====================================================
   // ATENCIÓN PARALELA - ALCANCE 3
-  // ====================================================
   atencionParalela: RequirementAtencionParalelaOut | null = null;
   cargandoAtencionParalela = false;
   errorAtencionParalela: string | null = null;
   paginaAtencionParalela = 1;
-  tamanoAtencionParalela = 25;
+  tamanoAtencionParalela = 10;
   limiteGraficoAtencionParalela = 10;
   resolutorAtencionParalela: string | null = null;
   private readonly cancelarAtencionParalela$ = new Subject<void>();
 
-  // ====================================================
   // ALCANCE 4 - ACTUALIZACIONES MANUALES
-  // ====================================================
   actualizacionesManuales: RequirementActualizacionesManualesOut | null = null;
   cargandoActualizacionesManuales = false;
   errorActualizacionesManuales: string | null = null;
@@ -124,7 +104,6 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
   limiteGraficoActualizacionesManuales = 10;
   resolutorActualizacionesManuales: string | null = null;
   private readonly cancelarActualizacionesManuales$ = new Subject<void>();
-
 
 
   //FIltro Proyectos
@@ -188,13 +167,12 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
     this.changeDetector.markForCheck();
   }
 
-  
+
 
   ngOnInit(): void {
     this.crearFormularioFiltros();
     this.cargarOpcionesFiltros();
   }
-
 
 
   ngOnDestroy(): void {
@@ -203,22 +181,16 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
       clearTimeout(this.temporizadorExclusiones);
       this.temporizadorExclusiones = null;
     }
-
     this.cancelarDashboard$.next();
     this.cancelarDashboard$.complete();
-
     this.cancelarTickets$.next();
     this.cancelarTickets$.complete();
-
     this.cancelarProductividad$.next();
     this.cancelarProductividad$.complete();
-
     this.cancelarDotacion$.next();
     this.cancelarDotacion$.complete();
-
     this.cancelarAtencionParalela$.next();
     this.cancelarAtencionParalela$.complete();
-
     this.cancelarActualizacionesManuales$.next();
     this.cancelarActualizacionesManuales$.complete();
   }
@@ -232,7 +204,9 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
       prioridad: [null],
       motivo_estado: [null],
       motivo_resolucion: [null],
-      grupo_resolutor: [null],
+
+      // feat/mejoras-analisis-incidentes-gpt
+      grupo_resolutor: [this.grupoResolutorPorDefecto]
     });
   }
 
@@ -313,30 +287,31 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
   limpiarFiltros(): void {
 
-    // Limpiar formulario
-    this.filtrosForm.reset();
-    this.filtrosActuales = {};
+    // feat/mejoras-analisis-incidentes-gpt
+    this.filtrosForm.reset({
+      desde: null,
+      hasta: null,
+      prioridad: null,
+      motivo_estado: null,
+      motivo_resolucion: null,
+      grupo_resolutor: this.grupoResolutorPorDefecto
+    });
+    this.filtrosActuales = {
+      grupo_resolutor: this.grupoResolutorPorDefecto
+    };
+
     this.proyectosExcluidos = [];
-
-    // Restaurar fechas disponibles
     this.establecerFechasPorDefecto();
-
-    // LIMPIAR TODAS LAS SELECCIONES
     this.proyectoSeleccionado = null;
     this.periodoSeleccionado = null;
     this.tiposRequerimientoSeleccionados = [];
-
-    // LIMPIAR FILTRO POR TICKET ID
     this.ticketIdSeleccionado = null;
-    // Restablecer el filtro local de atención paralela
     this.resolutorAtencionParalela = null;
     this.resolutorActualizacionesManuales = null;
-
-    // Recargar dashboard
     this.cargarOpcionesProyectos();
     this.cargarDashboard();
-
     this.changeDetector.markForCheck();
+
   }
 
 
@@ -974,10 +949,7 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
 
 
-  // ====================================================
   // CARGAR TABLA PAGINADA - REQUERIMIENTOS CONSOLIDADOS
-  // ====================================================
-
   cargarTickets(
     solicitudActual: number = this.solicitudDashboard
   ): void {
@@ -1038,7 +1010,6 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
 
 
-
   // PAGINACIÓN - EXPLORADOR DE TICKETS
   cambiarPaginaTickets(evento: {
     pagina: number;
@@ -1060,37 +1031,23 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
   }
 
 
-  // ====================================================
   // FILTRO DINÁMICO POR TICKET ID
-  // ====================================================
-
   cambiarTicketId(ticketId: string | null): void {
-
     const nuevoTicketId = ticketId?.trim() || null;
-
     if (this.ticketIdSeleccionado === nuevoTicketId) {
       return;
     }
-
-    // ACTUALIZAR TICKET SELECCIONADO
     this.ticketIdSeleccionado = nuevoTicketId;
-
-    // CONSERVAR LOS DEMÁS FILTROS
     this.filtrosActuales = {
       ...this.filtrosActuales,
       ticket_id: nuevoTicketId ?? undefined
     };
-
-    // RECARGAR TODOS LOS KPIs, GRÁFICOS Y TABLAS
     this.cargarDashboard();
   }
 
 
 
-
-  // ====================================================
   // ALCANCE 1 - EVOLUCIÓN Y PRODUCTIVIDAD POR PROYECTO
-  // ====================================================
   cargarProductividad(solicitudActual: number = this.solicitudDashboard): void {
     this.cancelarProductividad$.next();
     this.cargandoProductividad = true;
@@ -1134,16 +1091,14 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
   cambiarPaginaProductividad(evento: { pagina: number; tamano: number }): void {
     if (this.paginaProductividad === evento.pagina &&
-        this.tamanoProductividad === evento.tamano) return;
+      this.tamanoProductividad === evento.tamano) return;
     this.paginaProductividad = evento.pagina;
     this.tamanoProductividad = evento.tamano;
     this.cargarProductividad();
   }
 
 
-  // ====================================================
   // ALCANCE 2 - RESOLUTORES POR PROYECTO Y MES
-  // ====================================================
   cargarDotacion(solicitudActual: number = this.solicitudDashboard): void {
     this.cancelarDotacion$.next();
     this.cargandoDotacion = true;
@@ -1179,16 +1134,13 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
   cambiarPaginaDotacion(evento: { pagina: number; tamano: number }): void {
     if (this.paginaDotacion === evento.pagina &&
-        this.tamanoDotacion === evento.tamano) return;
+      this.tamanoDotacion === evento.tamano) return;
     this.paginaDotacion = evento.pagina;
     this.tamanoDotacion = evento.tamano;
     this.cargarDotacion();
   }
 
-
-  // ====================================================
   // ALCANCE 3 - ATENCIÓN PARALELA DE REQUERIMIENTOS
-  // ====================================================
   cargarAtencionParalela(solicitudActual: number = this.solicitudDashboard): void {
     this.cancelarAtencionParalela$.next();
     this.cargandoAtencionParalela = true;
@@ -1225,7 +1177,7 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
   cambiarPaginaAtencionParalela(evento: { pagina: number; tamano: number }): void {
     if (this.paginaAtencionParalela === evento.pagina &&
-        this.tamanoAtencionParalela === evento.tamano) return;
+      this.tamanoAtencionParalela === evento.tamano) return;
     this.paginaAtencionParalela = evento.pagina;
     this.tamanoAtencionParalela = evento.tamano;
     this.cargarAtencionParalela();
@@ -1239,15 +1191,10 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
     this.cargarAtencionParalela();
   }
 
-
-
-  // ====================================================
   // ALCANCE 4 - TICKETS CON REGISTROS DE ACTUALIZACIÓN MANUAL
-  // ====================================================
   cargarActualizacionesManuales(
     solicitudActual: number = this.solicitudDashboard
   ): void {
-    // Una paginación o búsqueda nueva invalida la petición anterior.
     this.cancelarActualizacionesManuales$.next();
     this.cargandoActualizacionesManuales = true;
     this.errorActualizacionesManuales = null;

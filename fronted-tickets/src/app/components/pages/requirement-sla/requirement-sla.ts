@@ -26,7 +26,6 @@ type NuevoVisualSla =
 export class RequirementSla implements OnDestroy {
 
 
-
   filtrosForm!: FormGroup;
   opcionesFiltros: RequirementSLAFilters = {
     fecha_min: null,
@@ -39,11 +38,14 @@ export class RequirementSla implements OnDestroy {
     condiciones_dia: []
   };
 
-  filtrosActuales: RequirementSLADashboardFilters = {};
 
-  // Filtro dinámico por mes
+  // feat/mejoras-analisis-incidentes-gpt
+  private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
+  filtrosActuales: RequirementSLADashboardFilters = {
+    grupo_resolutor: this.grupoResolutorPorDefecto
+  };
+
   periodoSeleccionado: string | null = null;
-
   slaSolucionSeleccionada: RequirementSLASolucionCondicion | null = null;
   cargandoFiltros: boolean = false;
   kpis: RequirementSLAKPI | null = null;
@@ -77,7 +79,6 @@ export class RequirementSla implements OnDestroy {
   proyectosExcluidos: string[] = [];
   private solicitudOpcionesProyectos = 0;
   private temporizadorExclusiones: ReturnType<typeof setTimeout> | null = null;
-
 
   exploradorTipos: RequirementSLAExploradorTiposOut | null = null;
   distribucionCondicionDia: RequirementSLACondicionDiaOut | null = null;
@@ -194,14 +195,17 @@ export class RequirementSla implements OnDestroy {
 
 
   crearFormularioFiltros(): void {
+
     this.filtrosForm = this.formBuilder.group({
       desde: [null, Validators.required],
       hasta: [null, Validators.required],
-      grupo_resolutor: [null],
+      //feat/mejoras-analisis-incidentes-gpt
+      grupo_resolutor: [this.grupoResolutorPorDefecto],
       prioridad: [null],
       categoria: [null],
       condicion_dia: [null]
     });
+
   }
 
   cargarOpcionesFiltros(): void {
@@ -212,12 +216,8 @@ export class RequirementSla implements OnDestroy {
         next: (data) => {
           this.opcionesFiltros = data;
           this.cargandoFiltros = false;
-
-          // 2. ESTABLECER FECHAS POR DEFECTO
           this.establecerFechasPorDefecto();
-          // 3. ACTUALIZAR OPCIONES DE PROYECTOS
           this.cargarOpcionesProyectos();
-
           this.cargarDashboard();
           this.changeDetector.markForCheck();
 
@@ -235,7 +235,6 @@ export class RequirementSla implements OnDestroy {
 
 
   aplicarFiltros(): void {
-    //Agregar esta validacion
     if (this.filtrosForm.invalid) {
       this.filtrosForm.markAllAsTouched();
       return;
@@ -260,18 +259,13 @@ export class RequirementSla implements OnDestroy {
       condicion_dia: (valores.condicion_dia as RequirementSLACondicionDia | null) ?? undefined,
 
       proyecto: undefined,
-
-      // CONSERVAR PROYECTOS EXCLUIDOS
       proyectos_excluidos: this.proyectosExcluidos.length > 0
         ? [...this.proyectosExcluidos]
         : undefined,
 
-
       sla_solucion_condicion: this.slaSolucionSeleccionada ?? undefined,
       periodo: undefined,
       ticket_id: undefined
-
-
     };
 
     this.proyectoSeleccionado = null;
@@ -283,24 +277,33 @@ export class RequirementSla implements OnDestroy {
   }
 
 
-
-
   limpiarFiltros(): void {
-    this.filtrosForm.reset();
-    this.filtrosActuales = {};
+
+    // feat/mejoras-analisis-incidentes-gpt
+    this.filtrosForm.reset({
+      desde: null,
+      hasta: null,
+      grupo_resolutor: this.grupoResolutorPorDefecto,
+      prioridad: null,
+      categoria: null,
+      condicion_dia: null
+    });
+
+    // feat/mejoras-analisis-incidentes-gpt
+    this.filtrosActuales = {
+      grupo_resolutor: this.grupoResolutorPorDefecto
+    };
+
     this.proyectosExcluidos = [];
-
-    //RESTABLECER FECHA MINIMA Y MAXIMA
     this.establecerFechasPorDefecto();
-
     this.proyectoSeleccionado = null;
     this.slaSolucionSeleccionada = null;
     this.tiposRequerimientoSeleccionados = [];
     this.periodoSeleccionado = null;
     this.ticketIdSeleccionado = null;
-
     this.cargarOpcionesProyectos();
     this.cargarDashboard();
+
   }
 
 
@@ -1098,51 +1101,35 @@ export class RequirementSla implements OnDestroy {
   }
 
 
-
-
-  // ====================================================
   // PAGINACIÓN - EXPLORADOR DE TICKETS
-  // ====================================================
-
   cambiarPaginaTickets(evento: {
     pagina: number;
     tamano: number;
   }): void {
 
-    if (
-      this.paginaTickets === evento.pagina &&
-      this.tamanoTickets === evento.tamano
-    ) {
+    if (this.paginaTickets === evento.pagina && this.tamanoTickets === evento.tamano) {
       return;
     }
 
     this.paginaTickets = evento.pagina;
     this.tamanoTickets = evento.tamano;
-
-    // SOLO RECARGAR LA TABLA
     this.cargarTickets();
   }
 
-
-
   cambiarTicketId(ticketId: string | null): void {
-
     const nuevoTicketId = ticketId?.trim() || null;
 
     if (this.ticketIdSeleccionado === nuevoTicketId) {
       return;
     }
 
-    // ACTUALIZAR SELECCIÓN
     this.ticketIdSeleccionado = nuevoTicketId;
 
-    // CONSERVAR TODOS LOS DEMÁS FILTROS ACTIVOS
     this.filtrosActuales = {
       ...this.filtrosActuales,
       ticket_id: nuevoTicketId ?? undefined
     };
 
-    // RECARGAR TODOS LOS COMPONENTES DEL DASHBOARD
     this.cargarDashboard();
   }
 

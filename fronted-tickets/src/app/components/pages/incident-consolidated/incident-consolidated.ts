@@ -53,8 +53,15 @@ const FORMATOS_FECHA: MatDateFormats = {
 
 
 export class IncidentConsolidated implements OnInit, OnDestroy {
+
+  // feat/mejoras-analisis-incidentes-gpt
+  private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
   filtrosForm!: FormGroup;
-  filtrosActuales: IncidentConsolidatedDashboardFilters = {};
+  filtrosActuales: IncidentConsolidatedDashboardFilters = {
+    grupo_resolutor: this.grupoResolutorPorDefecto
+  };
+
+
   opcionesFiltros: IncidentConsolidatedFilters = {
     fecha_min: null,
     fecha_max: null,
@@ -294,7 +301,8 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
       prioridad: [null],
       motivo_estado: [null],
       motivo_resolucion: [null],
-      grupo_resolutor: [null],
+      // feat/mejoras-analisis-incidentes-gpt
+      grupo_resolutor: [this.grupoResolutorPorDefecto]
     });
     console.log(
       'Controles del formulario:',
@@ -314,15 +322,9 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
           this.opcionesFiltros = data;
           this.cargandoFiltros = false;
-
-          // ESTABLECER FECHA MINIMA Y MAXIMA
           this.establecerFechasPorDefecto();
-          // ACTUALIZAR OPCIONES DE PROYECTOS
           this.cargarOpcionesProyectos();
-
-          // CARGAR TODOS LOS GRAFICOS
           this.cargarDashboard();
-
           this.changeDetector.markForCheck();
         },
         error: (error) => {
@@ -376,15 +378,21 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
   limpiarFiltros(): void {
 
-    // LIMPIAR TODOS LOS FILTROS
-    this.filtrosForm.reset();
-    this.filtrosActuales = {};
-    this.proyectosExcluidos = [];
+    this.filtrosForm.reset({
+      desde: null,
+      hasta: null,
+      prioridad: null,
+      motivo_estado: null,
+      motivo_resolucion: null,
+      grupo_resolutor: this.grupoResolutorPorDefecto
+    });
 
-    // RESTAURAR RANGO DISPONIBLE
+    // feat/mejoras-analisis-incidentes-gpt
+    this.filtrosActuales = { grupo_resolutor: this.grupoResolutorPorDefecto };
+
+    this.proyectosExcluidos = [];
     this.establecerFechasPorDefecto();
 
-    // RESTABLECER SELECCIONES
     this.proyectoSeleccionado = null;
     this.resolutorSeleccionado = null;
     this.descripcionSeleccionada = null;

@@ -20,11 +20,13 @@ export class IncidentSla {
     prioridades: []
   };
 
-  filtrosActuales: IncidentSLADashboardFilters = {};
+  // feat/mejoras-analisis-incidentes-gpt
+  private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
+  filtrosActuales: IncidentSLADashboardFilters = {
+    grupo_resolutor: this.grupoResolutorPorDefecto
+  };
 
-  // Filtro dinámico por mes
   periodoSeleccionado: string | null = null;
-
   kpis: IncidentSLAKPI | null = null;
   cargandoKpis: boolean = false;
   cargandoInsights: boolean = false;
@@ -54,14 +56,12 @@ export class IncidentSla {
   // CANCELACIÓN DE CONSULTAS DE PAGINACIÓN ANTERIORES
   private readonly cancelarTickets$ = new Subject<void>();
 
-
   //FIltro Proyectos
   opcionesProyectos: string[] = [];
   proyectoSeleccionado: string | null = null;
   proyectosExcluidos: string[] = [];
   private solicitudOpcionesProyectos = 0;
   private temporizadorExclusiones: ReturnType<typeof setTimeout> | null = null;
-
 
   //Control HTTP
   private readonly cancelarDashboard$ = new Subject<void>();
@@ -168,7 +168,8 @@ export class IncidentSla {
     this.filtrosForm = this.formBuilder.group({
       desde: [null, Validators.required],
       hasta: [null, Validators.required],
-      grupo_resolutor: [null],
+      // feat/mejoras-analisis-incidentes-gpt
+      grupo_resolutor: [this.grupoResolutorPorDefecto],
       prioridad: [null]
     });
   }
@@ -241,12 +242,17 @@ export class IncidentSla {
 
 
 
-  limpiarFiltros() {
-    this.filtrosForm.reset();
-    this.filtrosActuales = {};
-    this.proyectosExcluidos = [];
+  limpiarFiltros(): void {
+    this.filtrosForm.reset({
+      desde: null,
+      hasta: null,
+      grupo_resolutor: this.grupoResolutorPorDefecto,
+      prioridad: null
+    });
+    // feat/mejoras-analisis-incidentes-gpt
+    this.filtrosActuales = { grupo_resolutor: this.grupoResolutorPorDefecto };
 
-    //RESTABLECER FECHA MINIMA Y MAXIMA
+    this.proyectosExcluidos = [];
     this.establecerFechasPorDefecto();
 
     this.proyectoSeleccionado = null;
@@ -256,6 +262,7 @@ export class IncidentSla {
 
     this.cargarOpcionesProyectos();
     this.cargarDashboard();
+
   }
 
 

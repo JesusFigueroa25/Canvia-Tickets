@@ -1,19 +1,7 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Observable, Subject, takeUntil } from 'rxjs';
-
-import {
-  TaskConsolidatedDashboardFilters,
-  TaskConsolidatedFilters,
-  TaskConsolidatedKPI,
-  TaskConsolidatedPrioridadItem,
-  TaskConsolidatedPrioridadMensualItem,
-  TaskConsolidatedProyectoItem,
-  TaskConsolidatedTicketsOut,
-  TaskConsolidatedTipoItem,
-  TaskConsolidatedTopProyectos,
-  TaskConsolidatedVolumenItem
-} from '../../../models/task-consolidated';
+import { TaskConsolidatedDashboardFilters, TaskConsolidatedFilters, TaskConsolidatedKPI, TaskConsolidatedPrioridadItem, TaskConsolidatedPrioridadMensualItem, TaskConsolidatedProyectoItem, TaskConsolidatedTicketsOut, TaskConsolidatedTipoItem, TaskConsolidatedTopProyectos, TaskConsolidatedVolumenItem } from '../../../models/task-consolidated';
 import { TaskConsolidatedService } from '../../../services/task-consolidated.service';
 
 type RecursoDashboard =
@@ -33,6 +21,8 @@ type RecursoDashboard =
 })
 export class TaskConsolidated implements OnInit, OnDestroy {
 
+  //feat/mejoras-analisis-incidentes-gpt
+  private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
   filtrosForm!: FormGroup;
   filtrosActuales: TaskConsolidatedDashboardFilters = {};
 
@@ -127,14 +117,14 @@ export class TaskConsolidated implements OnInit, OnDestroy {
     private readonly formBuilder: FormBuilder,
     private readonly taskConsolidatedService: TaskConsolidatedService,
     private readonly changeDetector: ChangeDetectorRef
-  ) {}
+  ) { }
 
   get proyectosFiltrados(): string[] {
     const busqueda = this.busquedaProyecto.trim().toLocaleLowerCase();
     return busqueda
       ? this.opcionesFiltros.proyectos.filter(
-          proyecto => proyecto.toLocaleLowerCase().includes(busqueda)
-        )
+        proyecto => proyecto.toLocaleLowerCase().includes(busqueda)
+      )
       : this.opcionesFiltros.proyectos;
   }
 
@@ -158,18 +148,22 @@ export class TaskConsolidated implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
     this.filtrosForm = this.formBuilder.group(
       {
         desde: [null, Validators.required],
         hasta: [null, Validators.required],
         prioridad: [null],
         motivo_estado: [null],
-        grupo_resolutor: [null],
+        // feat/mejoras-analisis-incidentes-gpt
+        grupo_resolutor: [this.grupoResolutorPorDefecto],
         proyecto: [null]
       },
       { validators: this.validarRangoFechas }
     );
+
     this.cargarOpcionesFiltros();
+
   }
 
   ngOnDestroy(): void {
@@ -271,21 +265,31 @@ export class TaskConsolidated implements OnInit, OnDestroy {
   }
 
   private restablecerFormulario(): void {
+
     this.filtrosForm.reset(
       {
         desde: this.fechaMinima,
         hasta: this.fechaMaxima,
         prioridad: null,
         motivo_estado: null,
-        grupo_resolutor: null,
+
+        // feat/mejoras-analisis-incidentes-gpt
+        grupo_resolutor: this.grupoResolutorPorDefecto,
+
         proyecto: null
       },
       { emitEvent: false }
     );
+
     this.filtrosForm.markAsPristine();
     this.filtrosForm.markAsUntouched();
-    this.filtrosForm.updateValueAndValidity({ emitEvent: false });
+
+    this.filtrosForm.updateValueAndValidity({
+      emitEvent: false
+    });
+
     this.busquedaProyecto = '';
+
   }
 
   cargarDashboard(): void {

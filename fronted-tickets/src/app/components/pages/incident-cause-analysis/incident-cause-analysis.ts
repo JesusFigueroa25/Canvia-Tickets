@@ -51,9 +51,12 @@ const FORMATOS_FECHA: MatDateFormats = {
 })
 export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
-  // 1. FILTROS GLOBALES
+  // feat/mejoras-analisis-incidentes-gpt
+  private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
   filtrosForm!: FormGroup;
-  filtrosActuales: IncidentConsolidatedDashboardFilters = {};
+  filtrosActuales: IncidentConsolidatedDashboardFilters = {
+    grupo_resolutor: this.grupoResolutorPorDefecto
+  };
 
   opcionesFiltros: IncidentConsolidatedFilters = {
     fecha_min: null,
@@ -300,18 +303,23 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
   // 8. CREAR FORMULARIO
   crearFormularioFiltros(): void {
+
     this.filtrosForm = this.formBuilder.group({
       desde: [null, Validators.required],
       hasta: [null, Validators.required],
       prioridad: [null],
       motivo_estado: [null],
       motivo_resolucion: [null],
-      grupo_resolutor: [null],
+
+      // feat/mejoras-analisis-incidentes-gpt
+      grupo_resolutor: [this.grupoResolutorPorDefecto],
+
       proyecto: [null],
       nombre_resolutor: [null],
       tipo_incidente: [[]],
       ticket_id: ['']
     });
+
   }
 
 
@@ -459,24 +467,28 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   // 12. LIMPIAR FILTROS
   limpiarFiltros(): void {
 
+    // feat/mejoras-analisis-incidentes-gpt
     this.filtrosForm.reset({
       desde: null,
       hasta: null,
       prioridad: null,
       motivo_estado: null,
       motivo_resolucion: null,
-      grupo_resolutor: null,
+      grupo_resolutor: this.grupoResolutorPorDefecto,
       proyecto: null,
       nombre_resolutor: null,
       tipo_incidente: [],
       ticket_id: ''
     });
+    this.filtrosActuales = {
+      grupo_resolutor: this.grupoResolutorPorDefecto
+    };
 
-    this.filtrosActuales = {};
     this.errorFiltros = null;
     this.establecerFechasPorDefecto();
     this.atribucionSeleccionada = null;
     this.cargarDashboard();
+
   }
 
 

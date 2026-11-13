@@ -127,10 +127,7 @@ export interface RequirementConsolidatedPrioridadMensualItem {
 }
 
 
- // ============================================================
- // ALCANCE 1 - PRODUCTIVIDAD PROMEDIO POR PROYECTO
- // ============================================================
-
+// ALCANCE 1 - PRODUCTIVIDAD PROMEDIO POR PROYECTO
 export type RequirementProductividadGranularidad = 'dia' | 'semana' | 'mes';
 
 export interface RequirementProductividadProyectoItem {

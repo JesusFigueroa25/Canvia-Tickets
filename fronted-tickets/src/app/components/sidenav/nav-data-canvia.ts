@@ -17,7 +17,7 @@ export const navbarDataCanvia = [
   {
     routeLink: 'tareas-consolidados',
     icon: 'assignment',
-    label: 'Taras Consolidados'
+    label: 'Tareas Consolidados'
   },
   {
     routeLink: 'incidentes-consolidados',
