@@ -51,6 +51,10 @@
           Análisis de Causas
         </button>
 
+        <button type="button" (click)="irASeccion('tipos-incidente')">
+          Tipos de Incidente
+        </button>
+
         <button *ngIf="hayServidores" type="button" (click)="irASeccion('servidores')">
           Servidores
         </button>
@@ -83,7 +87,7 @@
           {{
           exportandoReporte
           ? 'Generando imagen...'
-          : 'Descargar reporte PNG'
+          : 'Descargar reporte  '
           }}
 
         </button>
@@ -518,14 +522,57 @@
 
     <!-- TABLA: CAUSAS, RECOMENDACIONES Y EVIDENCIAS -->
     <div class="chart-full-width">
-      <app-incident-cause-evidence-table [datos]="analisisCausas" [cargando]="cargandoAnalisisCausas"
+      <app-incident-cause-evidence-table [datos]="analisisCausasVisual" [cargando]="cargandoAnalisisCausas"
         [error]="errorAnalisisCausas">
       </app-incident-cause-evidence-table>
     </div>
 
   </section>
 
+  <!-- DISTRIBUCIÓN POR TIPO DE INCIDENTE-->
 
+  <section id="tipos-incidente" class="dashboard-section">
+
+    <header class="section-header">
+
+      <h1>Tipos de Incidente</h1>
+
+      <p>
+        Distribución de los incidentes según su categorización,
+        respetando los filtros del dashboard.
+      </p>
+
+    </header>
+
+    <div class="chart-full-width chart-expandable" id="fullscreen-tipos-analisis" #tiposAnalisisFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tiposAnalisisFs)" [title]="graficoExpandido === 'fullscreen-tipos-analisis'
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'">
+
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-tipos-analisis'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+
+      </button>
+
+      <app-category-distribution titulo="Distribución por Tipo de Incidente"
+        descripcion="Tipos de incidentes ordenados por volumen de tickets." orientacion="vertical"
+        [datos]="tiposGrafico" [cargando]="cargandoTipos" [seleccionMultiple]="false">
+      </app-category-distribution>
+
+    </div>
+
+    <div class="status-card error-card" *ngIf="errorTipos">
+
+      <mat-icon>error_outline</mat-icon>
+      {{ errorTipos }}
+
+    </div>
+
+  </section>
 
   <!-- SECCIÓN 3 - TOP DE SERVIDORES -->
   <section id="servidores" class="dashboard-section" *ngIf="hayServidores">
@@ -592,7 +639,8 @@
         </button>
 
         <app-project-monthly-top entidadConsolidado="incidentes" [datos]="topProyectos"
-          [proyectoSeleccionado]="filtrosActuales.proyecto ?? null" [periodoSeleccionado]="null">
+          [tituloPersonalizado]="tituloGraficoClientes" [proyectoSeleccionado]="filtrosActuales.proyecto ?? null"
+          [periodoSeleccionado]="null">
         </app-project-monthly-top>
 
       </div>
@@ -872,7 +920,7 @@
       [causas]="analisisCausas" [servidores]="topServidores" [proyectos]="proyectos" [topProyectos]="topProyectos"
       [rendimiento]="rendimientoReporte" [ticketsPorResolutor]="ticketsPorResolutor" [hallazgos]="principalesHallazgos"
       [conclusiones]="conclusiones" [origenAnalisis]="resultadoAnalisisIA?.origen ?? 'reglas'"
-      [modeloAnalisis]="resultadoAnalisisIA?.modelo ?? null">
+      [modeloAnalisis]="resultadoAnalisisIA?.modelo ?? null" [tiposDistribucion]="tiposIncidenteDistribucion ?? []">
     </app-incident-cause-report>
 
   </div>

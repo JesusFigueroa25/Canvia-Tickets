@@ -1,4 +1,3 @@
-
 <section class="servers-card">
 
   <!-- CABECERA -->
@@ -27,15 +26,9 @@
       Mostrar:
     </label>
 
-    <select
-      id="limiteServidores"
-      class="limit-select"
-      [value]="limite"
-      (change)="cambiarLimite($event)">
+    <select id="limiteServidores" class="limit-select" [value]="limite" (change)="cambiarLimite($event)">
 
-      <option
-        *ngFor="let opcion of opcionesLimite"
-        [value]="opcion">
+      <option *ngFor="let opcion of opcionesLimite" [value]="opcion">
 
         Top {{ opcion }}
 
@@ -107,26 +100,16 @@
 
 
     <!-- GRAFICO -->
-    <div
-      class="chart-area"
-      [style.height.px]="alturaGrafico">
+    <div class="chart-area" [style.height.px]="alturaGrafico">
 
-      <canvas
-        baseChart
-        [type]="chartType"
-        [data]="chartData"
-        [options]="chartOptions"
-        [plugins]="chartPlugins"
+      <canvas baseChart [type]="chartType" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins"
         aria-label="Ranking de servidores con incidentes asociados">
       </canvas>
 
     </div>
 
-
-    <div class="footer-note">
-
+    <!--   <div class="footer-note">
       <mat-icon>info_outline</mat-icon>
-
       <span>
         Se identificaron
         {{ datos!.total_asociaciones | number:'1.0-0' }}
@@ -135,16 +118,15 @@
         La aparición de un servidor no confirma que sea
         el origen del incidente.
       </span>
-
     </div>
+ -->
+
 
   </ng-container>
 
 
   <!-- SIN SERVIDORES IDENTIFICADOS -->
-  <div
-    class="empty-state"
-    *ngIf="!cargando && !error && !tieneDatos">
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
 
     <mat-icon>dns</mat-icon>
 

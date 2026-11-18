@@ -14,6 +14,7 @@ import {
     ArchivoImportacion,
     ImportResultado
 } from '../../../models/import-result';
+import { TicketsReportTimesService } from '../../../services/tickets-report-times.service';
 
 type TipoImportacion =
     | 'incident-sla'
@@ -21,7 +22,8 @@ type TipoImportacion =
     | 'requirement-consolidated'
     | 'requirement-sla'
     | 'task-consolidated'
-    | 'tickets-manual-updates';
+    | 'tickets-manual-updates'
+    | 'tickets-report-times';
 
 interface ModuloImportacion {
     id: TipoImportacion;
@@ -72,6 +74,13 @@ export class ImportacionesComponent {
             id: 'tickets-manual-updates',
             titulo: 'Tickets Modificados Manualmente',
             descripcion: 'Importación de tickets con registros de actualización manual. Conserva el primer registro de cada Ticket ID y omite tickets previamente importados.'
+        },
+        {
+            id: 'tickets-report-times',
+            titulo: 'Tiempos de Informes Mensuales',
+            descripcion:
+                'Importación de acciones registradas durante la elaboración de informes mensuales. ' +
+                'Identifica acciones nuevas, modificadas y sin cambios, conservando el detalle por ticket.'
         }
     ];
 
@@ -81,7 +90,8 @@ export class ImportacionesComponent {
         'requirement-consolidated': this.crearEstado(),
         'requirement-sla': this.crearEstado(),
         'task-consolidated': this.crearEstado(),
-        'tickets-manual-updates': this.crearEstado()
+        'tickets-manual-updates': this.crearEstado(),
+        'tickets-report-times': this.crearEstado()
     };
 
     private siguienteArchivoId = 1;
@@ -93,8 +103,9 @@ export class ImportacionesComponent {
         private requirementSlaService: RequirementSlaService,
         private taskConsolidatedService: TaskConsolidatedService,
         private ticketsManualUpdatesService: TicketsManualUpdatesService,
+        private ticketsReportTimesService: TicketsReportTimesService,
         private cdr: ChangeDetectorRef
-    ) {}
+    ) { }
 
     private crearEstado(): EstadoImportacion {
         return {
@@ -292,6 +303,10 @@ export class ImportacionesComponent {
                 return this.ticketsManualUpdatesService.importarExcel(
                     archivo
                 );
+            case 'tickets-report-times':
+                return this.ticketsReportTimesService.importarExcel(
+                    archivo
+                ) as Observable<ImportResultado>;
         }
     }
 

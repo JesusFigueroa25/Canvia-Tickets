@@ -10,6 +10,11 @@ export const navbarDataCanvia = [
     label: 'Reporte Diario'
   },
   {
+    routeLink: 'tickets-report-times',
+    icon: 'query_stats',
+    label: 'Análisis de Tiempos'
+  },
+  {
     routeLink: 'incident-cause-analysis',
     icon: 'analytics',
     label: 'Análisis de Incidentes'

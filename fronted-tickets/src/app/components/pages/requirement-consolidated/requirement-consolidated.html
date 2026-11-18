@@ -341,12 +341,12 @@
 
 
 
-  
+
 
     <!-- ALCANCE 1: PRODUCTIVIDAD PROMEDIO POR PROYECTO -->
 
 
-      <!--  -->
+    <!--  -->
     <section class="productivity-section" *ngIf="filtrosListos">
         <header class="productivity-section-header">
             <div>
@@ -356,19 +356,16 @@
             </div>
         </header>
 
-        <div class="productivity-chart chart-full-width chart-expandable"
-            id="fullscreen-productividad-requerimientos" #productividadReqFs>
-            <button type="button" class="chart-expand-btn"
-                (click)="alternarPantallaCompleta(productividadReqFs)"
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-productividad-requerimientos"
+            #productividadReqFs>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(productividadReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-productividad-requerimientos' ? 'Salir de pantalla completa' : 'Ampliar evolución de requerimientos'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-productividad-requerimientos' ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                <mat-icon>{{ graficoExpandido === 'fullscreen-productividad-requerimientos' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
             </button>
-            <app-requirement-productivity-evolution
-                [datos]="productividad?.grafico ?? null"
-                [resumen]="productividad?.resumen ?? null"
-                [granularidad]="granularidadProductividad"
-                [cargando]="cargandoProductividad"
-                [error]="errorProductividad"
+            <app-requirement-productivity-evolution [datos]="productividad?.grafico ?? null"
+                [resumen]="productividad?.resumen ?? null" [granularidad]="granularidadProductividad"
+                [cargando]="cargandoProductividad" [error]="errorProductividad"
                 (granularidadChange)="cambiarGranularidadProductividad($event)">
             </app-requirement-productivity-evolution>
         </div>
@@ -378,12 +375,11 @@
             <button type="button" class="productivity-table-expand-btn"
                 (click)="alternarPantallaCompleta(tablaProductividadReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-productividad-req' ? 'Salir de pantalla completa' : 'Ampliar productividad promedio por proyecto'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-productividad-req' ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-productividad-req' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
             </button>
-            <app-requirement-productivity-table
-                [datos]="productividad?.tabla ?? null"
-                [cargando]="cargandoProductividad"
-                [error]="errorProductividad"
+            <app-requirement-productivity-table [datos]="productividad?.tabla ?? null"
+                [cargando]="cargandoProductividad" [error]="errorProductividad"
                 (paginaChange)="cambiarPaginaProductividad($event)">
             </app-requirement-productivity-table>
         </div>
@@ -399,49 +395,49 @@
             </div>
         </header>
 
-        <div class="productivity-chart chart-full-width chart-expandable"
-            id="fullscreen-dotacion-requerimientos" #dotacionReqFs>
-            <button type="button" class="chart-expand-btn"
-                (click)="alternarPantallaCompleta(dotacionReqFs)"
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-dotacion-requerimientos"
+            #dotacionReqFs>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(dotacionReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-dotacion-requerimientos' ? 'Salir de pantalla completa' : 'Ampliar resolutores por proyecto y mes'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-dotacion-requerimientos' ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                <mat-icon>{{ graficoExpandido === 'fullscreen-dotacion-requerimientos' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
             </button>
-            <app-requirement-resolvers-monthly-chart
-                [datos]="dotacion?.grafico ?? null"
-                [resumen]="dotacion?.resumen ?? null"
-                [cargando]="cargandoDotacion"
-                [error]="errorDotacion">
+            <app-requirement-resolvers-monthly-chart [datos]="dotacion?.grafico ?? null"
+                [resumen]="dotacion?.resumen ?? null" [cargando]="cargandoDotacion" [error]="errorDotacion">
             </app-requirement-resolvers-monthly-chart>
         </div>
 
-        <div class="productivity-table table-expandable" id="fullscreen-tabla-dotacion-req"
-            #tablaDotacionReqFs>
+        <div class="productivity-table table-expandable" id="fullscreen-tabla-dotacion-req" #tablaDotacionReqFs>
             <button type="button" class="productivity-table-expand-btn"
                 (click)="alternarPantallaCompleta(tablaDotacionReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-dotacion-req' ? 'Salir de pantalla completa' : 'Ampliar dotación mensual de resolutores'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-dotacion-req' ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-dotacion-req' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
             </button>
-            <app-requirement-resolvers-monthly-table
-                [datos]="dotacion?.tabla ?? null"
-                [cargando]="cargandoDotacion"
-                [error]="errorDotacion"
-                (paginaChange)="cambiarPaginaDotacion($event)">
+            <app-requirement-resolvers-monthly-table [datos]="dotacion?.tabla ?? null" [cargando]="cargandoDotacion"
+                [error]="errorDotacion" (paginaChange)="cambiarPaginaDotacion($event)">
             </app-requirement-resolvers-monthly-table>
         </div>
     </section>
 
     <!-- ALCANCE 3: ATENCIÓN PARALELA DE REQUERIMIENTOS -->
     <section class="productivity-section" *ngIf="filtrosListos">
-        <header class="productivity-section-header">
+
+
+    <!--     <header class="productivity-section-header">
             <div>
                 <span class="productivity-section-label">Alcance 3</span>
                 <h2>Atención Paralela de Requerimientos</h2>
                 <p>Tickets con intervalos de apertura y resolución superpuestos por resolutor.</p>
             </div>
-        </header>
+        </header> -->
+
+        
+
+    
 
 
-    <!--    <div class="productivity-chart chart-full-width chart-expandable"
+        <!--    <div class="productivity-chart chart-full-width chart-expandable"
             id="fullscreen-paralela-requerimientos" #paralelaReqFs>
             <button type="button" class="chart-expand-btn"
                 (click)="alternarPantallaCompleta(paralelaReqFs)"
@@ -456,24 +452,24 @@
             </app-requirement-parallel-attention-chart>
         </div>-->
 
-     
 
-        <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req"
-            #tablaParalelaReqFs>
+    <!--     <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req" #tablaParalelaReqFs>
             <button type="button" class="productivity-table-expand-btn"
                 (click)="alternarPantallaCompleta(tablaParalelaReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'Salir de pantalla completa' : 'Ampliar detalle de tickets simultáneos'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
             </button>
-            <app-requirement-parallel-details-table
-                [datos]="atencionParalela?.tabla ?? null"
-                [resolutorSeleccionado]="resolutorAtencionParalela"
-                [cargando]="cargandoAtencionParalela"
-                [error]="errorAtencionParalela"
-                (paginaChange)="cambiarPaginaAtencionParalela($event)"
+            <app-requirement-parallel-details-table [datos]="atencionParalela?.tabla ?? null"
+                [resolutorSeleccionado]="resolutorAtencionParalela" [cargando]="cargandoAtencionParalela"
+                [error]="errorAtencionParalela" (paginaChange)="cambiarPaginaAtencionParalela($event)"
                 (resolutorChange)="cambiarResolutorAtencionParalela($event)">
             </app-requirement-parallel-details-table>
         </div>
+ -->
+
+    
+
     </section>
 
     <!-- ALCANCE 4: TICKETS CON REGISTROS DE ACTUALIZACIÓN MANUAL -->
@@ -487,34 +483,31 @@
         </header>
 
         <!-- TOP 10, KPI Y GRÁFICO -->
-        <div class="productivity-chart chart-full-width chart-expandable"
-            id="fullscreen-actualizaciones-manuales-req" #actualizacionesManualesReqFs>
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-actualizaciones-manuales-req"
+            #actualizacionesManualesReqFs>
             <button type="button" class="chart-expand-btn"
                 (click)="alternarPantallaCompleta(actualizacionesManualesReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-actualizaciones-manuales-req' ? 'Salir de pantalla completa' : 'Ampliar ranking de requerimientos con registros manuales'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-actualizaciones-manuales-req' ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                <mat-icon>{{ graficoExpandido === 'fullscreen-actualizaciones-manuales-req' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
             </button>
-            <app-requirement-manual-updates-chart
-                [datos]="actualizacionesManuales"
-                [cargando]="cargandoActualizacionesManuales"
-                [error]="errorActualizacionesManuales">
+            <app-requirement-manual-updates-chart [datos]="actualizacionesManuales"
+                [cargando]="cargandoActualizacionesManuales" [error]="errorActualizacionesManuales">
             </app-requirement-manual-updates-chart>
         </div>
 
         <!-- TABLA PAGINADA Y BÚSQUEDA POR RESOLUTOR -->
-        <div class="productivity-table table-expandable"
-            id="fullscreen-tabla-actualizaciones-manuales-req" #tablaActualizacionesManualesReqFs>
+        <div class="productivity-table table-expandable" id="fullscreen-tabla-actualizaciones-manuales-req"
+            #tablaActualizacionesManualesReqFs>
             <button type="button" class="productivity-table-expand-btn"
                 (click)="alternarPantallaCompleta(tablaActualizacionesManualesReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-actualizaciones-manuales-req' ? 'Salir de pantalla completa' : 'Ampliar tabla de actualizaciones manuales'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-actualizaciones-manuales-req' ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-actualizaciones-manuales-req' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
             </button>
-            <app-requirement-manual-updates-table
-                [datos]="actualizacionesManuales?.tabla ?? null"
-                [resolutorSeleccionado]="resolutorActualizacionesManuales"
-                [cargando]="cargandoActualizacionesManuales"
-                [error]="errorActualizacionesManuales"
-                (paginaChange)="cambiarPaginaActualizacionesManuales($event)"
+            <app-requirement-manual-updates-table [datos]="actualizacionesManuales?.tabla ?? null"
+                [resolutorSeleccionado]="resolutorActualizacionesManuales" [cargando]="cargandoActualizacionesManuales"
+                [error]="errorActualizacionesManuales" (paginaChange)="cambiarPaginaActualizacionesManuales($event)"
                 (resolutorChange)="cambiarResolutorActualizacionesManuales($event)">
             </app-requirement-manual-updates-table>
         </div>
@@ -548,4 +541,3 @@
 
 
 </div>
-

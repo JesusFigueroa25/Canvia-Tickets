@@ -84,6 +84,11 @@ import { RequirementParallelAttentionChart } from './components/charts/Consolida
 import { RequirementParallelDetailsTable } from './components/charts/Consolidated/Productivity/requirement-parallel-details-table/requirement-parallel-details-table';
 import { RequirementManualUpdatesChart } from './components/charts/Consolidated/Productivity/requirement-manual-updates-chart/requirement-manual-updates-chart';
 import { RequirementManualUpdatesTable } from './components/charts/Consolidated/Productivity/requirement-manual-updates-table/requirement-manual-updates-table';
+import { TicketsReportTimes } from './components/pages/tickets-report-times/tickets-report-times';
+import { ReportTimesResolverChart } from './components/charts/Report-Times/report-times-resolver-chart/report-times-resolver-chart';
+import { ReportTimesResolverTable } from './components/charts/Report-Times/report-times-resolver-table/report-times-resolver-table';
+import { ReportTimesProjectChart } from './components/charts/Report-Times/report-times-project-chart/report-times-project-chart';
+import { ReportTimesProjectTable } from './components/charts/Report-Times/report-times-project-table/report-times-project-table';
 
 @NgModule({
   declarations: [
@@ -161,6 +166,11 @@ import { RequirementManualUpdatesTable } from './components/charts/Consolidated/
     RequirementParallelDetailsTable,
     RequirementManualUpdatesChart,
     RequirementManualUpdatesTable,
+    TicketsReportTimes,
+    ReportTimesResolverChart,
+    ReportTimesResolverTable,
+    ReportTimesProjectChart,
+    ReportTimesProjectTable,
   ],
   imports: [
     BrowserAnimationsModule,

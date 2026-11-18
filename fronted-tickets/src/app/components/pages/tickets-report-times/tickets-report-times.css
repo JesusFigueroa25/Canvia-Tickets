@@ -1,0 +1,918 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+
+  --rt-bg: #F7F9FB;
+  --rt-surface: #FFFFFF;
+  --rt-border: #E5E9EE;
+  --rt-text: #101828;
+  --rt-muted: #667085;
+  --rt-orange: #FF620F;
+  --rt-green: #16835B;
+}
+
+/* PÁGINA */
+.tickets-report-times-page {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--rt-bg);
+  color: var(--rt-text);
+}
+
+/* CABECERA */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.page-header-content {
+  min-width: 0;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--rt-text);
+}
+
+.page-header p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--rt-muted);
+}
+
+/* TARJETA DE FILTROS */
+.filters-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 18px 20px 12px;
+  background: var(--rt-surface);
+  border: 1px solid var(--rt-border);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+.filters-form {
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 1.35fr) minmax(200px, 0.85fr) minmax(260px, 1.2fr) minmax(170px, 0.7fr) minmax(120px, 0.55fr);
+  align-items: end;
+  gap: 14px;
+  width: 100%;
+}
+
+.date-range-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+
+.filter-field,
+.project-filter {
+  min-width: 0;
+}
+
+.filter-field label,
+.all-projects-control>label:first-child {
+  display: block;
+  margin-bottom: 6px;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.full-width {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 42px;
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+}
+
+/* CHECKBOX DE PROYECTOS */
+.all-projects-control {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+  padding-bottom: 21px;
+}
+
+.checkbox-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 22px;
+  color: var(--rt-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.checkbox-line input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--rt-orange);
+  cursor: pointer;
+}
+
+/* BOTONES */
+.filter-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 1px;
+}
+
+.filter-actions button {
+  width: 100%;
+  justify-content: center;
+}
+
+.clear-button {
+  background: var(--rt-green) !important;
+  color: #FFFFFF !important;
+  border-radius: 8px !important;
+}
+
+.apply-button {
+  background: var(--rt-orange) !important;
+  color: #FFFFFF !important;
+  border-radius: 8px !important;
+}
+
+.apply-button:disabled {
+  background: #E4E7EC !important;
+  color: #98A2B3 !important;
+  opacity: 1 !important;
+}
+
+/* INFORMACIÓN DE FILTROS */
+.filter-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-top: 10px;
+}
+
+.available-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--rt-muted);
+  font-size: 11px;
+}
+
+.available-range mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--rt-green);
+}
+
+.filter-note {
+  margin: 0;
+  color: var(--rt-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ESTADOS Y ERRORES */
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 18px 20px;
+  background: var(--rt-surface);
+  border: 1px solid var(--rt-border);
+  border-radius: 14px;
+  color: var(--rt-muted);
+  font-size: 13px;
+}
+
+.status-card mat-icon {
+  flex-shrink: 0;
+}
+
+.error-card {
+  color: #D95C4F;
+  background: #FFF8F7;
+  border-color: #FEE4E2;
+}
+
+/* KPI */
+.kpis-section {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  margin-top: 18px;
+}
+
+.kpis-section>* {
+  min-width: 0;
+}
+
+/* GRÁFICO DE VOLUMEN */
+.chart-full-width {
+  width: 100%;
+  min-width: 0;
+  margin-top: 24px;
+}
+
+.chart-expandable {
+  position: relative;
+  box-sizing: border-box;
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 22px;
+  background: var(--rt-surface);
+  border: 1px solid var(--rt-border);
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+.chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-right: 45px;
+}
+
+.chart-header-content {
+  min-width: 0;
+}
+
+.chart-header h2 {
+  margin: 0;
+  color: var(--rt-text);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.chart-header p {
+  margin: 6px 0 0;
+  color: var(--rt-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.period-field {
+  width: 190px;
+  min-width: 150px;
+  flex-shrink: 0;
+}
+
+.chart-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 16px;
+}
+
+.chart-viewport {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.chart-viewport canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-loading,
+.chart-message {
+  padding: 12px 0;
+  text-align: center;
+  color: var(--rt-muted);
+  font-size: 12px;
+}
+
+.error-text {
+  color: #D95C4F;
+}
+
+/* BOTÓN PANTALLA COMPLETA */
+.chart-expand-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+  padding: 0;
+
+  border: 1px solid var(--rt-border);
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: var(--rt-muted);
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.chart-expand-btn:hover {
+  color: var(--rt-orange);
+  border-color: var(--rt-orange);
+  background: #FFF4ED;
+}
+
+.chart-expand-btn:focus-visible {
+  outline: 2px solid var(--rt-orange);
+  outline-offset: 2px;
+}
+
+.chart-expand-btn mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+/* MODO PANTALLA COMPLETA */
+.chart-expandable:fullscreen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 55px 24px 24px;
+  background: var(--rt-bg);
+  overflow: hidden;
+}
+
+.chart-expandable:fullscreen .chart-card {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+}
+
+.chart-expandable:fullscreen .chart-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.chart-expandable:fullscreen .chart-viewport {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1400px) {
+  .filters-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .kpis-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .all-projects-control {
+    padding-bottom: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tickets-report-times-page {
+    padding: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+  }
+
+  .filters-form {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    width: 100%;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    padding-right: 35px;
+  }
+
+  .period-field {
+    width: 100%;
+  }
+
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-viewport {
+    height: 300px;
+  }
+
+  .chart-expandable:fullscreen {
+    padding: 52px 12px 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .tickets-report-times-page {
+    padding: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 25px;
+  }
+
+  .filters-card {
+    padding: 16px;
+  }
+
+  .date-range-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .kpis-section {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-header h2 {
+    font-size: 18px;
+  }
+}
+
+
+
+/* ==============================================
+   ANÁLISIS DE TIEMPOS POR RESOLUTOR
+   ============================================== */
+
+.report-times-resolver-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 34px;
+}
+
+.report-times-section-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E5E9EE;
+}
+
+.report-times-section-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 5px;
+  color: #101828;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.report-times-section-header h2::before {
+  content: '';
+  width: 4px;
+  height: 22px;
+  flex-shrink: 0;
+  background: #FF620F;
+  border-radius: 4px;
+}
+
+.report-times-section-header p {
+  margin: 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.report-times-resolver-chart,
+.report-times-resolver-table {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.report-times-resolver-chart>app-report-times-resolver-chart,
+.report-times-resolver-table>app-report-times-resolver-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* PANTALLA COMPLETA */
+.report-times-resolver-chart:fullscreen,
+.report-times-resolver-table:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 55px 20px 20px;
+  background: #F7F9FB;
+  overflow: hidden;
+}
+
+.report-times-resolver-chart:fullscreen>app-report-times-resolver-chart,
+.report-times-resolver-table:fullscreen>app-report-times-resolver-table {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* TARJETAS INTERNAS */
+:host ::ng-deep .report-times-resolver-chart:fullscreen .chart-card,
+:host ::ng-deep .report-times-resolver-table:fullscreen .table-card {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0;
+}
+
+/* SCROLL DE TABLA EN PANTALLA COMPLETA */
+:host ::ng-deep .report-times-resolver-table:fullscreen .table-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+@media (max-width: 768px) {
+  .report-times-resolver-section {
+    margin-top: 26px;
+  }
+
+  .report-times-section-header h2 {
+    font-size: 19px;
+  }
+
+  .report-times-resolver-chart:fullscreen,
+  .report-times-resolver-table:fullscreen {
+    padding: 52px 12px 12px;
+  }
+}
+
+
+
+/* ==============================================
+   ANÁLISIS DE TIEMPOS POR PROYECTO
+   ============================================== */
+
+.report-times-project-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 34px;
+}
+
+.report-times-project-chart,
+.report-times-project-table {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.report-times-project-chart>app-report-times-project-chart,
+.report-times-project-table>app-report-times-project-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* PANTALLA COMPLETA */
+.report-times-project-chart:fullscreen,
+.report-times-project-table:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 55px 20px 20px;
+  background: #F7F9FB;
+  overflow: hidden;
+}
+
+.report-times-project-chart:fullscreen>app-report-times-project-chart,
+.report-times-project-table:fullscreen>app-report-times-project-table {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* TARJETAS INTERNAS */
+:host ::ng-deep .report-times-project-chart:fullscreen .chart-card,
+:host ::ng-deep .report-times-project-table:fullscreen .table-card {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0;
+}
+
+/* GRÁFICO ADAPTABLE */
+:host ::ng-deep .report-times-project-chart:fullscreen .chart-area {
+  flex: 1 1 auto;
+  height: auto !important;
+  min-height: 0;
+}
+
+/* TABLA CON SCROLL */
+:host ::ng-deep .report-times-project-table:fullscreen .table-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+@media (max-width: 768px) {
+  .report-times-project-section {
+    margin-top: 26px;
+  }
+
+  .report-times-project-chart:fullscreen,
+  .report-times-project-table:fullscreen {
+    padding: 52px 12px 12px;
+  }
+}
+
+
+
+.filters-form {
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 1.35fr) minmax(200px, 0.85fr) minmax(300px, 1.5fr) minmax(120px, 0.55fr);
+  align-items: end;
+  gap: 14px;
+  width: 100%;
+}
+
+
+
+/* ==========================================
+   BUSCADOR EN SELECT DE PROYECTOS
+   ========================================== */
+
+.project-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  background: #F7F9FB;
+  border: 1px solid #E5E9EE;
+  border-radius: 8px;
+  cursor: text;
+}
+
+.project-search-box:focus-within {
+  border-color: #FF620F;
+  background: #FFFFFF;
+}
+
+.project-search-box>mat-icon {
+  flex-shrink: 0;
+  color: #667085;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.project-search-box input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #101828;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.project-search-box input::placeholder {
+  color: #98A2B3;
+}
+
+.project-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #667085;
+  cursor: pointer;
+}
+
+.project-search-clear mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.project-search-clear:hover {
+  color: #FF620F;
+}
+
+/* LIMPIAR SELECCIÓN */
+.project-clear-selection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 0;
+  background: transparent;
+  border: none;
+  color: #16835B;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.project-clear-selection mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.project-clear-selection:hover {
+  color: #FF620F;
+}
+
+
+
+/* =============================================
+   BUSCADOR DE PROYECTOS - REPORT TIMES
+   ============================================= */
+
+::ng-deep .report-times-project-panel .combo-search {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 46px;
+  padding: 6px 12px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E5E9EE;
+}
+
+::ng-deep .report-times-project-panel .combo-search>mat-icon {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  color: #FF620F;
+  font-size: 19px;
+}
+
+::ng-deep .report-times-project-panel .combo-search input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #101828;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+::ng-deep .report-times-project-panel .combo-search input::placeholder {
+  color: #98A2B3;
+}
+
+::ng-deep .report-times-project-panel .combo-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #667085;
+  cursor: pointer;
+}
+
+::ng-deep .report-times-project-panel .combo-clear mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+::ng-deep .report-times-project-panel .combo-clear:hover {
+  background: #FFF3EB;
+  color: #FF620F;
+}
+
+
+::ng-deep .report-times-project-panel .combo-selection-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background: #F7F9FB;
+  border-bottom: 1px solid #E5E9EE;
+}
+
+::ng-deep .report-times-project-panel .combo-clear-selection {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: #16835B;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+::ng-deep .report-times-project-panel .combo-clear-selection mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+::ng-deep .report-times-project-panel .combo-clear-selection:hover {
+  color: #FF620F;
+}
+
+::ng-deep .report-times-project-panel .combo-selection-count {
+  color: #667085;
+  font-size: 11px;
+  white-space: nowrap;
+}

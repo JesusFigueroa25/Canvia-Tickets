@@ -1,0 +1,342 @@
+
+<article class="table-card">
+
+  <!-- ENCABEZADO -->
+  <header class="table-header">
+    <div class="header-content">
+
+      <div class="title-row">
+        <span class="title-accent"></span>
+
+        <div>
+          <h3>Detalle de Tiempos por Resolutor</h3>
+
+          <p>
+            Tickets distintos, acciones registradas y horas
+            invertidas por especialista y mes.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BÚSQUEDA LOCAL -->
+    <div class="table-actions">
+
+      <label class="search-control">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+
+        <input
+          type="search"
+          placeholder="Buscar en esta página..."
+          aria-label="Buscar resolutor o período"
+          [value]="busqueda"
+          (input)="buscar($event)"
+        />
+      </label>
+
+      <button
+        *ngIf="busqueda"
+        type="button"
+        class="clear-search"
+        (click)="limpiarBusqueda()"
+      >
+        Limpiar
+      </button>
+
+    </div>
+  </header>
+
+  <!-- RESUMEN -->
+  <div class="summary-grid" *ngIf="datos?.resumen as resumen">
+
+    <div class="summary-item">
+      <span>Tickets distintos</span>
+      <strong>
+        {{ formatearNumero(resumen.tickets_distintos) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Acciones</span>
+      <strong>
+        {{ formatearNumero(resumen.acciones) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Resolutores</span>
+      <strong>
+        {{ formatearNumero(resumen.resolutores_distintos) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Horas totales</span>
+      <strong class="hours-highlight">
+        {{ formatearHoras(resumen.horas_totales) }} h
+      </strong>
+    </div>
+
+  </div>
+
+  <!-- INFORMACIÓN -->
+  <div class="table-summary">
+
+    <div class="summary-left">
+      <span class="summary-indicator"></span>
+
+      <span>
+        <strong>
+          {{ formatearNumero(totalRegistros) }}
+        </strong>
+        registros resolutor-mes
+      </span>
+    </div>
+
+    <span class="summary-note">
+      Búsqueda y ordenamiento sobre la página actual.
+    </span>
+
+  </div>
+
+  <!-- TABLA -->
+  <div
+    class="table-wrapper"
+    tabindex="0"
+    aria-label="Tabla de tiempos por resolutor"
+  >
+
+    <table>
+      <thead>
+        <tr>
+
+          <th scope="col">
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('periodo')"
+            >
+              Período
+              <span class="sort-icon">
+                {{ indicadorOrden('periodo') }}
+              </span>
+            </button>
+          </th>
+
+          <th scope="col" class="resolver-column">
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('resolutor')"
+            >
+              Resolutor
+              <span class="sort-icon">
+                {{ indicadorOrden('resolutor') }}
+              </span>
+            </button>
+          </th>
+
+          <th scope="col" class="number-column">
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('tickets')"
+            >
+              Tickets
+              <span class="sort-icon">
+                {{ indicadorOrden('tickets') }}
+              </span>
+            </button>
+          </th>
+
+          <th scope="col" class="number-column">
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('acciones')"
+            >
+              Acciones
+              <span class="sort-icon">
+                {{ indicadorOrden('acciones') }}
+              </span>
+            </button>
+          </th>
+
+          <th scope="col" class="number-column">
+            <button
+              type="button"
+              class="sort-button"
+              (click)="ordenar('horas_totales')"
+            >
+              Horas Totales
+              <span class="sort-icon">
+                {{ indicadorOrden('horas_totales') }}
+              </span>
+            </button>
+          </th>
+
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr
+          *ngFor="let fila of filasVisibles; trackBy: identificarFila"
+        >
+
+          <td>
+            <span class="period-badge">
+              {{ formatearPeriodo(fila.periodo) }}
+            </span>
+          </td>
+
+          <td class="resolver-cell">
+            <span class="resolver-name" [title]="fila.resolutor">
+              {{ fila.resolutor }}
+            </span>
+          </td>
+
+          <td class="number-cell">
+            <strong>
+              {{ formatearNumero(fila.tickets) }}
+            </strong>
+          </td>
+
+          <td class="number-cell">
+            <span class="actions-badge">
+              {{ formatearNumero(fila.acciones) }}
+            </span>
+          </td>
+
+          <td class="number-cell total-cell">
+            <strong>
+              {{ formatearHoras(fila.horas_totales) }} h
+            </strong>
+          </td>
+
+        </tr>
+
+        <!-- SIN RESULTADOS -->
+        <tr
+          *ngIf="
+            !cargando &&
+            !error &&
+            filasVisibles.length === 0
+          "
+        >
+          <td colspan="5" class="empty-cell">
+            <div class="empty-content">
+              <span class="empty-icon">▤</span>
+              <strong>Sin resultados</strong>
+
+              <span *ngIf="busqueda">
+                No hay coincidencias en la página actual.
+              </span>
+
+              <span *ngIf="!busqueda">
+                No existen registros para los filtros seleccionados.
+              </span>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- CARGANDO -->
+  <div
+    class="table-status loading-status"
+    *ngIf="cargando"
+    role="status"
+  >
+    <span class="loading-spinner"></span>
+    Actualizando tiempos por resolutor...
+  </div>
+
+  <!-- ERROR -->
+  <div
+    class="table-status error-status"
+    *ngIf="!cargando && error"
+    role="alert"
+  >
+    {{ error }}
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <footer class="table-footer">
+
+    <div class="pagination-info">
+      Mostrando
+      <strong>{{ primerRegistro }}</strong>
+      -
+      <strong>{{ ultimoRegistro }}</strong>
+      de
+      <strong>{{ formatearNumero(totalRegistros) }}</strong>
+    </div>
+
+    <div class="pagination-controls">
+
+      <label class="page-size-control">
+        <span>Filas</span>
+
+        <select
+          [value]="tamanoActual"
+          [disabled]="cargando"
+          (change)="cambiarTamanoPagina($event)"
+        >
+          <option
+            *ngFor="let tamano of tamanosPagina"
+            [value]="tamano"
+          >
+            {{ tamano }}
+          </option>
+        </select>
+      </label>
+
+      <button
+        type="button"
+        class="page-button"
+        [disabled]="cargando || paginaActual <= 1"
+        (click)="cambiarPagina(paginaActual - 1)"
+        aria-label="Página anterior"
+      >
+        ‹
+      </button>
+
+      <span class="page-indicator">
+        Página
+        <strong>
+          {{ totalPaginas === 0 ? 0 : paginaActual }}
+        </strong>
+        de
+        <strong>{{ totalPaginas }}</strong>
+      </span>
+
+      <button
+        type="button"
+        class="page-button"
+        [disabled]="cargando || paginaActual >= totalPaginas"
+        (click)="cambiarPagina(paginaActual + 1)"
+        aria-label="Página siguiente"
+      >
+        ›
+      </button>
+
+    </div>
+  </footer>
+
+  <div class="methodology-note">
+    <span>
+      Las horas provienen del reporte importado.
+      Los tickets se cuentan de manera distinta por resolutor y mes.
+    </span>
+
+    <span>
+      La paginación se realiza desde SQL Server.
+    </span>
+  </div>
+
+</article>

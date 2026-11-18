@@ -20,7 +20,7 @@ export class ProjectMonthlyTop implements OnChanges {
   @Input() periodoSeleccionado: string | null = null;
   @Input() datos: IncidentConsolidatedTopProyectos | DailyReportTopProyectos = { periodos: [], proyectos: [] };
   @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'diario' | 'tareas' = 'incidentes';
-
+  @Input() tituloPersonalizado: string | null = null;
 
   vistaMensual = false;
   proyectoVistaMensual: string | null = null;

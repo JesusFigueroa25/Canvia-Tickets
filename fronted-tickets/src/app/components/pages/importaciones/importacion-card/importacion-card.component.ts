@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ArchivoImportacion, EstadoArchivoImportacion } from '../../../../models/import-result';
 import { ImportResultado } from '../../../../models/import-result';
 import { TicketsManualUpdatesImportOut } from '../../../../models/tickets-manual-updates';
+import { TicketsReportTimesImportResult } from '../../../../models/tickets-report-times';
 
 interface ResumenImportacion {
     filas_procesadas: number;
@@ -34,17 +35,33 @@ export class ImportacionCardComponent {
     arrastrando = false;
     errorLocal: string | null = null;
 
+
     get formatosPermitidos(): string {
-        return this.idModulo === 'tickets-manual-updates'
-            ? '.xlsx,.xls'
-            : '.xlsx';
+        switch (this.idModulo) {
+            case 'tickets-manual-updates':
+                return '.xlsx,.xls';
+
+            case 'tickets-report-times':
+                return '.xlsx,.xlsm';
+
+            default:
+                return '.xlsx';
+        }
     }
 
     get descripcionFormatos(): string {
-        return this.idModulo === 'tickets-manual-updates'
-            ? 'Formatos admitidos: XLSX o XLS · Máximo 50 MB por archivo'
-            : 'Formato admitido: XLSX';
+        switch (this.idModulo) {
+            case 'tickets-manual-updates':
+                return 'Formatos admitidos: XLSX o XLS · Máximo 50 MB por archivo';
+
+            case 'tickets-report-times':
+                return 'Formatos admitidos: XLSX o XLSM · Máximo 50 MB por archivo';
+
+            default:
+                return 'Formato admitido: XLSX';
+        }
     }
+
 
     get procesables(): number {
         return this.archivos.filter(
@@ -98,6 +115,7 @@ export class ImportacionCardComponent {
         this.validarArchivos(archivos);
     }
 
+
     validarArchivos(archivos: File[]): void {
         if (this.cargando || !archivos.length) {
             return;
@@ -107,13 +125,34 @@ export class ImportacionCardComponent {
         const rechazados: string[] = [];
 
         for (const archivo of archivos) {
-            const esModuloManual = this.idModulo === 'tickets-manual-updates';
-            const extensionValida = esModuloManual
-                ? /\.(xlsx|xls)$/i.test(archivo.name)
-                : /\.xlsx$/i.test(archivo.name);
-            const excedeLimite = esModuloManual && archivo.size > 50 * 1024 * 1024;
+            const esModuloManual =
+                this.idModulo === 'tickets-manual-updates';
 
-            if (!extensionValida || archivo.size === 0 || excedeLimite) {
+            const esReporteTiempos =
+                this.idModulo === 'tickets-report-times';
+
+            let extensionValida: boolean;
+
+            if (esModuloManual) {
+                extensionValida = /\.(xlsx|xls)$/i.test(archivo.name);
+            } else if (esReporteTiempos) {
+                extensionValida = /\.(xlsx|xlsm)$/i.test(archivo.name);
+            } else {
+                extensionValida = /\.xlsx$/i.test(archivo.name);
+            }
+
+            const tieneLimite =
+                esModuloManual || esReporteTiempos;
+
+            const excedeLimite =
+                tieneLimite &&
+                archivo.size > 50 * 1024 * 1024;
+
+            if (
+                !extensionValida ||
+                archivo.size === 0 ||
+                excedeLimite
+            ) {
                 rechazados.push(archivo.name);
                 continue;
             }
@@ -129,6 +168,7 @@ export class ImportacionCardComponent {
             this.archivosSeleccionados.emit(validos);
         }
     }
+
 
     alArrastrar(event: DragEvent): void {
         event.preventDefault();
@@ -223,4 +263,31 @@ export class ImportacionCardComponent {
     trackByArchivo(index: number, item: ArchivoImportacion): number {
         return item.id;
     }
+
+
+
+    obtenerDetalleTiempos(
+        resultado: ImportResultado
+    ): TicketsReportTimesImportResult | null {
+
+        if (this.idModulo !== 'tickets-report-times') {
+            return null;
+        }
+
+        const detalle =
+            resultado as Partial<TicketsReportTimesImportResult>;
+
+        if (
+            typeof detalle.filas_excel !== 'number' ||
+            typeof detalle.filas_rechazadas !== 'number' ||
+            typeof detalle.tickets_distintos !== 'number' ||
+            typeof detalle.total_acciones !== 'number' ||
+            typeof detalle.lote_id !== 'string'
+        ) {
+            return null;
+        }
+
+        return detalle as TicketsReportTimesImportResult;
+    }
+
 }

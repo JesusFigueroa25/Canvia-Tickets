@@ -3,19 +3,12 @@
     <div class="card-heading">
 
         <div class="module-icon">
-            <svg
-                width="23"
-                height="23"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <path d="M14 2v6h6"/>
-                <path d="m8 13 4 5"/>
-                <path d="m12 13-4 5"/>
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6" />
+                <path d="m8 13 4 5" />
+                <path d="m12 13-4 5" />
             </svg>
         </div>
 
@@ -26,40 +19,20 @@
 
     </div>
 
-    <div
-        class="drop-zone"
-        [class.dragging]="arrastrando"
-        [class.disabled]="cargando"
-        (dragover)="alArrastrar($event)"
-        (dragleave)="alSalir($event)"
-        (drop)="alSoltar($event)">
+    <div class="drop-zone" [class.dragging]="arrastrando" [class.disabled]="cargando" (dragover)="alArrastrar($event)"
+        (dragleave)="alSalir($event)" (drop)="alSoltar($event)">
 
-        <input
-            class="file-input"
-            type="file"
-            [attr.accept]="formatosPermitidos"
-            multiple
-            [id]="'archivo-' + idModulo"
-            [disabled]="cargando"
-            (change)="seleccionarDesdeInput($event)">
+        <input class="file-input" type="file" [attr.accept]="formatosPermitidos" multiple [id]="'archivo-' + idModulo"
+            [disabled]="cargando" (change)="seleccionarDesdeInput($event)">
 
-        <label
-            class="drop-content"
-            [attr.for]="'archivo-' + idModulo">
+        <label class="drop-content" [attr.for]="'archivo-' + idModulo">
 
             <div class="upload-icon">
-                <svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M12 16V4"/>
-                    <path d="m7 9 5-5 5 5"/>
-                    <path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/>
+                <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 16V4" />
+                    <path d="m7 9 5-5 5 5" />
+                    <path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3" />
                 </svg>
             </div>
 
@@ -92,33 +65,22 @@
                 <span>{{ archivos.length }} archivo(s)</span>
             </div>
 
-            <button
-                class="clear-button"
-                type="button"
-                [disabled]="cargando"
-                (click)="limpiarLista()">
+            <button class="clear-button" type="button" [disabled]="cargando" (click)="limpiarLista()">
                 Limpiar lista
             </button>
         </div>
 
         <div class="file-list">
 
-            <div
-                class="file-item"
-                *ngFor="let item of archivos; trackBy: trackByArchivo">
+            <div class="file-item" *ngFor="let item of archivos; trackBy: trackByArchivo">
 
                 <div class="file-item-main">
 
                     <div class="selected-file-icon">
-                        <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="1.7">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <path d="M14 2v6h6"/>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
                         </svg>
                     </div>
 
@@ -132,12 +94,8 @@
                         </span>
                     </div>
 
-                    <button
-                        class="remove-file"
-                        type="button"
-                        [attr.aria-label]="'Quitar ' + item.archivo.name"
-                        [disabled]="cargando"
-                        (click)="quitarArchivo(item.id)">
+                    <button class="remove-file" type="button" [attr.aria-label]="'Quitar ' + item.archivo.name"
+                        [disabled]="cargando" (click)="quitarArchivo(item.id)">
                         &times;
                     </button>
 
@@ -145,34 +103,25 @@
 
                 <div class="file-item-footer">
 
-                    <span
-                        class="file-status"
-                        [class.status-pendiente]="item.estado === 'pendiente'"
+                    <span class="file-status" [class.status-pendiente]="item.estado === 'pendiente'"
                         [class.status-procesando]="item.estado === 'procesando'"
                         [class.status-completado]="item.estado === 'completado'"
                         [class.status-error]="item.estado === 'error'">
                         {{ etiquetaEstado(item.estado) }}
                     </span>
 
-                    <span
-                        class="file-item-summary"
-                        *ngIf="item.resultado">
+                    <span class="file-item-summary" *ngIf="item.resultado">
                         {{ item.resultado.filas_procesadas | number }} filas procesadas
                     </span>
 
                 </div>
 
-                <div
-                    class="import-error file-error"
-                    role="alert"
-                    *ngIf="item.error">
+                <div class="import-error file-error" role="alert" *ngIf="item.error">
                     <span class="error-symbol">!</span>
                     <span>{{ item.error }}</span>
                 </div>
 
-                <details
-                    class="file-result-details"
-                    *ngIf="item.resultado as resultado">
+                <details class="file-result-details" *ngIf="item.resultado as resultado">
 
                     <summary>Ver resultado del archivo</summary>
 
@@ -227,6 +176,52 @@
                         </div>
                     </div>
 
+
+                    <!-- DETALLE DEL REPORTE DE TIEMPOS -->
+                    <div class="manual-import-details" *ngIf="obtenerDetalleTiempos(resultado) as detalleTiempos">
+                        <div class="manual-import-details-title">
+                            Conciliación de acciones e informes mensuales
+                        </div>
+
+                        <div class="file-result-grid">
+
+                            <div>
+                                <span>Filas originales del Excel</span>
+                                <strong>
+                                    {{ detalleTiempos.filas_excel | number }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Tickets distintos del archivo</span>
+                                <strong>
+                                    {{ detalleTiempos.tickets_distintos | number }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Filas rechazadas</span>
+                                <strong>
+                                    {{ detalleTiempos.filas_rechazadas | number }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Acciones acumuladas en SQL Server</span>
+                                <strong>
+                                    {{ detalleTiempos.total_acciones | number }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <div class="technical-row">
+                            <span>Identificador del lote</span>
+                            <strong>{{ detalleTiempos.lote_id }}</strong>
+                        </div>
+                    </div>
+
+
                     <div class="technical-row">
                         <span>Tabla staging</span>
                         <strong>{{ resultado.tabla_staging }}</strong>
@@ -250,11 +245,7 @@
 
     </section>
 
-    <button
-        class="import-button"
-        type="button"
-        [disabled]="!procesables || cargando"
-        (click)="solicitarImportacion()">
+    <button class="import-button" type="button" [disabled]="!procesables || cargando" (click)="solicitarImportacion()">
 
         <ng-container *ngIf="!cargando">
             Importar {{ procesables }}
@@ -268,18 +259,12 @@
 
     </button>
 
-    <div
-        class="processing-note"
-        aria-live="polite"
-        *ngIf="cargando">
+    <div class="processing-note" aria-live="polite" *ngIf="cargando">
         Los archivos se están importando uno por uno.
         Espera a que finalice el procesamiento.
     </div>
 
-    <section
-        class="import-result"
-        aria-live="polite"
-        *ngIf="resumen as totales">
+    <section class="import-result" aria-live="polite" *ngIf="resumen as totales">
 
         <div class="result-heading">
             <div class="success-icon">

@@ -1032,3 +1032,78 @@
   color: #16835B !important;
   font-weight: 700;
 }
+
+/* ==============================================
+   DISTRIBUCIÓN POR TIPO DE INCIDENTE - REPORTE
+   ============================================== */
+
+.report-type-chart {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 3px;
+}
+
+.report-type-row {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 370px)
+    minmax(0, 1fr)
+    75px
+    75px;
+
+  align-items: center;
+  gap: 15px;
+
+  min-height: 39px;
+  padding: 8px 12px;
+
+  border-bottom: 1px solid #E5E9EE;
+}
+
+.report-type-row:nth-child(even) {
+  background: #F7F9FB;
+}
+
+.report-type-name {
+  min-width: 0;
+  color: #344054;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
+}
+
+.report-type-track {
+  width: 100%;
+  min-width: 0;
+  height: 17px;
+
+  background: #EDF0F2;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.report-type-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: #FF620F;
+}
+
+.report-type-count {
+  color: #101828;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-type-percent {
+  color: #16835B;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+} 

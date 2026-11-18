@@ -15,7 +15,8 @@ import {
   IncidentConsolidatedRendimientoOut,
   IncidentConsolidatedTicketsPorResolutorOut,
   IncidentConsolidatedRendimientoResolutorItem,
-  IncidentConsolidatedTopProyectoItem
+  IncidentConsolidatedTopProyectoItem,
+  IncidentConsolidatedTipoItem
 } from '../../../../models/incident-consolidated';
 
 @Component({
@@ -35,6 +36,7 @@ export class IncidentCauseReport {
   @Input() servidores: IncidentConsolidatedTopServidoresOut | null = null;
   @Input() hallazgos: IncidentConsolidatedPrincipalesHallazgosOut | null = null;
   @Input() conclusiones: IncidentConsolidatedConclusionesOut | null = null;
+  @Input() tiposDistribucion: IncidentConsolidatedTipoItem[] = [];
 
   // PROCEDENCIA DEL ANÁLISIS EJECUTIVO
   @Input() origenAnalisis: 'ia' | 'reglas' | 'sin_datos' = 'reglas';
@@ -383,6 +385,58 @@ export class IncidentCauseReport {
 
   get resolutorMesesLimitados(): boolean {
     return (this.ticketsPorResolutor?.periodos.length ?? 0) > 12;
+  }
+
+
+  // CAUSAS VISIBLES
+  get causasVisibles() {
+    return (this.causas?.causas ?? []).filter(
+      item =>
+        item.categoria.trim().toLowerCase() !==
+        'sin evidencia técnica suficiente'
+    );
+  }
+
+  // TÍTULO DINÁMICO DE CLIENTES
+  get tituloGraficoClientes(): string {
+    return this.proyecto
+      ? `Tickets por el cliente ${this.proyecto}`
+      : 'Top 10: Tickets por Proyecto y Mes';
+  }
+
+  // DISTRIBUCIÓN POR TIPO DE INCIDENTE
+  get tiposReporte(): IncidentConsolidatedTipoItem[] {
+    return [...this.tiposDistribucion]
+      .sort((a, b) =>
+        b.cantidad - a.cantidad ||
+        a.tipo_incidente.localeCompare(b.tipo_incidente)
+      )
+      .slice(0, 10);
+  }
+
+
+  get maximoTiposReporte(): number {
+    return Math.max(
+      1,
+      ...this.tiposReporte.map(item => item.cantidad)
+    );
+  }
+
+  anchoBarraTipo(cantidad: number): number {
+    return Math.max(
+      0,
+      Math.min(
+        100,
+        (cantidad / this.maximoTiposReporte) * 100
+      )
+    );
+  }
+
+  porcentajeTipo(cantidad: number): number {
+    if (this.totalIncidentes <= 0) {
+      return 0;
+    }
+    return (cantidad / this.totalIncidentes) * 100;
   }
 
 }

@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild,
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
 import { Subscription } from 'rxjs';
-import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTopProyectos, IncidentConsolidatedProyectoItem, IncidentConsolidatedAnalisisEjecutivoIAOut } from '../../../models/incident-consolidated';
+import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTopProyectos, IncidentConsolidatedProyectoItem, IncidentConsolidatedAnalisisEjecutivoIAOut, IncidentConsolidatedTipoItem } from '../../../models/incident-consolidated';
 import { IncidentConsolidatedService } from '../../../services/incident-consolidated.service';
 import { toPng } from 'html-to-image';
 
@@ -82,7 +82,17 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   atribucionIncidentes: IncidentConsolidatedAtribucionOut | null = null;
   distribucionAjustada: IncidentConsolidatedDistribucionAjustadaOut | null = null;
   analisisCausas: IncidentConsolidatedAnalisisCausasOut | null = null;
+
+  // CAUSAS PREPARADAS SOLO PARA VISUALIZACIÓN
+  analisisCausasVisual: IncidentConsolidatedAnalisisCausasOut | null = null;
+
+  // DISTRIBUCIÓN POR TIPO DE INCIDENTE
+  tiposIncidenteDistribucion: IncidentConsolidatedTipoItem[] | null = null;
+  tiposGrafico: { categoria: string; cantidad: number }[] = [];
+  cargandoTipos = false;
+  errorTipos: string | null = null;
   topServidores: IncidentConsolidatedTopServidoresOut | null = null;
+
   // VERIFICAR SI EXISTEN SERVIDORES CON INCIDENTES
   get hayServidores(): boolean {
     return (this.topServidores?.servidores ?? []).some(
@@ -235,6 +245,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   // VALIDAR QUE TODOS LOS DATOS ESTEN LISTOS
   get reporteListo(): boolean {
 
+    
+
     return (
       !this.cargandoFiltros &&
       !this.cargandoAtribucion &&
@@ -243,6 +255,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       !this.cargandoHallazgos &&
       !this.cargandoConclusiones &&
       !this.cargandoAnalisisIA &&
+      !this.cargandoTipos &&
 
 
       // NUEVAS CONSULTAS
@@ -256,6 +269,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       !this.errorTopServidores &&
       !this.errorHallazgos &&
       !this.errorConclusiones &&
+      !this.errorTipos &&
 
       // NUEVOS ERRORES
       !this.errorProyectos &&
@@ -268,6 +282,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       this.analisisCausas !== null &&
       this.principalesHallazgos !== null &&
       this.conclusiones !== null &&
+      this.tiposIncidenteDistribucion !== null &&
 
       // DATOS NECESARIOS PARA EL REPORTE
       this.rendimientoReporte !== null &&
@@ -666,8 +681,14 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
     this.atribucionIncidentes = null;
     this.distribucionAjustada = null;
+
     this.analisisCausas = null;
+    this.analisisCausasVisual = null;
     this.topServidores = null;
+
+    this.tiposIncidenteDistribucion = null;
+    this.tiposGrafico = [];
+    this.errorTipos = null;
 
     // NUEVAS SECCIONES
     this.proyectos = [];
@@ -694,6 +715,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     // MÓDULOS EXISTENTES
     this.cargarAtribucion(filtros);
     this.cargarAnalisisCausas(filtros);
+    this.cargarTipos(filtros);
     this.cargarTopServidores(filtros);
 
     this.cargarAnalisisEjecutivoIA(filtros);
@@ -894,11 +916,19 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
       .subscribe({
 
         next: (data) => {
-
           this.analisisCausas = data;
+
+          this.analisisCausasVisual = {
+            ...data,
+            causas: data.causas.filter(
+              item =>
+                item.categoria.trim().toLowerCase() !==
+                'sin evidencia técnica suficiente'
+            )
+          };
+
           this.cargandoAnalisisCausas = false;
 
-          this.changeDetector.markForCheck();
         },
 
         error: (error) => {
@@ -909,10 +939,60 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
           );
 
           this.analisisCausas = null;
+          this.analisisCausasVisual = null;
           this.cargandoAnalisisCausas = false;
 
           this.errorAnalisisCausas =
             'No se pudo cargar el análisis de causas.';
+
+          this.changeDetector.markForCheck();
+        }
+      });
+
+    this.solicitudesDashboard.add(solicitud);
+  }
+
+  // DISTRIBUCIÓN POR TIPO DE INCIDENTE
+  private cargarTipos(
+    filtros: IncidentConsolidatedDashboardFilters
+  ): void {
+
+    this.cargandoTipos = true;
+    this.errorTipos = null;
+    this.tiposIncidenteDistribucion = null;
+    this.tiposGrafico = [];
+
+    const solicitud = this.incidentConsolidatedService
+      .obtenerTipos(filtros)
+      .subscribe({
+
+        next: (data) => {
+
+          this.tiposIncidenteDistribucion = data;
+
+          this.tiposGrafico = data.map(item => ({
+            categoria: item.tipo_incidente,
+            cantidad: item.cantidad
+          }));
+
+          this.cargandoTipos = false;
+
+          this.changeDetector.markForCheck();
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Error cargando distribución por tipo de incidente:',
+            error
+          );
+
+          this.tiposIncidenteDistribucion = null;
+          this.tiposGrafico = [];
+
+          this.cargandoTipos = false;
+          this.errorTipos =
+            'No se pudo cargar la distribución por tipo de incidente.';
 
           this.changeDetector.markForCheck();
         }
@@ -986,6 +1066,15 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     });
   }
 
+  // TÍTULO DINÁMICO DEL GRÁFICO DE CLIENTES
+  get tituloGraficoClientes(): string {
+
+    const proyecto = this.proyectoTitulo;
+
+    return proyecto
+      ? `Tickets por el cliente ${proyecto}`
+      : 'Top 10: Tickets por Proyecto y Mes';
+  }
 
   // TITULO DINAMICO - PROYECTO SELECCIONADO
   get proyectoTitulo(): string | null {

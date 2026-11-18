@@ -124,19 +124,19 @@
           </strong>
         </span>
 
-        <span>
+        <!-- 
+      <span>
           Sin servidor:
           <strong>
             {{ servidores.incidentes_sin_servidor }}
           </strong>
-        </span>
+        </span>    
+    -->
+
+
 
       </div>
 
-      <p class="report-note">
-        Un incidente puede estar asociado con varios servidores.
-        Su aparición no confirma el origen del incidente.
-      </p>
 
     </article>
 
@@ -204,12 +204,15 @@
 
       </div>
 
-      <p class="report-note">
+
+      <!-- 
+          <p class="report-note">
         Sin atribución:
         {{ atribucion?.sin_atribucion ?? 0 }} incidentes.
         Los porcentajes corresponden a los incidentes
         con atribución.
-      </p>
+      </p>  
+  -->
 
     </article>
 
@@ -287,16 +290,15 @@
         Sin información comparativa.
       </div>
 
-      <div class="adjustment-summary">
+
+      <!--    <div class="adjustment-summary">
         <span>Ajustes aplicados</span>
         <strong>
           {{ ajustada?.ajustes_aplicados ?? 0 }}
         </strong>
-      </div>
+      </div> -->
 
-      <p class="report-note">
-        Estado: {{ estadoAjuste }}
-      </p>
+
 
     </article>
 
@@ -330,7 +332,7 @@
 
       <tbody>
 
-        <tr *ngFor="let item of causas?.causas ?? []">
+        <tr *ngFor="let item of causasVisibles">
 
           <td>
             <span class="cause-indicator" [class.unidentified]="!item.es_causa_identificada">
@@ -353,7 +355,7 @@
 
         </tr>
 
-        <tr *ngIf="(causas?.causas?.length ?? 0) === 0">
+        <tr *ngIf="causasVisibles.length === 0">
           <td colspan="4" class="report-empty">
             No se identificaron factores técnicos.
           </td>
@@ -369,10 +371,14 @@
         <strong>{{ causas.con_factor_tecnico }}</strong>
       </span>
 
+
+
+      <!-- 
       <span>
         Sin causa determinada:
         <strong>{{ causas.sin_causa_determinada }}</strong>
-      </span>
+      </span>      
+  -->
 
       <span>
         Casos multifactor:
@@ -380,19 +386,76 @@
       </span>
     </div>
 
+
+    <!-- 
     <p class="report-note">
       Clasificación técnica preliminar basada en evidencia
       documentada. Las categorías pueden incluir factores
       concurrentes y sus porcentajes no necesariamente
       representan grupos excluyentes.
     </p>
+  -->
 
   </article>
 
 
+  <!--  DISTRIBUCIÓN POR TIPO DE INCIDENTE-->
+  <article class="report-panel report-wide">
+
+    <h2>
+
+      <span class="report-number">
+        {{ hayServidores ? 5 : 4 }}
+      </span>
+
+      Distribución por Tipo de Incidente
+
+    </h2>
+
+    <div class="report-type-chart" *ngIf="tiposReporte.length > 0">
+
+      <div class="report-type-row" *ngFor="let item of tiposReporte; let i = index">
+
+        <span class="report-type-name">
+          {{ i + 1 }}. {{ item.tipo_incidente }}
+        </span>
+
+        <div class="report-type-track">
+
+          <div class="report-type-fill" [style.width.%]="anchoBarraTipo(item.cantidad)">
+          </div>
+
+        </div>
+
+        <strong class="report-type-count">
+          {{ item.cantidad | number:'1.0-0' }}
+        </strong>
+
+        <span class="report-type-percent">
+          {{ porcentajeTipo(item.cantidad) | number:'1.1-2' }}%
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="report-empty" *ngIf="tiposReporte.length === 0">
+
+      No existen tipos de incidente para los filtros seleccionados.
+
+    </div>
+
+ 
+  <!--    <p class="report-note" *ngIf="tiposReporte.length > 0">
+      Se muestran hasta 10 tipos de incidente ordenados por volumen.
+      Los porcentajes se calculan sobre el total de incidentes filtrados.
+    </p>
+    -->
+
+  </article>
+
 
   <!-- CLIENTE - REPORTE EJECUTIVO -->
-
   <div class="report-section-heading">
     <h2>Cliente</h2>
     <p>
@@ -453,14 +516,15 @@
   </article>
   -->
 
+
   <!-- GRÁFICO: TOP 10 TICKETS POR PROYECTO Y MES -->
   <article class="report-panel report-wide">
 
     <h2>
       <span class="report-number">
-        {{ hayServidores ? 5 : 4 }}
+        {{ hayServidores ? 6 : 5 }}
       </span>
-      Top 10: Tickets por Proyecto y Mes
+      {{ tituloGraficoClientes }}
     </h2>
 
     <p class="report-chart-description">
@@ -529,10 +593,7 @@
   </article>
 
 
-  <!-- ==============================================
-     RESOLUTOR - REPORTE EJECUTIVO
-     ============================================== -->
-
+  <!-- RESOLUTOR - REPORTE EJECUTIVO-->
   <div class="report-section-heading">
     <h2>Resolutor</h2>
     <p>
@@ -625,15 +686,19 @@
 
     </table>
 
+    <!--  
     <p class="report-note">
       Se muestran {{ resolutoresTabla.length }} de
       {{ totalResolutoresReporte }} resolutores.
       La fila Total general considera todos los resolutores,
       no solamente los mostrados.
-      <span *ngIf="rendimientoMesesLimitados">
-        Las columnas corresponden a los 12 periodos más recientes.
-      </span>
-    </p>
+  <span *ngIf="rendimientoMesesLimitados">
+      Las columnas corresponden a los 12 periodos más recientes.
+    </span>
+    </p> 
+  -->
+
+
 
   </article>
 
@@ -695,6 +760,7 @@
       No hay tickets por resolutor para los filtros seleccionados.
     </div>
 
+    <!-- 
     <p class="report-note">
       Se muestran los {{ resolutoresGrafico.length }}
       resolutores devueltos por el ranking.
@@ -704,6 +770,8 @@
         los totales incluyen el periodo completo.
       </span>
     </p>
+    -->
+
 
   </article>
 
@@ -800,7 +868,6 @@
             </span>
 
           </p>
-
         </div>
 
 
@@ -816,16 +883,17 @@
 
 
 
-  <!-- PIE DE REPORTE -->
   <footer class="report-footer">
     <span>
       CANVIA · Plataforma de Análisis de Tickets de TI
     </span>
-
+    <!--
     <span>
       Fuente: registros de incidentes · Análisis sujeto
       a validación técnica
-    </span>
+    </span>-->
+
+
   </footer>
 
 </section>

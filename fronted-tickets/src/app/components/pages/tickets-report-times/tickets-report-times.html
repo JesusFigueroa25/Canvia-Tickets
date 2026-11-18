@@ -1,0 +1,440 @@
+<div class="tickets-report-times-page">
+
+  <!-- CABECERA -->
+  <header class="page-header">
+    <div class="page-header-content">
+      <h1>Análisis de Tiempos de Informes Mensuales</h1>
+
+      <p>
+        Seguimiento de tickets, acciones y horas invertidas
+        en la elaboración de informes mensuales por proyecto
+        y especialista.
+      </p>
+    </div>
+  </header>
+
+  <!-- FILTROS -->
+  <section class="filters-card">
+
+    <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()" class="filters-form">
+
+      <!-- FECHAS -->
+      <div class="date-range-fields">
+
+        <div class="filter-field">
+          <label>Desde</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput [matDatepicker]="pickerDesde" formControlName="desde" placeholder="Seleccionar fecha" />
+
+            <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+
+            <mat-datepicker #pickerDesde></mat-datepicker>
+
+            <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
+              Este campo es obligatorio.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-field">
+          <label>Hasta</label>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput [matDatepicker]="pickerHasta" formControlName="hasta" placeholder="Seleccionar fecha" />
+
+            <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+
+            <mat-datepicker #pickerHasta></mat-datepicker>
+
+            <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
+              Este campo es obligatorio.
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <!-- GRUPO RESOLUTOR -->
+      <div class="filter-field">
+        <label>Grupo Resolutor</label>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select formControlName="grupo_resolutor" placeholder="Todos los grupos"
+            (selectionChange)="cambiarGrupoResolutor($event.value)">
+            <mat-option [value]="null">
+              Todos los grupos
+            </mat-option>
+
+            <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
+              {{ grupo }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+
+      <!-- PROYECTOS -->
+      <div class="filter-field project-filter">
+        <label>Proyectos del análisis detallado</label>
+
+        <mat-form-field appearance="outline" class="full-width">
+
+          <mat-select formControlName="proyectos" multiple placeholder="Seleccionar proyectos"
+            panelClass="report-times-project-panel" (openedChange)="alAbrirComboProyecto($event)"
+            (selectionChange)="cambiarSeleccionProyectos($event.value)">
+
+            <mat-select-trigger>
+              <ng-container *ngIf="filtrosForm.get('todos_proyectos')?.value; else seleccion">
+                Todos los proyectos
+              </ng-container>
+
+              <ng-template #seleccion>
+                {{ filtrosForm.get('proyectos')?.value?.length ?? 0 }}
+                proyectos seleccionados
+              </ng-template>
+            </mat-select-trigger>
+
+            <!-- BUSCADOR COMO TAREAS CONSOLIDADAS -->
+            <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
+              <mat-icon aria-hidden="true">search</mat-icon>
+
+              <input type="text" placeholder="Buscar proyecto..." aria-label="Buscar proyecto"
+                [value]="busquedaProyecto" (input)="buscarProyecto($event)" (click)="$event.stopPropagation()" />
+
+              <button *ngIf="busquedaProyecto" type="button" class="combo-clear"
+                (click)="limpiarBusquedaProyecto($event)" aria-label="Limpiar búsqueda">
+                <mat-icon>close</mat-icon>
+              </button>
+
+
+              <!-- LIMPIAR PROYECTOS SELECCIONADOS -->
+              <div class="combo-selection-actions" (click)="$event.stopPropagation()"
+                (mousedown)="$event.stopPropagation()">
+                <button type="button" class="combo-clear-selection" (click)="limpiarSeleccionProyectos($event)">
+                  <mat-icon>restart_alt</mat-icon>
+                  Limpiar selección
+                </button>
+
+                <span class="combo-selection-count">
+                  {{ filtrosForm.get('todos_proyectos')?.value
+                  ? 'Todos'
+                  : (filtrosForm.get('proyectos')?.value?.length ?? 0) + ' seleccionados'
+                  }}
+                </span>
+              </div>
+
+            </div>
+
+            <!-- TODOS LOS PROYECTOS -->
+            <mat-option [value]="opcionTodosProyectos" [style.display]="busquedaProyecto ? 'none' : null">
+              Todos los proyectos
+            </mat-option>
+
+            <!-- SELECCIÓN INDIVIDUAL -->
+            <mat-option *ngFor="let proyecto of proyectosDisponibles" [value]="proyecto" [title]="proyecto"
+              [style.display]="coincideBusquedaProyecto(proyecto) ? null : 'none'">
+              {{ proyecto }}
+            </mat-option>
+
+            <!-- SIN RESULTADOS -->
+            <mat-option *ngIf="!hayProyectosCoincidentes" disabled>
+              No se encontraron proyectos
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+      </div>
+
+
+      <!-- BOTONES -->
+      <div class="filter-actions">
+
+        <button mat-button type="button" class="clear-button" (click)="limpiarFiltros()">
+          <mat-icon>restart_alt</mat-icon>
+          Limpiar
+        </button>
+
+        <button mat-flat-button type="submit" class="apply-button" [disabled]="
+            !filtrosListos ||
+            cargandoFiltros ||
+            filtrosForm.invalid ||
+            rangoInvalido
+          ">
+          <mat-icon>filter_alt</mat-icon>
+          Aplicar
+        </button>
+
+      </div>
+
+    </form>
+
+    <!-- INFORMACIÓN DEL FILTRO -->
+    <div class="filter-footer">
+
+      <div class="available-range" *ngIf="
+          opcionesFiltros.fecha_min &&
+          opcionesFiltros.fecha_max
+        ">
+        <mat-icon>info</mat-icon>
+
+        <span>
+          Datos disponibles:
+          {{ opcionesFiltros.fecha_min }}
+          al
+          {{ opcionesFiltros.fecha_max }}
+        </span>
+      </div>
+
+      <p class="filter-note">
+        La selección de proyectos se aplicará a las tablas
+        y gráficos de tiempos por resolutor y proyecto.
+      </p>
+
+    </div>
+
+  </section>
+
+  <!-- ESTADOS -->
+  <section class="status-card" *ngIf="cargandoFiltros" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Cargando opciones de filtros...
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorFiltros" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ errorFiltros }}
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorKpis" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ errorKpis }}
+  </section>
+
+  <!-- INDICADORES -->
+  <section class="kpis-section" *ngIf="kpis">
+
+    <app-kpi-card titulo="Total de Requerimientos" [valor]="kpis.total_tickets" icono="confirmation_number"
+      color="orange"></app-kpi-card>
+
+    <app-kpi-card titulo="Total de Proyectos" [valor]="kpis.total_proyectos" icono="business"
+      color="green"></app-kpi-card>
+
+    <app-kpi-card titulo="Alta Criticidad" [valor]="kpis.alta_criticidad" icono="priority_high"
+      color="orange"></app-kpi-card>
+
+    <app-kpi-card titulo="% Alta Criticidad" [valor]="kpis.porcentaje_alta_criticidad + '%'" icono="percent"
+      color="orange"></app-kpi-card>
+
+  </section>
+
+  <section class="status-card" *ngIf="cargandoKpis && !kpis" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Actualizando indicadores...
+  </section>
+
+  <!-- VOLUMEN MENSUAL -->
+  <section class="chart-full-width chart-expandable" id="fullscreen-volumen-report-times" #volumenFs>
+
+    <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenFs)" [attr.aria-label]="
+        graficoExpandido === 'fullscreen-volumen-report-times'
+          ? 'Salir de pantalla completa'
+          : 'Ampliar volumen mensual'
+      ">
+      <mat-icon>
+        {{
+        graficoExpandido === 'fullscreen-volumen-report-times'
+        ? 'fullscreen_exit'
+        : 'fullscreen'
+        }}
+      </mat-icon>
+    </button>
+
+    <div class="chart-card">
+
+      <header class="chart-header">
+
+        <div class="chart-header-content">
+          <h2>Volumen Mensual de Informes</h2>
+
+          <p>
+            Tickets distintos y acciones registradas por mes,
+            según la fecha de creación del ticket.
+            Selecciona un mes para filtrar los indicadores.
+          </p>
+        </div>
+
+        <mat-form-field appearance="outline" class="period-field">
+          <mat-label>Mes de análisis</mat-label>
+
+          <mat-select [value]="periodoSeleccionado" (selectionChange)="cambiarPeriodo($event.value)">
+            <mat-option [value]="null">
+              Todos los meses
+            </mat-option>
+
+            <mat-option *ngFor="let item of volumenMensual" [value]="item.periodo">
+              {{ nombreMes(item.periodo) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </header>
+
+      <div class="chart-body">
+
+        <div class="chart-loading" *ngIf="cargandoVolumenMensual" role="status">
+          Actualizando volumen mensual...
+        </div>
+
+        <div class="chart-viewport">
+          <canvas #volumenCanvas role="img" aria-label="Volumen mensual de tickets y acciones"></canvas>
+        </div>
+
+        <div class="chart-message error-text" *ngIf="errorVolumen" role="alert">
+          {{ errorVolumen }}
+        </div>
+
+        <div class="chart-message" *ngIf="
+            !cargandoVolumenMensual &&
+            !errorVolumen &&
+            volumenMensual.length === 0
+          ">
+          No se encontraron registros para los filtros seleccionados.
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ANÁLISIS DE TIEMPOS POR RESOLUTOR -->
+  <section class="report-times-resolver-section">
+
+    <header class="report-times-section-header">
+      <h2>Análisis de Tiempos por Resolutor</h2>
+
+      <p>
+        Horas invertidas por especialista en la elaboración
+        de informes mensuales, considerando tickets,
+        acciones y períodos de creación.
+      </p>
+    </header>
+
+    <!-- GRÁFICO -->
+    <div class="report-times-resolver-chart chart-expandable" id="fullscreen-report-times-resolver-chart"
+      #resolverChartFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(resolverChartFs)"
+        [attr.aria-label]="
+        graficoExpandido === 'fullscreen-report-times-resolver-chart'
+          ? 'Salir de pantalla completa'
+          : 'Ampliar horas por resolutor'
+      ">
+        <mat-icon>
+          {{
+          graficoExpandido === 'fullscreen-report-times-resolver-chart'
+          ? 'fullscreen_exit'
+          : 'fullscreen'
+          }}
+        </mat-icon>
+      </button>
+
+      <app-report-times-resolver-chart [datos]="datosGraficoResolutores" [cargando]="cargandoGraficoResolutores"
+        [error]="errorGraficoResolutores"></app-report-times-resolver-chart>
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="report-times-resolver-table table-expandable" id="fullscreen-report-times-resolver-table"
+      #resolverTableFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(resolverTableFs)"
+        [attr.aria-label]="
+        graficoExpandido === 'fullscreen-report-times-resolver-table'
+          ? 'Salir de pantalla completa'
+          : 'Ampliar tabla de resolutores'
+      ">
+        <mat-icon>
+          {{
+          graficoExpandido === 'fullscreen-report-times-resolver-table'
+          ? 'fullscreen_exit'
+          : 'fullscreen'
+          }}
+        </mat-icon>
+      </button>
+
+      <app-report-times-resolver-table [datos]="datosTablaResolutores" [cargando]="cargandoTablaResolutores"
+        [error]="errorTablaResolutores"
+        (paginaChange)="cambiarPaginaResolutores($event)"></app-report-times-resolver-table>
+
+    </div>
+
+  </section>
+
+
+  <!-- ANÁLISIS DE TIEMPOS POR PROYECTO -->
+  <section class="report-times-project-section">
+
+    <header class="report-times-section-header">
+      <h2>Análisis de Tiempos por Proyecto</h2>
+
+      <p>
+        Distribución mensual de horas dedicadas a la elaboración
+        de informes, por proyecto, considerando tickets,
+        acciones y especialistas involucrados.
+      </p>
+    </header>
+
+    <!-- GRÁFICO -->
+    <div class="report-times-project-chart chart-expandable" id="fullscreen-report-times-project-chart" #projectChartFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(projectChartFs)"
+        [attr.aria-label]="
+        graficoExpandido === 'fullscreen-report-times-project-chart'
+          ? 'Salir de pantalla completa'
+          : 'Ampliar gráfico de proyectos'
+      ">
+        <mat-icon>
+          {{
+          graficoExpandido === 'fullscreen-report-times-project-chart'
+          ? 'fullscreen_exit'
+          : 'fullscreen'
+          }}
+        </mat-icon>
+      </button>
+
+      <app-report-times-project-chart [datos]="datosGraficoProyectos" [cargando]="cargandoGraficoProyectos"
+        [error]="errorGraficoProyectos"></app-report-times-project-chart>
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="report-times-project-table table-expandable" id="fullscreen-report-times-project-table" #projectTableFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(projectTableFs)"
+        [attr.aria-label]="
+        graficoExpandido === 'fullscreen-report-times-project-table'
+          ? 'Salir de pantalla completa'
+          : 'Ampliar tabla de proyectos'
+      ">
+        <mat-icon>
+          {{
+          graficoExpandido === 'fullscreen-report-times-project-table'
+          ? 'fullscreen_exit'
+          : 'fullscreen'
+          }}
+        </mat-icon>
+      </button>
+
+      <app-report-times-project-table [datos]="datosTablaProyectos" [cargando]="cargandoTablaProyectos"
+        [error]="errorTablaProyectos" (paginaChange)="cambiarPaginaProyectos($event)"></app-report-times-project-table>
+
+    </div>
+
+  </section>
+
+
+</div>

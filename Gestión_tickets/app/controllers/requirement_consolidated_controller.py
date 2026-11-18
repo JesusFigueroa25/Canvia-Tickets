@@ -190,7 +190,7 @@ def obtener_productividad_proyectos(
         db, filtros, granularidad, limite_grafico, pagina, tamano
     )
 
-
+ 
 @router.get("/dotacion-resolutores", response_model=RequirementDotacionOut)
 def obtener_dotacion_resolutores(
     pagina: int = Query(1, ge=1),

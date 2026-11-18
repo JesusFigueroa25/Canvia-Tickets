@@ -10,7 +10,9 @@
 
             <p>
                 Administra la importación de incidentes, requerimientos,
-                tareas y tickets con actualizaciones manuales mediante archivos Excel.
+                tareas, tickets con actualizaciones manuales y reportes
+                de tiempos de elaboración de informes mensuales mediante
+                archivos Excel.
             </p>
 
         </div>
@@ -48,16 +50,10 @@
 
         <div class="importaciones-grid">
 
-            <app-importacion-card
-                *ngFor="let modulo of modulos; trackBy: trackByModulo"
-                [idModulo]="modulo.id"
-                [titulo]="modulo.titulo"
-                [descripcion]="modulo.descripcion"
-                [archivos]="estados[modulo.id].archivos"
-                [cargando]="estados[modulo.id].cargando"
-                (archivosSeleccionados)="agregarArchivos(modulo.id, $event)"
-                (archivoQuitado)="quitarArchivo(modulo.id, $event)"
-                (limpiarSolicitado)="limpiarLista(modulo.id)"
+            <app-importacion-card *ngFor="let modulo of modulos; trackBy: trackByModulo" [idModulo]="modulo.id"
+                [titulo]="modulo.titulo" [descripcion]="modulo.descripcion" [archivos]="estados[modulo.id].archivos"
+                [cargando]="estados[modulo.id].cargando" (archivosSeleccionados)="agregarArchivos(modulo.id, $event)"
+                (archivoQuitado)="quitarArchivo(modulo.id, $event)" (limpiarSolicitado)="limpiarLista(modulo.id)"
                 (importarSolicitado)="importarExcel(modulo.id)">
             </app-importacion-card>
 
