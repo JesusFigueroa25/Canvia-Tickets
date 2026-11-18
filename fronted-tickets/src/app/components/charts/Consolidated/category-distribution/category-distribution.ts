@@ -21,6 +21,7 @@ export class CategoryDistribution implements OnChanges {
   @Input() descripcion = '';
   @Input() orientacion: 'horizontal' | 'vertical' = 'vertical';
   @Input() coloresPorPrioridad = false;
+  @Input() ordenPrioridad = false;
   @Input() seleccionMultiple = false;
 
   // Texto del filtro según la entidad
@@ -55,10 +56,16 @@ export class CategoryDistribution implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
 
-    if (changes['datos'] || changes['orientacion'] || changes['coloresPorPrioridad'] ||
+    if (changes['datos'] || changes['orientacion'] || changes['coloresPorPrioridad'] || changes['ordenPrioridad'] ||
       changes['seleccionMultiple'] || changes['tiposSeleccionados']) {
       this.actualizarGrafico();
     }
+  }
+
+  private rangoPrioridad(categoria: string): number {
+    const nombre = categoria.trim().replace(/^\d+\s*-\s*/, '').toLowerCase();
+    const rango = ['critical', 'high', 'medium', 'low'].indexOf(nombre);
+    return rango === -1 ? 4 : rango;
   }
 
   private obtenerColor(categoria: string): string {
@@ -76,7 +83,9 @@ export class CategoryDistribution implements OnChanges {
     const horizontal = this.orientacion === 'horizontal';
     this.datosOrdenados = [...this.datos].sort(
       (a, b) =>
-        b.cantidad - a.cantidad ||
+        (this.ordenPrioridad
+          ? this.rangoPrioridad(a.categoria) - this.rangoPrioridad(b.categoria)
+          : b.cantidad - a.cantidad) ||
         a.categoria.localeCompare(b.categoria)
     );
 

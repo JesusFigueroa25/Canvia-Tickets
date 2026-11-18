@@ -348,8 +348,7 @@
         <div class="charts-grid">
 
             <!-- Nro Incidentes por Mes -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-volumen" #volumenFs
-                *ngIf="volumenMensual.length > 0">
+            <div class="chart-grid-item chart-expandable" id="fullscreen-volumen" #volumenFs>
                 <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenFs)"
                     [title]="graficoExpandido === 'fullscreen-volumen' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
                     aria-label="Ampliar o reducir gráfico de incidentes por mes">
@@ -476,7 +475,7 @@
             </button>
             <app-category-distribution titulo="Distribución por Prioridad"
                 descripcion="Cantidad de incidentes según su nivel de criticidad." orientacion="vertical"
-                [coloresPorPrioridad]="true" [datos]="prioridadesGrafico">
+                [coloresPorPrioridad]="true" [ordenPrioridad]="true" [datos]="prioridadesGrafico">
             </app-category-distribution>
         </div>
     </section>

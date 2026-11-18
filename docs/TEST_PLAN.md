@@ -87,6 +87,18 @@ No se especifican umbrales de cobertura porque no hay cobertura reportada ni obj
 
 ## Pruebas adicionales propuestas
 
+### Validaciones de Incidentes Consolidados
+
+Desde `fronted-tickets/`, ejecutar `npm test -- --watch=false` y `npm run build`.
+Los nuevos specs de `volume-month` y `Consolidated/category-distribution` cubren:
+
+- Título según las barras visibles, selección y limpieza del mes sin reducir el rango mostrado, un solo mes, respuesta vacía y períodos que cruzan años.
+- Orden optativo Critical, High, Medium, Low con prefijos y etiquetas originales; desconocidas al final, cantidades y colores conservados y orden por volumen para consumidores que no activan la opción.
+
+Resultado de ejecución del 18/11/2026: las cinco pruebas nuevas pasan. La suite completa registra siete pruebas aprobadas y dos fallidas en specs existentes: `App` no reconoce `app-landing` y `Login` carece de proveedor de `ActivatedRoute`. La compilación termina con código 0 al disponer de acceso a Google Fonts; advierte excesos de presupuesto del bundle inicial y de estilos. No se realizó validación visual en navegador.
+
+Validación manual pendiente: aplicar y limpiar filtros, seleccionar/desmarcar una barra mensual, comprobar el estado vacío, tooltips y pantalla completa; confirmar que requerimientos, tareas y SLA conservan sus títulos y órdenes actuales. El gráfico de distribución por prioridad solo presenta cantidades en su contrato actual; el gráfico mensual apilado con porcentajes no se modifica.
+
 Estas pruebas son propuestas, no funcionalidades ya presentes:
 
 - Pruebas de contrato para todas las rutas FastAPI y comparación automática con los modelos TypeScript/consumidores Angular.

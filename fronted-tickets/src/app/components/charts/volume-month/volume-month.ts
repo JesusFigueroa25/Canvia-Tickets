@@ -28,6 +28,27 @@ export class VolumeMonth implements OnChanges {
 
   // DATOS ORDENADOS
   private registrosConsolidados: IncidentConsolidatedVolumenItem[] = [];
+
+  get tituloIncidentesConsolidados(): string {
+    const base = 'Nro Incidentes por Mes';
+    const registros = this.registrosConsolidados;
+    if (!registros.length) return base;
+
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    // Usar los mismos registros ordenados que alimentan las barras.
+    if (registros.some(item => !Number.isInteger(item.mes) || item.mes < 1 || item.mes > 12 ||
+      !Number.isInteger(item.anio))) return base;
+    const primero = registros[0];
+    const ultimo = registros[registros.length - 1];
+    if (primero.anio === ultimo.anio && primero.mes === ultimo.mes) {
+      return `Nro Incidentes por el Mes de ${meses[primero.mes - 1]}`;
+    }
+    const conAnio = primero.anio !== ultimo.anio;
+    const nombre = (item: IncidentConsolidatedVolumenItem) =>
+      `${meses[item.mes - 1]}${conAnio ? ` ${item.anio}` : ''}`;
+    return `${base} - ${nombre(primero)} - ${nombre(ultimo)}`;
+  }
   private registrosSla: IncidentSLAVolumenItem[] = [];
 
   // Registros originales de Requerimientos SLA
