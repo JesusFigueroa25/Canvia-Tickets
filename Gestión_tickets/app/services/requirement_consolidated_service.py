@@ -780,13 +780,33 @@ def obtener_dotacion_resolutores(db: Session, filtros: RequirementConsolidatedDa
     for item in filas:
         item["resolutores"].sort(key=lambda x: (-x["tickets"], x["nombre"]))
 
-    if meses:
-        inicial, final = min(meses), max(meses)
-        inicio = _date.fromisoformat(inicial + "-01")
-        fin = _date.fromisoformat(final + "-01")
-        periodos = _periodos_grafico(inicio, fin, "mes")
+
+    # Meses de la matriz según los filtros del dashboard.
+    if filtros.periodo:
+        periodos = [filtros.periodo]
     else:
-        periodos = []
+        inicio = (
+            filtros.desde
+            if filtros.desde
+            else _date.fromisoformat(min(meses) + "-01")
+            if meses else None
+        )
+
+        fin = (
+            filtros.hasta
+            if filtros.hasta
+            else _date.fromisoformat(max(meses) + "-01")
+            if meses else None
+        )
+
+        periodos = (
+            _periodos_grafico(inicio, fin, "mes")
+            if inicio is not None
+            and fin is not None
+            and inicio <= fin
+            else []
+        )
+
 
     top_proyectos = [p for p, _ in sorted(totales_proyecto.items(),
                                          key=lambda par: (-par[1], par[0]))[:limite_grafico]]
@@ -795,17 +815,142 @@ def obtener_dotacion_resolutores(db: Session, filtros: RequirementConsolidatedDa
         {"periodo": periodo, "resolutores": mapa.get((periodo, proyecto), 0)}
         for periodo in periodos]}
         for proyecto in top_proyectos]
-    total = len(filas)
+
+
+    total_proyecto_meses = len(filas)
+    entidades = {}
+
+    def registrar_resolutor(
+        nombre: str,
+        periodo: str,
+        proyecto: str,
+        tickets: int,
+        sin_resolutor: bool = False,
+    ):
+        clave = (
+            "__SIN_RESOLUTOR__"
+            if sin_resolutor
+            else nombre.strip().casefold()
+        )
+
+        if clave not in entidades:
+            entidades[clave] = {
+                "nombre": nombre,
+                "sin_resolutor": sin_resolutor,
+                "total_tickets": 0,
+                "registros": {},
+            }
+
+        entidad = entidades[clave]
+        entidad["total_tickets"] += tickets
+
+        clave_registro = (periodo, proyecto)
+
+        entidad["registros"][clave_registro] = (
+            entidad["registros"].get(clave_registro, 0)
+            + tickets
+        )
+
+    # Agrupar cada persona independientemente de la cantidad
+    # de proyectos y meses en los que haya participado.
+    for fila in filas:
+        periodo = fila["periodo"]
+        proyecto = fila["proyecto"]
+
+        for resolutor in fila["resolutores"]:
+            registrar_resolutor(
+                nombre=resolutor["nombre"],
+                periodo=periodo,
+                proyecto=proyecto,
+                tickets=int(resolutor["tickets"]),
+            )
+
+        if fila["tickets_sin_resolutor"] > 0:
+            registrar_resolutor(
+                nombre="Sin resolutor",
+                periodo=periodo,
+                proyecto=proyecto,
+                tickets=int(fila["tickets_sin_resolutor"]),
+                sin_resolutor=True,
+            )
+
+    # Orden global por volumen de tickets.
+    ranking = sorted(
+        entidades.values(),
+        key=lambda entidad: (
+            -entidad["total_tickets"],
+            entidad["nombre"].casefold(),
+        ),
+    )
+
+    total_resolutores_tabla = len(ranking)
+    desplazamiento = (pagina - 1) * tamano
+
+    resolutores_pagina = ranking[
+        desplazamiento:desplazamiento + tamano
+    ]
+
+    # Conservamos el schema RequirementDotacionFila:
+    # cada registro contiene un proyecto, un mes y
+    # únicamente el resolutor de la página correspondiente.
+    items_tabla = []
+
+    for entidad in resolutores_pagina:
+        sin_resolutor = entidad["sin_resolutor"]
+
+        for (periodo, proyecto), tickets in sorted(
+            entidad["registros"].items()
+        ):
+            anio, mes = map(int, periodo.split("-"))
+
+            items_tabla.append({
+                "anio": anio,
+                "mes": mes,
+                "periodo": periodo,
+                "proyecto": proyecto,
+                "total_tickets": tickets,
+                "resolutores_distintos": (
+                    0 if sin_resolutor else 1
+                ),
+                "tickets_sin_resolutor": (
+                    tickets if sin_resolutor else 0
+                ),
+                "resolutores": (
+                    []
+                    if sin_resolutor
+                    else [{
+                        "nombre": entidad["nombre"],
+                        "tickets": tickets,
+                    }]
+                ),
+            })
+
     return {
-        "resumen": {"total_tickets": sum(i["total_tickets"] for i in filas),
-                    "total_proyectos": len(totales_proyecto),
-                    "total_resolutores_distintos": len(nombres_globales),
-                    "total_proyecto_meses": total},
-        "grafico": {"periodos": periodos, "proyectos": series},
-        "tabla": {"items": filas[(pagina - 1) * tamano:pagina * tamano],
-                  "total": total, "pagina": pagina, "tamano": tamano,
-                  "total_paginas": (total + tamano - 1) // tamano},
+        "resumen": {
+            "total_tickets": sum(
+                item["total_tickets"] for item in filas
+            ),
+            "total_proyectos": len(totales_proyecto),
+            "total_resolutores_distintos": len(
+                nombres_globales
+            ),
+            "total_proyecto_meses": total_proyecto_meses,
+        },
+        "grafico": {
+            "periodos": periodos,
+            "proyectos": series,
+        },
+        "tabla": {
+            "items": items_tabla,
+            "total": total_resolutores_tabla,
+            "pagina": pagina,
+            "tamano": tamano,
+            "total_paginas": (
+                total_resolutores_tabla + tamano - 1
+            ) // tamano,
+        },
     }
+
 
 
 # ===============================================================

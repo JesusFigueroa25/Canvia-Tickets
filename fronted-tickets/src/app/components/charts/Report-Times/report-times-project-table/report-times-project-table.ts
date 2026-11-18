@@ -9,17 +9,22 @@ import {
 } from '@angular/core';
 
 import {
-  TicketsReportTimesProjectItem,
   TicketsReportTimesProjectTabla
 } from '../../../../models/tickets-report-times';
 
-type ColumnaOrden =
-  | 'periodo'
-  | 'proyecto'
-  | 'tickets'
-  | 'acciones'
-  | 'resolutores_distintos'
-  | 'horas_totales';
+type Metrica = 'horas_totales' | 'acciones' | 'tickets';
+
+interface IndicadoresMes {
+  horas_totales: number;
+  acciones: number;
+  tickets: number;
+}
+
+interface FilaMatrizProyecto {
+  nombre: string;
+  mensual: Record<string, IndicadoresMes>;
+  total: IndicadoresMes;
+}
 
 @Component({
   selector: 'app-report-times-project-table',
@@ -36,136 +41,230 @@ export class ReportTimesProjectTable implements OnChanges {
   @Output() paginaChange =
     new EventEmitter<{ pagina: number; tamano: number }>();
 
-  busqueda = '';
-
-  ordenColumna: ColumnaOrden = 'horas_totales';
-  ordenDescendente = true;
-
   readonly tamanosPagina = [10, 25, 50, 100];
 
+  busqueda = '';
+  metrica: Metrica = 'horas_totales';
+
+  periodos: string[] = [];
+  filas: FilaMatrizProyecto[] = [];
+
+  columnaOrden = 'total';
+  ordenDescendente = true;
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['datos'] &&
-      !changes['datos'].firstChange
-    ) {
-      this.busqueda = '';
+    if (changes['datos']) {
+      this.construirMatriz();
+
+      if (!changes['datos'].firstChange) {
+        this.busqueda = '';
+      }
     }
   }
 
-  // ============================================
-  // FILAS VISIBLES
-  // ============================================
+  private crearIndicadores(): IndicadoresMes {
+    return {
+      horas_totales: 0,
+      acciones: 0,
+      tickets: 0
+    };
+  }
 
-  get filasVisibles(): TicketsReportTimesProjectItem[] {
+  private construirMatriz(): void {
     const registros = this.datos?.items ?? [];
+    const mapa = new Map<string, FilaMatrizProyecto>();
+    const meses = new Set<string>();
 
-    const termino = this.busqueda
-      .trim()
-      .toLocaleLowerCase('es-PE');
+    for (const item of registros) {
+      const nombre = item.proyecto?.trim() || 'Sin especificar';
+      const periodo = item.periodo;
 
-    const filtrados = registros.filter(item => {
-      if (!termino) {
-        return true;
+      meses.add(periodo);
+
+      let fila = mapa.get(nombre);
+
+      if (!fila) {
+        fila = {
+          nombre,
+          mensual: Object.create(null) as Record<string, IndicadoresMes>,
+          total: this.crearIndicadores()
+        };
+
+        mapa.set(nombre, fila);
       }
 
-      const proyecto = item.proyecto
-        .toLocaleLowerCase('es-PE');
+      if (!fila.mensual[periodo]) {
+        fila.mensual[periodo] = this.crearIndicadores();
+      }
 
-      const proyectoVisible = this.nombreVisibleProyecto(
-        item.proyecto
-      ).toLocaleLowerCase('es-PE');
+      const valores: IndicadoresMes = {
+        horas_totales: Number(item.horas_totales) || 0,
+        acciones: Number(item.acciones) || 0,
+        tickets: Number(item.tickets) || 0
+      };
 
-      const periodo = item.periodo.toLowerCase();
+      for (const metrica of [
+        'horas_totales',
+        'acciones',
+        'tickets'
+      ] as Metrica[]) {
+        fila.mensual[periodo][metrica] += valores[metrica];
+        fila.total[metrica] += valores[metrica];
+      }
+    }
 
-      const periodoVisible = this.formatearPeriodo(
-        item.periodo
-      ).toLocaleLowerCase('es-PE');
+    this.periodos = [...meses].sort();
+    this.filas = [...mapa.values()];
+  }
 
-      return (
-        proyecto.includes(termino) ||
-        proyectoVisible.includes(termino) ||
-        periodo.includes(termino) ||
-        periodoVisible.includes(termino)
-      );
-    });
+  get filasVisibles(): FilaMatrizProyecto[] {
+    const termino = this.normalizar(this.busqueda);
 
-    return [...filtrados].sort((a, b) => {
-      const valorA = a[this.ordenColumna];
-      const valorB = b[this.ordenColumna];
+    const filtradas = this.filas.filter(fila =>
+      this.normalizar(fila.nombre).includes(termino) ||
+      this.normalizar(
+        this.nombreVisibleProyecto(fila.nombre)
+      ).includes(termino)
+    );
 
-      let comparacion = 0;
+    return filtradas.sort((a, b) => {
+      let resultado: number;
 
-      if (
-        typeof valorA === 'number' &&
-        typeof valorB === 'number'
-      ) {
-        comparacion = valorA - valorB;
+      if (this.columnaOrden === 'nombre') {
+        resultado = a.nombre.localeCompare(
+          b.nombre, 'es', { sensitivity: 'base' }
+        );
       } else {
-        comparacion = String(valorA).localeCompare(
-          String(valorB),
-          'es',
-          { sensitivity: 'base' }
-        );
+        const valorA = this.columnaOrden === 'total'
+          ? a.total[this.metrica]
+          : a.mensual[this.columnaOrden]?.[this.metrica] ?? 0;
+
+        const valorB = this.columnaOrden === 'total'
+          ? b.total[this.metrica]
+          : b.mensual[this.columnaOrden]?.[this.metrica] ?? 0;
+
+        resultado = valorA - valorB;
       }
 
-      if (comparacion === 0) {
-        comparacion = a.proyecto.localeCompare(
-          b.proyecto,
-          'es',
-          { sensitivity: 'base' }
-        );
+      if (resultado === 0) {
+        resultado = a.nombre.localeCompare(b.nombre, 'es');
       }
 
-      if (comparacion === 0) {
-        comparacion = a.periodo.localeCompare(b.periodo);
-      }
-
-      return this.ordenDescendente
-        ? -comparacion
-        : comparacion;
+      return this.ordenDescendente ? -resultado : resultado;
     });
   }
 
-  // ============================================
-  // BÚSQUEDA
-  // ============================================
+  private normalizar(valor: string): string {
+    return valor
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
 
   buscar(evento: Event): void {
-    const input = evento.target as HTMLInputElement;
-    this.busqueda = input.value;
+    this.busqueda = (evento.target as HTMLInputElement).value;
   }
 
   limpiarBusqueda(): void {
     this.busqueda = '';
   }
 
-  // ============================================
-  // ORDENAMIENTO
-  // ============================================
+  cambiarMetrica(evento: Event): void {
+    const valor = (evento.target as HTMLSelectElement).value;
 
-  ordenar(columna: ColumnaOrden): void {
-    if (this.ordenColumna === columna) {
-      this.ordenDescendente = !this.ordenDescendente;
-      return;
+    if (
+      valor === 'horas_totales' ||
+      valor === 'acciones' ||
+      valor === 'tickets'
+    ) {
+      this.metrica = valor;
+      this.columnaOrden = 'total';
+      this.ordenDescendente = true;
     }
-
-    this.ordenColumna = columna;
-
-    this.ordenDescendente =
-      columna !== 'proyecto';
   }
 
-  indicadorOrden(columna: ColumnaOrden): string {
-    if (this.ordenColumna !== columna) {
+  ordenar(columna: string): void {
+    if (this.columnaOrden === columna) {
+      this.ordenDescendente = !this.ordenDescendente;
+    } else {
+      this.columnaOrden = columna;
+      this.ordenDescendente = columna !== 'nombre';
+    }
+  }
+
+  indicadorOrden(columna: string): string {
+    if (this.columnaOrden !== columna) {
       return '↕';
     }
 
     return this.ordenDescendente ? '↓' : '↑';
   }
 
-  // ============================================
-  // PAGINACIÓN DESDE BACKEND
-  // ============================================
+  obtenerValor(fila: FilaMatrizProyecto, periodo: string): number {
+    return fila.mensual[periodo]?.[this.metrica] ?? 0;
+  }
+
+  obtenerTotal(fila: FilaMatrizProyecto): number {
+    return fila.total[this.metrica];
+  }
+
+  totalMes(periodo: string): number {
+    return this.filasVisibles.reduce(
+      (total, fila) => total + this.obtenerValor(fila, periodo),
+      0
+    );
+  }
+
+  get totalVisible(): number {
+    return this.filasVisibles.reduce(
+      (total, fila) => total + this.obtenerTotal(fila),
+      0
+    );
+  }
+
+  nombreVisibleProyecto(proyecto: string): string {
+    return proyecto.replace(/^\d{6}\s+/, '').trim();
+  }
+
+  formatearValor(valor: number): string {
+    if (this.metrica === 'horas_totales') {
+      return valor.toLocaleString('es-PE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + ' h';
+    }
+
+    return valor.toLocaleString('es-PE', {
+      maximumFractionDigits: 0
+    });
+  }
+
+  formatearNumero(valor: number): string {
+    return valor.toLocaleString('es-PE');
+  }
+
+  formatearHoras(valor: number): string {
+    return valor.toLocaleString('es-PE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  formatearPeriodo(periodo: string): string {
+    const [anio, mes] = periodo.split('-').map(Number);
+
+    const meses = [
+      'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN',
+      'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'
+    ];
+
+    if (!anio || mes < 1 || mes > 12) {
+      return periodo;
+    }
+
+    return `${meses[mes - 1]} ${anio}`;
+  }
 
   get paginaActual(): number {
     return this.datos?.pagina ?? 1;
@@ -188,10 +287,7 @@ export class ReportTimesProjectTable implements OnChanges {
       return 0;
     }
 
-    return (
-      (this.datos.pagina - 1) *
-      this.datos.tamano
-    ) + 1;
+    return (this.datos.pagina - 1) * this.datos.tamano + 1;
   }
 
   get ultimoRegistro(): number {
@@ -215,8 +311,6 @@ export class ReportTimesProjectTable implements OnChanges {
       return;
     }
 
-    this.busqueda = '';
-
     this.paginaChange.emit({
       pagina,
       tamano: this.tamanoActual
@@ -224,19 +318,17 @@ export class ReportTimesProjectTable implements OnChanges {
   }
 
   cambiarTamanoPagina(evento: Event): void {
-    const select = evento.target as HTMLSelectElement;
-    const tamano = Number(select.value);
+    const tamano = Number(
+      (evento.target as HTMLSelectElement).value
+    );
 
     if (
       this.cargando ||
-      !Number.isInteger(tamano) ||
       !this.tamanosPagina.includes(tamano) ||
       tamano === this.tamanoActual
     ) {
       return;
     }
-
-    this.busqueda = '';
 
     this.paginaChange.emit({
       pagina: 1,
@@ -244,47 +336,14 @@ export class ReportTimesProjectTable implements OnChanges {
     });
   }
 
-  // ============================================
-  // FORMATEO
-  // ============================================
-
-  formatearPeriodo(periodo: string): string {
-    const [anio, mes] = periodo.split('-').map(Number);
-
-    if (!anio || !mes || mes < 1 || mes > 12) {
-      return periodo;
-    }
-
-    const meses = [
-      'ENE', 'FEB', 'MAR', 'ABR',
-      'MAY', 'JUN', 'JUL', 'AGO',
-      'SEP', 'OCT', 'NOV', 'DIC'
-    ];
-
-    return `${meses[mes - 1]} ${anio}`;
-  }
-
-  nombreVisibleProyecto(proyecto: string): string {
-    return proyecto
-      .replace(/^\d{6}\s+/, '')
-      .trim();
-  }
-
-  formatearNumero(valor: number): string {
-    return valor.toLocaleString('es-PE');
-  }
-
-  formatearHoras(valor: number): string {
-    return valor.toLocaleString('es-PE', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  }
-
   identificarFila(
     _indice: number,
-    fila: TicketsReportTimesProjectItem
+    fila: FilaMatrizProyecto
   ): string {
-    return `${fila.periodo}|${fila.proyecto}`;
+    return fila.nombre;
+  }
+
+  identificarPeriodo(_indice: number, periodo: string): string {
+    return periodo;
   }
 }

@@ -1,35 +1,36 @@
 
 <article class="table-card">
 
-  <!-- ENCABEZADO -->
   <header class="table-header">
-    <div class="header-content">
-
-      <div class="title-row">
-        <span class="title-accent"></span>
-
-        <div>
-          <h3>Detalle de Tiempos por Resolutor</h3>
-
-          <p>
-            Tickets distintos, acciones registradas y horas
-            invertidas por especialista y mes.
-          </p>
-        </div>
-      </div>
-
+    <div class="table-title">
+      <h3>Detalle de Tiempos por Resolutor</h3>
+      <p>
+        Comparación mensual de horas, acciones y tickets
+        por especialista.
+      </p>
     </div>
 
-    <!-- BÚSQUEDA LOCAL -->
     <div class="table-actions">
+
+      <label class="metric-control">
+        <span>Indicador</span>
+        <select
+          [value]="metrica"
+          (change)="cambiarMetrica($event)"
+          aria-label="Seleccionar indicador"
+        >
+          <option value="horas_totales">Horas</option>
+          <option value="acciones">Acciones</option>
+          <option value="tickets">Tickets</option>
+        </select>
+      </label>
 
       <label class="search-control">
         <span class="search-icon" aria-hidden="true">⌕</span>
-
         <input
           type="search"
-          placeholder="Buscar en esta página..."
-          aria-label="Buscar resolutor o período"
+          placeholder="Buscar resolutor..."
+          aria-label="Buscar resolutor"
           [value]="busqueda"
           (input)="buscar($event)"
         />
@@ -47,28 +48,20 @@
     </div>
   </header>
 
-  <!-- RESUMEN -->
   <div class="summary-grid" *ngIf="datos?.resumen as resumen">
-
     <div class="summary-item">
       <span>Tickets distintos</span>
-      <strong>
-        {{ formatearNumero(resumen.tickets_distintos) }}
-      </strong>
+      <strong>{{ formatearNumero(resumen.tickets_distintos) }}</strong>
     </div>
 
     <div class="summary-item">
-      <span>Acciones</span>
-      <strong>
-        {{ formatearNumero(resumen.acciones) }}
-      </strong>
+      <span>Acciones registradas</span>
+      <strong>{{ formatearNumero(resumen.acciones) }}</strong>
     </div>
 
     <div class="summary-item">
-      <span>Resolutores</span>
-      <strong>
-        {{ formatearNumero(resumen.resolutores_distintos) }}
-      </strong>
+      <span>Resolutores distintos</span>
+      <strong>{{ formatearNumero(resumen.resolutores_distintos) }}</strong>
     </div>
 
     <div class="summary-item">
@@ -77,186 +70,131 @@
         {{ formatearHoras(resumen.horas_totales) }} h
       </strong>
     </div>
-
   </div>
 
-  <!-- INFORMACIÓN -->
   <div class="table-summary">
-
-    <div class="summary-left">
+    <span class="summary-left">
       <span class="summary-indicator"></span>
-
-      <span>
-        <strong>
-          {{ formatearNumero(totalRegistros) }}
-        </strong>
-        registros resolutor-mes
-      </span>
-    </div>
-
-    <span class="summary-note">
-      Búsqueda y ordenamiento sobre la página actual.
+      <strong>{{ filasVisibles.length }}</strong>
+      resolutores visibles en esta página
     </span>
 
+    <span class="summary-note">
+      Los meses se muestran horizontalmente.
+    </span>
   </div>
 
-  <!-- TABLA -->
   <div
     class="table-wrapper"
     tabindex="0"
-    aria-label="Tabla de tiempos por resolutor"
+    aria-label="Matriz mensual de tiempos por resolutor"
   >
+    <table class="pivot-table">
 
-    <table>
       <thead>
         <tr>
-
-          <th scope="col">
+          <th class="name-column" scope="col">
             <button
               type="button"
               class="sort-button"
-              (click)="ordenar('periodo')"
-            >
-              Período
-              <span class="sort-icon">
-                {{ indicadorOrden('periodo') }}
-              </span>
-            </button>
-          </th>
-
-          <th scope="col" class="resolver-column">
-            <button
-              type="button"
-              class="sort-button"
-              (click)="ordenar('resolutor')"
+              (click)="ordenar('nombre')"
             >
               Resolutor
-              <span class="sort-icon">
-                {{ indicadorOrden('resolutor') }}
-              </span>
+              <span>{{ indicadorOrden('nombre') }}</span>
             </button>
           </th>
 
-          <th scope="col" class="number-column">
+          <th
+            *ngFor="let periodo of periodos; trackBy: identificarPeriodo"
+            class="number-column"
+            scope="col"
+          >
             <button
               type="button"
-              class="sort-button"
-              (click)="ordenar('tickets')"
+              class="sort-button numeric-sort"
+              (click)="ordenar(periodo)"
             >
-              Tickets
-              <span class="sort-icon">
-                {{ indicadorOrden('tickets') }}
-              </span>
+              {{ formatearPeriodo(periodo) }}
+              <span>{{ indicadorOrden(periodo) }}</span>
             </button>
           </th>
 
-          <th scope="col" class="number-column">
+          <th class="total-column" scope="col">
             <button
               type="button"
-              class="sort-button"
-              (click)="ordenar('acciones')"
+              class="sort-button numeric-sort"
+              (click)="ordenar('total')"
             >
-              Acciones
-              <span class="sort-icon">
-                {{ indicadorOrden('acciones') }}
-              </span>
+              TOTAL
+              <span>{{ indicadorOrden('total') }}</span>
             </button>
           </th>
-
-          <th scope="col" class="number-column">
-            <button
-              type="button"
-              class="sort-button"
-              (click)="ordenar('horas_totales')"
-            >
-              Horas Totales
-              <span class="sort-icon">
-                {{ indicadorOrden('horas_totales') }}
-              </span>
-            </button>
-          </th>
-
         </tr>
       </thead>
 
       <tbody>
-
         <tr
           *ngFor="let fila of filasVisibles; trackBy: identificarFila"
         >
-
-          <td>
-            <span class="period-badge">
-              {{ formatearPeriodo(fila.periodo) }}
+          <td class="name-column">
+            <span class="entity-name" [title]="fila.nombre">
+              {{ fila.nombre }}
             </span>
           </td>
 
-          <td class="resolver-cell">
-            <span class="resolver-name" [title]="fila.resolutor">
-              {{ fila.resolutor }}
-            </span>
+          <td
+            *ngFor="let periodo of periodos; trackBy: identificarPeriodo"
+            class="number-column"
+            [class.zero-value]="obtenerValor(fila, periodo) === 0"
+          >
+            {{ formatearValor(obtenerValor(fila, periodo)) }}
           </td>
 
-          <td class="number-cell">
-            <strong>
-              {{ formatearNumero(fila.tickets) }}
-            </strong>
+          <td class="total-column row-total">
+            {{ formatearValor(obtenerTotal(fila)) }}
           </td>
-
-          <td class="number-cell">
-            <span class="actions-badge">
-              {{ formatearNumero(fila.acciones) }}
-            </span>
-          </td>
-
-          <td class="number-cell total-cell">
-            <strong>
-              {{ formatearHoras(fila.horas_totales) }} h
-            </strong>
-          </td>
-
         </tr>
 
-        <!-- SIN RESULTADOS -->
         <tr
-          *ngIf="
-            !cargando &&
-            !error &&
-            filasVisibles.length === 0
-          "
+          *ngIf="!cargando && !error && filasVisibles.length === 0"
         >
-          <td colspan="5" class="empty-cell">
-            <div class="empty-content">
-              <span class="empty-icon">▤</span>
-              <strong>Sin resultados</strong>
-
-              <span *ngIf="busqueda">
-                No hay coincidencias en la página actual.
-              </span>
-
-              <span *ngIf="!busqueda">
-                No existen registros para los filtros seleccionados.
-              </span>
-            </div>
+          <td
+            class="empty-cell"
+            [attr.colspan]="periodos.length + 2"
+          >
+            <strong>Sin resultados</strong>
+            <span>
+              No hay resolutores para la búsqueda o filtros actuales.
+            </span>
           </td>
         </tr>
-
       </tbody>
-    </table>
 
+      <tfoot *ngIf="filasVisibles.length > 0">
+        <tr class="totals-row">
+          <td class="name-column">TOTAL VISIBLE</td>
+
+          <td
+            *ngFor="let periodo of periodos; trackBy: identificarPeriodo"
+            class="number-column"
+          >
+            {{ formatearValor(totalMes(periodo)) }}
+          </td>
+
+          <td class="total-column grand-total">
+            {{ formatearValor(totalVisible) }}
+          </td>
+        </tr>
+      </tfoot>
+
+    </table>
   </div>
 
-  <!-- CARGANDO -->
-  <div
-    class="table-status loading-status"
-    *ngIf="cargando"
-    role="status"
-  >
+  <div class="table-status loading-status" *ngIf="cargando" role="status">
     <span class="loading-spinner"></span>
     Actualizando tiempos por resolutor...
   </div>
 
-  <!-- ERROR -->
   <div
     class="table-status error-status"
     *ngIf="!cargando && error"
@@ -265,32 +203,23 @@
     {{ error }}
   </div>
 
-  <!-- PAGINACIÓN -->
   <footer class="table-footer">
-
-    <div class="pagination-info">
-      Mostrando
-      <strong>{{ primerRegistro }}</strong>
-      -
+    <span class="pagination-info">
+      Registros mensuales
+      <strong>{{ primerRegistro }}</strong> -
       <strong>{{ ultimoRegistro }}</strong>
-      de
-      <strong>{{ formatearNumero(totalRegistros) }}</strong>
-    </div>
+      de <strong>{{ formatearNumero(totalRegistros) }}</strong>
+    </span>
 
     <div class="pagination-controls">
-
       <label class="page-size-control">
-        <span>Filas</span>
-
+        <span>Registros</span>
         <select
           [value]="tamanoActual"
           [disabled]="cargando"
           (change)="cambiarTamanoPagina($event)"
         >
-          <option
-            *ngFor="let tamano of tamanosPagina"
-            [value]="tamano"
-          >
+          <option *ngFor="let tamano of tamanosPagina" [value]="tamano">
             {{ tamano }}
           </option>
         </select>
@@ -302,17 +231,11 @@
         [disabled]="cargando || paginaActual <= 1"
         (click)="cambiarPagina(paginaActual - 1)"
         aria-label="Página anterior"
-      >
-        ‹
-      </button>
+      >‹</button>
 
       <span class="page-indicator">
-        Página
-        <strong>
-          {{ totalPaginas === 0 ? 0 : paginaActual }}
-        </strong>
-        de
-        <strong>{{ totalPaginas }}</strong>
+        Página {{ totalPaginas ? paginaActual : 0 }}
+        de {{ totalPaginas }}
       </span>
 
       <button
@@ -321,21 +244,19 @@
         [disabled]="cargando || paginaActual >= totalPaginas"
         (click)="cambiarPagina(paginaActual + 1)"
         aria-label="Página siguiente"
-      >
-        ›
-      </button>
-
+      >›</button>
     </div>
   </footer>
 
   <div class="methodology-note">
     <span>
-      Las horas provienen del reporte importado.
-      Los tickets se cuentan de manera distinta por resolutor y mes.
+      Horas y acciones: suma por resolutor y mes.
+      Tickets: suma de conteos mensuales.
     </span>
-
     <span>
-      La paginación se realiza desde SQL Server.
+      La matriz y su total visible corresponden a la página
+      recibida de SQL Server. Los indicadores superiores
+      corresponden a todos los registros filtrados.
     </span>
   </div>
 

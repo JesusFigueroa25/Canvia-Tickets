@@ -414,9 +414,12 @@
                 <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-dotacion-req' ? 'fullscreen_exit' : 'fullscreen'
                     }}</mat-icon>
             </button>
-            <app-requirement-resolvers-monthly-table [datos]="dotacion?.tabla ?? null" [cargando]="cargandoDotacion"
+
+            <app-requirement-resolvers-monthly-table [datos]="dotacion?.tabla ?? null"
+                [periodosDisponibles]="dotacion?.grafico?.periodos ?? []" [cargando]="cargandoDotacion"
                 [error]="errorDotacion" (paginaChange)="cambiarPaginaDotacion($event)">
             </app-requirement-resolvers-monthly-table>
+
         </div>
     </section>
 
@@ -424,7 +427,7 @@
     <section class="productivity-section" *ngIf="filtrosListos">
 
 
-    <!--     <header class="productivity-section-header">
+        <!--     <header class="productivity-section-header">
             <div>
                 <span class="productivity-section-label">Alcance 3</span>
                 <h2>Atención Paralela de Requerimientos</h2>
@@ -432,9 +435,9 @@
             </div>
         </header> -->
 
-        
 
-    
+
+
 
 
         <!--    <div class="productivity-chart chart-full-width chart-expandable"
@@ -453,7 +456,7 @@
         </div>-->
 
 
-    <!--     <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req" #tablaParalelaReqFs>
+        <!--     <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req" #tablaParalelaReqFs>
             <button type="button" class="productivity-table-expand-btn"
                 (click)="alternarPantallaCompleta(tablaParalelaReqFs)"
                 [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'Salir de pantalla completa' : 'Ampliar detalle de tickets simultáneos'">
@@ -468,7 +471,7 @@
         </div>
  -->
 
-    
+
 
     </section>
 

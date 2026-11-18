@@ -121,7 +121,7 @@ export class TicketsReportTimes
   errorGraficoResolutores: string | null = null;
 
   paginaTablaResolutores = 1;
-  tamanoTablaResolutores = 10;
+  tamanoTablaResolutores = 100;
   limiteGraficoResolutores = 10;
 
 
@@ -136,7 +136,7 @@ export class TicketsReportTimes
   errorGraficoProyectos: string | null = null;
 
   paginaTablaProyectos = 1;
-  tamanoTablaProyectos = 10;
+  tamanoTablaProyectos = 100;
   limiteGraficoProyectos = 10;
 
   private readonly cancelarTablaProyectos$ =
