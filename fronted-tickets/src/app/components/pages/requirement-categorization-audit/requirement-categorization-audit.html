@@ -8,7 +8,25 @@
                 y las actividades descritas en los requerimientos.
             </p>
         </div>
+        <button mat-flat-button type="button" class="report-download-button"
+            [disabled]="!reporteListo || exportandoReporte" [attr.aria-busy]="exportandoReporte"
+            (click)="descargarReporte()">
+            <mat-icon>{{ exportandoReporte ? 'hourglass_top' : 'download' }}</mat-icon>
+            {{ exportandoReporte ? 'Generando PNG…' : 'Descargar Reporte PNG' }}
+        </button>
     </header>
+
+    <section class="status-card error-card" *ngIf="errorPreparacionReporte || errorExportacion" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ errorPreparacionReporte || errorExportacion }}
+        <button mat-button type="button" *ngIf="errorPreparacionReporte" (click)="cargarDashboard()">Actualizar datos</button>
+    </section>
+
+    <div #reporteImagen class="report-export-stage" aria-hidden="true" inert *ngIf="datosReporte as datos">
+        <app-requirement-categorization-report [datos]="datos"
+            (renderizado)="confirmarRenderReporte($event)" (errorRenderizado)="fallarRenderReporte($event)">
+        </app-requirement-categorization-report>
+    </div>
 
 
 

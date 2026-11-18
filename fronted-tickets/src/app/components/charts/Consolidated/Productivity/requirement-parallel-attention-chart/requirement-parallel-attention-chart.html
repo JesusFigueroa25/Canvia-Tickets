@@ -1,0 +1,201 @@
+
+<article class="chart-card">
+
+  <!-- ENCABEZADO -->
+  <header class="chart-header">
+
+    <div class="header-content">
+
+      <div class="title-row">
+
+        <span class="title-accent"></span>
+
+        <div>
+          <h3>Atención Paralela por Resolutor</h3>
+
+          <p>
+            Ranking de resolutores según las superposiciones
+            detectadas entre los intervalos de sus tickets.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SELECCIÓN DE MÉTRICA -->
+    <div class="chart-controls">
+
+      <label
+        for="parallel-metric"
+        class="control-label">
+        Indicador
+      </label>
+
+      <select
+        id="parallel-metric"
+        [value]="metrica"
+        [disabled]="cargando"
+        (change)="cambiarMetrica($event)">
+
+        <option value="eventos">
+          Eventos de superposición
+        </option>
+
+        <option value="tickets_con_superposicion">
+          Tickets con superposición
+        </option>
+
+        <option value="maximo_simultaneos">
+          Máximo simultáneo
+        </option>
+
+      </select>
+
+    </div>
+
+  </header>
+
+
+  <!-- INDICADORES -->
+  <div class="summary-grid" *ngIf="resumen">
+
+    <div class="summary-item">
+      <span>Tickets evaluados</span>
+
+      <strong>
+        {{ formatearNumero(resumen?.tickets_evaluados ?? 0) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Tickets con superposición</span>
+
+      <strong class="orange-value">
+        {{ formatearNumero(resumen?.tickets_con_superposicion ?? 0) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Resolutores involucrados</span>
+
+      <strong>
+        {{ formatearNumero(resumen?.resolutores_con_superposicion ?? 0) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Eventos detectados</span>
+
+      <strong class="green-value">
+        {{ formatearNumero(resumen?.total_eventos ?? 0) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Máximo simultáneo</span>
+
+      <strong>
+        {{ formatearNumero(resumen?.maximo_simultaneos ?? 0) }}
+      </strong>
+    </div>
+
+  </div>
+
+
+  <!-- DESCRIPCIÓN DEL INDICADOR -->
+  <div class="metric-description">
+
+    <span class="metric-dot"></span>
+
+    <span>
+      {{ descripcionMetrica }}
+    </span>
+
+  </div>
+
+
+  <!-- GRÁFICO -->
+  <div
+    class="chart-container"
+    [style.height.px]="alturaGrafico">
+
+    <canvas
+      #parallelCanvas
+      role="img"
+      aria-label="Ranking de resolutores por superposición de tickets">
+    </canvas>
+
+
+    <!-- CARGANDO -->
+    <div
+      class="chart-state loading-state"
+      *ngIf="cargando"
+      role="status">
+
+      <span class="loading-spinner"></span>
+
+      <span>Analizando superposiciones de tickets...</span>
+
+    </div>
+
+
+    <!-- ERROR -->
+    <div
+      class="chart-state error-state"
+      *ngIf="!cargando && error"
+      role="alert">
+
+      <span class="state-icon">!</span>
+
+      <strong>No se pudo cargar el análisis</strong>
+
+      <span>{{ error }}</span>
+
+    </div>
+
+
+    <!-- SIN DATOS -->
+    <div
+      class="chart-state empty-state"
+      *ngIf="!cargando && !error && sinDatos">
+
+      <span class="empty-icon">▤</span>
+
+      <strong>Sin superposiciones detectadas</strong>
+
+      <span>
+        No existen registros para los filtros seleccionados.
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- METODOLOGÍA -->
+  <footer class="chart-footer">
+
+    <div class="methodology-message">
+
+      <span class="info-icon" aria-hidden="true">i</span>
+
+     
+
+    </div>
+
+    <span class="source-label">
+      Fuente: Requerimientos Consolidados
+    </span>
+
+  </footer>
+
+  <p
+    class="backend-methodology"
+    *ngIf="resumen?.metodologia">
+
+    {{ resumen?.metodologia }}
+
+  </p>
+
+</article>

@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
 import { IncidentConsolidatedTopProyectos } from '../../../../models/incident-consolidated';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { DailyReportTopProyectos } from '../../../../models/daily-report';
 
 @Component({
   selector: 'app-project-monthly-top',
@@ -12,18 +13,17 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 })
 export class ProjectMonthlyTop implements OnChanges {
 
-  @Input() datos: IncidentConsolidatedTopProyectos = { periodos: [], proyectos: [] };
-  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' = 'incidentes';
   anchoGrafico = 900;
   readonly chartPlugins = [ChartDataLabels];
 
   @Input() proyectoSeleccionado: string | null = null;
+  @Input() periodoSeleccionado: string | null = null;
+  @Input() datos: IncidentConsolidatedTopProyectos | DailyReportTopProyectos = { periodos: [], proyectos: [] };
+  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'diario' | 'tareas' = 'incidentes';
+  @Input() tituloPersonalizado: string | null = null;
 
-  // Indica qué representación está mostrando el gráfico.
   vistaMensual = false;
-  // Nombre del proyecto que aparece en la vista mensual.
   proyectoVistaMensual: string | null = null;
-  // Meses utilizados por los tooltips de la vista mensual.
   periodosVistaMensual: string[] = [];
 
 
@@ -115,10 +115,12 @@ export class ProjectMonthlyTop implements OnChanges {
 
     scales: {
       x: {
+        //09/11/2026
+        offset: true,
+        //Fin
         grid: {
           display: false
         },
-
         ticks: {
           maxRotation: 0,
           autoSkip: false,
@@ -126,12 +128,32 @@ export class ProjectMonthlyTop implements OnChanges {
             size: 10
           },
 
+          //09/11/2026
           callback: function (value) {
             const etiqueta = this.getLabelForValue(Number(value));
-            return etiqueta.length > 19
-              ? etiqueta.slice(0, 16) + '...'
-              : etiqueta;
+
+            const palabras = etiqueta.split(' ');
+            const lineas: string[] = [];
+            let linea = '';
+
+            for (const palabra of palabras) {
+              const siguiente = linea ? `${linea} ${palabra}` : palabra;
+
+              if (siguiente.length > 22 && linea) {
+                lineas.push(linea);
+                linea = palabra;
+              } else {
+                linea = siguiente;
+              }
+            }
+
+            if (linea) {
+              lineas.push(linea);
+            }
+
+            return lineas;
           }
+          //Fin
         }
       },
 
@@ -153,7 +175,11 @@ export class ProjectMonthlyTop implements OnChanges {
 
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['datos'] || changes['proyectoSeleccionado']) {
+    if (
+      changes['datos'] ||
+      changes['proyectoSeleccionado'] ||
+      changes['periodoSeleccionado']
+    ) {
       this.actualizarGrafico();
     }
   }
@@ -164,7 +190,31 @@ export class ProjectMonthlyTop implements OnChanges {
 
     const proyectos = this.datos.proyectos ?? [];
     const periodos = this.datos.periodos ?? [];
+
+    // FILTRO DINAMICO MENSUAL
+    const periodosVisibles = this.periodoSeleccionado
+      ? periodos.filter(periodo => {
+
+        const codigoPeriodo =
+          `${periodo.anio}-${String(periodo.mes).padStart(2, '0')}`;
+
+        return codigoPeriodo === this.periodoSeleccionado;
+      })
+      : periodos;
+
+    this.chartOptions = {
+      ...this.chartOptions,
+      plugins: {
+        ...this.chartOptions.plugins,
+        legend: {
+          ...this.chartOptions.plugins?.legend,
+          display: periodosVisibles.length > 1
+        }
+      }
+    };
+
     const nombreSeleccionado = this.proyectoSeleccionado?.trim().toLowerCase();
+
     const proyectoFiltrado = nombreSeleccionado
       ? proyectos.find(
         item =>
@@ -176,13 +226,19 @@ export class ProjectMonthlyTop implements OnChanges {
     if (proyectoFiltrado) {
       this.vistaMensual = true;
       this.proyectoVistaMensual = proyectoFiltrado.proyecto;
-      const periodosOrdenados = [...periodos].sort(
+      const periodosOrdenados = [...periodosVisibles].sort(
         (a, b) =>
           (a.anio - b.anio) ||
           (a.mes - b.mes)
       );
 
       this.periodosVistaMensual = periodosOrdenados.map(item => item.periodo);
+      //09/11/2026
+      this.anchoGrafico = Math.max(
+        900,
+        periodosOrdenados.length * 85
+      );
+
       this.chartData = {
         labels: this.periodosVistaMensual,
         datasets: [
@@ -194,10 +250,17 @@ export class ProjectMonthlyTop implements OnChanges {
               );
               return registro?.tickets ?? 0;
             }),
+            backgroundColor: periodosOrdenados.map(
+              (_, index) => this.colores[index % this.colores.length]
+            ),
 
-            backgroundColor: this.colores[0],
+            borderColor: periodosOrdenados.map(
+              (_, index) => this.colores[index % this.colores.length]
+            ),
+
             borderRadius: 4,
             maxBarThickness: 42
+            //Fin
           }
         ]
       };
@@ -207,29 +270,71 @@ export class ProjectMonthlyTop implements OnChanges {
     this.vistaMensual = false;
     this.proyectoVistaMensual = null;
     this.periodosVistaMensual = [];
+
+    // IDENTIFICAR SI SOLO EXISTE UN MES VISIBLE
+    const unSoloMes = periodosVisibles.length === 1;
+
+    // ANCHO ADAPTABLE POR PROYECTO
+    const anchoPorProyecto = unSoloMes
+      ? 160
+      : Math.max(220, periodosVisibles.length * 30 + 50);
+
     this.anchoGrafico = Math.max(
       900,
-      proyectos.length * 110
+      proyectos.length * anchoPorProyecto
     );
+
+    // COLORES POR PROYECTO CUANDO SOLO HAY UN MES
+    const coloresPorProyecto = proyectos.map(
+      (_, index) => this.colores[index % this.colores.length]
+    );
+
+    // CONFIGURACIÓN DEL GRÁFICO
     this.chartData = {
+
       labels: proyectos.map(
-        item => item.proyecto
+        item => this.limpiarNombreProyecto(item.proyecto)
       ),
-      datasets: periodos.map((periodo, indice) => ({
+
+      datasets: periodosVisibles.map((periodo, indice) => ({
+
         label: periodo.periodo,
+
         data: proyectos.map(proyecto => {
+
           const registro = proyecto.mensual.find(
             mes => mes.periodo === periodo.periodo
           );
+
           return registro?.tickets ?? 0;
         }),
-        backgroundColor: this.colores[indice % this.colores.length],
-        borderRadius: 4,
-        maxBarThickness: 22
-      }))
 
+        // UN MES: COLOR POR PROYECTO
+        // VARIOS MESES: COLOR POR PERIODO
+        backgroundColor: unSoloMes
+          ? coloresPorProyecto
+          : this.colores[indice % this.colores.length],
+
+        borderRadius: 5,
+
+        // BARRAS MÁS ANCHAS CUANDO HAY UN SOLO MES
+        maxBarThickness: unSoloMes ? 70 : 24,
+
+        // CENTRADO Y SEPARACIÓN
+        barPercentage: unSoloMes ? 0.90 : 0.88,
+        categoryPercentage: unSoloMes ? 0.72 : 0.78
+
+      }))
     };
 
+
+
+
   }
+  //09/11/2026
+  private limpiarNombreProyecto(nombre: string): string {
+    return nombre.replace(/^\s*\d{6}\s*[-–:]?\s*/, '').trim();
+  }
+  //FIN
 
 }

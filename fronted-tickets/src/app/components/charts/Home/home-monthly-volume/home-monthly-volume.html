@@ -1,24 +1,22 @@
-
 <section class="chart-card">
     <div class="chart-header">
         <div>
+
             <h2>
-                Volumen Mensual de Operación - 2026
+                Volumen Mensual de Operación
             </h2>
+
             <p>
-                Comparación mensual de incidentes
-                y requerimientos registrados en los consolidados.
+                Comparación mensual de incidentes, requerimientos
+                y tareas registrados en las tablas consolidadas.
             </p>
+
         </div>
     </div>
 
 
     <div class="chart-container">
-        <canvas
-            baseChart
-            [data]="chartData"
-            [options]="chartOptions"
-            [type]="'bar'">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="'bar'">
         </canvas>
     </div>
 

@@ -28,6 +28,17 @@ export class SLAPareto implements OnChanges {
   categoriasCompletas: string[] = [];
   participaciones: number[] = [];
 
+  private readonly colores = [
+    '#FF620F',
+    '#FFB184',
+    '#16835B',
+    '#63B891',
+    '#D97706',
+    '#F4C95D',
+    '#12633F',
+    '#A8DCC2'
+  ];
+
   //Char
   chartData: ChartData<'bar' | 'line', number[], string> = { labels: [], datasets: [] };
   chartOptions: ChartOptions<'bar' | 'line'> = this.crearOpciones(false);
@@ -401,47 +412,63 @@ export class SLAPareto implements OnChanges {
     // COLORES DINÁMICOS DE LAS BARRAS
     const coloresBarras = categorias.map((_, indice) => {
 
+      const colorOriginal = this.colores[indice % this.colores.length];
+
+      // Requerimientos SLA: aplicar paleta Canvia
       if (!this.seleccionMultiple) {
-        return '#ffb184';
+        return colorOriginal;
       }
 
       const tipo = this.categoriasSeleccionables[indice];
 
-      // "Otros" y categorías no seleccionables
+      // Otros y categorías no seleccionables
       if (!tipo) {
-        return '#d0d5dd';
+        return '#D0D5DD';
       }
 
-      // Sin filtros: todas las barras usan naranja suave
+      // Sin selección: mostrar paleta completa
       if (this.tiposSeleccionados.length === 0) {
-        return '#ffb184';
+        return colorOriginal;
       }
 
-      // Seleccionado: naranja Canvia
+      // Mantener color original de las categorías seleccionadas
       if (this.tiposSeleccionados.includes(tipo)) {
-        return '#ff620f';
+        return colorOriginal;
       }
 
-      // No seleccionado: naranja claro
-      return '#ffe4d4';
+      // Atenuar las categorías no seleccionadas
+      return '#FFE4D4';
 
     });
 
+    // COLORES DE LOS BORDES
     const bordesBarras = categorias.map((_, indice) => {
 
+      const colorOriginal = this.colores[indice % this.colores.length];
+
       if (!this.seleccionMultiple) {
-        return '#ff620f';
+        return colorOriginal;
       }
 
       const tipo = this.categoriasSeleccionables[indice];
 
+      // Otros
       if (!tipo) {
-        return '#98a2b3';
+        return '#98A2B3';
       }
 
-      return this.tiposSeleccionados.includes(tipo)
-        ? '#d84a00'
-        : '#ff620f';
+      // Sin selección
+      if (this.tiposSeleccionados.length === 0) {
+        return colorOriginal;
+      }
+
+      // Categorías seleccionadas
+      if (this.tiposSeleccionados.includes(tipo)) {
+        return colorOriginal;
+      }
+
+      // Categorías no seleccionadas
+      return '#FFE4D4';
 
     });
 

@@ -1,0 +1,420 @@
+
+<article class="table-card">
+
+  <!-- ENCABEZADO -->
+  <header class="table-header">
+
+    <div class="header-content">
+
+      <div class="header-title">
+
+        <span class="header-accent"></span>
+
+        <div>
+          <h3>Productividad Promedio por Proyecto</h3>
+
+          <p>
+            Volumen de requerimientos, productividad promedio
+            y resolutores distintos por proyecto.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- BÚSQUEDA -->
+    <div class="table-actions">
+
+      <label class="search-control">
+
+        <span class="search-icon" aria-hidden="true">⌕</span>
+
+        <input type="search"
+               placeholder="Buscar en esta página..."
+               aria-label="Buscar proyectos de la página actual"
+               [value]="busqueda"
+               (input)="buscar($event)">
+
+      </label>
+
+      <button type="button"
+              class="clear-search"
+              *ngIf="busqueda"
+              (click)="limpiarBusqueda()">
+        Limpiar
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- INFORMACIÓN -->
+  <div class="table-summary">
+
+    <div class="summary-left">
+
+      <span class="summary-indicator"></span>
+
+      <span>
+        <strong>{{ formatearEntero(totalRegistros) }}</strong>
+        proyectos encontrados
+      </span>
+
+    </div>
+
+    <span class="summary-note">
+      Promedios calculados sobre el período efectivo.
+    </span>
+
+  </div>
+
+
+  <!-- TABLA -->
+  <div class="table-wrapper" tabindex="0"
+       aria-label="Tabla de productividad promedio por proyecto">
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <!-- PROYECTO -->
+          <th scope="col" class="project-column">
+
+            <button type="button"
+                    class="sort-button"
+                    (click)="ordenar('proyecto')">
+
+              <span>Proyecto</span>
+
+              <span class="sort-icon">
+                {{ indicadorOrden('proyecto') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- TOTAL TICKETS -->
+          <th scope="col" class="number-column">
+
+            <button type="button"
+                    class="sort-button"
+                    (click)="ordenar('total_tickets')">
+
+              <span>Total Tickets</span>
+
+              <span class="sort-icon">
+                {{ indicadorOrden('total_tickets') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- PROMEDIO DIARIO -->
+          <th scope="col" class="number-column">
+
+            <button type="button"
+                    class="sort-button"
+                    (click)="ordenar('promedio_diario')">
+
+              <span>Prom. Diario</span>
+
+              <span class="sort-icon">
+                {{ indicadorOrden('promedio_diario') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- PROMEDIO SEMANAL -->
+          <th scope="col" class="number-column">
+
+            <button type="button"
+                    class="sort-button"
+                    (click)="ordenar('promedio_semanal')">
+
+              <span>Prom. Semanal</span>
+
+              <span class="sort-icon">
+                {{ indicadorOrden('promedio_semanal') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- PROMEDIO MENSUAL -->
+          <th scope="col" class="number-column">
+
+            <button type="button"
+                    class="sort-button"
+                    (click)="ordenar('promedio_mensual')">
+
+              <span>Prom. Mensual</span>
+
+              <span class="sort-icon">
+                {{ indicadorOrden('promedio_mensual') }}
+              </span>
+
+            </button>
+
+          </th>
+
+
+          <!-- RESOLUTORES -->
+          <th scope="col" class="number-column">
+
+            <button type="button"
+                    class="sort-button"
+                    (click)="ordenar('resolutores_distintos')">
+
+              <span>Resolutores</span>
+
+              <span class="sort-icon">
+                {{ indicadorOrden('resolutores_distintos') }}
+              </span>
+
+            </button>
+
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <tr *ngFor="
+              let fila of filasVisibles;
+              trackBy: identificarProyecto
+            ">
+
+          <!-- PROYECTO -->
+          <td class="project-cell">
+
+            <span class="project-name"
+                  [title]="fila.proyecto">
+
+              {{ nombreVisibleProyecto(fila.proyecto) }}
+
+            </span>
+
+          </td>
+
+
+          <!-- TOTAL TICKETS -->
+          <td class="number-cell total-cell">
+
+            <strong>
+              {{ formatearEntero(fila.total_tickets) }}
+            </strong>
+
+          </td>
+
+
+          <!-- PROMEDIO DIARIO -->
+          <td class="number-cell">
+
+            <span class="average-value">
+              {{ formatearPromedio(fila.promedio_diario) }}
+            </span>
+
+          </td>
+
+
+          <!-- PROMEDIO SEMANAL -->
+          <td class="number-cell">
+
+            <span class="average-value">
+              {{ formatearPromedio(fila.promedio_semanal) }}
+            </span>
+
+          </td>
+
+
+          <!-- PROMEDIO MENSUAL -->
+          <td class="number-cell">
+
+            <span class="average-value">
+              {{ formatearPromedio(fila.promedio_mensual) }}
+            </span>
+
+          </td>
+
+
+          <!-- RESOLUTORES -->
+          <td class="number-cell">
+
+            <span class="resolvers-badge">
+
+              {{ formatearEntero(fila.resolutores_distintos) }}
+
+            </span>
+
+          </td>
+
+        </tr>
+
+
+        <!-- SIN RESULTADOS -->
+        <tr *ngIf="
+              !cargando &&
+              !error &&
+              filasVisibles.length === 0
+            ">
+
+          <td colspan="6" class="empty-cell">
+
+            <div class="empty-content">
+
+              <span class="empty-icon">▤</span>
+
+              <strong>Sin resultados</strong>
+
+              <span *ngIf="busqueda">
+                No hay proyectos que coincidan con la búsqueda
+                dentro de esta página.
+              </span>
+
+              <span *ngIf="!busqueda">
+                No existen proyectos para los filtros seleccionados.
+              </span>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- ERROR -->
+  <div class="table-status error-status"
+       *ngIf="!cargando && error"
+       role="alert">
+
+    {{ error }}
+
+  </div>
+
+
+  <!-- CARGANDO -->
+  <div class="table-status loading-status"
+       *ngIf="cargando"
+       role="status">
+
+    <span class="loading-spinner"></span>
+
+    Actualizando productividad por proyecto...
+
+  </div>
+
+
+  <!-- PIE / PAGINACIÓN -->
+  <footer class="table-footer">
+
+    <div class="pagination-info">
+
+      Mostrando
+      <strong>{{ primerRegistro }}</strong>
+      -
+      <strong>{{ ultimoRegistro }}</strong>
+      de
+      <strong>{{ formatearEntero(totalRegistros) }}</strong>
+
+    </div>
+
+
+    <div class="pagination-controls">
+
+      <!-- TAMAÑO DE PÁGINA -->
+      <label class="page-size-control">
+
+        <span>Filas</span>
+
+        <select [value]="tamanoActual"
+                [disabled]="cargando"
+                (change)="cambiarTamanoPagina($event)">
+
+          <option *ngFor="let tamano of tamanosPagina"
+                  [value]="tamano">
+
+            {{ tamano }}
+
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <!-- ANTERIOR -->
+      <button type="button"
+              class="page-button"
+              [disabled]="cargando || paginaActual <= 1"
+              (click)="cambiarPagina(paginaActual - 1)"
+              aria-label="Página anterior">
+
+        ‹
+
+      </button>
+
+
+      <!-- INDICADOR -->
+      <span class="page-indicator">
+
+        Página
+        <strong>{{ paginaActual }}</strong>
+        de
+        <strong>{{ totalPaginas }}</strong>
+
+      </span>
+
+
+      <!-- SIGUIENTE -->
+      <button type="button"
+              class="page-button"
+              [disabled]="cargando || paginaActual >= totalPaginas"
+              (click)="cambiarPagina(paginaActual + 1)"
+              aria-label="Página siguiente">
+
+        ›
+
+      </button>
+
+    </div>
+
+  </footer>
+
+
+  <!-- NOTA METODOLÓGICA -->
+  <div class="methodology-note">
+
+    <span>
+      Promedios calculados sobre días, semanas y meses calendario.
+      Los resolutores se cuentan por nombre distinto no vacío.
+    </span>
+
+    <span>
+      La búsqueda y el ordenamiento aplican a la página cargada.
+    </span>
+
+  </div>
+
+</article>

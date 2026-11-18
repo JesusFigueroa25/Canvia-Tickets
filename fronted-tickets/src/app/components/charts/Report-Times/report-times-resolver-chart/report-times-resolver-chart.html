@@ -1,0 +1,131 @@
+<section class="chart-card">
+
+  <header class="chart-header">
+    <div class="header-content">
+      <div class="title-row">
+        <span class="title-accent"></span>
+
+        <div>
+          <h3>Horas Registradas por Resolutor</h3>
+
+          <p>
+            Distribución de horas dedicadas a la elaboración
+            de informes mensuales por especialista.
+          </p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- CONTROLES DEL GRÁFICO -->
+    <div class="chart-actions">
+
+      <!-- SELECTOR DE MES -->
+      <div class="chart-controls">
+        <label class="control-label" for="report-resolver-month">
+          Mes del gráfico
+        </label>
+
+        <select id="report-resolver-month" [value]="mesActivo" [disabled]="cargando || !datos?.periodos?.length"
+          (change)="seleccionarMes($event)">
+          <option value="">Todos los meses</option>
+
+          <option *ngFor="let periodo of datos?.periodos ?? []" [value]="periodo">
+            {{ nombreMes(periodo) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- BUSCADOR DE RESOLUTORES -->
+      <div class="resolver-search">
+
+        <label class="control-label" for="report-resolver-search">
+          Buscar resolutor
+        </label>
+
+        <div class="resolver-search-box">
+          <span class="search-icon" aria-hidden="true">
+            ⌕
+          </span>
+
+          <input id="report-resolver-search" type="search" placeholder="Buscar resolutor..." [value]="busquedaResolutor"
+            (input)="buscarResolutor($event)" />
+
+          <button *ngIf="busquedaResolutor" type="button" class="clear-search" (click)="limpiarBusquedaResolutor()"
+            aria-label="Limpiar búsqueda">
+            ×
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+  <!-- RESUMEN DEL RANKING -->
+  <!--
+    <div class="summary-grid" *ngIf="datos">
+
+    <div class="summary-item">
+      <span>Resolutores mostrados</span>
+      <strong>
+        {{ formatearNumero(registrosVisibles.length) }}
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Horas del ranking</span>
+      <strong class="highlight">
+        {{ formatearHoras(totalHorasMostradas) }} h
+      </strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Meses disponibles</span>
+      <strong>
+        {{ formatearNumero(totalMeses) }}
+      </strong>
+    </div>
+
+  </div>
+  -->
+
+
+
+  <!-- CARGANDO -->
+  <div *ngIf="cargando" class="chart-status" role="status">
+    <span class="loading-spinner"></span>
+    Actualizando horas por resolutor...
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="!cargando && error" class="chart-status error" role="alert">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!cargando && !error && sinDatos" class="chart-status">
+    {{
+    busquedaResolutor
+    ? 'No se encontraron resolutores que coincidan con la búsqueda.'
+    : 'No existen horas registradas para los filtros seleccionados.'
+    }}
+  </div>
+
+  <!-- GRÁFICO -->
+  <div *ngIf="!cargando && !error && !sinDatos" class="chart-container" [style.height.px]="alturaGrafico">
+    <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'" role="img"
+      aria-label="Horas por resolutor y mes"></canvas>
+  </div>
+
+  <footer class="chart-footer">
+    <span>
+      Unidad: horas
+    </span>
+
+    <span>
+      Los meses corresponden a la fecha de creación del ticket.
+    </span>
+  </footer>
+
+</section>

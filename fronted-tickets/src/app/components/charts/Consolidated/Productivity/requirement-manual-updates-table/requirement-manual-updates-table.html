@@ -1,0 +1,58 @@
+<section class="table-card" aria-label="Detalle de tickets con registros manuales">
+  <header class="table-header">
+    <div class="header-copy">
+      <h2>Detalle por grupo y resolutor</h2>
+      <p>Registros agrupados y paginados en SQL Server. La búsqueda consulta el backend.</p>
+    </div>
+    <mat-form-field appearance="outline" class="resolver-search">
+      <mat-label>Buscar resolutor asignado</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput type="search" [value]="textoBusqueda" (input)="actualizarBusqueda($event)"
+        placeholder="Nombre o apellido" aria-label="Buscar resolutor asignado">
+      <button type="button" mat-icon-button matSuffix *ngIf="textoBusqueda" (click)="limpiarBusqueda()"
+        aria-label="Limpiar búsqueda">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </header>
+
+  <div class="table-status" *ngIf="cargando" role="status">Actualizando resultados...</div>
+  <div class="table-status error" *ngIf="!cargando && error" role="alert">{{ error }}</div>
+
+  <div class="table-container" *ngIf="!cargando && !error">
+    <table mat-table [dataSource]="datos?.items ?? []" class="manual-table">
+      <ng-container matColumnDef="grupo_resolutor">
+        <th mat-header-cell *matHeaderCellDef>Grupo resolutor</th>
+        <td mat-cell *matCellDef="let item">{{ item.grupo_resolutor }}</td>
+      </ng-container>
+      <ng-container matColumnDef="resolutor">
+        <th mat-header-cell *matHeaderCellDef>Resolutor asignado</th>
+        <td mat-cell *matCellDef="let item" class="resolver-name">{{ item.resolutor }}</td>
+      </ng-container>
+      <ng-container matColumnDef="tickets">
+        <th mat-header-cell *matHeaderCellDef class="numeric">Tickets</th>
+        <td mat-cell *matCellDef="let item" class="numeric strong">{{ item.tickets | number:'1.0-0' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="proyectos">
+        <th mat-header-cell *matHeaderCellDef class="numeric">Proyectos</th>
+        <td mat-cell *matCellDef="let item" class="numeric">{{ item.proyectos | number:'1.0-0' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="porcentaje">
+        <th mat-header-cell *matHeaderCellDef class="numeric">Participación</th>
+        <td mat-cell *matCellDef="let item" class="numeric">{{ item.porcentaje | number:'1.2-2' }}%</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="columnas; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty-state" [attr.colspan]="columnas.length">
+          No se encontraron resolutores para los filtros actuales.
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-paginator *ngIf="!error && datos" [length]="datos.total" [pageIndex]="datos.pagina - 1" [pageSize]="datos.tamano"
+    [pageSizeOptions]="opcionesPagina" [showFirstLastButtons]="true" (page)="cambiarPagina($event)"
+    aria-label="Paginación de actualizaciones manuales">
+  </mat-paginator>
+</section>

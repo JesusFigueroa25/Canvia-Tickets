@@ -6,6 +6,7 @@ class HomeKPIsOut(BaseModel):
     incidentes_sla: int
     requerimientos_consolidados: int
     requerimientos_sla: int
+    tareas_consolidadas: int
 
 #INDICADORES CLAVE
 class HomeIndicadoresClaveOut(BaseModel):
@@ -21,6 +22,8 @@ class HomeVolumenMensualItem(BaseModel):
     periodo: str
     incidentes: int | None
     requerimientos: int | None
+    tareas: int | None = None
+
 
 class HomeEvolucionSLAItem(BaseModel):
     anio: int

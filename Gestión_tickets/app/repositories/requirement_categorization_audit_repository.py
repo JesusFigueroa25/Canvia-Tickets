@@ -2,8 +2,13 @@
 from __future__ import annotations
 import json
 from datetime import date, timedelta
-from sqlalchemy import case, func, insert, select
+from sqlalchemy import and_, case, func, insert, or_, select
 from sqlalchemy.orm import Session, aliased
+from app.services.categorization.category_scope import (
+    CategoryScope,
+    obtener_alcance,
+    normalizar_valor,
+)
 from app.schemas.requirement_categorization_audit_schema import AuditDashboardFilters
 from app.models.requirement_consolidated_model import RequirementConsolidated
 from app.models.requirement_categorization_audit_model import (
@@ -11,18 +16,40 @@ from app.models.requirement_categorization_audit_model import (
     RequirementCategorizationAuditGroup,
     RequirementCategorizationAuditRun,
     RequirementCategorizationAuditResult,
-
-
 )
 
 GRUPO_PREDETERMINADO = "BASE DE DATOS Y EBS"
-GRUPOS_HABILITADOS = frozenset({GRUPO_PREDETERMINADO})
 
 
-def normalizar_grupo_resolutor(grupo_resolutor: str | None = None) -> str:
-    grupo = " ".join((grupo_resolutor or GRUPO_PREDETERMINADO).split()).upper()
-    if grupo not in GRUPOS_HABILITADOS:
-        raise ValueError(f"Grupo resolutor no habilitado para auditoría: {grupo}")
+def normalizar_grupo_resolutor(
+    grupo_resolutor: str | None = None,
+) -> str:
+    """
+    Normaliza el grupo resolutor sin restringirlo
+    a un grupo específico.
+
+    Mantiene BASE DE DATOS Y EBS como valor
+    predeterminado para compatibilidad con el sistema.
+    """
+
+    valor = (
+        GRUPO_PREDETERMINADO
+        if grupo_resolutor is None
+        else grupo_resolutor
+    )
+
+    grupo = " ".join(str(valor).split()).upper()
+
+    if not grupo:
+        raise ValueError(
+            "El grupo resolutor no puede estar vacío."
+        )
+
+    if len(grupo) > 150:
+        raise ValueError(
+            "El grupo resolutor supera los 150 caracteres."
+        )
+
     return grupo
 
 
@@ -182,6 +209,158 @@ def listar_catalogo(db: Session,grupo_resolutor: str | None = None,limite: int =
     ).all()
 
     return {"total":int(total),"items":list(items)}
+
+
+
+
+# ==========================================================
+# CATÁLOGO DINÁMICO PARA AUDITORÍA CON MINILM
+# ==========================================================
+
+def obtener_catalogo_ia_con_alcance(
+    db: Session,
+    grupo_resolutor: str | None = None,
+) -> tuple[CategoryScope, list[RequirementCategoryCatalog]]:
+    """
+    Resuelve dinámicamente la relación entre el grupo
+    resolutor y las categorías de nivel 1 de ServiceAIDE.
+
+    No contiene familias específicas hardcodeadas.
+
+    Devuelve:
+        - Alcance calculado para el grupo.
+        - Rutas elegibles para MiniLM.
+
+    No realiza escrituras en SQL Server.
+    """
+
+    # ======================================================
+    # 1. NORMALIZAR GRUPO RESOLUTOR
+    # ======================================================
+
+    grupo = normalizar_grupo_resolutor(
+        grupo_resolutor
+    )
+
+    C = RequirementCategoryCatalog
+
+    # ======================================================
+    # 2. OBTENER CATEGORÍAS OFICIALES E HISTÓRICAS
+    # ======================================================
+    #
+    # Familias de servicio:
+    #   SERVICE_AIDE / VALIDATED
+    #
+    # Actividades Genéricas históricas:
+    #   SQL_SERVER / OBSERVED
+    #
+    # Las categorías históricas de otras familias
+    # no se consideran automáticamente autorizadas.
+    # ======================================================
+
+    oficiales = and_(
+        C.catalog_source == "SERVICE_AIDE",
+        C.validation_status == "VALIDATED",
+    )
+
+    genericas_historicas = and_(
+        C.level_1 == "Actividades Genericas",
+        C.catalog_source == "SQL_SERVER",
+        C.validation_status == "OBSERVED",
+    )
+
+    consulta = (
+        select(C)
+        .where(
+            or_(
+                oficiales,
+                genericas_historicas,
+            )
+        )
+        .order_by(
+            C.level_1.asc(),
+            C.level_2.asc(),
+            C.level_3.asc(),
+            C.catalog_id.asc(),
+        )
+    )
+
+    catalogo_disponible = list(
+        db.scalars(consulta).all()
+    )
+
+    if not catalogo_disponible:
+        raise RuntimeError(
+            "No existen categorías oficiales disponibles "
+            "para construir el alcance de auditoría."
+        )
+
+    # ======================================================
+    # 3. DESCUBRIR NIVELES 1 DISPONIBLES
+    # ======================================================
+
+    niveles_1 = {
+        categoria.level_1
+        for categoria in catalogo_disponible
+        if categoria.level_1
+    }
+
+    # ======================================================
+    # 4. RESOLVER ALCANCE DINÁMICAMENTE
+    # ======================================================
+
+    alcance = obtener_alcance(
+        grupo_resolutor=grupo,
+        categorias_nivel_1=niveles_1,
+    )
+
+    # ======================================================
+    # 5. IDENTIFICAR CATEGORÍAS PERMITIDAS
+    # ======================================================
+
+    claves_permitidas = {
+        normalizar_valor(categoria)
+        for categoria in alcance.niveles_1_permitidos
+    }
+
+    # ======================================================
+    # 6. FILTRAR LAS RUTAS DEL CATÁLOGO
+    # ======================================================
+
+    rutas_elegibles = [
+        categoria
+        for categoria in catalogo_disponible
+        if normalizar_valor(categoria.level_1)
+        in claves_permitidas
+    ]
+
+    if not rutas_elegibles:
+        raise RuntimeError(
+            "No se encontraron rutas elegibles para "
+            f"el grupo resolutor: {grupo}"
+        )
+
+    return alcance, rutas_elegibles
+
+
+def listar_catalogo_para_ia(
+    db: Session,
+    grupo_resolutor: str | None = None,
+) -> list[RequirementCategoryCatalog]:
+    """
+    Mantiene la interfaz de lectura existente.
+
+    Obtiene exclusivamente las rutas elegibles
+    para el grupo resolutor seleccionado.
+    """
+
+    _, rutas = obtener_catalogo_ia_con_alcance(
+        db,
+        grupo_resolutor,
+    )
+
+    return rutas
+
 
 
 

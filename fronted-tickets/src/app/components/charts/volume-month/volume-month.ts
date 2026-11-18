@@ -17,7 +17,7 @@ export class VolumeMonth implements OnChanges {
   @Input() datos: (IncidentSLAVolumenItem | RequirementSLAVolumenItem)[] = [];
   @Input() datosConsolidados: IncidentConsolidatedVolumenItem[] = [];
   @Input() modo: 'sla' | 'consolidado' = 'sla';
-  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' = 'incidentes';
+  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'tareas' = 'incidentes';
   @Input() entidadSla: 'incidentes' | 'requerimientos' = 'incidentes';
 
   // FILTRO DINAMICO - SOLO INCIDENTES CONSOLIDADOS
@@ -28,6 +28,27 @@ export class VolumeMonth implements OnChanges {
 
   // DATOS ORDENADOS
   private registrosConsolidados: IncidentConsolidatedVolumenItem[] = [];
+
+  get tituloIncidentesConsolidados(): string {
+    const base = 'Nro Incidentes por Mes';
+    const registros = this.registrosConsolidados;
+    if (!registros.length) return base;
+
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    // Usar los mismos registros ordenados que alimentan las barras.
+    if (registros.some(item => !Number.isInteger(item.mes) || item.mes < 1 || item.mes > 12 ||
+      !Number.isInteger(item.anio))) return base;
+    const primero = registros[0];
+    const ultimo = registros[registros.length - 1];
+    if (primero.anio === ultimo.anio && primero.mes === ultimo.mes) {
+      return `Nro Incidentes por el Mes de ${meses[primero.mes - 1]}`;
+    }
+    const conAnio = primero.anio !== ultimo.anio;
+    const nombre = (item: IncidentConsolidatedVolumenItem) =>
+      `${meses[item.mes - 1]}${conAnio ? ` ${item.anio}` : ''}`;
+    return `${base} - ${nombre(primero)} - ${nombre(ultimo)}`;
+  }
   private registrosSla: IncidentSLAVolumenItem[] = [];
 
   // Registros originales de Requerimientos SLA
@@ -39,6 +60,18 @@ export class VolumeMonth implements OnChanges {
     datasets: []
   };
 
+  //09/11/2026
+  private readonly colores = [
+    '#FF620F',
+    '#FFB184',
+    '#16835B',
+    '#63B891',
+    '#D97706',
+    '#F4C95D',
+    '#12633F',
+    '#A8DCC2'
+  ];
+
   readonly chartPlugins = [ChartDataLabels];
 
 
@@ -49,15 +82,14 @@ export class VolumeMonth implements OnChanges {
       return false;
     }
 
-    // Consolidados: incidentes y requerimientos
     if (this.modo === 'consolidado') {
       return (
         this.entidadConsolidado === 'incidentes' ||
-        this.entidadConsolidado === 'requerimientos'
+        this.entidadConsolidado === 'requerimientos' ||
+        this.entidadConsolidado === 'tareas'
       );
     }
 
-    // SLA: incidentes y requerimientos
     if (this.modo === 'sla') {
       return (
         this.entidadSla === 'incidentes' ||
@@ -292,15 +324,18 @@ export class VolumeMonth implements OnChanges {
       this.registrosConsolidados = registros;
 
       // COLORES DE BARRAS SEGUN EL MES SELECCIONADO
-      const colores = registros.map(item => {
+      //09/11/2026
+      const colores = registros.map((item, index) => {
 
         if (!this.filtroMesActivo || !this.periodoSeleccionado) {
-          return '#FFB184';
+          return this.colores[index % this.colores.length];
         }
 
-        return this.obtenerPeriodoApi(item) === this.periodoSeleccionado ? '#FF620F' : '#FFE4D4';
-
+        return this.obtenerPeriodoApi(item) === this.periodoSeleccionado
+          ? '#FF620F'
+          : '#FFE4D4';
       });
+      //Fin
 
 
       const bordes = registros.map(item => {
@@ -350,11 +385,13 @@ export class VolumeMonth implements OnChanges {
       // Guardar registros para identificar las barras
       this.registrosRequerimientosSla = registros;
 
-      // Colores según el mes seleccionado
-      const colores = registros.map(item => {
+      // COLORES DE BARRAS - REQUERIMIENTOS SLA
+      const colores = registros.map((item, index) => {
+
+        const colorOriginal = this.colores[index % this.colores.length];
 
         if (!this.filtroMesActivo || !this.periodoSeleccionado) {
-          return '#FFB184';
+          return colorOriginal;
         }
 
         const periodo = this.obtenerPeriodoRequerimientoSla(item);
@@ -364,19 +401,18 @@ export class VolumeMonth implements OnChanges {
           : '#FFE4D4';
       });
 
-      // Bordes según la selección
-      const bordes = registros.map(item => {
+      // COLORES DE BORDES
+      const bordes = registros.map((item, index) => {
 
         const periodo = this.obtenerPeriodoRequerimientoSla(item);
 
-        if (
-          this.filtroMesActivo &&
-          periodo === this.periodoSeleccionado
-        ) {
-          return '#D84A00';
+        if (this.filtroMesActivo && this.periodoSeleccionado) {
+          return periodo === this.periodoSeleccionado
+            ? '#D84A00'
+            : '#FFE4D4';
         }
 
-        return '#FF620F';
+        return this.colores[index % this.colores.length];
       });
 
       // Gráfico combinado: barras y tendencia
@@ -448,11 +484,13 @@ export class VolumeMonth implements OnChanges {
     // Guardar los registros originales
     this.registrosSla = registros;
 
-    // Colores según el mes seleccionado
-    const colores = registros.map(item => {
+    // COLORES DE BARRAS - INCIDENTES SLA
+    const colores = registros.map((item, index) => {
+
+      const colorOriginal = this.colores[index % this.colores.length];
 
       if (!this.filtroMesActivo || !this.periodoSeleccionado) {
-        return '#FFB184';
+        return colorOriginal;
       }
 
       return item.mes === this.periodoSeleccionado
@@ -460,17 +498,16 @@ export class VolumeMonth implements OnChanges {
         : '#FFE4D4';
     });
 
-    // Bordes según la selección
-    const bordes = registros.map(item => {
+    // COLORES DE BORDES
+    const bordes = registros.map((item, index) => {
 
-      if (
-        this.filtroMesActivo &&
-        item.mes === this.periodoSeleccionado
-      ) {
-        return '#D84A00';
+      if (this.filtroMesActivo && this.periodoSeleccionado) {
+        return item.mes === this.periodoSeleccionado
+          ? '#D84A00'
+          : '#FFE4D4';
       }
 
-      return '#FF620F';
+      return this.colores[index % this.colores.length];
     });
 
     // Actualizar Chart.js

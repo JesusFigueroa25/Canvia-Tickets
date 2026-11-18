@@ -7,6 +7,11 @@ from dataclasses import dataclass
 from typing import Any
 import numpy as np
 from app.services.categorization.preprocessor import TicketPreparado,normalizar_texto
+from app.services.categorization.category_scope import (
+    CategoryScope,
+    es_categoria_permitida,
+    validar_nivel_1,
+)
 import re
 import unicodedata
 
@@ -194,8 +199,21 @@ class SemanticEngine:
         )
 
 
+        
+    def evaluar(
+        self,
+        ticket: TicketPreparado,
+        catalogo: Sequence[Any],
+        grupo_resolutor: str,
+        alcance: CategoryScope,
+    ) -> EvaluacionSemantica:
 
-    def evaluar(self,ticket: TicketPreparado,catalogo: Sequence[Any]) -> EvaluacionSemantica:
+        alcance_original = validar_nivel_1(
+            grupo_resolutor,
+            ticket.nivel_1,
+            alcance,
+        )       
+        
         if not ticket.tiene_ruta_completa:
             return self._salida(
                 "INCORRECT",
@@ -203,8 +221,10 @@ class SemanticEngine:
                 "Falta uno o mas niveles de la ruta de categorizacion.",
             )
 
+    
         if (
             not self.config.binary_mode
+            and alcance_original == "PERMITIDA"
             and sum(
                 len(texto.split())
                 for texto in (ticket.descripcion,ticket.detalle,ticket.solucion)
@@ -216,6 +236,19 @@ class SemanticEngine:
                 "Los textos disponibles son insuficientes para evaluar la categorizacion.",
             )
 
+        if not ticket.fragmentos and alcance_original == "FUERA_DE_ALCANCE":
+            return self._salida(
+                "INCORRECT",
+                "CATEGORY_OUT_OF_SCOPE",
+                "La categoria original no pertenece a las familias autorizadas para el grupo resolutor.",
+                evidencia={
+                    "grupo_resolutor": grupo_resolutor,
+                    "alcance_original": alcance_original,
+                    "sugerencia_validada": False,
+                },
+            )
+
+
         if not ticket.fragmentos:
             return self._salida(
                 "INCORRECT" if self.config.binary_mode else "REVIEW",
@@ -223,7 +256,18 @@ class SemanticEngine:
                 "El ticket no contiene descripcion, detalle ni solucion evaluables.",
             )
 
-        self.preparar_catalogo(catalogo)
+
+        catalogo_elegible = [
+            categoria
+            for categoria in catalogo
+            if es_categoria_permitida(
+                grupo_resolutor,
+                self._valor(categoria, "level_1"),
+                alcance,
+            )
+        ]
+
+        self.preparar_catalogo(catalogo_elegible)
 
         if not self._catalogo:
             if self.config.binary_mode:
@@ -375,10 +419,110 @@ class SemanticEngine:
         margen_alternativa = (
             mejor_score-segundo_score
         )
+        
+
+        # SELECCIÓN DE SUGERENCIAS AUTORIZADAS
+        # La categoría original nunca puede recomendarse
+        # como alternativa a sí misma.
+
+        candidatos_elegibles = sorted(
+            (
+                i
+                for i, ruta in enumerate(rutas)
+                if i != indice_original
+                and ruta.catalog_id is not None
+              
+                and es_categoria_permitida(
+                    grupo_resolutor,
+                    ruta.level_1,
+                    alcance,
+                )
+            ),
+            key=lambda i: puntajes[i],
+            reverse=True,
+        )
+
+        # Mejor candidato autorizado.
+        indice_candidato = (
+            candidatos_elegibles[0]
+            if candidatos_elegibles
+            else None
+        )
+
+        score_candidato = (
+            puntajes[indice_candidato]
+            if indice_candidato is not None
+            else -1.0
+        )
+
+        # Segundo candidato autorizado.
+        segundo_candidato = (
+            puntajes[candidatos_elegibles[1]]
+            if len(candidatos_elegibles) > 1
+            else -1.0
+        )
+
+        margen_candidato = (
+            score_candidato - segundo_candidato
+        )
+
+        # ==================================================
+        # CRITERIOS DE CONFIANZA
+        # ==================================================
+
+        sugerencia_valida = (
+            indice_candidato is not None
+
+            # Similitud semántica suficiente.
+            and score_candidato >= self.config.incorrect_score
+
+            # Diferencia suficiente frente a otras rutas.
+            and margen_candidato >= self.config.alternative_margin
+
+            # No utilizar evidencia fragmentada incompleta.
+            and ticket.fragmentos_omitidos == 0
+
+            # Para categorías permitidas, exigir mejora
+            # respecto a la categoría original.
+            # Para una categoría fuera de alcance, prevalece
+            # la regla validada por el especialista DBA.
+            and (
+                alcance_original == "FUERA_DE_ALCANCE"
+                or (
+                    score_candidato - score_original
+                    >= self.config.incorrect_margin
+                )
+            )
+        )
+
+        sugerencia = (
+            rutas[indice_candidato].catalog_id
+            if sugerencia_valida
+            else None
+        )
+
 
         evidencia = {
-            "modelo":self.config.model_name,
-            "metrica":"cosine_similarity",
+            "modelo": self.config.model_name,
+            "metrica": "cosine_similarity",
+            "grupo_resolutor": grupo_resolutor,
+            "familia_catalogo": alcance.familia_catalogo,
+            "tipo_coincidencia": alcance.tipo_coincidencia,
+            "alcance_original": alcance_original,
+
+            "score_candidato_elegible": (
+                round(score_candidato, 4)
+                if indice_candidato is not None
+                else None
+            ),
+
+            "margen_candidato_elegible": (
+                round(margen_candidato, 4)
+                if indice_candidato is not None
+                else None
+            ),
+
+            "sugerencia_validada": sugerencia is not None,
             "score_original":round(score_original,4),
             "score_mejor":round(mejor_score,4),
             "margen_original":round(margen_original,4),
@@ -398,6 +542,43 @@ class SemanticEngine:
                 for i,valor in mejores_fragmentos[mejor_indice]
             ],
         }
+        
+        
+
+        # Mejor categoria candidata, independientemente
+        # de si supera los umbrales de confianza.
+        # No modifica la sugerencia validada.
+
+        if indice_candidato is not None:
+            candidato = rutas[indice_candidato]
+
+            evidencia["mejor_candidato"] = {
+                "catalog_id": candidato.catalog_id,
+                "level_1": candidato.level_1,
+                "level_2": candidato.level_2,
+                "level_3": candidato.level_3,
+                "score": round(score_candidato, 4),
+                "margen": round(margen_candidato, 4),
+                "estado": (
+                    "VALIDADA"
+                    if sugerencia_valida
+                    else "PRELIMINAR"
+                ),
+            }
+
+        else:
+            evidencia["mejor_candidato"] = None
+
+        
+        if alcance_original == "FUERA_DE_ALCANCE":
+            return self._salida(
+                "INCORRECT",
+                "CATEGORY_OUT_OF_SCOPE",
+                "La categoria original no pertenece a las familias autorizadas para el grupo resolutor.",
+                score_original,
+                sugerencia,
+                evidencia,
+            )
 
         if self.config.binary_mode:
             coherencia_lexica = self._coherencia_lexica(ticket)
@@ -437,6 +618,37 @@ class SemanticEngine:
                 "confianza_limitada":confianza_limitada,
             })
 
+
+            # CALIBRACIÓN HÍBRIDA: MINILM + CRITERIO DBA
+            criterio_dba = self._criterio_dba(ticket)
+
+            if criterio_dba is not None:
+
+                estado_dba, codigo_dba = criterio_dba
+
+                evidencia["calibracion_dba"] = {
+                    "version": "1.0",
+                    "criterio": codigo_dba,
+                    "indice_minilm": round(
+                        indice_coherencia, 4
+                    ),
+                    "decision_minilm_original": (
+                        "CORRECT"
+                        if indice_coherencia >= self.config.binary_threshold
+                        else "INCORRECT"
+                    ),
+                }
+
+                return self._salida(
+                    estado_dba,
+                    "BINARY_DBA_" + codigo_dba,
+                    "Criterio técnico DBA de alta evidencia aplicado sobre MiniLM.",
+                    score_original,
+                    sugerencia if estado_dba == "INCORRECT" else None,
+                    evidencia,
+                )
+
+
             if indice_coherencia >= self.config.binary_threshold:
                 return self._salida(
                     "CORRECT",
@@ -446,11 +658,7 @@ class SemanticEngine:
                     evidencia=evidencia,
                 )
 
-            sugerencia = (
-                alternativa.catalog_id
-                if mejor_indice != indice_original
-                else None
-            )
+       
 
             return self._salida(
                 "INCORRECT",
@@ -480,13 +688,14 @@ class SemanticEngine:
             and mejor_score-score_original >= self.config.incorrect_margin
             and margen_alternativa >= self.config.alternative_margin
             and ticket.fragmentos_omitidos == 0
+            and sugerencia is not None
         ):
             return self._salida(
                 "INCORRECT",
                 "SEMANTIC_MISMATCH",
                 "La evidencia se aproxima mas a una ruta alternativa que a la ruta registrada; clasificacion preliminar pendiente de validacion DBA.",
                 score_original,
-                alternativa.catalog_id,
+                sugerencia,
                 evidencia,
             )
 
@@ -511,6 +720,239 @@ class SemanticEngine:
             evidencia=evidencia,
         )
 
+
+
+
+    @staticmethod
+    def _normalizar_criterio(valor: str) -> str:
+        texto = unicodedata.normalize(
+            "NFKD", (valor or "").casefold()
+        )
+        texto = "".join(
+            c for c in texto
+            if not unicodedata.combining(c)
+        )
+        return " ".join(re.findall(r"[a-z0-9]+", texto))
+
+    def _criterio_dba(
+        self,
+        ticket: TicketPreparado,
+    ) -> tuple[str, str] | None:
+        """
+        Reglas DBA basadas en evidencia textual concreta.
+
+        No dependen del Ticket_ID ni del grupo resolutor.
+        Si ninguna regla aplica, decide MiniLM.
+        """
+
+        n2 = self._normalizar_criterio(ticket.nivel_2)
+        n3 = self._normalizar_criterio(ticket.nivel_3)
+
+        descripcion = self._normalizar_criterio(
+            ticket.descripcion
+        )
+        detalle = self._normalizar_criterio(ticket.detalle)
+        solucion = self._normalizar_criterio(
+            ticket.solucion
+        )
+
+        contenido = f"{descripcion} {detalle} {solucion}"
+
+        # 1. CAPACITACIONES
+        if (
+            "capacitacion" in descripcion
+            and any(
+                palabra in solucion
+                for palabra in ("capacitacion", "caacitacion")
+            )
+        ):
+            if "capacitacion" in n2:
+                return (
+                    "CORRECT",
+                    "CAPACITACION_CONFIRMADA",
+                )
+
+            return (
+                "INCORRECT",
+                "CAPACITACION_FUERA_DE_CATEGORIA",
+            )
+
+        # 2. CHECKLISTS DE MANTENIMIENTO DBA
+        if "checklist diario" in n3:
+
+            menciona_bd = any(
+                x in contenido
+                for x in (
+                    "tablespace",
+                    "datafile",
+                    "validacion de tbs",
+                )
+            )
+
+            reviso = any(
+                x in solucion
+                for x in (
+                    "verificacion",
+                    "validacion",
+                    "revision",
+                )
+            )
+
+            if menciona_bd and reviso:
+                return (
+                    "CORRECT",
+                    "CHECKLIST_BD_CONFIRMADO",
+                )
+
+        # 3. OTORGAMIENTO DE ACCESOS
+        if "alta baja accesos" in n3:
+
+            otorgamiento = re.search(
+                r"\b(se dieron|se otorgaron|se brindaron|se asignaron)\b",
+                solucion,
+            )
+
+            objeto = re.search(
+                r"\b(permisos|accesos|privilegios)\b",
+                solucion,
+            )
+
+            if otorgamiento and objeto:
+                return (
+                    "CORRECT",
+                    "ACCESOS_OTORGADOS",
+                )
+
+        # 4. CONSULTAS TÉCNICAS
+        if "consulta tecnica" in n3:
+
+            if (
+                "reunion" in solucion
+                and (
+                    "cliente" in solucion
+                    or "informacion" in solucion
+                )
+            ):
+                return (
+                    "CORRECT",
+                    "CONSULTA_TECNICA_CONFIRMADA",
+                )
+
+        # 5. LEVANTAMIENTO DE INFORMACIÓN
+        if "levantamiento de informacion" in n3:
+
+            menciona_tickets = (
+                "tickets" in contenido
+                or "tks" in contenido
+            )
+
+            if menciona_tickets and "compart" in contenido:
+                return (
+                    "CORRECT",
+                    "LEVANTAMIENTO_CONFIRMADO",
+                )
+
+        # 6. RESTORE O DISKGROUP NO ES CREACIÓN DE BD
+        if "creacion de base de datos" in n3:
+
+            if any(
+                x in descripcion
+                for x in (
+                    "restauracion",
+                    "restore",
+                )
+            ):
+                return (
+                    "INCORRECT",
+                    "RESTORE_NO_ES_CREACION_BD",
+                )
+
+            diskgroup = (
+                "disk group" in descripcion
+                or "diskgroup" in descripcion
+            )
+
+            if diskgroup and "rebalance" in solucion:
+                return (
+                    "INCORRECT",
+                    "DISKGROUP_NO_ES_CREACION_BD",
+                )
+
+        # 7. OTORGAR PRIVILEGIOS NO ES DESBLOQUEAR
+        if "bloquear desbloquear usuario" in n3:
+
+            if (
+                "otorg" in solucion
+                and (
+                    "acces" in solucion
+                    or "permis" in solucion
+                )
+            ):
+                return (
+                    "INCORRECT",
+                    "PRIVILEGIOS_NO_ES_BLOQUEO",
+                )
+
+        # 8. ALERTAS DE MONITOREO NO SON CONSULTAS DE USUARIO
+        if "consulta de usuario en bd" in n3:
+
+            if (
+                "monitoreo" in descripcion
+                and (
+                    "umbral" in descripcion
+                    or "alerta" in descripcion
+                )
+            ):
+                return (
+                    "INCORRECT",
+                    "MONITOREO_NO_ES_CONSULTA_USUARIO",
+                )
+
+        # 9. DESARROLLO DE INTERFAZ NO ES VALIDACIÓN DE BD
+        if "validacion de servicios bd" in n3:
+
+            if (
+                "interfaz" in descripcion
+                and "implementacion" in solucion
+            ):
+                return (
+                    "INCORRECT",
+                    "DESARROLLO_UI_NO_ES_VALIDACION_BD",
+                )
+
+        # 10. CREACIÓN DE PROCEDIMIENTOS NO ES REPORTE
+        if "analisis de reportes" in n3:
+
+            if (
+                "procedimiento" in descripcion
+                and (
+                    "depuracion" in descripcion
+                    or "eliminar registros" in solucion
+                )
+            ):
+                return (
+                    "INCORRECT",
+                    "PROCEDIMIENTO_NO_ES_REPORTE",
+                )
+
+        # 11. PASE A PRODUCCIÓN NO ES MODIFICACIÓN DE USUARIOS
+        if "modificacion usuarios roles permisos" in n3:
+
+            if (
+                "pase" in descripcion
+                and (
+                    "script" in solucion
+                    or "ejecucion" in solucion
+                )
+            ):
+                return (
+                    "INCORRECT",
+                    "PASE_NO_ES_MODIFICACION_USUARIOS",
+                )
+
+        # Sin regla DBA concluyente:
+        # se conserva la evaluación original de MiniLM.
+        return None
 
 
 

@@ -1,0 +1,140 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.table-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 18px 20px 8px;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EE;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+.table-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding-right: 52px;
+}
+
+.header-copy {
+  min-width: 0;
+  flex: 1 1 280px;
+}
+
+.table-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #101828;
+}
+
+.table-header p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #667085;
+}
+
+.resolver-search {
+  flex: 0 1 320px;
+  width: 100%;
+  min-width: 190px;
+}
+
+:host ::ng-deep .resolver-search .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.manual-table {
+  width: 100%;
+  min-width: 690px;
+}
+
+.manual-table th {
+  color: #475467;
+  background: #F7F9FB;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.manual-table td {
+  color: #344054;
+  font-size: 12px;
+}
+
+.manual-table th,
+.manual-table td {
+  padding: 12px 14px;
+  border-bottom-color: #E5E9EE;
+}
+
+.manual-table tr.mat-mdc-row:hover {
+  background: #FFF7F1;
+}
+
+.manual-table .resolver-name {
+  color: #101828;
+  font-weight: 600;
+}
+
+.manual-table .numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.manual-table .strong {
+  color: #FF620F;
+  font-weight: 700;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 34px 14px !important;
+  color: #667085;
+}
+
+.table-status {
+  text-align: center;
+  padding: 45px 10px;
+  color: #667085;
+  font-size: 12px;
+}
+
+.table-status.error {
+  color: #D92D20;
+}
+
+:host ::ng-deep mat-paginator {
+  width: 100%;
+  background: #FFFFFF;
+}
+
+@media (max-width: 700px) {
+  .table-card {
+    padding: 14px 12px 4px;
+  }
+
+  .table-header {
+    padding-right: 42px;
+  }
+
+  .resolver-search {
+    flex-basis: 100%;
+  }
+}

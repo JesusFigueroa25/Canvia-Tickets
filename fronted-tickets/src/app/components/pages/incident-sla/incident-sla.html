@@ -128,11 +128,12 @@
 
 
 
+    <!-- EXPLORADOR DE PROYECTOS Y PARETO -->
     <section class="project-pareto-grid"
         *ngIf="proyectos.length > 0 || opcionesProyectos.length > 0 || proyectosExcluidos.length > 0 || cargandoProyectos">
 
-        <!-- Explorador de Proyectos -->
-        <div class="projects-section">
+        <!-- EXPLORADOR DE PROYECTOS -->
+        <div class="projects-section table-expandable" id="fullscreen-tabla-proyectos-sla" #tablaProyectosSlaFs>
 
             <div *ngIf="cargandoProyectos" class="projects-loading" role="status" aria-live="polite">
                 Actualizando proyectos...
@@ -141,21 +142,39 @@
             <app-project-explorer-table modo="sla" modoBusqueda="combo" [datos]="proyectos"
                 [opcionesProyectos]="opcionesProyectos" [proyectoSeleccionado]="proyectoSeleccionado"
                 (proyectoChange)="cambiarProyecto($event)" [habilitarExclusionProyectos]="true"
-                [proyectosExcluidos]="proyectosExcluidos"
-                (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)">
+                [proyectosExcluidos]="proyectosExcluidos" (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)"
+                [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-proyectos-sla'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosSlaFs)">
             </app-project-explorer-table>
 
         </div>
 
 
-        <!-- Pareto de Tipos de Incidente -->
-        <div class="pareto-section">
+        <!-- PARETO DE TIPOS DE INCIDENTE -->
+        <div class="pareto-section chart-expandable" id="fullscreen-pareto" #paretoFs>
 
+            <!-- BOTÓN PANTALLA COMPLETA -->
+            <button *ngIf="paretoTipos.length > 0" type="button" class="chart-expand-btn"
+                (click)="alternarPantallaCompleta(paretoFs)" [title]="graficoExpandido === 'fullscreen-pareto'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir gráfico Pareto">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-pareto'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
+            <!-- LIMPIAR TIPOS -->
             <button *ngIf="tiposIncidenteSeleccionados.length > 0" type="button" class="pareto-clear-button"
                 (click)="cambiarTiposIncidente([])">
                 Limpiar tipos
             </button>
 
+            <!-- GRÁFICO -->
             <app-sla-pareto *ngIf="paretoTipos.length > 0" [datos]="paretoTipos" [seleccionMultiple]="true"
                 [tiposSeleccionados]="tiposIncidenteSeleccionados" (tiposChange)="cambiarTiposIncidente($event)">
             </app-sla-pareto>
@@ -168,56 +187,127 @@
 
 
 
+    <!-- ANÁLISIS OPERATIVO -->
     <section class="analysis-grid">
 
+        <!-- VOLUMEN DE INCIDENTES -->
+        <div class="chart-expandable" id="fullscreen-volumen-sla" #volumenSlaFs *ngIf="volumenIncidentes.length > 0">
 
-        <!-- Volumen de Incidentes -->
-        <app-volume-month *ngIf="volumenIncidentes.length > 0" modo="sla" entidadSla="incidentes"
-            [datos]="volumenIncidentes" [habilitarFiltroMes]="true" [periodoSeleccionado]="periodoSeleccionado"
-            [cargando]="cargandoVolumenIncidentes" (periodoChange)="cambiarPeriodo($event)">
-        </app-volume-month>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenSlaFs)" [title]="graficoExpandido === 'fullscreen-volumen-sla'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir volumen de incidentes">
 
-        <!-- Desempeño por Resolutor -->
-        <app-resolutor-performance *ngIf="resolutores.length > 0" [datos]="resolutores">
-        </app-resolutor-performance>
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-volumen-sla'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
+            <app-volume-month modo="sla" entidadSla="incidentes" [datos]="volumenIncidentes" [habilitarFiltroMes]="true"
+                [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenIncidentes"
+                (periodoChange)="cambiarPeriodo($event)">
+            </app-volume-month>
+
+        </div>
+
+
+        <!-- DESEMPEÑO POR RESOLUTOR -->
+        <div class="chart-expandable" id="fullscreen-resolutor-sla" #resolutorSlaFs *ngIf="resolutores.length > 0">
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(resolutorSlaFs)" [title]="graficoExpandido === 'fullscreen-resolutor-sla'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir desempeño por resolutor">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-resolutor-sla'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
+            <app-resolutor-performance [datos]="resolutores">
+            </app-resolutor-performance>
+
+        </div>
+
     </section>
 
 
 
+    <!-- GRÁFICOS DE TENDENCIAS -->
     <section class="charts-grid">
-        <!-- SLA Solución: Tendencia -->
-        <app-sla-solution-trend *ngIf="slaSolucionTendencia.length > 0" [datos]="slaSolucionTendencia">
-        </app-sla-solution-trend>
+
+        <!-- SLA SOLUCIÓN: TENDENCIA -->
+        <div class="chart-expandable" id="fullscreen-sla-solucion" #slaSolucionFs
+            *ngIf="slaSolucionTendencia.length > 0">
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(slaSolucionFs)" [title]="graficoExpandido === 'fullscreen-sla-solucion'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir tendencia SLA Solución">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-sla-solucion'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
+            <app-sla-solution-trend [datos]="slaSolucionTendencia">
+            </app-sla-solution-trend>
+
+        </div>
 
 
-        <!-- Tendencia de Incidentes -->
-        <app-tendencia-type-trend *ngIf="tendenciaIncidentes && tendenciaIncidentes.series.length > 0"
-            [datos]="tendenciaIncidentes">
-        </app-tendencia-type-trend>
+        <!-- TENDENCIA DE INCIDENTES -->
+        <div class="chart-expandable" id="fullscreen-tendencia-incidentes" #tendenciaIncidentesFs
+            *ngIf="tendenciaIncidentes && tendenciaIncidentes.series.length > 0">
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tendenciaIncidentesFs)"
+                [title]="graficoExpandido === 'fullscreen-tendencia-incidentes'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir tendencia de incidentes">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-tendencia-incidentes'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
+            <app-tendencia-type-trend [datos]="tendenciaIncidentes">
+            </app-tendencia-type-trend>
+
+        </div>
 
     </section>
 
 
 
-    <section class="ticket-explorer-section">
+    <section class="ticket-explorer-section" *ngIf="ticketsDetalle || cargandoTickets">
 
         <header class="ticket-explorer-header">
-
             <h2>Explorador de Tickets</h2>
-
             <p>
                 Consulta los registros de Incidentes SLA, revisa sus
                 indicadores de cumplimiento y filtra el dashboard
                 por Ticket ID.
             </p>
-
         </header>
 
-        <div class="ticket-explorer-container">
+        <!-- EXPLORADOR DE TICKETS -->
+        <div class="ticket-explorer-container table-expandable" id="fullscreen-tabla-tickets-sla" #tablaTicketsSlaFs>
 
             <app-ticket-explorer-table [tipoDashboard]="'incident-sla'" [datos]="ticketsDetalle"
                 [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
-                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
+                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)"
+                [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tickets-sla'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsSlaFs)">
             </app-ticket-explorer-table>
 
         </div>

@@ -25,6 +25,7 @@ class IncidentConsolidatedFiltersOut(BaseModel):
     grupos_resolutores: list[str]
     proyectos: list[str]
     nombres_resolutores: list[str]
+    tipos_incidente: list[str] = Field(default_factory=list)
     
 class IncidentConsolidatedKPIOut(BaseModel):
     total_tickets: int
@@ -79,7 +80,6 @@ class IncidentConsolidatedPrioridadMensualItem(BaseModel):
     periodo: str
     total_tickets: int
     prioridades: list[IncidentConsolidatedPrioridadMesDetalleItem]
-    
     
 class IncidentConsolidatedRendimientoPeriodoItem(BaseModel):
     anio: int
@@ -175,7 +175,6 @@ class IncidentConsolidatedTicketsPorResolutorOut(BaseModel):
     periodos: list[IncidentConsolidatedRendimientoPeriodoItem]
     resolutores: list[IncidentConsolidatedRendimientoResolutorItem]
     
-
 class IncidentConsolidatedDashboardFilters(BaseModel):
     desde: date | None = None
     hasta: date | None = None
@@ -206,7 +205,6 @@ class IncidentConsolidatedDashboardFilters(BaseModel):
     )
 
 
-
 class IncidentConsolidatedTicketItem(BaseModel):
     Ticket_ID: str
     Fecha_Apertura: datetime
@@ -233,7 +231,6 @@ class IncidentConsolidatedTicketItem(BaseModel):
     Causa: str | None = None
     Motivo_Resolucion: str | None = None
 
-
 class IncidentConsolidatedTicketsOut(BaseModel):
     tickets: list[IncidentConsolidatedTicketItem]
     total: int
@@ -242,7 +239,159 @@ class IncidentConsolidatedTicketsOut(BaseModel):
     total_paginas: int
 
 
+
+# ANÁLISIS DE INCIDENTES - ATRIBUCIÓN ORIGINAL
+class IncidentConsolidatedAtribucionItem(BaseModel):
+    atribucion: str
+    tickets: int
+    porcentaje: float
+
+class IncidentConsolidatedAtribucionOut(BaseModel):
+    total_tickets: int
+    total_atribuidos: int
+    sin_atribucion: int
+    distribucion: list[IncidentConsolidatedAtribucionItem]
+
+
+
+# ANÁLISIS DE INCIDENTES - TOP DE SERVIDORES
+class IncidentConsolidatedServidorItem(BaseModel):
+    servidor: str
+    incidentes: int
+    porcentaje: float
+    tickets_ejemplo: list[str]
+
+class IncidentConsolidatedTopServidoresOut(BaseModel):
+    total_incidentes: int
+    incidentes_con_servidor: int
+    incidentes_sin_servidor: int
+    total_servidores_identificados: int
+    total_asociaciones: int
+    limite: int
+    servidores: list[IncidentConsolidatedServidorItem]
+
+
+
+# ANÁLISIS DE LAS CAUSAS DE LOS INCIDENTES
+
+class IncidentConsolidatedCausaEvidenciaItem(BaseModel):
+    ticket_id: str
+    campo: str
+    texto: str
+
+class IncidentConsolidatedCausaAnalisisItem(BaseModel):
+    categoria: str
+    incidentes: int
+    porcentaje: float
+    es_causa_identificada: bool
+    accion_recomendada: str
+    evidencias: list[IncidentConsolidatedCausaEvidenciaItem]
+
+class IncidentConsolidatedAnalisisCausasOut(BaseModel):
+    total_incidentes: int
+    con_factor_tecnico: int
+    sin_causa_determinada: int
+    casos_multifactor: int
+    metodologia: str
+    causas: list[IncidentConsolidatedCausaAnalisisItem]
+    tickets_para_revision: list[str]
+
+
+
+# ANALISIS DE INCIDENTES
+# DISTRIBUCION AJUSTADA POR ANALISIS DE CAUSA
+
+class IncidentConsolidatedComparacionAtribucionItem(BaseModel):
+    atribucion: str
+    tickets_originales: int
+    tickets_ajustados: int
+    variacion_tickets: int
+    porcentaje_original: float
+    porcentaje_ajustado: float
+
+
+class IncidentConsolidatedDistribucionAjustadaOut(BaseModel):
+    total_tickets: int
+
+    total_atribuidos_original: int
+    total_atribuidos_ajustado: int
+
+    sin_atribucion_original: int
+    sin_atribucion_ajustado: int
+
+    reglas_aprobadas: int
+    ajustes_aplicados: int
+    ajustes_habilitados: bool
+
+    estado_ajuste: str
+    metodologia: str
+
+    distribucion_original: list[IncidentConsolidatedAtribucionItem]
+    distribucion_ajustada: list[IncidentConsolidatedAtribucionItem]
+
+    comparacion: list[IncidentConsolidatedComparacionAtribucionItem]
+
+
+
+
+# ANALISIS DE INCIDENTES - PRINCIPALES HALLAZGOS
+
+class IncidentConsolidatedHallazgoItem(BaseModel):
+    codigo: str
+    tipo: str
+    titulo: str
+    descripcion: str
+    valor: int
+    porcentaje: float | None = None
+    denominador: int | None = None
+    requiere_validacion: bool = False
+
+
+class IncidentConsolidatedPrincipalesHallazgosOut(BaseModel):
+    total_incidentes: int
+    total_hallazgos: int
+    estado_ajuste: str
+    metodologia: str
+    hallazgos: list[IncidentConsolidatedHallazgoItem]
+
+
+
+# ANALISIS DE INCIDENTES - CONCLUSIONES
+class IncidentConsolidatedConclusionItem(BaseModel):
+    codigo: str
+    tipo: str
+    titulo: str
+    conclusion: str
+    recomendacion: str
+    hallazgos_referencia: list[str]
+    requiere_validacion: bool = False
+
+
+class IncidentConsolidatedConclusionesOut(BaseModel):
+    total_incidentes: int
+    total_conclusiones: int
+    estado_ajuste: str
+    metodologia: str
+    conclusiones: list[IncidentConsolidatedConclusionItem]
+
+
+
+# ANÁLISIS EJECUTIVO CON IA (sin modificar los contratos existentes).
+from typing import Literal
+
+
+class IncidentConsolidatedAnalisisEjecutivoIAOut(BaseModel):
+    origen: Literal["ia", "reglas", "sin_datos"]
+    modelo: str | None = None
+    advertencia: str | None = None
+    hallazgos: IncidentConsolidatedPrincipalesHallazgosOut
+    conclusiones: IncidentConsolidatedConclusionesOut
+
+
+#--------------------------------------------------------------------
 # Requerimientos Consolidado
+#--------------------------------------------------------------------
+
 class RequirementConsolidatedFiltersOut(BaseModel):
     fecha_min: date | None = None
     fecha_max: date | None = None
@@ -363,3 +512,175 @@ class RequirementConsolidatedTicketsOut(BaseModel):
     pagina: int
     tamano: int
     total_paginas: int
+
+
+# ===============================================================
+# INDICADORES PRODUCTIVIDAD - REQUERIMIENTOS CONSOLIDADOS
+# ===============================================================
+class RequirementProductividadProyectoItem(BaseModel):
+    proyecto: str
+    total_tickets: int
+    promedio_diario: float
+    promedio_semanal: float
+    promedio_mensual: float
+    resolutores_distintos: int
+
+class RequirementProductividadResumen(BaseModel):
+    total_tickets: int
+    total_proyectos: int
+    fecha_desde: date | None = None
+    fecha_hasta: date | None = None
+    dias_calendario: int
+    semanas_calendario: int
+    meses_calendario: int
+
+class RequirementProductividadPunto(BaseModel):
+    periodo: str
+    tickets: int
+
+class RequirementProductividadSerie(BaseModel):
+    proyecto: str
+    total_tickets: int
+    puntos: list[RequirementProductividadPunto]
+
+class RequirementProductividadGrafico(BaseModel):
+    granularidad: str
+    periodos: list[str]
+    proyectos: list[RequirementProductividadSerie]
+
+class RequirementProductividadTabla(BaseModel):
+    items: list[RequirementProductividadProyectoItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+class RequirementProductividadOut(BaseModel):
+    resumen: RequirementProductividadResumen
+    grafico: RequirementProductividadGrafico
+    tabla: RequirementProductividadTabla
+
+class RequirementDotacionResolutorItem(BaseModel):
+    nombre: str
+    tickets: int
+
+class RequirementDotacionFila(BaseModel):
+    anio: int
+    mes: int
+    periodo: str
+    proyecto: str
+    total_tickets: int
+    resolutores_distintos: int
+    tickets_sin_resolutor: int
+    resolutores: list[RequirementDotacionResolutorItem]
+
+class RequirementDotacionResumen(BaseModel):
+    total_tickets: int
+    total_proyectos: int
+    total_resolutores_distintos: int
+    total_proyecto_meses: int
+
+class RequirementDotacionPunto(BaseModel):
+    periodo: str
+    resolutores: int
+
+class RequirementDotacionSerie(BaseModel):
+    proyecto: str
+    puntos: list[RequirementDotacionPunto]
+
+class RequirementDotacionGrafico(BaseModel):
+    periodos: list[str]
+    proyectos: list[RequirementDotacionSerie]
+
+class RequirementDotacionTabla(BaseModel):
+    items: list[RequirementDotacionFila]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+class RequirementDotacionOut(BaseModel):
+    resumen: RequirementDotacionResumen
+    grafico: RequirementDotacionGrafico
+    tabla: RequirementDotacionTabla
+
+
+# ===============================================================
+# ALCANCE 3 - ATENCIÓN PARALELA DE REQUERIMIENTOS
+# ===============================================================
+class RequirementAtencionParalelaResumen(BaseModel):
+    tickets_evaluados: int
+    tickets_con_superposicion: int
+    resolutores_con_superposicion: int
+    total_eventos: int
+    maximo_simultaneos: int
+    fecha_desde: date | None = None
+    fecha_hasta: date | None = None
+    metodologia: str
+
+
+class RequirementAtencionParalelaGraficoItem(BaseModel):
+    resolutor: str
+    eventos: int
+    tickets_con_superposicion: int
+    maximo_simultaneos: int
+
+
+class RequirementAtencionParalelaDetalleItem(BaseModel):
+    ticket_id: str
+    proyecto: str
+    resolutor: str
+    fecha_apertura: datetime
+    fecha_resolucion: datetime
+    inicio_coincidencia: datetime
+    fin_coincidencia: datetime
+    tickets_simultaneos: int
+    tickets_coincidentes: list[str]
+
+
+class RequirementAtencionParalelaTabla(BaseModel):
+    items: list[RequirementAtencionParalelaDetalleItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+
+class RequirementAtencionParalelaOut(BaseModel):
+    resumen: RequirementAtencionParalelaResumen
+    grafico: list[RequirementAtencionParalelaGraficoItem]
+    tabla: RequirementAtencionParalelaTabla
+
+
+
+
+# ALCANCE 4 - TICKETS CON MODIFICACIONES MANUALES
+
+class RequirementActualizacionManualResumen(BaseModel):
+    total_tickets: int
+    total_resolutores: int
+    total_grupos: int
+    total_proyectos: int
+    tickets_sin_resolutor: int
+
+
+class RequirementActualizacionManualItem(BaseModel):
+    grupo_resolutor: str
+    resolutor: str
+    tickets: int
+    proyectos: int
+    porcentaje: float
+
+
+class RequirementActualizacionManualTabla(BaseModel):
+    items: list[RequirementActualizacionManualItem]
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+  
+class RequirementActualizacionesManualesOut(BaseModel):
+    resumen: RequirementActualizacionManualResumen
+    grafico: list[RequirementActualizacionManualItem]
+    tabla: RequirementActualizacionManualTabla

@@ -15,7 +15,7 @@ class IncidentConsolidated(Base):
     ALP = Column(String(30), nullable=True)
     BU = Column(Unicode(50), nullable=True)
     Grupo_Resolutor = Column(Unicode(150), nullable=True)
-    Nombre_Resolutor = Column(Unicode(150), nullable=True)
+    Nombre_Resolutor = Column(Unicode(150), nullable=True) 
     Categorizacion_Nivel_1 = Column(Unicode(150), nullable=True)
     Categorizacion_Nivel_2 = Column(Unicode(150), nullable=True)
     Categorizacion_Nivel_3 = Column(Unicode(200), nullable=True)
@@ -30,7 +30,7 @@ class IncidentConsolidated(Base):
     Solucion = Column(NVARCHAR(None), nullable=True)
     Causa = Column(NVARCHAR(None), nullable=True)
     Motivo_Resolucion = Column(Unicode(100), nullable=True)
-
+ 
 
 stg_incident_consolidated_table = Table("stg_incident_consolidated", Base.metadata,
 

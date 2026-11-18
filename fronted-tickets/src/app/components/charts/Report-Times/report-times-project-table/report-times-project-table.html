@@ -1,0 +1,209 @@
+<article class="table-card">
+
+  <header class="table-header">
+    <div class="table-title">
+      <h3>Detalle de Tiempos por Proyecto</h3>
+      <p>
+        Comparación mensual de horas, acciones y tickets
+        por proyecto o cliente.
+      </p>
+    </div>
+
+    <div class="table-actions">
+
+      <label class="metric-control">
+        <span>Indicador</span>
+        <select [value]="metrica" (change)="cambiarMetrica($event)" aria-label="Seleccionar indicador">
+          <option value="horas_totales">Horas</option>
+          <option value="acciones">Acciones</option>
+          <option value="tickets">Tickets</option>
+        </select>
+      </label>
+
+      <label class="search-control">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input type="search" placeholder="Buscar proyecto o ALP..." aria-label="Buscar proyecto" [value]="busqueda"
+          (input)="buscar($event)" />
+      </label>
+
+      <button *ngIf="busqueda" type="button" class="clear-search" (click)="limpiarBusqueda()">
+        Limpiar
+      </button>
+
+    </div>
+  </header>
+
+  <!-- RESUMEN  -->
+  <!--   <div class="summary-grid" *ngIf="datos?.resumen as resumen">
+    <div class="summary-item">
+      <span>Tickets distintos</span>
+      <strong>{{ formatearNumero(resumen.tickets_distintos) }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Acciones registradas</span>
+      <strong>{{ formatearNumero(resumen.acciones) }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Proyectos distintos</span>
+      <strong>{{ formatearNumero(resumen.proyectos_distintos) }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Resolutores distintos</span>
+      <strong>{{ formatearNumero(resumen.resolutores_distintos) }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span>Horas totales</span>
+      <strong class="hours-highlight">
+        {{ formatearHoras(resumen.horas_totales) }} h
+      </strong>
+    </div>
+  </div>  -->
+
+
+
+  <div class="table-summary">
+    <span class="summary-left">
+      <span class="summary-indicator"></span>
+      <strong>{{ filasVisibles.length }}</strong>
+      proyectos visibles en esta página
+    </span>
+
+    <span class="summary-note">
+      Los meses se muestran horizontalmente.
+    </span>
+  </div>
+
+  <div class="table-wrapper" tabindex="0" aria-label="Matriz mensual de tiempos por proyecto">
+    <table class="pivot-table">
+
+      <thead>
+        <tr>
+          <th class="name-column" scope="col">
+            <button type="button" class="sort-button" (click)="ordenar('nombre')">
+              Proyecto / Cliente
+              <span>{{ indicadorOrden('nombre') }}</span>
+            </button>
+          </th>
+
+          <th *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column" scope="col">
+            <button type="button" class="sort-button numeric-sort" (click)="ordenar(periodo)">
+              {{ formatearPeriodo(periodo) }}
+              <span>{{ indicadorOrden(periodo) }}</span>
+            </button>
+          </th>
+
+          <th class="total-column" scope="col">
+            <button type="button" class="sort-button numeric-sort" (click)="ordenar('total')">
+              TOTAL
+              <span>{{ indicadorOrden('total') }}</span>
+            </button>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let fila of filasVisibles; trackBy: identificarFila">
+          <td class="name-column">
+            <span class="entity-name" [title]="fila.nombre">
+              {{ nombreVisibleProyecto(fila.nombre) }}
+            </span>
+          </td>
+
+          <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column"
+            [class.zero-value]="obtenerValor(fila, periodo) === 0">
+            {{ formatearValor(obtenerValor(fila, periodo)) }}
+          </td>
+
+          <td class="total-column row-total">
+            {{ formatearValor(obtenerTotal(fila)) }}
+          </td>
+        </tr>
+
+        <tr *ngIf="!cargando && !error && filasVisibles.length === 0">
+          <td class="empty-cell" [attr.colspan]="periodos.length + 2">
+            <strong>Sin resultados</strong>
+            <span>
+              No hay proyectos para la búsqueda o filtros actuales.
+            </span>
+          </td>
+        </tr>
+      </tbody>
+
+      <tfoot *ngIf="filasVisibles.length > 0">
+        <tr class="totals-row">
+          <td class="name-column">TOTAL VISIBLE</td>
+
+          <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column">
+            {{ formatearValor(totalMes(periodo)) }}
+          </td>
+
+          <td class="total-column grand-total">
+            {{ formatearValor(totalVisible) }}
+          </td>
+        </tr>
+      </tfoot>
+
+    </table>
+  </div>
+
+  <div class="table-status loading-status" *ngIf="cargando" role="status">
+    <span class="loading-spinner"></span>
+    Actualizando tiempos por proyecto...
+  </div>
+
+  <div class="table-status error-status" *ngIf="!cargando && error" role="alert">
+    {{ error }}
+  </div>
+
+  <footer class="table-footer">
+    <span class="pagination-info">
+      Registros mensuales
+      <strong>{{ primerRegistro }}</strong> -
+      <strong>{{ ultimoRegistro }}</strong>
+      de <strong>{{ formatearNumero(totalRegistros) }}</strong>
+    </span>
+
+    <!-- PAGINACION -->
+    <!--  <div class="pagination-controls">
+      <label class="page-size-control">
+        <span>Registros</span>
+        <select [value]="tamanoActual" [disabled]="cargando" (change)="cambiarTamanoPagina($event)">
+          <option *ngFor="let tamano of tamanosPagina" [value]="tamano">
+            {{ tamano }}
+          </option>
+        </select>
+      </label>
+
+      <button type="button" class="page-button" [disabled]="cargando || paginaActual <= 1"
+        (click)="cambiarPagina(paginaActual - 1)" aria-label="Página anterior">‹</button>
+
+      <span class="page-indicator">
+        Página {{ totalPaginas ? paginaActual : 0 }}
+        de {{ totalPaginas }}
+      </span>
+
+      <button type="button" class="page-button" [disabled]="cargando || paginaActual >= totalPaginas"
+        (click)="cambiarPagina(paginaActual + 1)" aria-label="Página siguiente">›</button>
+    </div> -->
+
+
+
+  </footer>
+
+  <div class="methodology-note">
+    <span>
+      Las horas corresponden a la suma mensual por proyecto.
+      El nombre se muestra sin el código ALP.
+    </span>
+    <span>
+      La matriz y su total visible corresponden a la página
+      recibida de SQL Server. Los indicadores superiores
+      corresponden a todos los registros filtrados.
+    </span>
+  </div>
+
+</article>

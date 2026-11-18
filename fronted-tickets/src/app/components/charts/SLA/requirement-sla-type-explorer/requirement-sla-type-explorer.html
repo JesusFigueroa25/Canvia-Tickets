@@ -12,11 +12,35 @@
       </p>
     </div>
 
-    <!-- BUSQUEDA LOCAL -->
-    <div class="search-box">
-      <mat-icon>search</mat-icon>
-      <input type="text" placeholder="Buscar tipo de requerimiento..." aria-label="Buscar tipo de requerimiento"
-        [value]="busqueda" (input)="filtrarTipos($event)">
+    <!-- ACCIONES DE CABECERA -->
+    <div class="table-header-actions">
+
+      <!-- BÚSQUEDA LOCAL -->
+      <div class="search-box">
+
+        <mat-icon>search</mat-icon>
+
+        <input type="text" placeholder="Buscar tipo de requerimiento..." aria-label="Buscar tipo de requerimiento"
+          [value]="busqueda" (input)="filtrarTipos($event)">
+
+      </div>
+
+      <!-- PANTALLA COMPLETA -->
+      <button *ngIf="habilitarPantallaCompleta" type="button" class="table-expand-btn"
+        (click)="pantallaCompletaSolicitada.emit()" [title]="pantallaCompletaActiva
+            ? 'Salir de pantalla completa'
+            : 'Ver en pantalla completa'" [attr.aria-label]="pantallaCompletaActiva
+            ? 'Salir de pantalla completa'
+            : 'Ampliar explorador de tipos de requerimientos'">
+
+        <mat-icon>
+          {{ pantallaCompletaActiva
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+
+      </button>
+
     </div>
   </div>
 

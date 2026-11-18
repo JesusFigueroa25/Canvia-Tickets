@@ -1,3 +1,25 @@
+.report-download-button {
+    flex-shrink: 0;
+    background: #16835B !important;
+    color: #fff !important;
+    border-radius: 8px;
+}
+.report-download-button:disabled { background: #E4E7EC !important; color: #667085 !important; }
+.report-export-stage {
+    position: fixed;
+    left: -20000px;
+    top: 0;
+    width: 1400px;
+    height: auto;
+    overflow: visible;
+    pointer-events: none;
+    background: #F7F9FB;
+}
+@media (max-width: 900px) {
+    .page-header { flex-wrap: wrap; }
+    .report-download-button { width: 100%; }
+}
+
 :host {
     display: block;
     width: 100%;

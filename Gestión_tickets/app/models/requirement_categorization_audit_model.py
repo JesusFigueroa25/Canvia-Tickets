@@ -1,26 +1,5 @@
-from sqlalchemy import (
-    CHAR,
-    BigInteger,
-    CheckConstraint,
-    Column,
-    Float,
-    ForeignKey,
-    Identity,
-    Index,
-    Integer,
-    PrimaryKeyConstraint,
-    SmallInteger,
-    String,
-    UniqueConstraint,
-    text,
-)
-
-from sqlalchemy.dialects.mssql import (
-    BIT,
-    DATE,
-    DATETIME2,
-    NVARCHAR,
-)
+from sqlalchemy import (CHAR,BigInteger,CheckConstraint,Column,Float,ForeignKey,Identity,Index,Integer,PrimaryKeyConstraint,SmallInteger,String,UniqueConstraint,text,)
+from sqlalchemy.dialects.mssql import (BIT,DATE,DATETIME2,NVARCHAR,)
 from sqlalchemy.orm import relationship
 
 from app.database.database import Base
@@ -67,13 +46,7 @@ class RequirementCategoryCatalog(Base):
             name="CK_rc_catalog_dates",
         ),
 
-        Index(
-            "UX_rc_catalog_route",
-            "level_1",
-            "level_2",
-            "level_3",
-            unique=True,
-        ),
+        Index("UX_rc_catalog_route","level_1","level_2","level_3",unique=True,),
 
         {"schema": "dbo"},
     )
@@ -100,21 +73,9 @@ class RequirementCategorizationAuditRun(Base):
     started_at = Column(DATETIME2(precision=0),nullable=True,)
     finished_at = Column(DATETIME2(precision=0),nullable=True,)
     error_message = Column(NVARCHAR(2000),nullable=True,)
-    group_id = Column(
-        BigInteger,
-        ForeignKey(
-            "dbo.requirement_categorization_audit_groups.group_id",
-            name="FK_rc_runs_group",
-        ),
-        nullable=True,
-    )
-    
+    group_id = Column(BigInteger,ForeignKey("dbo.requirement_categorization_audit_groups.group_id",name="FK_rc_runs_group",),nullable=True,)
     results = relationship("RequirementCategorizationAuditResult",back_populates="run",)
-    audit_group = relationship(
-        "RequirementCategorizationAuditGroup",
-        back_populates="runs",
-    )
-
+    audit_group = relationship("RequirementCategorizationAuditGroup",back_populates="runs",)
     __table_args__ = (
         PrimaryKeyConstraint(
             "run_id",
@@ -171,6 +132,7 @@ class RequirementCategorizationAuditRun(Base):
 
         {"schema": "dbo"},
     )
+
 
 class RequirementCategorizationAuditResult(Base):
     __tablename__ = "requirement_categorization_audit_results"
@@ -267,64 +229,17 @@ class RequirementCategorizationAuditResult(Base):
 
 
 class RequirementCategorizationAuditGroup(Base):
-
     __tablename__ = "requirement_categorization_audit_groups"
-
-    group_id = Column(
-        BigInteger,
-        Identity(start=1, increment=1),
-        nullable=False,
-    )
-
-    group_name = Column(
-        NVARCHAR(200),
-        nullable=False,
-    )
-
-    grupo_resolutor = Column(
-        NVARCHAR(150),
-        nullable=False,
-    )
-
-    audit_year = Column(
-        SmallInteger,
-        nullable=False,
-    )
-
-    description = Column(
-        NVARCHAR(500),
-        nullable=True,
-    )
-
-    created_at = Column(
-        DATETIME2(precision=0),
-        nullable=False,
-        server_default=text("SYSUTCDATETIME()"),
-    )
-
-    # Una agrupación contiene múltiples ejecuciones.
-    runs = relationship(
-        "RequirementCategorizationAuditRun",
-        back_populates="audit_group",
-    )
+    group_id = Column(BigInteger,Identity(start=1, increment=1),nullable=False,)
+    group_name = Column(NVARCHAR(200),nullable=False,)
+    grupo_resolutor = Column(NVARCHAR(150),nullable=False,)
+    audit_year = Column(SmallInteger,nullable=False,)
+    description = Column(NVARCHAR(500),nullable=True,)
+    created_at = Column(DATETIME2(precision=0),nullable=False,server_default=text("SYSUTCDATETIME()"),)
+    runs = relationship("RequirementCategorizationAuditRun",back_populates="audit_group",)
 
     __table_args__ = (
-
-        PrimaryKeyConstraint(
-            "group_id",
-            name="PK_rc_audit_groups",
-        ),
-
-        UniqueConstraint(
-            "grupo_resolutor",
-            "audit_year",
-            name="UQ_rc_groups_resolver_year",
-        ),
-
-        CheckConstraint(
-            "audit_year BETWEEN 2000 AND 2100",
-            name="CK_rc_groups_year",
-        ),
-
-        {"schema": "dbo"},
+        PrimaryKeyConstraint("group_id",name="PK_rc_audit_groups",),
+        UniqueConstraint("grupo_resolutor","audit_year",name="UQ_rc_groups_resolver_year",),
+        CheckConstraint("audit_year BETWEEN 2000 AND 2100",name="CK_rc_groups_year",),{"schema": "dbo"},
     )

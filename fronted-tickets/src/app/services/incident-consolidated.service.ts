@@ -1,8 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedVolumenItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedTipoItem, IncidentConsolidatedPrioridadItem, IncidentConsolidatedTopProyectos, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedTicketsOut } from '../models/incident-consolidated';
+import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedVolumenItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedTipoItem, IncidentConsolidatedPrioridadItem, IncidentConsolidatedTopProyectos, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedTicketsOut, IncidentConsolidatedAnalisisEjecutivoIAOut } from '../models/incident-consolidated';
 import { ImportResultado } from '../models/import-result';
+
+import {
+    IncidentConsolidatedAtribucionOut,
+    IncidentConsolidatedTopServidoresOut,
+    IncidentConsolidatedAnalisisCausasOut,
+    IncidentConsolidatedDistribucionAjustadaOut,
+    IncidentConsolidatedPrincipalesHallazgosOut,
+    IncidentConsolidatedConclusionesOut
+} from '../models/incident-consolidated';
+
+
+
 
 @Injectable({ providedIn: 'root' })
 export class IncidentConsolidatedService {
@@ -329,12 +341,13 @@ export class IncidentConsolidatedService {
     ): Observable<IncidentConsolidatedTicketsPorResolutorOut> {
 
         const params = this.construirParametros(filtros)
-            .set('limite', limite.toString());
+            .set('tamano', limite.toString());
 
         return this.http.get<IncidentConsolidatedTicketsPorResolutorOut>(
             `${this.apiUrl}/tickets-por-resolutor`,
             { params }
         );
+
     }
 
 
@@ -350,6 +363,130 @@ export class IncidentConsolidatedService {
 
         return this.http.get<IncidentConsolidatedTicketsOut>(
             `${this.apiUrl}/tickets`,
+            { params }
+        );
+    }
+
+
+
+
+
+    // 1. DISTRIBUCION POR ATRIBUCION ORIGINAL
+    obtenerAtribucionIncidentes(
+        filtros: IncidentConsolidatedDashboardFilters = {}
+    ): Observable<IncidentConsolidatedAtribucionOut> {
+
+        return this.http.get<IncidentConsolidatedAtribucionOut>(
+            `${this.apiUrl}/atribucion-incidentes`,
+            {
+                params: this.construirParametros(filtros)
+            }
+        );
+    }
+
+
+
+    // 2. TOP DE SERVIDORES CON MAS INCIDENTES
+    obtenerTopServidores(
+        filtros: IncidentConsolidatedDashboardFilters = {},
+        limite: number = 10
+    ): Observable<IncidentConsolidatedTopServidoresOut> {
+
+        const params = this.construirParametros(filtros)
+            .set('limite', limite.toString());
+
+        return this.http.get<IncidentConsolidatedTopServidoresOut>(
+            `${this.apiUrl}/top-servidores`,
+            { params }
+        );
+    }
+
+
+
+    // 3. ANALISIS DE CAUSAS V3
+    obtenerAnalisisCausas(
+        filtros: IncidentConsolidatedDashboardFilters = {}
+    ): Observable<IncidentConsolidatedAnalisisCausasOut> {
+
+        return this.http.get<IncidentConsolidatedAnalisisCausasOut>(
+            `${this.apiUrl}/analisis-causas`,
+            {
+                params: this.construirParametros(filtros)
+            }
+        );
+    }
+
+
+
+    // 4. DISTRIBUCION AJUSTADA POR ANALISIS DE CAUSA
+    obtenerDistribucionAjustadaCausas(
+        filtros: IncidentConsolidatedDashboardFilters = {}
+    ): Observable<IncidentConsolidatedDistribucionAjustadaOut> {
+
+        return this.http.get<IncidentConsolidatedDistribucionAjustadaOut>(
+            `${this.apiUrl}/distribucion-ajustada-causas`,
+            {
+                params: this.construirParametros(filtros)
+            }
+        );
+    }
+
+
+
+    // 5. PRINCIPALES HALLAZGOS
+    obtenerPrincipalesHallazgos(
+        filtros: IncidentConsolidatedDashboardFilters = {},
+        incluirServidores: boolean = false
+    ): Observable<IncidentConsolidatedPrincipalesHallazgosOut> {
+
+        const params = this.construirParametros(filtros)
+            .set(
+                'incluir_servidores',
+                incluirServidores.toString()
+            );
+
+        return this.http.get<IncidentConsolidatedPrincipalesHallazgosOut>(
+            `${this.apiUrl}/principales-hallazgos`,
+            { params }
+        );
+    }
+
+
+
+    // 6. CONCLUSIONES
+    obtenerConclusiones(
+        filtros: IncidentConsolidatedDashboardFilters = {},
+        incluirServidores: boolean = false
+    ): Observable<IncidentConsolidatedConclusionesOut> {
+
+        const params = this.construirParametros(filtros)
+            .set(
+                'incluir_servidores',
+                incluirServidores.toString()
+            );
+
+        return this.http.get<IncidentConsolidatedConclusionesOut>(
+            `${this.apiUrl}/conclusiones`,
+            { params }
+        );
+    }
+
+
+
+    // 7. ANÁLISIS EJECUTIVO CON INTELIGENCIA ARTIFICIAL
+    generarAnalisisEjecutivoIA(
+        filtros: IncidentConsolidatedDashboardFilters = {},
+        incluirServidores: boolean = false
+    ): Observable<IncidentConsolidatedAnalisisEjecutivoIAOut> {
+
+        const params = new HttpParams().set(
+            'incluir_servidores',
+            incluirServidores.toString()
+        );
+
+        return this.http.post<IncidentConsolidatedAnalisisEjecutivoIAOut>(
+            `${this.apiUrl}/analisis-ejecutivo-ia`,
+            filtros,
             { params }
         );
     }

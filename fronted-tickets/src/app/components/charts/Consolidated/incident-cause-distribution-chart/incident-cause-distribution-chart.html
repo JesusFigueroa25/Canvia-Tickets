@@ -1,0 +1,133 @@
+
+<section class="cause-chart-card">
+
+  <div class="card-header">
+
+    <div class="card-heading">
+      <h2>Distribución de Factores Técnicos</h2>
+
+      <p>
+        Clasificación preliminar de incidentes según
+        las evidencias identificadas en los tickets.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">
+      bar_chart
+    </mat-icon>
+
+  </div>
+
+
+  <!-- CARGA -->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Analizando causas de los incidentes...
+  </div>
+
+
+  <!-- ERROR -->
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <!-- INDICADORES -->
+    <div class="summary-grid">
+
+      <div class="summary-item">
+        <span>Total de incidentes</span>
+        <strong>
+          {{ datos!.total_incidentes | number:'1.0-0' }}
+        </strong>
+      </div>
+
+      <div class="summary-item">
+        <span>Factor documentado</span>
+        <strong>
+          {{ datos!.con_factor_tecnico | number:'1.0-0' }}
+        </strong>
+      </div>
+
+      <div class="summary-item">
+        <span>Multifactor</span>
+        <strong>
+          {{ datos!.casos_multifactor | number:'1.0-0' }}
+        </strong>
+      </div>
+
+      <div class="summary-item">
+        <span>Sin evidencia suficiente</span>
+        <strong>
+          {{ sinEvidencia | number:'1.0-0' }}
+        </strong>
+      </div>
+
+    </div>
+
+
+    <!-- LEYENDA -->
+    <div class="chart-legend">
+
+      <span class="legend-item">
+        <i class="legend-dot" [style.backgroundColor]="naranja"></i>
+        Factor técnico identificado
+      </span>
+
+      <span class="legend-item">
+        <i class="legend-dot" [style.backgroundColor]="verde"></i>
+        Múltiples factores
+      </span>
+
+      <span class="legend-item">
+        <i class="legend-dot" [style.backgroundColor]="gris"></i>
+        Sin evidencia suficiente
+      </span>
+
+    </div>
+
+
+    <!-- GRAFICO -->
+    <div
+      class="chart-area"
+      [style.height.px]="alturaGrafico">
+
+      <canvas
+        baseChart
+        [type]="chartType"
+        [data]="chartData"
+        [options]="chartOptions"
+        [plugins]="chartPlugins"
+        aria-label="Gráfico de factores técnicos identificados">
+      </canvas>
+
+    </div>
+
+
+    <div class="methodology-note">
+      <mat-icon>info_outline</mat-icon>
+
+      <p>
+        {{ datos!.metodologia }}
+        Cada incidente pertenece a una sola categoría
+        de esta distribución.
+      </p>
+    </div>
+
+  </ng-container>
+
+
+  <!-- SIN DATOS -->
+  <div
+    class="empty-state"
+    *ngIf="!cargando && !error && !tieneDatos">
+
+    <mat-icon>bar_chart</mat-icon>
+
+
+  </div>
+
+</section>

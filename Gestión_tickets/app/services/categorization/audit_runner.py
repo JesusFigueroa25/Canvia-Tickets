@@ -5,12 +5,16 @@ from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime,timezone
 from typing import Callable
-from sqlalchemy import update
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
-from app.models.requirement_categorization_audit_model import RequirementCategorizationAuditRun
+from app.models.requirement_categorization_audit_model import (
+    RequirementCategorizationAuditRun,
+    RequirementCategoryCatalog,
+)
 from app.repositories import requirement_categorization_audit_repository as repo
 from app.services.categorization.preprocessor import normalizar_texto,preparar_ticket
 from app.services.categorization.semantic_engine import SemanticConfig,SemanticEngine
+from app.services.categorization.category_scope import CategoryScope
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +74,9 @@ class AuditRunner:
 
         self.session_factory = session_factory
         self.batch_size = batch_size
+        self._alcance: CategoryScope | None = None
+        self._catalogo: list[dict] = []
+        self._indices_originales: dict[tuple[str, str, str], int] = {}
 
         if semantic_engine is not None:
             self.semantic_engine = semantic_engine
@@ -151,44 +158,121 @@ class AuditRunner:
             db.commit()
             return grupo,desde,hasta
 
-    def _cargar_catalogo(self,grupo: str) -> list[dict]:
+
+
+    def _cargar_catalogo(self, grupo: str) -> list[dict]:
+        """
+        Carga dinámicamente las categorías autorizadas para
+        el grupo resolutor seleccionado.
+
+        Conserva:
+        - El alcance del grupo.
+        - Las rutas candidatas para MiniLM.
+        - El índice global de categorías originales.
+
+        Solo realiza consultas de lectura.
+        """
+
         with self.session_factory() as db:
-            repo.sincronizar_catalogo_desde_tickets(db,grupo)
-            rutas = []
-            offset = 0
 
-            while True:
-                bloque = repo.listar_catalogo(db,grupo_resolutor=grupo,limite=500,offset=offset)
+            # 1. Resolver la familia y obtener las categorías
+            # permitidas desde el catálogo ServiceAIDE.
 
-                for categoria in bloque["items"]:
-                    rutas.append({
-                        "catalog_id":categoria.catalog_id,
-                        "level_1":categoria.level_1,
-                        "level_2":categoria.level_2,
-                        "level_3":categoria.level_3,
-                        "description":categoria.description,
-                        "examples":categoria.examples,
-                    })
+            alcance, categorias = (
+                repo.obtener_catalogo_ia_con_alcance(
+                    db,
+                    grupo_resolutor=grupo,
+                )
+            )
 
-                offset += len(bloque["items"])
+            # 2. Preparar las rutas candidatas para MiniLM.
 
-                if offset >= bloque["total"]:
-                    break
+            rutas = [
+                {
+                    "catalog_id": categoria.catalog_id,
+                    "level_1": categoria.level_1,
+                    "level_2": categoria.level_2,
+                    "level_3": categoria.level_3,
+                    "description": categoria.description,
+                    "examples": categoria.examples,
+                }
+                for categoria in categorias
+            ]
 
-            db.commit()
-            return rutas
+            if not rutas:
+                raise RuntimeError(
+                    f"No existen rutas elegibles para {grupo}"
+                )
+
+            # 3. Obtener los IDs de todas las categorías
+            # originales, incluidas las que están fuera
+            # del alcance del grupo.
+
+            C = RequirementCategoryCatalog
+
+            consulta = select(
+                C.catalog_id,
+                C.level_1,
+                C.level_2,
+                C.level_3,
+            )
+
+            registros = db.execute(consulta).all()
+
+            indices_originales = {
+                self._clave(nivel_1, nivel_2, nivel_3): catalog_id
+                for catalog_id, nivel_1, nivel_2, nivel_3
+                in registros
+            }
+
+        # 4. Guardar el contexto de la auditoría.
+
+        self._alcance = alcance
+        self._indices_originales = indices_originales
+
+        logger.info(
+            "Catálogo dinámico cargado: "
+            "grupo=%s, familia=%s, coincidencia=%s, "
+            "rutas_elegibles=%s, indices_originales=%s",
+            grupo,
+            alcance.familia_catalogo,
+            alcance.tipo_coincidencia,
+            len(rutas),
+            len(indices_originales),
+        )
+
+        return rutas
+
+
 
     @staticmethod
     def _clave(nivel_1: str | None,nivel_2: str | None,nivel_3: str | None) -> tuple[str,str,str]:
         return tuple(" ".join(normalizar_texto(nivel).split()).casefold() for nivel in (nivel_1,nivel_2,nivel_3))
 
-    def _evaluar_lote(self,tickets: list,run_id: int,indices: dict) -> list[dict]:
+    def _evaluar_lote(
+        self,
+        tickets: list,
+        run_id: int,
+        indices: dict,
+    ) -> list[dict]:
+
+        if self._alcance is None:
+            raise RuntimeError(
+                "No se ha cargado el alcance dinámico de la auditoría."
+            )
+
         registros = []
 
         for ticket in tickets:
             try:
                 preparado = preparar_ticket(ticket)
-                resultado = self.semantic_engine.evaluar(preparado,self._catalogo)
+                
+                resultado = self.semantic_engine.evaluar(
+                    ticket=preparado,
+                    catalogo=self._catalogo,
+                    grupo_resolutor=ticket.Grupo_Resolutor,
+                    alcance=self._alcance,
+                )
                 situacion = evaluar_estado_solucion(ticket)
             except Exception as exc:
                 raise RuntimeError(f"No se pudo evaluar el ticket {ticket.Ticket_ID}") from exc
@@ -384,17 +468,15 @@ class AuditRunner:
             self._catalogo = catalogo
             self.semantic_engine.preparar_catalogo(catalogo)
 
-            indices = {
-                self._clave(c["level_1"],c["level_2"],c["level_3"]):c["catalog_id"]
-                for c in catalogo
-            }
+
+            indices = self._indices_originales
 
             with self.session_factory() as db:
                 repo.actualizar_ejecucion(
                     db,run_id,
                     model_name=self.semantic_engine.config.model_name,
                     catalog_snapshot_hash=self.semantic_engine.catalog_hash,
-                    engine_version="2.0.0-exp",
+                    engine_version="2.3.2-dba-hybrid-candidates",
                 )
                 db.commit()
 

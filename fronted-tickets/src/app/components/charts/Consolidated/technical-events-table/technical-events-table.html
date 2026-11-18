@@ -2,6 +2,7 @@
 
     <!-- HEADER -->
     <div class="table-header">
+
         <div class="table-title">
             <h2>Tabla Detalle de Eventos Técnicos</h2>
             <p>
@@ -10,18 +11,38 @@
             </p>
         </div>
 
-        <!-- BUSCADOR -->
-        <mat-form-field appearance="outline" class="search-field">
-            <mat-icon matPrefix>search</mat-icon>
+        <div class="table-header-actions">
 
-            <input matInput type="text" placeholder="Buscar detalle técnico..." [value]="busqueda"
-                (input)="cambiarBusqueda($event)" aria-label="Buscar detalle técnico">
+            <!-- BUSCADOR -->
+            <mat-form-field appearance="outline" class="search-field">
 
-            <button *ngIf="busqueda" matSuffix type="button" class="clear-search" (click)="limpiarBusqueda()"
-                aria-label="Limpiar búsqueda">
-                <mat-icon>close</mat-icon>
+                <mat-icon matPrefix>search</mat-icon>
+
+                <input matInput type="text" placeholder="Buscar detalle técnico..." [value]="busqueda"
+                    (input)="cambiarBusqueda($event)" aria-label="Buscar detalle técnico">
+
+                <button *ngIf="busqueda" matSuffix type="button" class="clear-search" (click)="limpiarBusqueda()"
+                    aria-label="Limpiar búsqueda">
+
+                    <mat-icon>close</mat-icon>
+                </button>
+
+            </mat-form-field>
+
+            <!-- PANTALLA COMPLETA -->
+            <button *ngIf="habilitarPantallaCompleta" type="button" class="table-expand-btn"
+                (click)="pantallaCompletaSolicitada.emit()" [title]="pantallaCompletaActiva
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" [attr.aria-label]="pantallaCompletaActiva
+                ? 'Salir de pantalla completa'
+                : 'Ampliar tabla de eventos técnicos'">
+
+                <mat-icon>
+                    {{ pantallaCompletaActiva ? 'fullscreen_exit' : 'fullscreen' }}
+                </mat-icon>
             </button>
-        </mat-form-field>
+
+        </div>
 
     </div>
 

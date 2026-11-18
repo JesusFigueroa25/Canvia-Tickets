@@ -1,4 +1,3 @@
-
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EMPTY, from, Observable } from 'rxjs';
@@ -8,14 +7,23 @@ import { IncidentConsolidatedService } from '../../../services/incident-consolid
 import { IncidentSlaService } from '../../../services/incident-sla.service';
 import { RequirementConsolidatedService } from '../../../services/requirement-consolidated.service';
 import { RequirementSlaService } from '../../../services/requirement-sla.service';
+import { TaskConsolidatedService } from '../../../services/task-consolidated.service';
+import { TicketsManualUpdatesService } from '../../../services/tickets-manual-updates.service';
 
-import { ArchivoImportacion, ImportResultado } from '../../../models/import-result';
+import {
+    ArchivoImportacion,
+    ImportResultado
+} from '../../../models/import-result';
+import { TicketsReportTimesService } from '../../../services/tickets-report-times.service';
 
 type TipoImportacion =
     | 'incident-sla'
     | 'incident-consolidated'
     | 'requirement-consolidated'
-    | 'requirement-sla';
+    | 'requirement-sla'
+    | 'task-consolidated'
+    | 'tickets-manual-updates'
+    | 'tickets-report-times';
 
 interface ModuloImportacion {
     id: TipoImportacion;
@@ -56,6 +64,23 @@ export class ImportacionesComponent {
             id: 'requirement-sla',
             titulo: 'Requerimiento SLA',
             descripcion: 'Importación de requerimientos y mediciones de cumplimiento SLA.'
+        },
+        {
+            id: 'task-consolidated',
+            titulo: 'Tareas Consolidadas',
+            descripcion: 'Importación y actualización del consolidado de tareas, con validación de duplicados por ALP y proyecto.'
+        },
+        {
+            id: 'tickets-manual-updates',
+            titulo: 'Tickets Modificados Manualmente',
+            descripcion: 'Importación de tickets con registros de actualización manual. Conserva el primer registro de cada Ticket ID y omite tickets previamente importados.'
+        },
+        {
+            id: 'tickets-report-times',
+            titulo: 'Tiempos de Informes Mensuales',
+            descripcion:
+                'Importación de acciones registradas durante la elaboración de informes mensuales. ' +
+                'Identifica acciones nuevas, modificadas y sin cambios, conservando el detalle por ticket.'
         }
     ];
 
@@ -63,7 +88,10 @@ export class ImportacionesComponent {
         'incident-sla': this.crearEstado(),
         'incident-consolidated': this.crearEstado(),
         'requirement-consolidated': this.crearEstado(),
-        'requirement-sla': this.crearEstado()
+        'requirement-sla': this.crearEstado(),
+        'task-consolidated': this.crearEstado(),
+        'tickets-manual-updates': this.crearEstado(),
+        'tickets-report-times': this.crearEstado()
     };
 
     private siguienteArchivoId = 1;
@@ -73,8 +101,11 @@ export class ImportacionesComponent {
         private incidentSlaService: IncidentSlaService,
         private requirementConsolidatedService: RequirementConsolidatedService,
         private requirementSlaService: RequirementSlaService,
+        private taskConsolidatedService: TaskConsolidatedService,
+        private ticketsManualUpdatesService: TicketsManualUpdatesService,
+        private ticketsReportTimesService: TicketsReportTimesService,
         private cdr: ChangeDetectorRef
-    ) {}
+    ) { }
 
     private crearEstado(): EstadoImportacion {
         return {
@@ -84,6 +115,7 @@ export class ImportacionesComponent {
     }
 
     agregarArchivos(id: TipoImportacion, archivos: File[]): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -91,12 +123,15 @@ export class ImportacionesComponent {
         }
 
         const existentes = new Set(
-            estado.archivos.map(item => this.obtenerClaveArchivo(item.archivo))
+            estado.archivos.map(
+                item => this.obtenerClaveArchivo(item.archivo)
+            )
         );
 
         const nuevos: ArchivoImportacion[] = [];
 
         for (const archivo of archivos) {
+
             const clave = this.obtenerClaveArchivo(archivo);
 
             if (existentes.has(clave)) {
@@ -122,7 +157,11 @@ export class ImportacionesComponent {
         this.cdr.markForCheck();
     }
 
-    quitarArchivo(id: TipoImportacion, archivoId: number): void {
+    quitarArchivo(
+        id: TipoImportacion,
+        archivoId: number
+    ): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -137,6 +176,7 @@ export class ImportacionesComponent {
     }
 
     limpiarLista(id: TipoImportacion): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -149,6 +189,7 @@ export class ImportacionesComponent {
     }
 
     importarExcel(id: TipoImportacion): void {
+
         const estado = this.estados[id];
 
         if (estado.cargando) {
@@ -156,7 +197,9 @@ export class ImportacionesComponent {
         }
 
         const pendientes = estado.archivos.filter(
-            item => item.estado === 'pendiente' || item.estado === 'error'
+            item =>
+                item.estado === 'pendiente' ||
+                item.estado === 'error'
         );
 
         if (!pendientes.length) {
@@ -164,37 +207,51 @@ export class ImportacionesComponent {
         }
 
         estado.cargando = true;
+
         this.cdr.markForCheck();
 
         from(pendientes)
             .pipe(
                 concatMap(item => {
+
                     item.estado = 'procesando';
                     item.error = null;
                     item.resultado = null;
 
                     this.cdr.markForCheck();
 
-                    return this.ejecutarImportacion(id, item.archivo)
-                        .pipe(
-                            tap(resultado => {
-                                item.resultado = resultado;
-                                item.estado = 'completado';
+                    return this.ejecutarImportacion(
+                        id,
+                        item.archivo
+                    ).pipe(
 
-                                this.cdr.markForCheck();
-                            }),
-                            catchError(error => {
-                                item.estado = 'error';
-                                item.error = this.obtenerMensajeError(error);
+                        tap(resultado => {
 
-                                this.cdr.markForCheck();
+                            item.resultado = resultado;
+                            item.estado = 'completado';
 
-                                return EMPTY;
-                            })
-                        );
+                            this.cdr.markForCheck();
+                        }),
+
+                        catchError(error => {
+
+                            item.estado = 'error';
+
+                            item.error = this.obtenerMensajeError(
+                                error
+                            );
+
+                            this.cdr.markForCheck();
+
+                            return EMPTY;
+                        })
+                    );
                 }),
+
                 finalize(() => {
+
                     estado.cargando = false;
+
                     this.cdr.markForCheck();
                 })
             )
@@ -202,7 +259,12 @@ export class ImportacionesComponent {
     }
 
     private obtenerClaveArchivo(archivo: File): string {
-        return `${archivo.name}|${archivo.size}|${archivo.lastModified}`;
+
+        return (
+            `${archivo.name}|` +
+            `${archivo.size}|` +
+            `${archivo.lastModified}`
+        );
     }
 
     private ejecutarImportacion(
@@ -211,21 +273,45 @@ export class ImportacionesComponent {
     ): Observable<ImportResultado> {
 
         switch (id) {
+
             case 'incident-sla':
-                return this.incidentSlaService.importarExcel(archivo);
+                return this.incidentSlaService.importarExcel(
+                    archivo
+                );
 
             case 'incident-consolidated':
-                return this.incidentConsolidatedService.importarExcel(archivo);
+                return this.incidentConsolidatedService.importarExcel(
+                    archivo
+                );
 
             case 'requirement-consolidated':
-                return this.requirementConsolidatedService.importarExcel(archivo);
+                return this.requirementConsolidatedService.importarExcel(
+                    archivo
+                );
 
             case 'requirement-sla':
-                return this.requirementSlaService.importarExcel(archivo);
+                return this.requirementSlaService.importarExcel(
+                    archivo
+                );
+
+            case 'task-consolidated':
+                return this.taskConsolidatedService.importarExcel(
+                    archivo
+                );
+
+            case 'tickets-manual-updates':
+                return this.ticketsManualUpdatesService.importarExcel(
+                    archivo
+                );
+            case 'tickets-report-times':
+                return this.ticketsReportTimesService.importarExcel(
+                    archivo
+                ) as Observable<ImportResultado>;
         }
     }
 
     private obtenerMensajeError(error: unknown): string {
+
         if (!(error instanceof HttpErrorResponse)) {
             return 'Se produjo un error inesperado durante la importación.';
         }
@@ -242,7 +328,9 @@ export class ImportacionesComponent {
 
         if (Array.isArray(detalle)) {
             return detalle
-                .map(item => item.msg || 'Error de validación')
+                .map(
+                    item => item.msg || 'Error de validación'
+                )
                 .join('. ');
         }
 
@@ -257,6 +345,7 @@ export class ImportacionesComponent {
         index: number,
         modulo: ModuloImportacion
     ): TipoImportacion {
+
         return modulo.id;
     }
 }

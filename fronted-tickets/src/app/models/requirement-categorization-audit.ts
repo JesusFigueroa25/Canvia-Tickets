@@ -255,3 +255,14 @@ export interface AuditFilterOptions {
   meses: string[];
   ticket_ids: string[];
 }
+
+/** Instantánea agregada para exportación; nunca contiene tickets paginados. */
+export interface RequirementCategorizationReportData {
+  version: number;
+  preparadoEn: string;
+  filtros: AuditDashboardFilters;
+  resumen: AuditSummary;
+  motivos: AuditResolutionReasonList;
+  resolutores: AuditResolver[];
+  meses: AuditMonthlyStat[];
+}

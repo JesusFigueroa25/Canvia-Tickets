@@ -40,13 +40,11 @@
                     Detalle Alertas
                 </button>
 
-
                 <button type="button" (click)="irASeccion('explorador-tickets')">
 
                     Explorador de Tickets
 
                 </button>
-
 
             </nav>
 
@@ -109,7 +107,6 @@
 
                 </div>
 
-
                 <!-- PRIORIDAD -->
                 <div class="filter-field">
                     <label>Prioridad</label>
@@ -132,7 +129,6 @@
 
                     </mat-form-field>
                 </div>
-
 
                 <!-- MOTIVO DE ESTADO -->
                 <div class="filter-field">
@@ -157,7 +153,6 @@
                     </mat-form-field>
                 </div>
 
-
                 <!-- MOTIVO DE RESOLUCION -->
                 <div class="filter-field">
                     <label>Motivo de Resolución</label>
@@ -180,7 +175,6 @@
 
                     </mat-form-field>
                 </div>
-
 
                 <!-- GRUPO RESOLUTOR -->
                 <div class="filter-field">
@@ -205,7 +199,6 @@
                     </mat-form-field>
                 </div>
 
-
                 <!-- BOTONES -->
                 <div class="filter-actions">
 
@@ -227,8 +220,6 @@
 
             </form>
 
-
-
         </details>
 
         <!--FILTROS DINAMICOS ACTIVOS - TIPOS DE INCIDENTE
@@ -249,11 +240,7 @@
 
             </div>
 
-
-
-
             <div class="active-filters-content">
-
 
                 <button type="button" class="type-filter-chip" *ngFor="let tipo of tiposIncidenteSeleccionados"
                     [title]="tipo" [attr.aria-label]="'Quitar filtro ' + tipo" (click)="quitarTipoIncidente(tipo)">
@@ -264,18 +251,13 @@
 
                 </button>
 
-
                 <button type="button" class="clear-types-button" (click)="cambiarTiposIncidente([])">
                     <mat-icon>restart_alt</mat-icon>
                     Limpiar tipos
                 </button>
             </div>
 
-
-
-
         </section>
-
 
            <section class="active-month-filter" *ngIf="periodoSeleccionado">
 
@@ -300,7 +282,6 @@
             </button>
 
         </section>
-        
 
           <section class="active-detail-filter" *ngIf="detalleSeleccionadoId">
             <div class="active-detail-info">
@@ -364,11 +345,16 @@
             </p>
         </header>
 
-
         <div class="charts-grid">
 
             <!-- Nro Incidentes por Mes -->
-            <div class="chart-grid-item" *ngIf="volumenMensual.length > 0">
+            <div class="chart-grid-item chart-expandable" id="fullscreen-volumen" #volumenFs>
+                <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenFs)"
+                    [title]="graficoExpandido === 'fullscreen-volumen' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                    aria-label="Ampliar o reducir gráfico de incidentes por mes">
+                    <mat-icon>{{ graficoExpandido === 'fullscreen-volumen' ? 'fullscreen_exit' : 'fullscreen'
+                        }}</mat-icon>
+                </button>
                 <app-volume-month modo="consolidado" entidadConsolidado="incidentes"
                     [datosConsolidados]="volumenMensual" [habilitarFiltroMes]="true"
                     [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenMensual"
@@ -376,9 +362,15 @@
                 </app-volume-month>
             </div>
 
-
-            <!--Distribución por Tipo de Incidente-->
-            <div class="chart-grid-item" *ngIf="tiposGrafico.length > 0">
+            <!-- Distribución por Tipo de Incidente -->
+            <div class="chart-grid-item chart-expandable" id="fullscreen-tipos" #tiposFs
+                *ngIf="tiposGrafico.length > 0">
+                <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tiposFs)"
+                    [title]="graficoExpandido === 'fullscreen-tipos' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                    aria-label="Ampliar o reducir gráfico de tipos de incidente">
+                    <mat-icon>{{ graficoExpandido === 'fullscreen-tipos' ? 'fullscreen_exit' : 'fullscreen'
+                        }}</mat-icon>
+                </button>
                 <app-category-distribution titulo="Distribución por Tipo de Incidente"
                     descripcion="Tipos de incidentes ordenados por volumen de tickets." orientacion="vertical"
                     [datos]="tiposGrafico" [seleccionMultiple]="true" [tiposSeleccionados]="tiposIncidenteSeleccionados"
@@ -387,21 +379,16 @@
             </div>
 
         </div>
-
     </section>
 
-
-    <!-- Resolutor -->
+    <!-- RESOLUTOR -->
     <section id="resolutor" class="dashboard-section">
         <header class="section-header">
             <h1>Resolutor</h1>
-            <p>
-                Distribución de tickets y rendimiento mensual
-                de los resolutores.
-            </p>
+            <p>Distribución de tickets y rendimiento mensual de los resolutores.</p>
         </header>
 
-        <!-- Rendimiento por Resolutor -->
+        <!-- Rendimiento por Resolutor: tabla sin pantalla completa -->
         <div class="chart-full-width" *ngIf="rendimientoResolutores || cargandoRendimientoResolutores">
             <app-resolutor-performance-table [datos]="rendimientoResolutores"
                 [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
@@ -411,173 +398,223 @@
         </div>
 
         <!-- Número de Tickets por Resolutor -->
-
-        <div class="chart-full-width" *ngIf="ticketsPorResolutor || cargandoTicketsPorResolutor">
-
+        <div class="chart-full-width chart-expandable" id="fullscreen-resolutores" #resolutoresFs
+            *ngIf="ticketsPorResolutor || cargandoTicketsPorResolutor">
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(resolutoresFs)"
+                [title]="graficoExpandido === 'fullscreen-resolutores' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                aria-label="Ampliar o reducir gráfico de tickets por resolutor">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-resolutores' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
+            </button>
             <app-resolver-monthly-tickets [datos]="ticketsPorResolutor" [cargando]="cargandoTicketsPorResolutor"
                 [limite]="limiteTicketsPorResolutor" [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
                 (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
             </app-resolver-monthly-tickets>
-
         </div>
-
-
-
     </section>
 
-
-    <!-- Empresa-->
+    <!-- EMPRESA -->
     <section id="empresa" class="dashboard-section">
-
         <header class="section-header">
             <h1>Empresa</h1>
-            <p>
-                Distribución de incidentes por proyecto
-                y nivel de prioridad.
-            </p>
+            <p>Distribución de incidentes por proyecto y nivel de prioridad.</p>
         </header>
 
-
         <div class="charts-grid">
-
-            <!-- Explorador por Proyectos -->
-            <div class="chart-grid-item" *ngIf="proyectos.length > 0 || proyectosExcluidos.length > 0">
+            <!-- EXPLORADOR POR PROYECTOS -->
+            <div class="chart-grid-item table-expandable" id="fullscreen-tabla-proyectos" #tablaProyectosFs
+                *ngIf="proyectos.length > 0 || proyectosExcluidos.length > 0">
 
                 <app-project-explorer-table modo="consolidado" entidadConsolidado="incidentes"
                     [datosConsolidados]="proyectos" modoBusqueda="combo" [opcionesProyectos]="opcionesProyectos"
                     [proyectoSeleccionado]="proyectoSeleccionado" (proyectoChange)="cambiarProyecto($event)"
                     [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
-                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)">
+                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
+                    [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-proyectos'"
+                    (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosFs)">
                 </app-project-explorer-table>
 
             </div>
 
-
             <!-- Top 10: Tickets por Proyecto y Mes -->
-            <div class="chart-grid-item" *ngIf="topProyectos.proyectos.length > 0">
-                <app-project-monthly-top [datos]="topProyectos" [proyectoSeleccionado]="proyectoSeleccionado">
+            <div class="chart-grid-item chart-expandable" id="fullscreen-proyectos" #proyectosFs
+                *ngIf="topProyectos.proyectos.length > 0">
+                <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(proyectosFs)"
+                    [title]="graficoExpandido === 'fullscreen-proyectos' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                    aria-label="Ampliar o reducir gráfico de tickets por proyecto y mes">
+                    <mat-icon>{{ graficoExpandido === 'fullscreen-proyectos' ? 'fullscreen_exit' : 'fullscreen'
+                        }}</mat-icon>
+                </button>
+                <app-project-monthly-top [datos]="topProyectos" [proyectoSeleccionado]="proyectoSeleccionado"
+                    [periodoSeleccionado]="periodoSeleccionado">
                 </app-project-monthly-top>
             </div>
         </div>
 
         <!-- N.º de Incidencias por Prioridad -->
-        <div class="chart-full-width" *ngIf="prioridadMensual.length > 0">
+        <div class="chart-full-width chart-expandable" id="fullscreen-prioridad-mensual" #prioridadMensualFs
+            *ngIf="prioridadMensual.length > 0">
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadMensualFs)"
+                [title]="graficoExpandido === 'fullscreen-prioridad-mensual' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                aria-label="Ampliar o reducir gráfico de incidencias por prioridad">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-prioridad-mensual' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
+            </button>
             <app-priority-monthly-stack [datos]="prioridadMensual">
             </app-priority-monthly-stack>
         </div>
 
+        <!-- Distribución por Prioridad -->
+        <div class="chart-full-width chart-expandable" id="fullscreen-prioridades" #prioridadesFs
+            *ngIf="prioridadesGrafico.length > 0">
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadesFs)"
+                [title]="graficoExpandido === 'fullscreen-prioridades' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                aria-label="Ampliar o reducir gráfico de distribución por prioridad">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-prioridades' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
+            </button>
+            <app-category-distribution titulo="Distribución por Prioridad"
+                descripcion="Cantidad de incidentes según su nivel de criticidad." orientacion="vertical"
+                [coloresPorPrioridad]="true" [ordenPrioridad]="true" [datos]="prioridadesGrafico">
+            </app-category-distribution>
+        </div>
     </section>
 
-
-    <!-- Alertas -->
+    <!-- ALERTAS -->
     <section id="alertas" class="dashboard-section">
-
         <header class="section-header">
             <h1>Alertas</h1>
-            <p>
-                Análisis de eventos técnicos y distribución
-                de alertas registradas.
-            </p>
+            <p>Análisis de eventos técnicos y distribución de alertas registradas.</p>
         </header>
 
-        <!-- Explorador por Descripciones x Mes -->
-        <div class="chart-full-width" *ngIf="exploradorDescripciones || cargandoExploradorDescripciones">
+        <!-- EXPLORADOR POR DESCRIPCIONES X MES -->
+        <div class="chart-full-width table-expandable" id="fullscreen-tabla-descripciones" #tablaDescripcionesFs
+            *ngIf="exploradorDescripciones || cargandoExploradorDescripciones">
+
             <app-description-month-explorer [datos]="exploradorDescripciones"
                 [descripcionSeleccionada]="descripcionSeleccionada" [busqueda]="busquedaDescripcion"
                 [cargando]="cargandoExploradorDescripciones" (descripcionChange)="cambiarDescripcion($event)"
                 (busquedaChange)="cambiarBusquedaDescripciones($event)"
-                (paginaChange)="cambiarPaginaDescripciones($event)">
+                (paginaChange)="cambiarPaginaDescripciones($event)" [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-descripciones'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaDescripcionesFs)">
             </app-description-month-explorer>
-        </div>
 
+        </div>
 
         <div class="charts-grid">
 
-            <!-- Tabla Detalle de Eventos Técnicos -->
-            <div class="chart-grid-item" *ngIf="detalleEventosTecnicos || cargandoDetalleEventosTecnicos">
+            <!-- TABLA DETALLE DE EVENTOS TÉCNICOS -->
+            <div class="chart-grid-item table-expandable" id="fullscreen-tabla-eventos-tecnicos" #tablaEventosFs
+                *ngIf="detalleEventosTecnicos || cargandoDetalleEventosTecnicos">
+
                 <app-technical-events-table [datos]="detalleEventosTecnicos" [busqueda]="busquedaDetalles"
                     [cargando]="cargandoDetalleEventosTecnicos" [habilitarFiltroDetalle]="true"
                     [detalleSeleccionadoId]="detalleSeleccionadoId"
                     [detalleSeleccionadoTexto]="detalleSeleccionadoTexto"
                     (detalleChange)="cambiarDetalleTecnico($event)" (busquedaChange)="cambiarBusquedaDetalles($event)"
-                    (paginaChange)="cambiarPaginaDetalles($event)">
+                    (paginaChange)="cambiarPaginaDetalles($event)" [habilitarPantallaCompleta]="true"
+                    [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-eventos-tecnicos'"
+                    (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaEventosFs)">
                 </app-technical-events-table>
+
             </div>
 
             <!-- N.º de Incidentes x Porcentajes -->
-            <div class="chart-grid-item" *ngIf="incidentesPorcentajes || cargandoIncidentesPorcentajes">
+            <div class="chart-grid-item chart-expandable" id="fullscreen-porcentajes" #porcentajesFs
+                *ngIf="incidentesPorcentajes || cargandoIncidentesPorcentajes">
+                <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(porcentajesFs)"
+                    [title]="graficoExpandido === 'fullscreen-porcentajes' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                    aria-label="Ampliar o reducir gráfico de incidentes por porcentajes">
+                    <mat-icon>{{ graficoExpandido === 'fullscreen-porcentajes' ? 'fullscreen_exit' : 'fullscreen'
+                        }}</mat-icon>
+                </button>
                 <app-incident-percentage-bars [datos]="incidentesPorcentajes" [cargando]="cargandoIncidentesPorcentajes"
                     [limite]="limiteIncidentesPorcentajes" (limiteChange)="cambiarLimiteIncidentesPorcentajes($event)">
                 </app-incident-percentage-bars>
             </div>
         </div>
-
     </section>
 
-    <!-- Detalle Alertas -->
+    <!-- DETALLE ALERTAS -->
     <section id="detalle-alertas" class="dashboard-section">
 
         <header class="section-header">
             <h1>Detalle Alertas</h1>
-            <p>
-                Distribución por criticidad y ranking
-                de descripciones y eventos técnicos.
-            </p>
+            <p>Distribución por criticidad y ranking de descripciones y eventos técnicos.</p>
         </header>
 
-        <!-- Distribución por Prioridad -->
-        <div class="chart-full-width" *ngIf="prioridadesGrafico.length > 0">
-            <app-category-distribution titulo="Distribución por Prioridad"
-                descripcion="Cantidad de incidentes según su nivel de criticidad." orientacion="vertical"
-                [coloresPorPrioridad]="true" [datos]="prioridadesGrafico">
-            </app-category-distribution>
-        </div>
-
         <!-- TOP 10 Tickets por Descripción y Proyecto -->
-        <div class="chart-full-width" *ngIf="topDescripcionesProyectos || cargandoTopDescripcionesProyectos">
+        <div class="chart-full-width chart-expandable" id="fullscreen-descripciones-proyectos" #descripcionesProyectosFs
+            *ngIf="topDescripcionesProyectos || cargandoTopDescripcionesProyectos">
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(descripcionesProyectosFs)"
+                [title]="graficoExpandido === 'fullscreen-descripciones-proyectos'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'"
+                aria-label="Ampliar o reducir gráfico de tickets por descripción y proyecto">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-descripciones-proyectos'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
             <app-top-description-project [datos]="topDescripcionesProyectos"
                 [cargando]="cargandoTopDescripcionesProyectos">
             </app-top-description-project>
+
         </div>
 
-        <!-- Top 10 Tickets por Detalle -->
-        <div class="chart-full-width" *ngIf="topDetalles || cargandoTopDetalles">
+
+        <!-- TOP 10 Tickets por Detalle -->
+        <div class="chart-full-width chart-expandable" id="fullscreen-detalles" #detallesFs
+            *ngIf="topDetalles || cargandoTopDetalles">
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(detallesFs)" [title]="graficoExpandido === 'fullscreen-detalles'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir gráfico de tickets por detalle">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-detalles'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
             <app-top-technical-details [datos]="topDetalles" [cargando]="cargandoTopDetalles">
             </app-top-technical-details>
+
         </div>
 
     </section>
 
-
-
-    <!-- ==================================================
-     EXPLORADOR DE TICKETS
-     ================================================== -->
-
-    <section id="explorador-tickets" class="dashboard-section">
+    <!-- EXPLORADOR DE TICKETS -->
+    <section id="explorador-tickets" class="dashboard-section" *ngIf="ticketsDetalle || cargandoTickets">
 
         <header class="section-header">
-
             <h1>Explorador de Tickets</h1>
-
             <p>
                 Consulta todos los campos de los incidentes,
                 busca tickets específicos y analiza su información.
             </p>
-
         </header>
 
-        <div class="chart-full-width">
+        <div class="chart-full-width table-expandable" id="fullscreen-tabla-tickets" #tablaTicketsFs>
 
             <app-ticket-explorer-table [tipoDashboard]="'incident-consolidated'" [datos]="ticketsDetalle"
                 [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
-                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
+                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)"
+                [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tickets'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsFs)">
             </app-ticket-explorer-table>
 
         </div>
 
     </section>
-
-
 
 </div>

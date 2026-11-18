@@ -185,14 +185,13 @@
     </section>
 
 
+    <!-- EXPLORADOR DE PROYECTOS Y VOLUMEN MENSUAL -->
     <section class="charts-scroll">
 
+        <!-- EXPLORADOR POR PROYECTOS -->
+        <div class="chart-scroll-item" *ngIf="proyectos.length > 0">
 
-
-        <!-- Explorador por Proyectos -->
-        <div class="chart-scroll-item" *ngIf="proyectos.length > 0 ">
-
-            <section class="projects-section">
+            <section class="projects-section table-expandable" id="fullscreen-tabla-proyectos-req" #tablaProyectosReqFs>
 
                 <div *ngIf="cargandoProyectos" class="projects-loading" role="status" aria-live="polite">
                     Actualizando proyectos...
@@ -202,7 +201,9 @@
                     [datosConsolidados]="proyectos" [opcionesProyectos]="opcionesProyectos"
                     [proyectoSeleccionado]="proyectoSeleccionado" (proyectoChange)="cambiarProyecto($event)"
                     [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
-                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)">
+                    (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
+                    [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-proyectos-req'"
+                    (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosReqFs)">
                 </app-project-explorer-table>
 
             </section>
@@ -210,8 +211,21 @@
         </div>
 
 
-        <!-- Volumen Mensual de Requerimientos -->
-        <div class="chart-scroll-item" *ngIf="volumenMensual.length > 0">
+        <!-- VOLUMEN MENSUAL DE REQUERIMIENTOS -->
+        <div class="chart-scroll-item chart-expandable" id="fullscreen-volumen-requerimientos" #volumenReqFs
+            *ngIf="volumenMensual.length > 0">
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenReqFs)" [title]="graficoExpandido === 'fullscreen-volumen-requerimientos'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir volumen mensual de requerimientos">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-volumen-requerimientos'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
 
             <app-volume-month modo="consolidado" entidadConsolidado="requerimientos"
                 [datosConsolidados]="volumenMensual" [habilitarFiltroMes]="true"
@@ -221,16 +235,28 @@
 
         </div>
 
-
     </section>
 
 
 
+    <!-- DISTRIBUCIÓN POR TIPO Y PRIORIDAD -->
     <section class="charts-scroll">
 
+        <!-- DISTRIBUCIÓN POR TIPO DE REQUERIMIENTO -->
+        <div class="chart-scroll-item chart-expandable" id="fullscreen-tipos-requerimientos" #tiposReqFs
+            *ngIf="tiposGrafico.length > 0">
 
-        <!-- Distribución por Tipo de Requerimiento -->
-        <div class="chart-scroll-item" *ngIf="tiposGrafico.length > 0">
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tiposReqFs)" [title]="graficoExpandido === 'fullscreen-tipos-requerimientos'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir distribución por tipo de requerimiento">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-tipos-requerimientos'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
 
             <app-category-distribution titulo="Distribución por Tipo de Requerimiento"
                 descripcion="Tipos de requerimientos ordenados por volumen de tickets." orientacion="vertical"
@@ -241,31 +267,259 @@
 
         </div>
 
-        <!-- Distribución por Prioridad-->
-        <div class="chart-scroll-item" *ngIf="prioridadesGrafico.length > 0">
+
+        <!-- DISTRIBUCIÓN POR PRIORIDAD -->
+        <div class="chart-scroll-item chart-expandable" id="fullscreen-prioridades-requerimientos" #prioridadesReqFs
+            *ngIf="prioridadesGrafico.length > 0">
+
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadesReqFs)" [title]="graficoExpandido === 'fullscreen-prioridades-requerimientos'
+                ? 'Salir de pantalla completa'
+                : 'Ver en pantalla completa'" aria-label="Ampliar o reducir distribución por prioridad">
+
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-prioridades-requerimientos'
+                    ? 'fullscreen_exit'
+                    : 'fullscreen' }}
+                </mat-icon>
+
+            </button>
+
             <app-category-distribution titulo="Distribución por Prioridad"
                 descripcion="Cantidad de requerimientos según su nivel de criticidad." orientacion="vertical"
                 [coloresPorPrioridad]="true" [datos]="prioridadesGrafico">
             </app-category-distribution>
+
         </div>
 
     </section>
 
-    <!-- Top 10: Tickets por Proyecto y Mes-->
-    <section class="chart-full-width" *ngIf="topProyectos.proyectos.length > 0">
+
+
+    <!-- TOP 10: TICKETS POR PROYECTO Y MES -->
+    <section class="chart-full-width chart-expandable" id="fullscreen-proyectos-requerimientos" #proyectosReqFs
+        *ngIf="topProyectos.proyectos.length > 0">
+
+        <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(proyectosReqFs)" [title]="graficoExpandido === 'fullscreen-proyectos-requerimientos'
+            ? 'Salir de pantalla completa'
+            : 'Ver en pantalla completa'" aria-label="Ampliar o reducir tickets por proyecto y mes">
+
+            <mat-icon>
+                {{ graficoExpandido === 'fullscreen-proyectos-requerimientos'
+                ? 'fullscreen_exit'
+                : 'fullscreen' }}
+            </mat-icon>
+
+        </button>
+
         <app-project-monthly-top entidadConsolidado="requerimientos" [datos]="topProyectos"
-            [proyectoSeleccionado]="proyectoSeleccionado">
+            [proyectoSeleccionado]="proyectoSeleccionado" [periodoSeleccionado]="periodoSeleccionado">
         </app-project-monthly-top>
+
     </section>
 
-    <!-- N.º de Requerimientos por Prioridad-->
-    <section class="chart-full-width" *ngIf="prioridadMensual.length > 0">
+    <!-- N.º DE REQUERIMIENTOS POR PRIORIDAD -->
+    <section class="chart-full-width chart-expandable" id="fullscreen-prioridad-mensual-requerimientos"
+        #prioridadMensualReqFs *ngIf="prioridadMensual.length > 0">
+
+        <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadMensualReqFs)"
+            [title]="graficoExpandido === 'fullscreen-prioridad-mensual-requerimientos'
+            ? 'Salir de pantalla completa'
+            : 'Ver en pantalla completa'" aria-label="Ampliar o reducir requerimientos por prioridad">
+
+            <mat-icon>
+                {{ graficoExpandido === 'fullscreen-prioridad-mensual-requerimientos'
+                ? 'fullscreen_exit'
+                : 'fullscreen' }}
+            </mat-icon>
+
+        </button>
+
         <app-priority-monthly-stack entidadConsolidado="requerimientos" [datos]="prioridadMensual">
         </app-priority-monthly-stack>
+
     </section>
 
 
-    <section class="chart-full-width ticket-explorer-section">
+
+
+
+    <!-- ALCANCE 1: PRODUCTIVIDAD PROMEDIO POR PROYECTO -->
+
+
+    <!--  -->
+    <section class="productivity-section" *ngIf="filtrosListos">
+        <header class="productivity-section-header">
+            <div>
+                <span class="productivity-section-label">Alcance 1</span>
+                <h2>Productividad de Requerimientos por Proyecto</h2>
+                <p>Evolución diaria, semanal y mensual, con promedios por proyecto.</p>
+            </div>
+        </header>
+
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-productividad-requerimientos"
+            #productividadReqFs>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(productividadReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-productividad-requerimientos' ? 'Salir de pantalla completa' : 'Ampliar evolución de requerimientos'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-productividad-requerimientos' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
+            </button>
+            <app-requirement-productivity-evolution [datos]="productividad?.grafico ?? null"
+                [resumen]="productividad?.resumen ?? null" [granularidad]="granularidadProductividad"
+                [cargando]="cargandoProductividad" [error]="errorProductividad"
+                (granularidadChange)="cambiarGranularidadProductividad($event)">
+            </app-requirement-productivity-evolution>
+        </div>
+
+        <div class="productivity-table table-expandable" id="fullscreen-tabla-productividad-req"
+            #tablaProductividadReqFs>
+            <button type="button" class="productivity-table-expand-btn"
+                (click)="alternarPantallaCompleta(tablaProductividadReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-productividad-req' ? 'Salir de pantalla completa' : 'Ampliar productividad promedio por proyecto'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-productividad-req' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
+            </button>
+            <app-requirement-productivity-table [datos]="productividad?.tabla ?? null"
+                [cargando]="cargandoProductividad" [error]="errorProductividad"
+                (paginaChange)="cambiarPaginaProductividad($event)">
+            </app-requirement-productivity-table>
+        </div>
+    </section>
+
+    <!-- ALCANCE 2: DOTACIÓN MENSUAL DE RESOLUTORES -->
+    <section class="productivity-section" *ngIf="filtrosListos">
+        <header class="productivity-section-header">
+            <div>
+                <span class="productivity-section-label">Alcance 2</span>
+                <h2>Resolutores por Proyecto y Mes</h2>
+                <p>Resolutores distintos por período y detalle de dotación mensual.</p>
+            </div>
+        </header>
+
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-dotacion-requerimientos"
+            #dotacionReqFs>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(dotacionReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-dotacion-requerimientos' ? 'Salir de pantalla completa' : 'Ampliar resolutores por proyecto y mes'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-dotacion-requerimientos' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
+            </button>
+            <app-requirement-resolvers-monthly-chart [datos]="dotacion?.grafico ?? null"
+                [resumen]="dotacion?.resumen ?? null" [cargando]="cargandoDotacion" [error]="errorDotacion">
+            </app-requirement-resolvers-monthly-chart>
+        </div>
+
+        <div class="productivity-table table-expandable" id="fullscreen-tabla-dotacion-req" #tablaDotacionReqFs>
+            <button type="button" class="productivity-table-expand-btn"
+                (click)="alternarPantallaCompleta(tablaDotacionReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-dotacion-req' ? 'Salir de pantalla completa' : 'Ampliar dotación mensual de resolutores'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-dotacion-req' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
+            </button>
+
+            <app-requirement-resolvers-monthly-table [datos]="dotacion?.tabla ?? null"
+                [periodosDisponibles]="dotacion?.grafico?.periodos ?? []" [cargando]="cargandoDotacion"
+                [error]="errorDotacion" (paginaChange)="cambiarPaginaDotacion($event)">
+            </app-requirement-resolvers-monthly-table>
+
+        </div>
+    </section>
+
+    <!-- ALCANCE 3: ATENCIÓN PARALELA DE REQUERIMIENTOS -->
+    <section class="productivity-section" *ngIf="filtrosListos">
+
+
+        <!--     
+-->
+
+        <header class="productivity-section-header">
+            <div>
+                <span class="productivity-section-label">Alcance 3</span>
+                <h2>Atención Paralela de Requerimientos</h2>
+                <p>Tickets con intervalos de apertura y resolución superpuestos por resolutor.</p>
+            </div>
+        </header>
+
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-paralela-requerimientos"
+            #paralelaReqFs>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(paralelaReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-paralela-requerimientos' ? 'Salir de pantalla completa' : 'Ampliar atención paralela'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-paralela-requerimientos' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
+            </button>
+            <app-requirement-parallel-attention-chart [datos]="atencionParalela?.grafico ?? []"
+                [resumen]="atencionParalela?.resumen ?? null" [cargando]="cargandoAtencionParalela"
+                [error]="errorAtencionParalela">
+            </app-requirement-parallel-attention-chart>
+        </div>
+
+
+        <!--    
+
+-->
+        <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req" #tablaParalelaReqFs>
+            <button type="button" class="productivity-table-expand-btn"
+                (click)="alternarPantallaCompleta(tablaParalelaReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'Salir de pantalla completa' : 'Ampliar detalle de tickets simultáneos'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
+            </button>
+            <app-requirement-parallel-details-table [datos]="atencionParalela?.tabla ?? null"
+                [resolutorSeleccionado]="resolutorAtencionParalela" [cargando]="cargandoAtencionParalela"
+                [error]="errorAtencionParalela" (paginaChange)="cambiarPaginaAtencionParalela($event)"
+                (resolutorChange)="cambiarResolutorAtencionParalela($event)">
+            </app-requirement-parallel-details-table>
+        </div>
+
+        <!--     
+
+ -->
+
+
+
+    </section>
+
+    <!-- ALCANCE 4: TICKETS CON REGISTROS DE ACTUALIZACIÓN MANUAL -->
+    <section class="productivity-section" *ngIf="filtrosListos">
+        <header class="productivity-section-header">
+            <div>
+                <span class="productivity-section-label">Alcance 4</span>
+                <h2>Requerimientos con Actualizaciones Manuales</h2>
+                <p>Tickets del reporte manual relacionados con Requerimientos Consolidados, por resolutor asignado.</p>
+            </div>
+        </header>
+
+        <!-- TOP 10, KPI Y GRÁFICO -->
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-actualizaciones-manuales-req"
+            #actualizacionesManualesReqFs>
+            <button type="button" class="chart-expand-btn"
+                (click)="alternarPantallaCompleta(actualizacionesManualesReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-actualizaciones-manuales-req' ? 'Salir de pantalla completa' : 'Ampliar ranking de requerimientos con registros manuales'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-actualizaciones-manuales-req' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
+            </button>
+            <app-requirement-manual-updates-chart [datos]="actualizacionesManuales"
+                [cargando]="cargandoActualizacionesManuales" [error]="errorActualizacionesManuales">
+            </app-requirement-manual-updates-chart>
+        </div>
+
+        <!-- TABLA PAGINADA Y BÚSQUEDA POR RESOLUTOR -->
+        <div class="productivity-table table-expandable" id="fullscreen-tabla-actualizaciones-manuales-req"
+            #tablaActualizacionesManualesReqFs>
+            <button type="button" class="productivity-table-expand-btn"
+                (click)="alternarPantallaCompleta(tablaActualizacionesManualesReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-actualizaciones-manuales-req' ? 'Salir de pantalla completa' : 'Ampliar tabla de actualizaciones manuales'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-actualizaciones-manuales-req' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
+            </button>
+            <app-requirement-manual-updates-table [datos]="actualizacionesManuales?.tabla ?? null"
+                [resolutorSeleccionado]="resolutorActualizacionesManuales" [cargando]="cargandoActualizacionesManuales"
+                [error]="errorActualizacionesManuales" (paginaChange)="cambiarPaginaActualizacionesManuales($event)"
+                (resolutorChange)="cambiarResolutorActualizacionesManuales($event)">
+            </app-requirement-manual-updates-table>
+        </div>
+    </section>
+
+    <!-- EXPLORADOR DE TICKETS -->
+    <section class="chart-full-width ticket-explorer-section" *ngIf="ticketsDetalle || cargandoTickets">
 
         <header class="ticket-explorer-header">
             <h2>Explorador de Tickets</h2>
@@ -274,10 +528,18 @@
                 revisa todos sus campos y filtra el dashboard por Ticket ID.
             </p>
         </header>
-        <app-ticket-explorer-table [tipoDashboard]="'requirement-consolidated'" [datos]="ticketsDetalle"
-            [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
-            (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
-        </app-ticket-explorer-table>
+
+        <div class="table-expandable" id="fullscreen-tabla-tickets-req" #tablaTicketsReqFs>
+
+            <app-ticket-explorer-table [tipoDashboard]="'requirement-consolidated'" [datos]="ticketsDetalle"
+                [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
+                (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)"
+                [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tickets-req'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsReqFs)">
+            </app-ticket-explorer-table>
+
+        </div>
 
     </section>
 

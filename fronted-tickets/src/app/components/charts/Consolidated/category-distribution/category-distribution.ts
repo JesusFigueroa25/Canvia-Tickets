@@ -21,6 +21,7 @@ export class CategoryDistribution implements OnChanges {
   @Input() descripcion = '';
   @Input() orientacion: 'horizontal' | 'vertical' = 'vertical';
   @Input() coloresPorPrioridad = false;
+  @Input() ordenPrioridad = false;
   @Input() seleccionMultiple = false;
 
   // Texto del filtro según la entidad
@@ -39,14 +40,32 @@ export class CategoryDistribution implements OnChanges {
     datasets: []
   };
 
+  //09/11/2026
+  private readonly colores = [
+    '#FF620F',
+    '#FFB184',
+    '#16835B',
+    '#63B891',
+    '#D97706',
+    '#F4C95D',
+    '#12633F',
+    '#A8DCC2'
+  ];
+
   chartOptions: ChartOptions<'bar'> = {};
 
   ngOnChanges(changes: SimpleChanges): void {
 
-    if (changes['datos'] || changes['orientacion'] || changes['coloresPorPrioridad'] ||
+    if (changes['datos'] || changes['orientacion'] || changes['coloresPorPrioridad'] || changes['ordenPrioridad'] ||
       changes['seleccionMultiple'] || changes['tiposSeleccionados']) {
       this.actualizarGrafico();
     }
+  }
+
+  private rangoPrioridad(categoria: string): number {
+    const nombre = categoria.trim().replace(/^\d+\s*-\s*/, '').toLowerCase();
+    const rango = ['critical', 'high', 'medium', 'low'].indexOf(nombre);
+    return rango === -1 ? 4 : rango;
   }
 
   private obtenerColor(categoria: string): string {
@@ -64,7 +83,9 @@ export class CategoryDistribution implements OnChanges {
     const horizontal = this.orientacion === 'horizontal';
     this.datosOrdenados = [...this.datos].sort(
       (a, b) =>
-        b.cantidad - a.cantidad ||
+        (this.ordenPrioridad
+          ? this.rangoPrioridad(a.categoria) - this.rangoPrioridad(b.categoria)
+          : b.cantidad - a.cantidad) ||
         a.categoria.localeCompare(b.categoria)
     );
 
@@ -76,34 +97,37 @@ export class CategoryDistribution implements OnChanges {
       : 330;
 
     const haySeleccion = this.seleccionMultiple && this.tiposSeleccionados.length > 0;
-    const coloresBarras = this.datosOrdenados.map(item => {
+
+    //09/11/2026
+    const coloresBarras = this.datosOrdenados.map((item, index) => {
 
       if (this.coloresPorPrioridad) {
         return this.obtenerColor(item.categoria);
       }
 
       if (!haySeleccion) {
-        return '#FFB184';
+        return this.colores[index % this.colores.length];
       }
 
       if (this.tiposSeleccionados.includes(item.categoria)) {
-        return '#FF620F';
+        return this.colores[index % this.colores.length];
       }
 
       return '#FFE4D4';
 
     });
 
+    const coloresBordes = this.datosOrdenados.map((item, index) => {
 
-    const coloresBordes = this.datosOrdenados.map(item => {
       if (this.coloresPorPrioridad) {
         return this.obtenerColor(item.categoria);
       }
-      return haySeleccion &&
-        this.tiposSeleccionados.includes(item.categoria)
-        ? '#D84A00'
-        : '#FF620F';
+      if (haySeleccion && !this.tiposSeleccionados.includes(item.categoria)) {
+        return '#FFE4D4';
+      }
+      return this.colores[index % this.colores.length];
     });
+    //Fin
 
 
     this.chartData = {

@@ -1,4 +1,3 @@
-
 :host {
     display: block;
     font-family: inherit;
@@ -604,4 +603,17 @@
     .file-list-heading {
         align-items: flex-start;
     }
+}
+
+/* Conciliación adicional del importador de tickets manuales. */
+.manual-import-details {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #EDF0F2;
+}
+
+.manual-import-details-title {
+    color: #475467;
+    font-size: 11px;
+    font-weight: 700;
 }

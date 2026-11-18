@@ -65,6 +65,31 @@ import { RequirementCategorizationResolversTable } from './components/charts/Cat
 import { RequirementCategorizationMonthlyChart } from './components/charts/Categorization/requirement-categorization-monthly-chart/requirement-categorization-monthly-chart';
 import { RequirementCategorizationMonthlyTable } from './components/charts/Categorization/requirement-categorization-monthly-table/requirement-categorization-monthly-table';
 import { TicketExplorerTable } from './components/charts/ticket-explorer-table/ticket-explorer-table';
+import { IncidentCauseAnalysis } from './components/pages/incident-cause-analysis/incident-cause-analysis';
+import { IncidentAttributionDonut } from './components/charts/Consolidated/incident-attribution-donut/incident-attribution-donut';
+import { IncidentAttributionComparison } from './components/charts/Consolidated/incident-attribution-comparison/incident-attribution-comparison';
+import { IncidentCauseDistributionChart } from './components/charts/Consolidated/incident-cause-distribution-chart/incident-cause-distribution-chart';
+import { IncidentCauseEvidenceTable } from './components/charts/Consolidated/incident-cause-evidence-table/incident-cause-evidence-table';
+import { IncidentTopServersChart } from './components/charts/Consolidated/incident-top-servers-chart/incident-top-servers-chart';
+import { IncidentCauseReport } from './components/charts/Consolidated/incident-cause-report/incident-cause-report';
+import { DailyReport } from './components/pages/daily-report/daily-report';
+import { DailyReportTable } from './components/charts/Report-Diary/daily-report-table/daily-report-table';
+import { DailyReportChart } from './components/charts/Report-Diary/daily-report-chart/daily-report-chart';
+import { TaskConsolidated } from './components/pages/task-consolidated/task-consolidated';
+import { RequirementProductivityEvolution } from './components/charts/Consolidated/Productivity/requirement-productivity-evolution/requirement-productivity-evolution';
+import { RequirementProductivityTable } from './components/charts/Consolidated/Productivity/requirement-productivity-table/requirement-productivity-table';
+import { RequirementResolversMonthlyChart } from './components/charts/Consolidated/Productivity/requirement-resolvers-monthly-chart/requirement-resolvers-monthly-chart';
+import { RequirementResolversMonthlyTable } from './components/charts/Consolidated/Productivity/requirement-resolvers-monthly-table/requirement-resolvers-monthly-table';
+import { RequirementParallelAttentionChart } from './components/charts/Consolidated/Productivity/requirement-parallel-attention-chart/requirement-parallel-attention-chart';
+import { RequirementParallelDetailsTable } from './components/charts/Consolidated/Productivity/requirement-parallel-details-table/requirement-parallel-details-table';
+import { RequirementManualUpdatesChart } from './components/charts/Consolidated/Productivity/requirement-manual-updates-chart/requirement-manual-updates-chart';
+import { RequirementManualUpdatesTable } from './components/charts/Consolidated/Productivity/requirement-manual-updates-table/requirement-manual-updates-table';
+import { TicketsReportTimes } from './components/pages/tickets-report-times/tickets-report-times';
+import { ReportTimesResolverChart } from './components/charts/Report-Times/report-times-resolver-chart/report-times-resolver-chart';
+import { ReportTimesResolverTable } from './components/charts/Report-Times/report-times-resolver-table/report-times-resolver-table';
+import { ReportTimesProjectChart } from './components/charts/Report-Times/report-times-project-chart/report-times-project-chart';
+import { ReportTimesProjectTable } from './components/charts/Report-Times/report-times-project-table/report-times-project-table';
+import { RequirementCategorizationReport } from './components/charts/Consolidated/requirement-categorization-report/requirement-categorization-report';
 
 @NgModule({
   declarations: [
@@ -123,6 +148,31 @@ import { TicketExplorerTable } from './components/charts/ticket-explorer-table/t
     RequirementCategorizationMonthlyChart,
     RequirementCategorizationMonthlyTable,
     TicketExplorerTable,
+    IncidentCauseAnalysis,
+    IncidentAttributionDonut,
+    IncidentAttributionComparison,
+    IncidentCauseDistributionChart,
+    IncidentCauseEvidenceTable,
+    IncidentTopServersChart,
+    IncidentCauseReport,
+    DailyReport,
+    DailyReportTable,
+    DailyReportChart,
+    TaskConsolidated,
+    RequirementProductivityEvolution,
+    RequirementProductivityTable,
+    RequirementResolversMonthlyChart,
+    RequirementResolversMonthlyTable,
+    RequirementParallelAttentionChart,
+    RequirementParallelDetailsTable,
+    RequirementManualUpdatesChart,
+    RequirementManualUpdatesTable,
+    TicketsReportTimes,
+    ReportTimesResolverChart,
+    ReportTimesResolverTable,
+    ReportTimesProjectChart,
+    ReportTimesProjectTable,
+    RequirementCategorizationReport,
   ],
   imports: [
     BrowserAnimationsModule,

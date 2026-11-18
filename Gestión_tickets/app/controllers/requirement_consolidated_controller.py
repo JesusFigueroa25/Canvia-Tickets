@@ -7,6 +7,14 @@ from app.database.sqlserver import get_sqlserver_db
 from app.schemas.consolidated_import_schema import (ConsolidatedImportOut, RequirementConsolidatedFiltersOut, RequirementConsolidatedKPIOut, RequirementConsolidatedPrioridadItem, RequirementConsolidatedPrioridadMensualItem, RequirementConsolidatedProyectoItem, RequirementConsolidatedTipoItem, RequirementConsolidatedTopProyectosOut, RequirementConsolidatedVolumenItem,)
 from app.schemas.consolidated_import_schema import (RequirementConsolidatedDashboardFilters,RequirementConsolidatedTicketsOut)
 from app.services import (requirement_consolidated_service,)
+from typing import Literal
+from app.schemas.consolidated_import_schema import (
+    RequirementProductividadOut,
+    RequirementDotacionOut,
+)
+from app.schemas.consolidated_import_schema import (
+    RequirementActualizacionesManualesOut,
+)
 
 router = APIRouter(prefix="/requirement-consolidated", tags=["Requirement Consolidated"])
 
@@ -76,10 +84,7 @@ def obtener_kpis(
 
 
 # Volumen Mensual de Requerimientos
-@router.get(
-    "/volumen-mensual",
-    response_model=list[RequirementConsolidatedVolumenItem]
-)
+@router.get("/volumen-mensual", response_model=list[RequirementConsolidatedVolumenItem])
 def obtener_volumen_mensual(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -91,10 +96,7 @@ def obtener_volumen_mensual(
 
 
 # Explorador por Proyectos
-@router.get(
-    "/proyectos",
-    response_model=list[RequirementConsolidatedProyectoItem]
-)
+@router.get("/proyectos", response_model=list[RequirementConsolidatedProyectoItem])
 def obtener_proyectos(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -106,10 +108,7 @@ def obtener_proyectos(
 
 
 # Distribución por Tipo de Requerimiento
-@router.get(
-    "/tipos",
-    response_model=list[RequirementConsolidatedTipoItem]
-)
+@router.get("/tipos", response_model=list[RequirementConsolidatedTipoItem])
 def obtener_tipos(
     limite: int = Query(10, ge=1, le=100),
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
@@ -123,10 +122,7 @@ def obtener_tipos(
 
 
 # Distribución por Prioridad
-@router.get(
-    "/prioridades",
-    response_model=list[RequirementConsolidatedPrioridadItem]
-)
+@router.get("/prioridades", response_model=list[RequirementConsolidatedPrioridadItem])
 def obtener_prioridades(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -138,10 +134,7 @@ def obtener_prioridades(
 
 
 # Top 10: Tickets por Proyecto y Mes
-@router.get(
-    "/top-proyectos",
-    response_model=RequirementConsolidatedTopProyectosOut
-)
+@router.get("/top-proyectos", response_model=RequirementConsolidatedTopProyectosOut)
 def obtener_top_proyectos(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -153,10 +146,7 @@ def obtener_top_proyectos(
 
 
 # N.º de Requerimientos por Prioridad
-@router.get(
-    "/prioridad-mensual",
-    response_model=list[RequirementConsolidatedPrioridadMensualItem]
-)
+@router.get("/prioridad-mensual", response_model=list[RequirementConsolidatedPrioridadMensualItem])
 def obtener_prioridad_mensual(
     filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
     db: Session = Depends(get_sqlserver_db)
@@ -168,11 +158,8 @@ def obtener_prioridad_mensual(
 
 
 
-# TABLA PAGINADA - DETALLE DE TICKETS REQUERIMIENTOS CONSOLIDADOS
-@router.get(
-    "/tickets",
-    response_model=RequirementConsolidatedTicketsOut
-)
+# Tabla Tickets
+@router.get("/tickets", response_model=RequirementConsolidatedTicketsOut)
 def obtener_tickets(
     pagina: int = Query(1, ge=1),
     tamano: int = Query(10, ge=1, le=100),
@@ -185,4 +172,97 @@ def obtener_tickets(
         filtros,
         pagina=pagina,
         tamano=tamano
+    )
+
+
+# INDICADORES PRODUCTIVIDAD - REQUERIMIENTOS CONSOLIDADOS
+
+@router.get("/productividad-proyectos", response_model=RequirementProductividadOut)
+def obtener_productividad_proyectos(
+    granularidad: Literal["dia", "semana", "mes"] = Query("mes"),
+    limite_grafico: int = Query(10, ge=1, le=20),
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(25, ge=1, le=100),
+    filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return requirement_consolidated_service.obtener_productividad_proyectos(
+        db, filtros, granularidad, limite_grafico, pagina, tamano
+    )
+
+ 
+@router.get("/dotacion-resolutores", response_model=RequirementDotacionOut)
+def obtener_dotacion_resolutores(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(25, ge=1, le=100),
+    limite_grafico: int = Query(10, ge=1, le=20),
+    filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return requirement_consolidated_service.obtener_dotacion_resolutores(
+        db, filtros, pagina, tamano, limite_grafico
+    )
+
+
+# ===============================================================
+# ALCANCE 3 - ATENCIÓN PARALELA DE REQUERIMIENTOS CONSOLIDADOS
+# ===============================================================
+from app.schemas.consolidated_import_schema import RequirementAtencionParalelaOut
+
+
+@router.get("/atencion-paralela", response_model=RequirementAtencionParalelaOut)
+def obtener_atencion_paralela(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(25, ge=1, le=100),
+    limite_grafico: int = Query(10, ge=1, le=30),
+    resolutor: str | None = Query(None, max_length=150),
+    filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    if filtros.desde and filtros.hasta and filtros.desde > filtros.hasta:
+        raise HTTPException(status_code=422, detail="La fecha Desde no puede superar Hasta.")
+    return requirement_consolidated_service.obtener_atencion_paralela(
+        db, filtros, pagina, tamano, limite_grafico, resolutor
+    )
+
+
+
+# ALCANCE 4 - TICKETS MODIFICADOS MANUALMENTE
+@router.get("/actualizaciones-manuales",response_model=RequirementActualizacionesManualesOut)
+def obtener_actualizaciones_manuales(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(25, ge=1, le=100),
+    limite_grafico: int = Query(10, ge=1, le=30),
+    resolutor: str | None = Query(
+        default=None,
+        max_length=150
+    ),
+    filtros: RequirementConsolidatedDashboardFilters = Depends(
+        _obtener_filtros_dashboard
+    ),
+    db: Session = Depends(get_sqlserver_db),
+):
+
+    if (
+        filtros.desde is not None
+        and filtros.hasta is not None
+        and filtros.desde > filtros.hasta
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "La fecha Desde no puede superar Hasta."
+            )
+        )
+
+    return (
+        requirement_consolidated_service
+        .obtener_actualizaciones_manuales(
+            db=db,
+            filtros=filtros,
+            pagina=pagina,
+            tamano=tamano,
+            limite_grafico=limite_grafico,
+            resolutor=resolutor
+        )
     )

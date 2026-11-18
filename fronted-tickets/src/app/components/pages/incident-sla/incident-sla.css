@@ -382,9 +382,7 @@
 
 
 
-/* ==============================================
-   EXPLORADOR DE TICKETS - INCIDENTES SLA
-   ============================================== */
+/* EXPLORADOR DE TICKETS - INCIDENTES SLA*/
 
 .ticket-explorer-section {
   width: 100%;
@@ -463,6 +461,333 @@
 
   .ticket-explorer-header h2 {
     font-size: 19px;
+  }
+
+}
+
+
+/* PANTALLA COMPLETA - GRÁFICOS INCIDENTES SLA*/
+
+/* CONTENEDOR DEL GRÁFICO */
+
+.chart-expandable {
+  position: relative;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* COMPONENTES HIJOS */
+
+.chart-expandable > app-volume-month,
+.chart-expandable > app-sla-pareto,
+.chart-expandable > app-resolutor-performance,
+.chart-expandable > app-sla-solution-trend,
+.chart-expandable > app-tendencia-type-trend {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* BOTÓN DE PANTALLA COMPLETA*/
+
+.chart-expandable > .chart-expand-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+
+  border: 1px solid #E5E9EE;
+  border-radius: 8px;
+
+  background: #FFFFFF;
+  color: #667085;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* HOVER */
+
+.chart-expandable > .chart-expand-btn:hover {
+  color: #FF620F;
+  background: #FFF4ED;
+  border-color: #FF620F;
+}
+
+/* ICONO */
+
+.chart-expandable > .chart-expand-btn mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+
+  font-size: 20px;
+  line-height: 20px;
+}
+
+/* PANTALLA COMPLETA*/
+
+.chart-expandable:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+
+  padding: 56px 24px 24px;
+  margin: 0 !important;
+
+  background: #F7F9FB;
+
+  overflow: hidden;
+}
+
+/* COMPONENTES HIJOS EN PANTALLA COMPLETA*/
+
+.chart-expandable:fullscreen > app-volume-month,
+.chart-expandable:fullscreen > app-sla-pareto,
+.chart-expandable:fullscreen > app-resolutor-performance,
+.chart-expandable:fullscreen > app-sla-solution-trend,
+.chart-expandable:fullscreen > app-tendencia-type-trend {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+}
+
+/* TARJETAS INTERNAS */
+
+:host ::ng-deep .chart-expandable:fullscreen .chart-card {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  height: 100% !important;
+
+  min-width: 0;
+  min-height: 0;
+}
+
+/* CONTENEDORES DE CHART.JS */
+
+:host ::ng-deep .chart-expandable:fullscreen .chart-container,
+:host ::ng-deep .chart-expandable:fullscreen .chart-content {
+  flex: 1 1 auto;
+
+  width: 100%;
+  height: auto !important;
+
+  min-width: 0;
+  min-height: 0 !important;
+}
+
+/* CONTENEDORES CON SCROLL */
+
+:host ::ng-deep .chart-expandable:fullscreen .chart-scroll,
+:host ::ng-deep .chart-expandable:fullscreen .chart-viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* EVITAR SUPERPOSICIÓN CON LOS TÍTULOS*/
+
+:host ::ng-deep .chart-expandable .chart-header {
+  padding-right: 55px;
+}
+
+/* PARETO - EVITAR CONFLICTO ENTRE BOTONES*/
+
+/* DESPLAZAR EL BOTÓN LIMPIAR TIPOS */
+
+.project-pareto-grid
+.pareto-section.chart-expandable
+.pareto-clear-button {
+  right: 60px;
+}
+
+/* RESERVAR ESPACIO PARA LOS DOS BOTONES */
+
+:host ::ng-deep
+.project-pareto-grid
+.pareto-section.chart-expandable
+.chart-header {
+  padding-right: 165px;
+}
+
+/* RESPONSIVE*/
+
+@media (max-width: 768px) {
+
+  .chart-expandable:fullscreen {
+    padding: 52px 12px 12px;
+  }
+
+  .chart-expandable > .chart-expand-btn {
+    top: 10px;
+    right: 10px;
+  }
+
+  .project-pareto-grid
+  .pareto-section.chart-expandable
+  .pareto-clear-button {
+    right: 50px;
+  }
+
+}
+
+/* ==============================================
+   PANTALLA COMPLETA - TABLAS INCIDENTES SLA
+   ============================================== */
+
+.table-expandable {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* COMPONENTES HIJOS */
+
+.table-expandable > app-project-explorer-table,
+.table-expandable > app-ticket-explorer-table {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==============================================
+   MODO PANTALLA COMPLETA
+   ============================================== */
+
+.table-expandable:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+
+  margin: 0 !important;
+  padding: 18px;
+
+  background: #F7F9FB;
+  overflow: hidden;
+}
+
+/* EXPANDIR COMPONENTES HIJOS */
+
+.table-expandable:fullscreen > app-project-explorer-table,
+.table-expandable:fullscreen > app-ticket-explorer-table {
+  display: flex !important;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ==============================================
+   TARJETAS INTERNAS
+   ============================================== */
+
+:host ::ng-deep
+.table-expandable:fullscreen .table-card {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+}
+
+/* MANTENER CABECERAS EN SU ALTURA NATURAL */
+
+:host ::ng-deep
+.table-expandable:fullscreen .table-header {
+  flex: 0 0 auto;
+}
+
+/* ==============================================
+   ÁREA DE TABLAS
+   ============================================== */
+
+:host ::ng-deep
+.table-expandable:fullscreen .table-container,
+:host ::ng-deep
+.table-expandable:fullscreen .table-scroll,
+:host ::ng-deep
+.table-expandable:fullscreen .table-wrapper {
+  flex: 1 1 auto;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  max-height: none !important;
+
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* ==============================================
+   PAGINACIÓN
+   ============================================== */
+
+:host ::ng-deep
+.table-expandable:fullscreen mat-paginator {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media (max-width: 768px) {
+
+  .table-expandable:fullscreen {
+    padding: 10px;
   }
 
 }

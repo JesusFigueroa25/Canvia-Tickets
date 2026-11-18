@@ -18,6 +18,11 @@ export class DescriptionMonthExplorer implements OnChanges {
   @Output() busquedaChange = new EventEmitter<string>();
   @Output() paginaChange = new EventEmitter<{ pagina: number; tamano: number; }>();
 
+  // PANTALLA COMPLETA
+  @Input() habilitarPantallaCompleta = false;
+  @Input() pantallaCompletaActiva = false;
+  @Output() pantallaCompletaSolicitada = new EventEmitter<void>();
+
   columnasMostradas: string[] = [
     'descripcion',
     'total'

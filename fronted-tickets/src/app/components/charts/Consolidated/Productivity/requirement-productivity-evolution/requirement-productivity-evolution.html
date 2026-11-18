@@ -1,0 +1,174 @@
+
+<article class="chart-card">
+
+  <!-- ENCABEZADO -->
+  <header class="chart-header">
+
+    <div class="header-content">
+      <div class="header-title">
+        <span class="header-accent"></span>
+
+        <div>
+          <h3>Evolución de Requerimientos por Proyecto</h3>
+
+          <p>
+            Comportamiento de los requerimientos registrados
+            por proyecto durante el período seleccionado.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="header-controls">
+
+      <!-- GRANULARIDAD -->
+      <div class="control-group">
+
+        <span class="control-label">Granularidad</span>
+
+        <div class="granularity-selector" role="group"
+             aria-label="Granularidad del gráfico">
+
+          <button type="button"
+                  [class.active]="granularidad === 'dia'"
+                  [disabled]="cargando"
+                  [attr.aria-pressed]="granularidad === 'dia'"
+                  (click)="seleccionarGranularidad('dia')">
+            Diaria
+          </button>
+
+          <button type="button"
+                  [class.active]="granularidad === 'semana'"
+                  [disabled]="cargando"
+                  [attr.aria-pressed]="granularidad === 'semana'"
+                  (click)="seleccionarGranularidad('semana')">
+            Semanal
+          </button>
+
+          <button type="button"
+                  [class.active]="granularidad === 'mes'"
+                  [disabled]="cargando"
+                  [attr.aria-pressed]="granularidad === 'mes'"
+                  (click)="seleccionarGranularidad('mes')">
+            Mensual
+          </button>
+
+        </div>
+      </div>
+
+
+      <!-- FILTRO VISUAL POR PROYECTO -->
+      <div class="control-group project-control">
+
+        <label class="control-label" for="productivity-project">
+          Proyecto
+        </label>
+
+        <select id="productivity-project"
+                [value]="proyectoActivo"
+                [disabled]="!datos?.proyectos?.length"
+                (change)="seleccionarProyecto($event)">
+
+          <option value="">
+            Todos los proyectos (Top 10)
+          </option>
+
+          <option *ngFor="let serie of datos?.proyectos ?? []"
+                  [value]="serie.proyecto">
+            {{ nombreVisibleProyecto(serie.proyecto) }}
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- RESUMEN -->
+  <div class="summary-row" *ngIf="resumen">
+
+    <div class="summary-item">
+      <span class="summary-label">Requerimientos</span>
+      <strong>{{ formatearNumero(resumen.total_tickets) }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span class="summary-label">Proyectos</span>
+      <strong>{{ resumen.total_proyectos }}</strong>
+    </div>
+
+    <div class="summary-item">
+      <span class="summary-label">Período</span>
+      <strong>{{ textoRango }}</strong>
+    </div>
+
+  </div>
+
+
+  <!-- GRÁFICO -->
+  <div class="chart-viewport">
+
+    <canvas #productivityCanvas
+            role="img"
+            aria-label="Evolución de requerimientos por proyecto">
+    </canvas>
+
+
+    <!-- CARGANDO -->
+    <div class="chart-state loading-state" *ngIf="cargando">
+
+      <div class="loading-spinner"></div>
+
+      <span>Actualizando evolución de requerimientos...</span>
+
+    </div>
+
+
+    <!-- ERROR -->
+    <div class="chart-state error-state"
+         *ngIf="!cargando && error">
+
+      <span class="state-icon">!</span>
+
+      <strong>No se pudo cargar el gráfico</strong>
+
+      <span>{{ error }}</span>
+
+    </div>
+
+
+    <!-- SIN DATOS -->
+    <div class="chart-state empty-state"
+         *ngIf="!cargando && !error && sinDatos">
+
+      <span class="empty-icon">▤</span>
+
+      <strong>Sin datos disponibles</strong>
+
+      <span>
+        No existen requerimientos para los filtros seleccionados.
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- PIE -->
+  <footer class="chart-footer">
+
+    <span>
+      Se muestran hasta 10 proyectos con mayor volumen.
+    </span>
+
+    <span>
+      Fuente: Requerimientos Consolidados
+    </span>
+
+  </footer>
+
+</article>

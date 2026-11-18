@@ -140,21 +140,34 @@
           </td>
         </ng-container>
 
+
         <ng-container matColumnDef="suggested_category">
+
           <th mat-header-cell *matHeaderCellDef>
             Categoría Sugerida
           </th>
 
           <td mat-cell *matCellDef="let item" class="category-cell">
-            <span *ngIf="item.suggested_catalog_id !== null; else sinSugerencia" [title]="obtenerRutaSugerida(item)">
-              {{ obtenerRutaSugerida(item) }}
-            </span>
+
+            <ng-container *ngIf="tieneCategoriaSugerida(item); else sinSugerencia">
+
+              <span [title]="obtenerRutaSugerida(item)">
+                {{ obtenerRutaSugerida(item) }}
+              </span>
+
+              <div class="muted-text" *ngIf="item.suggested_catalog_id == null">
+              </div>
+
+            </ng-container>
 
             <ng-template #sinSugerencia>
               <span class="muted-text">Sin sugerencia</span>
             </ng-template>
+
           </td>
+
         </ng-container>
+
 
         <ng-container matColumnDef="reason_text">
           <th mat-header-cell *matHeaderCellDef>
@@ -283,12 +296,14 @@
         <p>{{ obtenerRutaOriginal(ticket) }}</p>
       </div>
 
+
       <div class="detail-field">
         <label>Categorización Sugerida</label>
         <p>
-          {{ ticket.suggested_catalog_id !== null ? obtenerRutaSugerida(ticket) : 'Sin sugerencia' }}
+          {{ tieneCategoriaSugerida(ticket) ? obtenerRutaSugerida(ticket) : 'Sin sugerencia' }}
         </p>
       </div>
+
 
       <div class="detail-field full-width">
         <label>Descripción</label>
@@ -346,6 +361,6 @@
       </span>
     </div>
 
-  </section> 
+  </section>
 
-</div> 
+</div>

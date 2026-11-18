@@ -1,0 +1,238 @@
+<section class="evidence-card">
+
+  <!-- CABECERA -->
+  <div class="card-header">
+
+    <div>
+      <h2>Detalle de Causas y Evidencias</h2>
+
+      <p>
+        Factores técnicos identificados, acciones recomendadas
+        y ejemplos de evidencia registrados en tickets.
+      </p>
+    </div>
+
+    <mat-icon class="header-icon">table_chart</mat-icon>
+
+  </div>
+
+
+  <!-- CARGANDO -->
+  <div class="loading-state" *ngIf="cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>
+    Cargando detalle de causas...
+  </div>
+
+
+  <!-- ERROR -->
+  <div class="error-state" *ngIf="!cargando && error" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    {{ error }}
+  </div>
+
+
+  <ng-container *ngIf="!cargando && !error && tieneDatos">
+
+    <!-- BUSQUEDA -->
+    <div class="table-toolbar">
+
+      <div class="search-wrapper">
+
+        <mat-icon>search</mat-icon>
+
+
+        <input type="search" [value]="busqueda" (input)="actualizarBusqueda($event)"
+          placeholder="Buscar causa o recomendación..." aria-label="Buscar causa o recomendación">
+
+
+      </div>
+
+      <span class="category-count">
+        {{ filas.length }} de {{ totalCategorias }} categorías
+      </span>
+
+    </div>
+
+
+    <!-- TABLA -->
+    <div class="table-scroll">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Factor técnico / Categoría</th>
+            <th class="numeric-column">Incidentes</th>
+            <th class="numeric-column">Porcentaje</th>
+            <th>Acción recomendada</th>
+            <th class="action-column">Evidencias</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <ng-container *ngFor="let item of filas">
+
+            <tr>
+
+              <td>
+                <div class="category-cell">
+
+                  <span class="category-indicator" [class.identified]="item.es_causa_identificada"
+                    [class.not-identified]="!item.es_causa_identificada">
+                  </span>
+
+                  <span>{{ item.categoria }}</span>
+
+                </div>
+              </td>
+
+              <td class="numeric-column">
+                <strong>
+                  {{ item.incidentes | number:'1.0-0' }}
+                </strong>
+              </td>
+
+              <td class="numeric-column">
+                {{ item.porcentaje | number:'1.2-2' }}%
+              </td>
+
+              <td class="recommendation-cell">
+                {{ item.accion_recomendada }}
+              </td>
+
+              <td class="action-column">
+
+                <button type="button" class="evidence-button" [disabled]="item.evidencias.length === 0"
+                  [attr.aria-expanded]="categoriaExpandida === item.categoria" (click)="alternarEvidencias(item)">
+
+                  <mat-icon>
+                    {{
+                    categoriaExpandida === item.categoria
+                    ? 'expand_less'
+                    : 'visibility'
+                    }}
+                  </mat-icon>
+
+                  {{ item.evidencias.length }}
+
+                </button>
+
+              </td>
+
+            </tr>
+
+
+            <!-- FILA EXPANDIDA CON EVIDENCIAS -->
+            <tr class="expanded-row" *ngIf="categoriaExpandida === item.categoria">
+
+              <td colspan="5">
+
+                <div class="evidence-detail">
+
+                  <h3>
+                    Evidencias de {{ item.categoria }}
+                  </h3>
+
+                  <p class="evidence-help">
+                    Ejemplos documentados en el ticket.
+                    Esta muestra no representa necesariamente
+                    todos los incidentes de la categoría.
+                  </p>
+
+                  <div class="evidence-item" *ngFor="let evidencia of item.evidencias">
+
+                    <div class="evidence-meta">
+
+                      <span class="ticket-code">
+                        {{ evidencia.ticket_id }}
+                      </span>
+
+                      <span class="field-code">
+                        {{ evidencia.campo }}
+                      </span>
+
+                    </div>
+
+                    <p>{{ evidencia.texto }}</p>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          </ng-container>
+
+
+          <!-- SIN RESULTADOS DE BUSQUEDA -->
+          <tr *ngIf="filas.length === 0">
+
+            <td colspan="5" class="no-results">
+              No se encontraron categorías que coincidan
+              con la búsqueda.
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- TICKETS PARA REVISION -->
+    <div class="review-section" *ngIf="datos!.tickets_para_revision.length > 0">
+
+      <div class="review-header">
+        <mat-icon>fact_check</mat-icon>
+
+        <div>
+          <h3>Tickets sugeridos para revisión</h3>
+
+          <p>
+            Muestra de registros sin causa principal
+            determinada por el clasificador.
+          </p>
+        </div>
+      </div>
+
+      <div class="ticket-list">
+
+        <span class="review-ticket" *ngFor="let ticketId of datos!.tickets_para_revision">
+
+          {{ ticketId }}
+
+        </span>
+
+      </div>
+
+    </div>
+
+  <!--     <div class="footer-note">
+      <mat-icon>info_outline</mat-icon>
+
+      <span>
+        Las evidencias corresponden a una clasificación
+        técnica preliminar. No confirman causas raíz
+        ni atribuyen responsabilidad.
+      </span>
+
+    </div> -->
+
+
+
+  </ng-container>
+
+
+  <!-- SIN DATOS -->
+  <div class="empty-state" *ngIf="!cargando && !error && !tieneDatos">
+
+    <mat-icon>table_chart</mat-icon>
+
+  </div>
+
+</section>
