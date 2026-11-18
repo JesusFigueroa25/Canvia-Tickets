@@ -32,6 +32,20 @@ La aplicación usa Angular con `AppModule` y `AppRoutingModule`; los componentes
 
 La visualización usa Chart.js con `ng2-charts`. Los formularios incluyen Reactive Forms y controles Angular Material. No se observa una configuración de estado global dedicada en los archivos revisados.
 
+### Reporte PNG de Auditoría de Categorización
+
+`RequirementCategorizationAudit` reutiliza las cuatro respuestas agregadas existentes (`summary`, `resolvers`, `monthly-stats`, `resolution-reasons`) para construir una instantánea `RequirementCategorizationReportData`. El componente presentacional `app-requirement-categorization-report`, ya declarado en `AppModule`, no realiza HTTP. El contrato del servicio y el backend se mantienen.
+
+- El PNG contiene cinco KPIs, dos distribuciones, Top 10 de colaboradores, gráfico mensual, cuadro mensual completo y Top 10 Estadístico por Colaborador. El explorador de tickets queda excluido; sus cargas, errores y paginación no condicionan la exportación.
+- La instantánea copia los filtros efectivos del padre: fechas, grupo, proyecto, resultado, motivo, mes, colaborador y ticket. Los cambios de formulario pendientes de aplicar no alteran el reporte. La selección por ticket sigue filtrando los agregados.
+- Cada actualización del dashboard incrementa una versión e invalida la instantánea y el render. Solo cuatro respuestas exitosas, con cantidades y porcentajes válidos y conteos reconciliados, permiten preparar el documento. Un `404` no equivale a una respuesta agregada válida. Cero tickets mantiene la descarga deshabilitada.
+- El cuadro mensual usa todos los registros recibidos. La sección 07 reutiliza exactamente las diez filas del gráfico Top 10: incorrectas descendentes, total descendente y nombre. Su pie «Subtotal Top 10» suma únicamente esas filas y calcula los porcentajes desde sus cantidades. Los KPIs y totales generales siguen usando el conjunto completo; la tabla del dashboard conserva su comportamiento y paginación.
+- El documento está fuera de pantalla, mide 1400 px de ancho y usa HTML/CSS estático sin animaciones ni fuentes remotas. Espera fuentes disponibles y dos ciclos de pintura, verifica dimensiones y confirma su versión al padre antes de habilitar el botón.
+- La descarga usa `html-to-image` existente y captura únicamente `.report-document`. Revalida la instantánea antes y después de capturar, impide descargas simultáneas, limpia el enlace temporal y permite reintentar tras un fallo. Navegar fuera de la página descarta la entrega pendiente.
+- La escala es 2, o 1 cuando la altura supera 4000 px. Se rechazan dimensiones finales superiores a 16384 px por lado o 32 millones de píxeles; no se recortan filas ni se reduce automáticamente el documento. En ese caso se informa al usuario para reducir el alcance mediante filtros.
+
+Los endpoints agregados siguen siendo consultas independientes: comprobar conteos reduce inconsistencias detectables, pero no constituye una instantánea transaccional del servidor. La evidencia de validación y los límites pendientes se registran en [TEST_PLAN.md](TEST_PLAN.md#reporte-png-de-auditoría-de-categorización).
+
 ## Backend
 
 `app/main.py` crea la aplicación FastAPI, instala CORS e incluye los routers. Los controladores reciben solicitudes y dependencias de sesión; los schemas Pydantic describen las entradas y respuestas; los servicios implementan analítica, ETL y lógica de negocio; los repositorios centralizan consultas; los modelos SQLAlchemy representan entidades.

@@ -18,6 +18,12 @@ Este inventario refleja archivos, rutas y dependencias presentes en el repositor
 | Chat analítico IA | Página y componentes de chat; API para enviar mensajes, listar/obtener conversaciones e historial. Hay servicios de contexto, consulta, herramientas y chat. | No se probó la conexión con proveedor IA, controles de consulta, persistencia, límites ni calidad de respuestas. |
 | ETL de prueba SQLite | `/etl-test/upload/{tipo}` procesa tipos SLA/consolidados y guarda tablas SQLite reemplazándolas; `/etl-test/data/{tipo}` consulta sus datos. | Está separado de las cargas SQL Server y no debe confundirse con ETL productivo. No se ejecutaron cargas. |
 
+## Reporte PNG de Auditoría de Categorización
+
+Implementado el botón «Descargar Reporte PNG» y un reporte agregado de siete secciones. Reutiliza las cuatro consultas agregadas del padre y respeta los filtros efectivos, sin cargar tickets adicionales ni modificar backend. La descarga espera respuestas correctas, coherencia de conteos y confirmación de renderizado; es independiente del explorador de tickets. El cuadro mensual incluye todos los registros; la sección 07 muestra el mismo Top 10 del gráfico por incorrectas, con «Subtotal Top 10». Los KPIs y totales generales conservan el conjunto completo y la tabla del dashboard no cambia.
+
+El 18/11/2026 se ejecutaron compilación Angular, pruebas unitarias y una descarga real en Edge con datos ficticios locales. No se validó contra SQL Server ni datos productivos. Consultar [arquitectura y límites](ARCHITECTURE.md#reporte-png-de-auditoría-de-categorización) y [resultados de pruebas](TEST_PLAN.md#reporte-png-de-auditoría-de-categorización). Se preservó la declaración local preexistente del componente en `AppModule`; no se añadieron dependencias.
+
 ## Tecnologías declaradas
 
 - Frontend: Angular `^22.2.x`, TypeScript `~6.0.2`, RxJS `~7.8.0`, Angular Material, Chart.js y `ng2-charts`. `package-lock.json` registra resoluciones; `package.json` no declara una versión de Node.

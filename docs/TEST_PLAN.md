@@ -87,6 +87,30 @@ No se especifican umbrales de cobertura porque no hay cobertura reportada ni obj
 
 ## Pruebas adicionales propuestas
 
+### Reporte PNG de Auditoría de Categorización
+
+Desde `fronted-tickets/`:
+
+```powershell
+npm test -- --watch=false --include="**/requirement-categorization-audit.spec.ts" --include="**/requirement-categorization-report.spec.ts"
+npm test -- --watch=false
+npm run build
+```
+
+Los specs del padre y del reporte usan datos ficticios y sustituyen las respuestas HTTP o la captura según el caso. Cubren: cuatro respuestas en distinto orden y render pendiente; fuentes y dos ciclos de pintura; `404` en cada agregado; ausencia de resultados; cantidades inválidas y conteos incompletos; filtros efectivos y copias independientes; paginación de tickets; respuestas canceladas; versiones obsoletas; cuadro mensual completo y Top 10 por colaborador; etiquetas «Sin dato»/«Sin asignar»; nombres largos; errores de render/captura; doble clic y descargas sucesivas; limpieza del enlace; abandono de página; escalas y límites de imagen.
+
+Ajuste de la sección 07 del 18/11/2026: las pruebas específicas del padre y del reporte registran **25 aprobadas**. Verifican el mismo orden de filas en gráfico y tabla (incorrectas descendentes, total descendente y nombre), límite de diez, seis columnas, «Subtotal Top 10» y porcentajes ponderados, menos de diez colaboradores y conjunto vacío. También comprueban que los KPIs y el total mensual mantienen el conjunto completo y que no se mutan los datos originales. No se repitió la descarga en navegador para este ajuste; la evidencia visual siguiente corresponde a la versión inicial que mostraba todos los colaboradores.
+
+**Evidencia del 18/11/2026**, con Node 24.20.0 y las dependencias instaladas del proyecto:
+
+- Los 23 casos nuevos pasan. La suite completa registra 30 aprobados y dos fallos preexistentes, ya descritos en este documento: `App` no reconoce `app-landing` y `Login` carece de proveedor de `ActivatedRoute`.
+- La compilación de producción termina con código 0. El entorno restringido no resuelve Google Fonts; la compilación se completó con acceso de red autorizado a la fuente global existente. Se mantienen advertencias de presupuesto del bundle inicial (aproximadamente 2.61 MB frente a 2.50 MB) y de estilos, incluido el padre de auditoría; no se modificaron los presupuestos.
+- Se sirvió la compilación en un servidor local con respuestas ficticias, sin arrancar FastAPI ni consultar SQL Server. Edge sin interfaz descargó un PNG real de **2800 × 5830 px**, revisado visualmente, con siete secciones, doce meses y doce colaboradores, sin explorador, recortes de tablas ni desbordamiento horizontal detectado. No se observaron excepciones JavaScript.
+- El botón se habilitó mientras la consulta de tickets seguía pendiente y permaneció disponible tras responder con un error de tickets. La descarga no añadió solicitudes HTTP a las siete consultas iniciales de la página.
+- El arnés temporal y las evidencias se guardaron en `.angular/png-report-smoke/`, excluido de Git. El comportamiento y sus límites se documentan en [ARCHITECTURE.md](ARCHITECTURE.md#reporte-png-de-auditoría-de-categorización).
+
+Pendiente: aceptación con datos reales y contraste de resultados en el entorno de negocio; validación visual en otros navegadores y con volúmenes cercanos al límite de imagen. La prueba local no acredita el funcionamiento de la ejecución de auditorías contra SQL Server.
+
 ### Validaciones de Incidentes Consolidados
 
 Desde `fronted-tickets/`, ejecutar `npm test -- --watch=false` y `npm run build`.

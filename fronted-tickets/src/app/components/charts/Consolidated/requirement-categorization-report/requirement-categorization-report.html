@@ -1,0 +1,177 @@
+<section #documento class="report-document" *ngIf="datos as d">
+  <header class="report-header">
+    <div>
+      <div class="brand">CANVIA <span>· ANALÍTICA DE SERVICIOS</span></div>
+      <h1>Auditoría de Categorización</h1>
+      <p>
+        {{ d.resumen.group_name || 'Auditoría de Categorización' }} · {{ d.resumen.audit_year }}
+      </p>
+    </div>
+    <div class="header-total">
+      <span>Tickets evaluados</span><strong>{{ d.resumen.processed_tickets | number: '1.0-0' }}</strong>
+    </div>
+  </header>
+  <div class="report-meta">
+    <span *ngFor="let filtro of filtros">{{ filtro }}</span>
+  </div>
+  <p class="methodology">
+    Acumulado de tickets únicos: última evaluación vigente de cada ticket en ejecuciones
+    completadas. Los filtros indicados se aplican a todas las secciones.
+  </p>
+
+  <article class="report-panel kpi-panel">
+    <h2><b>01</b> Indicadores de Categorización</h2>
+    <div class="kpis">
+      <div>
+        <span>Tickets Evaluados</span><strong>{{ d.resumen.processed_tickets | number: '1.0-0' }}</strong>
+      </div>
+      <div class="correct">
+        <span>Categorizaciones Correctas</span><strong>{{ d.resumen.correct_count | number: '1.0-0' }}</strong>
+      </div>
+      <div class="incorrect">
+        <span>Categorizaciones Incorrectas</span><strong>{{ d.resumen.incorrect_count | number: '1.0-0' }}</strong>
+      </div>
+      <div class="correct">
+        <span>% Correctas</span><strong>{{ d.resumen.correct_percentage | number: '1.1-1' }}%</strong>
+      </div>
+      <div class="incorrect">
+        <span>% Incorrectas</span><strong>{{ d.resumen.incorrect_percentage | number: '1.1-1' }}%</strong>
+      </div>
+    </div>
+  </article>
+
+  <div class="report-grid">
+    <article class="report-panel">
+      <h2><b>02</b> Distribución de Categorizaciones</h2>
+      <ng-container *ngTemplateOutlet="
+          distribucion;
+          context: { $implicit: categorizaciones, total: d.resumen.processed_tickets }
+        "></ng-container>
+    </article>
+    <article class="report-panel">
+      <h2><b>03</b> Distribución por Motivo Resolución</h2>
+      <ng-container
+        *ngTemplateOutlet="distribucion; context: { $implicit: motivos, total: d.motivos.total }"></ng-container>
+    </article>
+  </div>
+
+  <div class="report-grid">
+    <article class="report-panel">
+      <h2><b>04</b> Top 10: Tickets por Colaborador</h2>
+      <p class="note">
+        {{ top.length }} de {{ colaboradores.length }} colaboradores ·
+        Ordenados por cantidad total de tickets.
+      </p>
+      <div class="legend">
+        <span class="correct">● Correctas</span><span class="incorrect">● Incorrectas</span>
+      </div>
+      <div class="resolver-bar-row" *ngFor="let r of top">
+        <span class="resolver-name">{{ nombre(r.resolver_name) }}</span>
+        <div class="bar-track">
+          <div class="bar correct-fill" [style.width.%]="(r.correct_count * 100) / maxTop"></div>
+          <div class="bar incorrect-fill" [style.width.%]="(r.incorrect_count * 100) / maxTop"></div>
+        </div>
+        <span class="bar-values"><span class="correct">{{ r.correct_count | number: '1.0-0' }}</span> /
+          <span class="incorrect">{{ r.incorrect_count | number: '1.0-0' }}</span></span>
+      </div>
+      <p class="note">
+        Cifras: correctas / incorrectas. El Top 10 es una selección; los totales generales incluyen
+        a todos los colaboradores.
+      </p>
+    </article>
+    <article class="report-panel">
+      <h2><b>05</b> Categorizaciones Correctas e Incorrectas por Mes</h2>
+      <div class="legend">
+        <span class="correct">● Correctas</span><span class="incorrect">● Incorrectas</span>
+      </div>
+      <div class="monthly-bars">
+        <div class="month-column" *ngFor="let m of meses">
+          <strong>{{ m.total_tickets | number: '1.0-0' }}</strong>
+          <div class="month-track">
+            <div class="month-stack" [style.height.%]="(m.total_tickets * 100) / maxMes">
+              <div class="incorrect-fill" [style.flex]="m.incorrect_count"></div>
+              <div class="correct-fill" [style.flex]="m.correct_count"></div>
+            </div>
+          </div>
+          <span>{{ mes(m.month) }}</span>
+          <small><span class="correct">{{ m.correct_count }}</span> /
+            <span class="incorrect">{{ m.incorrect_count }}</span></small>
+        </div>
+      </div>
+      <p class="note">
+        Total sobre cada barra; correctas / incorrectas debajo. Detalle completo en el cuadro
+        mensual.
+      </p>
+    </article>
+  </div>
+
+  <article class="report-panel monthly-table">
+    <h2><b>06</b> Cuadro Estadístico Mensual</h2>
+    <p class="note">{{ meses.length }} meses · Todos los registros del conjunto filtrado.</p>
+    <ng-container
+      *ngTemplateOutlet="tabla; context: { $implicit: meses, mensual: true, totales: d.resumen }"></ng-container>
+  </article>
+  <article class="report-panel resolver-table">
+    <h2><b>07</b> Top 10 Estadístico por Colaborador</h2>
+    <p class="note">
+      {{ top.length }} de {{ colaboradores.length }} colaboradores ·
+      Ordenados por cantidad total de tickets.
+    </p>
+    <ng-container
+      *ngTemplateOutlet="tabla; context: { $implicit: top, mensual: false, totales: subtotalTop }"></ng-container>
+  </article>
+  <footer>
+    CANVIA · Reporte agregado de categorización
+    <span>Preparado: {{ d.preparadoEn | date: 'dd/MM/yyyy HH:mm' : '-0500' }} (UTC−05:00)</span>
+  </footer>
+
+  <ng-template #distribucion let-segmentos let-total="total">
+    <div class="distribution">
+      <div class="donut" [style.background]="dona(segmentos)">
+        <div>
+          <strong>{{ total | number: '1.0-0' }}</strong><span>Tickets</span>
+        </div>
+      </div>
+      <div class="distribution-legend">
+        <div *ngFor="let s of segmentos">
+          <i [style.background]="s.color"></i><span>{{ s.nombre }}</span><strong>{{ s.cantidad | number: '1.0-0'
+            }}</strong><small>{{ s.porcentaje | number: '1.1-1' }}%</small>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #tabla let-filas let-mensual="mensual" let-totales="totales">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ mensual ? 'Mes' : 'Colaborador' }}</th>
+          <th>Total de tickets</th>
+          <th>Correctas</th>
+          <th>Incorrectas</th>
+          <th>% Correctas</th>
+          <th>% Incorrectas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of filas">
+          <td>{{ mensual ? mes(f.month) : nombre(f.resolver_name) }}</td>
+          <td>{{ f.total_tickets | number: '1.0-0' }}</td>
+          <td class="correct">{{ f.correct_count | number: '1.0-0' }}</td>
+          <td class="incorrect">{{ f.incorrect_count | number: '1.0-0' }}</td>
+          <td>{{ f.correct_percentage | number: '1.1-1' }}%</td>
+          <td>{{ f.incorrect_percentage | number: '1.1-1' }}%</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>{{ mensual ? 'Total filtrado' : 'Subtotal Top 10' }}</td>
+          <td>{{ (mensual ? totales.processed_tickets : totales.total_tickets) | number: '1.0-0' }}</td>
+          <td class="correct">{{ totales.correct_count | number: '1.0-0' }}</td>
+          <td class="incorrect">{{ totales.incorrect_count | number: '1.0-0' }}</td>
+          <td>{{ totales.correct_percentage | number: '1.1-1' }}%</td>
+          <td>{{ totales.incorrect_percentage | number: '1.1-1' }}%</td>
+        </tr>
+      </tfoot>
+    </table>
+  </ng-template>
+</section>

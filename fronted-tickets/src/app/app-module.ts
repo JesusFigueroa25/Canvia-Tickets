@@ -89,6 +89,7 @@ import { ReportTimesResolverChart } from './components/charts/Report-Times/repor
 import { ReportTimesResolverTable } from './components/charts/Report-Times/report-times-resolver-table/report-times-resolver-table';
 import { ReportTimesProjectChart } from './components/charts/Report-Times/report-times-project-chart/report-times-project-chart';
 import { ReportTimesProjectTable } from './components/charts/Report-Times/report-times-project-table/report-times-project-table';
+import { RequirementCategorizationReport } from './components/charts/Consolidated/requirement-categorization-report/requirement-categorization-report';
 
 @NgModule({
   declarations: [
@@ -171,6 +172,7 @@ import { ReportTimesProjectTable } from './components/charts/Report-Times/report
     ReportTimesResolverTable,
     ReportTimesProjectChart,
     ReportTimesProjectTable,
+    RequirementCategorizationReport,
   ],
   imports: [
     BrowserAnimationsModule,
