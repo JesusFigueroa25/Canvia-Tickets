@@ -19,3 +19,11 @@ dist/
 
 # Archivos temporales
 *.log
+
+# Archivos de Windows
+desktop.ini
+Thumbs.db
+
+# Archivos temporales
+*.tar.gz
+*.zip
