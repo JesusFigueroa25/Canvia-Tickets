@@ -1,4 +1,3 @@
-
 <section class="chart-card">
 
   <header class="chart-header">
@@ -17,33 +16,56 @@
       </div>
     </div>
 
-    <div class="chart-controls">
-      <label class="control-label" for="report-resolver-month">
-        Mes del gráfico
-      </label>
 
-      <select
-        id="report-resolver-month"
-        [value]="mesActivo"
-        [disabled]="cargando || !datos?.periodos?.length"
-        (change)="seleccionarMes($event)"
-      >
-        <option value="">
-          Todos los meses
-        </option>
+    <!-- CONTROLES DEL GRÁFICO -->
+    <div class="chart-actions">
 
-        <option
-          *ngFor="let periodo of datos?.periodos ?? []"
-          [value]="periodo"
-        >
-          {{ nombreMes(periodo) }}
-        </option>
-      </select>
+      <!-- SELECTOR DE MES -->
+      <div class="chart-controls">
+        <label class="control-label" for="report-resolver-month">
+          Mes del gráfico
+        </label>
+
+        <select id="report-resolver-month" [value]="mesActivo" [disabled]="cargando || !datos?.periodos?.length"
+          (change)="seleccionarMes($event)">
+          <option value="">Todos los meses</option>
+
+          <option *ngFor="let periodo of datos?.periodos ?? []" [value]="periodo">
+            {{ nombreMes(periodo) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- BUSCADOR DE RESOLUTORES -->
+      <div class="resolver-search">
+
+        <label class="control-label" for="report-resolver-search">
+          Buscar resolutor
+        </label>
+
+        <div class="resolver-search-box">
+          <span class="search-icon" aria-hidden="true">
+            ⌕
+          </span>
+
+          <input id="report-resolver-search" type="search" placeholder="Buscar resolutor..." [value]="busquedaResolutor"
+            (input)="buscarResolutor($event)" />
+
+          <button *ngIf="busquedaResolutor" type="button" class="clear-search" (click)="limpiarBusquedaResolutor()"
+            aria-label="Limpiar búsqueda">
+            ×
+          </button>
+        </div>
+
+      </div>
+
     </div>
+
   </header>
 
   <!-- RESUMEN DEL RANKING -->
-  <div class="summary-grid" *ngIf="datos">
+  <!--
+    <div class="summary-grid" *ngIf="datos">
 
     <div class="summary-item">
       <span>Resolutores mostrados</span>
@@ -67,50 +89,33 @@
     </div>
 
   </div>
+  -->
+
 
 
   <!-- CARGANDO -->
-  <div
-    *ngIf="cargando"
-    class="chart-status"
-    role="status"
-  >
+  <div *ngIf="cargando" class="chart-status" role="status">
     <span class="loading-spinner"></span>
     Actualizando horas por resolutor...
   </div>
 
   <!-- ERROR -->
-  <div
-    *ngIf="!cargando && error"
-    class="chart-status error"
-    role="alert"
-  >
+  <div *ngIf="!cargando && error" class="chart-status error" role="alert">
     {{ error }}
   </div>
 
-  <!-- SIN DATOS -->
-  <div
-    *ngIf="!cargando && !error && sinDatos"
-    class="chart-status"
-  >
-    No existen horas registradas para los filtros seleccionados.
+  <div *ngIf="!cargando && !error && sinDatos" class="chart-status">
+    {{
+    busquedaResolutor
+    ? 'No se encontraron resolutores que coincidan con la búsqueda.'
+    : 'No existen horas registradas para los filtros seleccionados.'
+    }}
   </div>
 
   <!-- GRÁFICO -->
-  <div
-    *ngIf="!cargando && !error && !sinDatos"
-    class="chart-container"
-    [style.height.px]="alturaGrafico"
-  >
-    <canvas
-      baseChart
-      [data]="chartData"
-      [options]="chartOptions"
-      [plugins]="chartPlugins"
-      [type]="'bar'"
-      role="img"
-      aria-label="Horas por resolutor y mes"
-    ></canvas>
+  <div *ngIf="!cargando && !error && !sinDatos" class="chart-container" [style.height.px]="alturaGrafico">
+    <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'" role="img"
+      aria-label="Horas por resolutor y mes"></canvas>
   </div>
 
   <footer class="chart-footer">

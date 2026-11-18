@@ -1,18 +1,8 @@
 
-import {
-  Component,
-  Input,
-  OnChanges,
-  SimpleChanges
-} from '@angular/core';
-
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-import {
-  TicketsReportTimesGrafico,
-  TicketsReportTimesGraficoSerie
-} from '../../../../models/tickets-report-times';
+import { TicketsReportTimesGrafico, TicketsReportTimesGraficoSerie } from '../../../../models/tickets-report-times';
 
 @Component({
   selector: 'app-report-times-resolver-chart',
@@ -43,6 +33,29 @@ export class ReportTimesResolverChart implements OnChanges {
 
   // Filtro local: no modifica los filtros del dashboard.
   mesActivo = '';
+
+  busquedaResolutor = '';
+
+  buscarResolutor(evento: Event): void {
+    this.busquedaResolutor =
+      (evento.target as HTMLInputElement).value;
+
+    this.actualizarGrafico();
+  }
+
+  limpiarBusquedaResolutor(): void {
+    this.busquedaResolutor = '';
+    this.actualizarGrafico();
+  }
+
+  private normalizarResolutor(texto: string): string {
+    return texto
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
 
   registrosVisibles: TicketsReportTimesGraficoSerie[] = [];
   periodosMostrados: string[] = [];
@@ -87,29 +100,66 @@ export class ReportTimesResolverChart implements OnChanges {
         }
       },
 
+
       datalabels: {
         display: context => {
           const valor = Number(
             context.dataset.data[context.dataIndex] ?? 0
           );
 
-          return this.periodosMostrados.length === 1 && valor > 0;
+          if (valor <= 0) {
+            return false;
+          }
+
+          // Mostrar el total solamente en el último
+          // segmento visible de cada barra horizontal.
+          const haySegmentosPosteriores =
+            context.chart.data.datasets.some((dataset, indice) =>
+              indice > context.datasetIndex &&
+              context.chart.isDatasetVisible(indice) &&
+              Number(dataset.data[context.dataIndex] ?? 0) > 0
+            );
+
+          return !haySegmentosPosteriores;
         },
 
         color: '#344054',
         anchor: 'end',
         align: 'end',
-        offset: 5,
+        offset: 6,
         clamp: true,
+        clip: false,
 
         font: {
-          size: 10,
+          size: 11,
           weight: 'bold'
         },
 
-        formatter: (valor: number) =>
-          valor > 0 ? this.formatearHoras(valor) : ''
+        formatter: (_valor: number, context) => {
+          const indiceResolutor = context.dataIndex;
+
+          const totalHoras =
+            context.chart.data.datasets.reduce(
+              (total, dataset, indice) => {
+                if (!context.chart.isDatasetVisible(indice)) {
+                  return total;
+                }
+
+                const horas = Number(
+                  dataset.data[indiceResolutor] ?? 0
+                );
+
+                return total + horas;
+              },
+              0
+            );
+
+          return totalHoras > 0
+            ? `${this.formatearHoras(totalHoras)} h`
+            : '';
+        }
       },
+
 
       tooltip: {
         enabled: true,
@@ -255,12 +305,24 @@ export class ReportTimesResolverChart implements OnChanges {
 
     this.periodosMostrados = periodos;
 
+    const termino = this.normalizarResolutor(
+      this.busquedaResolutor
+    );
+
     this.registrosVisibles = [...series]
-      .filter(registro =>
-        !this.mesActivo ||
-        this.horasEnPeriodo(registro, this.mesActivo) > 0
-      )
+      .filter(registro => {
+        const cumpleMes =
+          !this.mesActivo ||
+          this.horasEnPeriodo(registro, this.mesActivo) > 0;
+
+        const cumpleBusqueda =
+          this.normalizarResolutor(registro.nombre)
+            .includes(termino);
+
+        return cumpleMes && cumpleBusqueda;
+      })
       .sort((a, b) => {
+
         const horasA = this.mesActivo
           ? this.horasEnPeriodo(a, this.mesActivo)
           : a.horas_totales;

@@ -149,29 +149,39 @@ El nombre completo visible del resolutor puede formarse inicialmente a partir de
 
 ## 7. Filtros
 
-### 7.1. Globales
+El módulo utiliza los tres mecanismos de filtrado definidos en [ARCHITECTURE.md](../ARCHITECTURE.md): globales, dinámicos y locales.
 
-- **Desde / Hasta:** intervalo de fechas, sujeto a la decisión P-01.
-- **Grupo Resolutor:** preseleccionar `BASE DE DATOS Y EBS`.
+### 7.1. Filtros globales
 
-### 7.2. Dinámicos
+- **Desde / Hasta:** delimitan el período de consulta.
+- **Grupo Resolutor:** inicialmente `BASE DE DATOS Y EBS`.
+- **Proyectos:** permiten seleccionar uno, varios o todos los proyectos.
+- **Aplicar:** actualiza los indicadores, gráficos y tablas utilizando los filtros seleccionados.
 
-- **Proyecto/Cliente:** selección de uno, varios o todos los proyectos.
-- **Mes:** filtro dinámico del gráfico de Volumen Mensual de Requerimientos.
-- **Tipo de ticket y categoría:** reglas de consulta previstas para `Service Request` y `Elaboracion Informe Mensual`.
+### 7.2. Filtros dinámicos
 
-### 7.3. Proyectos preseleccionados
+- **Mes de análisis:** permite seleccionar un período mensual desde el gráfico ejecutivo o su selector asociado.
+- La selección actualiza los KPI, gráficos y tablas vinculados.
+- Al seleccionar «Todos los meses», se elimina el filtro dinámico de período y se conserva el rango definido por los filtros globales.
 
-1. `104842 KOMATSU PROY CLOUD DTA CENT`
-2. `105811 ASOCIACION DE AFP PROY CLOUD HOST`
-3. `103532 SAN MIGUEL FRUIT PROY CLOUD IAAS`
-4. `103948 EUROMOTORS PROY CLOUD OUTSOUR`
-5. `104859 CAMARACOMP PROY CLOUD OUT`
-6. `106255 SEDAPAL PROY CLOUD SERV HOSTING (O)`
-7. `100988 UNICON PROY CLOUD HOST PLATAF`
-8. `104474 CELIMA PROY CLOUD HOST SAP`
+### 7.3. Filtros locales
 
-Debe existir la opción **Seleccionar todos los proyectos**.
+- **Gráfico por resolutor:** búsqueda por nombre y selección de un mes para explorar las horas registradas.
+- **Gráfico por proyecto:** controles locales de exploración según su implementación.
+- **Tabla por resolutor:** búsqueda, ordenamiento y selector de indicador (horas, acciones o tickets).
+- **Tabla por proyecto:** búsqueda, ordenamiento y selector de indicador (horas, acciones o tickets).
+
+Los filtros locales no modifican los parámetros globales del dashboard. Cuando una búsqueda trabaja sobre datos paginados, su alcance corresponde únicamente a los registros disponibles en el componente, salvo implementación explícita de búsqueda en el backend.
+
+### 7.4. Reglas de consulta
+
+Los criterios técnicos utilizados por el backend, como `Categorizacion_Nivel_3 = 'Elaboracion Informe Mensual'`, se consideran **reglas de negocio de consulta**, no filtros dinámicos de la interfaz.
+
+El análisis considera los tipos de tickets incluidos por las reglas vigentes del repositorio, sin restringirse exclusivamente a `Service Request`.
+
+### 7.5. Proyectos preseleccionados
+
+Se conserva la lista de ocho proyectos predeterminados establecida para el módulo, con posibilidad de seleccionar un único proyecto, varios proyectos o todos los proyectos.
 
 ## 8. Arquitectura e integración previstas
 

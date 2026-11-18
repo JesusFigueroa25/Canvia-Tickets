@@ -15,22 +15,16 @@
 
   <!-- FILTROS -->
   <section class="filters-card">
-
     <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()" class="filters-form">
-
       <!-- FECHAS -->
       <div class="date-range-fields">
 
         <div class="filter-field">
           <label>Desde</label>
-
           <mat-form-field appearance="outline" class="full-width">
             <input matInput [matDatepicker]="pickerDesde" formControlName="desde" placeholder="Seleccionar fecha" />
-
             <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
-
             <mat-datepicker #pickerDesde></mat-datepicker>
-
             <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
               Este campo es obligatorio.
             </mat-error>
@@ -215,19 +209,25 @@
   <!-- INDICADORES -->
   <section class="kpis-section" *ngIf="kpis">
 
-    <app-kpi-card titulo="Total de Requerimientos" [valor]="kpis.total_tickets" icono="confirmation_number"
+    <app-kpi-card titulo="Total de Tickets" [valor]="kpis.total_tickets" icono="confirmation_number"
       color="orange"></app-kpi-card>
+
+    <app-kpi-card titulo="Horas Totales" [valor]="horasTotalesKpi" icono="schedule" color="green">
+    </app-kpi-card>
 
     <app-kpi-card titulo="Total de Proyectos" [valor]="kpis.total_proyectos" icono="business"
       color="green"></app-kpi-card>
 
-    <app-kpi-card titulo="Alta Criticidad" [valor]="kpis.alta_criticidad" icono="priority_high"
-      color="orange"></app-kpi-card>
 
-    <app-kpi-card titulo="% Alta Criticidad" [valor]="kpis.porcentaje_alta_criticidad + '%'" icono="percent"
-      color="orange"></app-kpi-card>
+    <app-kpi-card titulo="Total Resolutores" [valor]="cargandoTablaResolutores
+    ? '...'
+    : (datosTablaResolutores?.resumen?.resolutores_distintos ?? 0)" icono="groups" color="orange">
+    </app-kpi-card>
+
 
   </section>
+
+
 
   <section class="status-card" *ngIf="cargandoKpis && !kpis" role="status">
     <mat-icon>hourglass_top</mat-icon>
@@ -256,28 +256,38 @@
       <header class="chart-header">
 
         <div class="chart-header-content">
-          <h2>Volumen Mensual de Informes</h2>
-
+          <h2>Resumen Ejecutivo Mensual</h2>
           <p>
-            Tickets distintos y acciones registradas por mes,
+            Tickets distintos y horas registradas por mes,
             según la fecha de creación del ticket.
             Selecciona un mes para filtrar los indicadores.
           </p>
         </div>
 
-        <mat-form-field appearance="outline" class="period-field">
-          <mat-label>Mes de análisis</mat-label>
 
-          <mat-select [value]="periodoSeleccionado" (selectionChange)="cambiarPeriodo($event.value)">
-            <mat-option [value]="null">
+        <!-- SELECTOR DE MES - ESTILO RESOLUTOR CHART -->
+        <div class="volumen-month-control">
+
+          <label class="volumen-month-label" for="volumen-mes-analisis">
+            Mes de análisis
+          </label>
+
+          <select id="volumen-mes-analisis" [value]="periodoSeleccionado ?? ''"
+            [disabled]="cargandoVolumenMensual || volumenMensual.length === 0"
+            (change)="cambiarPeriodo($any($event.target).value || null)">
+
+            <option value="">
               Todos los meses
-            </mat-option>
+            </option>
 
-            <mat-option *ngFor="let item of volumenMensual" [value]="item.periodo">
+            <option *ngFor="let item of volumenMensual" [value]="item.periodo">
               {{ nombreMes(item.periodo) }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+            </option>
+
+          </select>
+
+        </div>
+
 
       </header>
 
@@ -288,7 +298,8 @@
         </div>
 
         <div class="chart-viewport">
-          <canvas #volumenCanvas role="img" aria-label="Volumen mensual de tickets y acciones"></canvas>
+          <canvas #volumenCanvas role="img" aria-label="Volumen mensual de tickets distintos y horas registradas">
+          </canvas>
         </div>
 
         <div class="chart-message error-text" *ngIf="errorVolumen" role="alert">

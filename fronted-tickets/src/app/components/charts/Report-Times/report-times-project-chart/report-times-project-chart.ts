@@ -63,7 +63,7 @@ export class ReportTimesProjectChart implements OnChanges {
 
     layout: {
       padding: {
-        top: 20,
+        top: 38,
         right: 15,
         bottom: 6,
         left: 8
@@ -90,30 +90,46 @@ export class ReportTimesProjectChart implements OnChanges {
         }
       },
 
-      datalabels: {
-        display: context => {
-          const valor = Number(
-            context.dataset.data[context.dataIndex] ?? 0
-          );
 
-          return this.seriesVisibles.length === 1 && valor > 0;
+      datalabels: {
+        display: contexto => {
+          const valor = Number(
+            contexto.dataset.data[contexto.dataIndex] ?? 0
+          );
+          return valor > 0;
         },
 
         color: '#344054',
         anchor: 'end',
         align: 'end',
-        offset: 5,
+        offset: 4,
         clamp: true,
+        clip: false,
 
         font: {
           size: 10,
           weight: 'bold'
         },
 
-        formatter: (valor: number) =>
-          valor > 0 ? this.formatearHoras(valor) : ''
+        formatter: (valor: number) => {
+          const horas = Number(valor) || 0;
+
+          if (horas <= 0) {
+            return '';
+          }
+
+          return (
+            horas.toLocaleString('es-PE', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }) + ' h'
+          );
+        }
       },
 
+
+      /*
+      
       tooltip: {
         enabled: true,
         backgroundColor: '#101828',
@@ -157,6 +173,8 @@ export class ReportTimesProjectChart implements OnChanges {
           }
         }
       }
+
+      */
     },
 
     scales: {
@@ -185,7 +203,7 @@ export class ReportTimesProjectChart implements OnChanges {
       y: {
         stacked: false,
         beginAtZero: true,
-        grace: '15%',
+        grace: '20%',
 
         grid: {
           color: '#EEF1F5'

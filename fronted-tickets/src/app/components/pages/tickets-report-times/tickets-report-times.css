@@ -916,3 +916,62 @@
   font-size: 11px;
   white-space: nowrap;
 }
+
+
+/* ============================================
+   SELECTOR DE MES - VOLUMEN MENSUAL
+   MISMO ESTILO QUE RESOLUTOR CHART
+   ============================================ */
+
+.volumen-month-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 230px;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.volumen-month-label {
+  color: #475467;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.volumen-month-control select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+
+  border: 1px solid #E5E9EE;
+  border-radius: 9px;
+
+  background: #FFFFFF;
+  color: #101828;
+
+  font-family: inherit;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.volumen-month-control select:hover:not(:disabled) {
+  border-color: #FF620F;
+}
+
+.volumen-month-control select:focus-visible {
+  outline: 2px solid #FF620F;
+  outline-offset: 1px;
+}
+
+.volumen-month-control select:disabled {
+  background: #F7F9FB;
+  color: #98A2B3;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .volumen-month-control {
+    width: 100%;
+  }
+}

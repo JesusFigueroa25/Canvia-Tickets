@@ -1,4 +1,3 @@
-
 <article class="table-card">
 
   <header class="table-header">
@@ -14,11 +13,7 @@
 
       <label class="metric-control">
         <span>Indicador</span>
-        <select
-          [value]="metrica"
-          (change)="cambiarMetrica($event)"
-          aria-label="Seleccionar indicador"
-        >
+        <select [value]="metrica" (change)="cambiarMetrica($event)" aria-label="Seleccionar indicador">
           <option value="horas_totales">Horas</option>
           <option value="acciones">Acciones</option>
           <option value="tickets">Tickets</option>
@@ -27,28 +22,19 @@
 
       <label class="search-control">
         <span class="search-icon" aria-hidden="true">⌕</span>
-        <input
-          type="search"
-          placeholder="Buscar resolutor..."
-          aria-label="Buscar resolutor"
-          [value]="busqueda"
-          (input)="buscar($event)"
-        />
+        <input type="search" placeholder="Buscar resolutor..." aria-label="Buscar resolutor" [value]="busqueda"
+          (input)="buscar($event)" />
       </label>
 
-      <button
-        *ngIf="busqueda"
-        type="button"
-        class="clear-search"
-        (click)="limpiarBusqueda()"
-      >
+      <button *ngIf="busqueda" type="button" class="clear-search" (click)="limpiarBusqueda()">
         Limpiar
       </button>
 
     </div>
   </header>
 
-  <div class="summary-grid" *ngIf="datos?.resumen as resumen">
+  <!-- RESUMEN  -->
+  <!--   <div class="summary-grid" *ngIf="datos?.resumen as resumen">
     <div class="summary-item">
       <span>Tickets distintos</span>
       <strong>{{ formatearNumero(resumen.tickets_distintos) }}</strong>
@@ -70,7 +56,9 @@
         {{ formatearHoras(resumen.horas_totales) }} h
       </strong>
     </div>
-  </div>
+  </div> -->
+
+
 
   <div class="table-summary">
     <span class="summary-left">
@@ -84,47 +72,27 @@
     </span>
   </div>
 
-  <div
-    class="table-wrapper"
-    tabindex="0"
-    aria-label="Matriz mensual de tiempos por resolutor"
-  >
+  <div class="table-wrapper" tabindex="0" aria-label="Matriz mensual de tiempos por resolutor">
     <table class="pivot-table">
 
       <thead>
         <tr>
           <th class="name-column" scope="col">
-            <button
-              type="button"
-              class="sort-button"
-              (click)="ordenar('nombre')"
-            >
+            <button type="button" class="sort-button" (click)="ordenar('nombre')">
               Resolutor
               <span>{{ indicadorOrden('nombre') }}</span>
             </button>
           </th>
 
-          <th
-            *ngFor="let periodo of periodos; trackBy: identificarPeriodo"
-            class="number-column"
-            scope="col"
-          >
-            <button
-              type="button"
-              class="sort-button numeric-sort"
-              (click)="ordenar(periodo)"
-            >
+          <th *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column" scope="col">
+            <button type="button" class="sort-button numeric-sort" (click)="ordenar(periodo)">
               {{ formatearPeriodo(periodo) }}
               <span>{{ indicadorOrden(periodo) }}</span>
             </button>
           </th>
 
           <th class="total-column" scope="col">
-            <button
-              type="button"
-              class="sort-button numeric-sort"
-              (click)="ordenar('total')"
-            >
+            <button type="button" class="sort-button numeric-sort" (click)="ordenar('total')">
               TOTAL
               <span>{{ indicadorOrden('total') }}</span>
             </button>
@@ -133,20 +101,15 @@
       </thead>
 
       <tbody>
-        <tr
-          *ngFor="let fila of filasVisibles; trackBy: identificarFila"
-        >
+        <tr *ngFor="let fila of filasVisibles; trackBy: identificarFila">
           <td class="name-column">
             <span class="entity-name" [title]="fila.nombre">
               {{ fila.nombre }}
             </span>
           </td>
 
-          <td
-            *ngFor="let periodo of periodos; trackBy: identificarPeriodo"
-            class="number-column"
-            [class.zero-value]="obtenerValor(fila, periodo) === 0"
-          >
+          <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column"
+            [class.zero-value]="obtenerValor(fila, periodo) === 0">
             {{ formatearValor(obtenerValor(fila, periodo)) }}
           </td>
 
@@ -155,13 +118,8 @@
           </td>
         </tr>
 
-        <tr
-          *ngIf="!cargando && !error && filasVisibles.length === 0"
-        >
-          <td
-            class="empty-cell"
-            [attr.colspan]="periodos.length + 2"
-          >
+        <tr *ngIf="!cargando && !error && filasVisibles.length === 0">
+          <td class="empty-cell" [attr.colspan]="periodos.length + 2">
             <strong>Sin resultados</strong>
             <span>
               No hay resolutores para la búsqueda o filtros actuales.
@@ -174,10 +132,7 @@
         <tr class="totals-row">
           <td class="name-column">TOTAL VISIBLE</td>
 
-          <td
-            *ngFor="let periodo of periodos; trackBy: identificarPeriodo"
-            class="number-column"
-          >
+          <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column">
             {{ formatearValor(totalMes(periodo)) }}
           </td>
 
@@ -195,11 +150,7 @@
     Actualizando tiempos por resolutor...
   </div>
 
-  <div
-    class="table-status error-status"
-    *ngIf="!cargando && error"
-    role="alert"
-  >
+  <div class="table-status error-status" *ngIf="!cargando && error" role="alert">
     {{ error }}
   </div>
 
@@ -211,41 +162,30 @@
       de <strong>{{ formatearNumero(totalRegistros) }}</strong>
     </span>
 
-    <div class="pagination-controls">
+    <!-- PAGINACION -->
+    <!-- <div class="pagination-controls">
       <label class="page-size-control">
         <span>Registros</span>
-        <select
-          [value]="tamanoActual"
-          [disabled]="cargando"
-          (change)="cambiarTamanoPagina($event)"
-        >
+        <select [value]="tamanoActual" [disabled]="cargando" (change)="cambiarTamanoPagina($event)">
           <option *ngFor="let tamano of tamanosPagina" [value]="tamano">
             {{ tamano }}
           </option>
         </select>
       </label>
 
-      <button
-        type="button"
-        class="page-button"
-        [disabled]="cargando || paginaActual <= 1"
-        (click)="cambiarPagina(paginaActual - 1)"
-        aria-label="Página anterior"
-      >‹</button>
+      <button type="button" class="page-button" [disabled]="cargando || paginaActual <= 1"
+        (click)="cambiarPagina(paginaActual - 1)" aria-label="Página anterior">‹</button>
 
       <span class="page-indicator">
         Página {{ totalPaginas ? paginaActual : 0 }}
         de {{ totalPaginas }}
       </span>
 
-      <button
-        type="button"
-        class="page-button"
-        [disabled]="cargando || paginaActual >= totalPaginas"
-        (click)="cambiarPagina(paginaActual + 1)"
-        aria-label="Página siguiente"
-      >›</button>
+      <button type="button" class="page-button" [disabled]="cargando || paginaActual >= totalPaginas"
+        (click)="cambiarPagina(paginaActual + 1)" aria-label="Página siguiente">›</button>
     </div>
+ -->
+
   </footer>
 
   <div class="methodology-note">

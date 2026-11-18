@@ -80,3 +80,173 @@ La ruta de ETL de prueba difiere en el paso de persistencia: el procesamiento de
 - Definir y documentar cómo se sirve el frontend, se configura la URL API y se limita CORS en cada entorno.
 - Acordar el esquema de migraciones y la fuente de verdad para el DDL de SQL Server.
 - Revisar los parámetros ODBC de cifrado con el responsable de la infraestructura antes de documentar su adecuación a producción.
+
+## Arquitectura de filtros del dashboard
+
+### Descripción general
+
+CANVIA utiliza tres tipos de filtros para controlar la información presentada en los dashboards: **globales, dinámicos y locales**.
+
+Esta clasificación distingue el mecanismo de interacción del usuario y el alcance de los componentes afectados.
+
+El componente padre Angular coordina los filtros que afectan al dashboard completo, mientras que los componentes hijos pueden administrar sus propios filtros de visualización.
+
+### 1. Filtros globales
+
+Son controles ubicados normalmente en la sección principal de filtros del dashboard.
+
+Permiten definir los criterios generales de consulta antes de solicitar información al backend.
+
+**Características:**
+
+- Se administran desde el componente padre Angular.
+- Generalmente utilizan Reactive Forms y Angular Material.
+- Se aplican mediante el botón «Aplicar».
+- Se incorporan a los parámetros de las solicitudes HTTP.
+- Actualizan los KPI, gráficos y tablas que dependen del estado global.
+- Deben mantener consistencia entre todos los endpoints analíticos del módulo.
+
+**Ejemplos:**
+
+- Fecha Desde y Hasta.
+- Grupo Resolutor.
+- Proyecto o conjunto de proyectos.
+- Prioridad, estado o categorización, cuando el módulo lo permita.
+
+### 2. Filtros dinámicos
+
+Son filtros activados mediante interacciones directas con las visualizaciones, como seleccionar una barra o un período del gráfico.
+
+A diferencia de los filtros locales, tienen alcance sobre el dashboard y pueden actualizar otros componentes relacionados.
+
+**Características:**
+
+- Se activan mediante eventos de interacción.
+- Comunican la selección al componente padre.
+- Actualizan el estado compartido de filtros.
+- Pueden desencadenar nuevas solicitudes HTTP.
+- Permiten seleccionar, cambiar o desactivar un criterio.
+- No deben alterar silenciosamente los criterios globales que no estén relacionados.
+
+**Ejemplo en CANVIA:**
+
+En el módulo de Análisis de Tiempos de Informes Mensuales, seleccionar octubre de 2026 en el gráfico mensual establece el filtro `periodo = '2026-10'`.
+
+El componente padre propaga el período seleccionado a los endpoints correspondientes, actualizando los KPI, gráficos y tablas.
+
+Al desactivar la selección, el dashboard recupera el rango temporal establecido por los filtros globales.
+
+### 3. Filtros locales
+
+Son controles pertenecientes a un gráfico o tabla específica. Su objetivo es facilitar la exploración de los datos sin alterar el resto del dashboard.
+
+**Características:**
+
+- Se administran dentro del componente hijo Angular.
+- Utilizan variables de estado locales.
+- Afectan únicamente la representación del componente.
+- No modifican los filtros globales ni dinámicos.
+- Normalmente trabajan con datos ya recibidos del backend, sin generar nuevas solicitudes HTTP.
+- Pueden implementar búsquedas, selección de meses, ordenamiento o cambios de indicadores.
+
+**Ejemplos en CANVIA:**
+
+- Buscar un resolutor dentro de `app-report-times-resolver-chart`.
+- Seleccionar un mes únicamente en el gráfico de horas por resolutor.
+- Buscar proyectos o resolutores en una tabla.
+- Alternar entre horas, acciones y tickets en una matriz de resultados.
+
+Los filtros locales deben conservar la información original recibida y aplicar la transformación únicamente sobre la vista.
+
+### 4. Diferencias entre filtros
+
+| Característica | Global | Dinámico | Local |
+|---|---|---|---|
+| Origen | Formulario del dashboard | Interacción con visualizaciones | Control interno del componente |
+| Estado | Componente padre | Componente padre | Componente hijo |
+| Alcance | Dashboard | Dashboard o componentes vinculados | Componente específico |
+| Solicitud HTTP | Generalmente sí | Generalmente sí | No, si filtra datos ya cargados |
+| Afecta otros gráficos | Sí | Sí, según el vínculo definido | No |
+| Ejemplo | Filtrar por grupo resolutor | Seleccionar una barra mensual | Buscar un resolutor |
+
+### 5. Flujo de aplicación de filtros
+
+```mermaid
+flowchart TD
+    A[Usuario] --> B{Tipo de filtro}
+
+    B --> C[Global]
+    B --> D[Dinámico]
+    B --> E[Local]
+
+    C --> F[Estado del componente padre]
+    D --> F
+
+    F --> G[Servicios HTTP Angular]
+    G --> H[FastAPI]
+    H --> I[Consultas SQL Server]
+    I --> J[Respuesta JSON]
+    J --> K[Actualización del dashboard]
+
+    E --> L[Estado del componente hijo]
+    L --> M[Filtrar datos recibidos]
+    M --> N[Actualizar únicamente la visualización]
+```
+
+### 6. Responsabilidades por capa
+
+**Componente padre Angular**
+
+- Administra los filtros globales.
+- Recibe los eventos de filtrado dinámico.
+- Mantiene el estado compartido.
+- Coordina la actualización de los componentes.
+- Controla las solicitudes HTTP, los errores y los estados de carga.
+
+**Componentes hijos Angular**
+
+- Representan los datos mediante gráficos y tablas.
+- Administran filtros locales.
+- Emiten eventos cuando una interacción debe afectar al dashboard.
+- No modifican directamente el estado global del componente padre.
+
+**Servicios HTTP Angular**
+
+- Transforman los filtros del dashboard en parámetros de consulta.
+- Invocan los endpoints correspondientes.
+- Mantienen los contratos definidos mediante interfaces TypeScript.
+
+**Backend FastAPI**
+
+- Valida los parámetros recibidos.
+- Aplica las reglas de filtrado a las consultas.
+- Mantiene consistencia entre los indicadores.
+- Devuelve resultados agregados y detallados según el endpoint.
+
+**SQL Server**
+
+- Ejecuta las consultas y agrupaciones.
+- Aplica condiciones de búsqueda y restricciones de datos.
+- Proporciona los registros necesarios para los cálculos analíticos.
+
+### 7. Reglas de implementación
+
+1. Los filtros globales deben mantenerse sincronizados entre los endpoints correspondientes al mismo dashboard.
+2. Los filtros dinámicos deben comunicar sus cambios al componente padre mediante eventos o métodos de coordinación.
+3. Los filtros locales no deben modificar el estado global ni provocar la actualización de componentes independientes.
+4. Al limpiar un filtro dinámico, deben conservarse los filtros globales previamente aplicados.
+5. La combinación de filtros debe respetar las reglas de negocio, incluyendo fechas, proyectos y grupo resolutor.
+6. Los conteos, porcentajes y agregaciones deben calcularse sobre un conjunto de datos coherente.
+7. Los filtros locales sobre resultados paginados deben identificarse como búsquedas sobre datos cargados, salvo que exista búsqueda implementada en el backend.
+8. Los componentes deben gestionar estados de carga, errores, resultados vacíos y cambios de filtros sin mostrar información obsoleta.
+9. Las nuevas funcionalidades deben identificar explícitamente el tipo y alcance de cada filtro antes de implementarlo.
+
+### 8. Convención de nomenclatura
+
+Para mantener consistencia en el desarrollo y la documentación de CANVIA, se utilizarán las siguientes denominaciones:
+
+- **Filtro global (`Global Filter`):** establece criterios compartidos para el dashboard.
+- **Filtro dinámico (`Cross-component Interactive Filter`):** propaga una selección interactiva a otros componentes.
+- **Filtro local (`Component-level Filter`):** modifica únicamente la visualización del componente que lo contiene.
+
+Esta clasificación debe utilizarse en nuevos requerimientos, documentación técnica y revisiones de componentes Angular.

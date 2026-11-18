@@ -1,37 +1,11 @@
 
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-
-import {
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Subject, takeUntil } from 'rxjs';
 import Chart from 'chart.js/auto';
-
-import {
-  TicketsReportTimesDashboardFilters,
-  TicketsReportTimesFilters,
-  TicketsReportTimesGrafico,
-  TicketsReportTimesKPI,
-  TicketsReportTimesProjectTabla,
-  TicketsReportTimesResolverTabla,
-  TicketsReportTimesVolumenItem
-} from '../../../models/tickets-report-times';
-
-import {
-  TicketsReportTimesService
-} from '../../../services/tickets-report-times.service';
+import { TicketsReportTimesDashboardFilters, TicketsReportTimesFilters, TicketsReportTimesGrafico, TicketsReportTimesKPI, TicketsReportTimesProjectTabla, TicketsReportTimesResolverTabla, TicketsReportTimesVolumenItem } from '../../../models/tickets-report-times';
+import { TicketsReportTimesService } from '../../../services/tickets-report-times.service';
 
 @Component({
   selector: 'app-tickets-report-times',
@@ -546,8 +520,6 @@ export class TicketsReportTimes
     this.cargandoVolumenMensual = true;
     this.errorVolumen = null;
 
-    // El volumen conserva todos los meses para que
-    // seleccionar uno no haga desaparecer el resto.
     const filtrosVolumen: TicketsReportTimesDashboardFilters = {
       ...this.filtrosActuales,
       periodo: undefined
@@ -590,41 +562,65 @@ export class TicketsReportTimes
       });
   }
 
+
+
   private inicializarGrafico(): void {
     if (!this.volumenCanvas) {
       return;
     }
 
+    this.chartVolumen?.destroy();
+
     this.chartVolumen = new Chart(
       this.volumenCanvas.nativeElement,
       {
         type: 'bar',
+
         data: {
           labels: [],
           datasets: [
             {
-              label: 'Tickets distintos',
+              label: 'Tickets',
               data: [],
+              yAxisID: 'yTickets',
               backgroundColor: '#FF620F',
               borderRadius: 6,
-              maxBarThickness: 42
+              maxBarThickness: 42,
+              categoryPercentage: 0.75,
+              barPercentage: 0.85
             },
             {
-              label: 'Acciones registradas',
+              label: 'Horas',
               data: [],
+              yAxisID: 'yHoras',
               backgroundColor: '#16835B',
               borderRadius: 6,
-              maxBarThickness: 42
+              maxBarThickness: 42,
+              categoryPercentage: 0.75,
+              barPercentage: 0.85
             }
           ]
         },
+
+        plugins: [ChartDataLabels],
+
         options: {
           responsive: true,
           maintainAspectRatio: false,
+
           interaction: {
             mode: 'index',
             intersect: false
           },
+
+          layout: {
+            padding: {
+              top: 30,
+              right: 12,
+              left: 12
+            }
+          },
+
           plugins: {
             legend: {
               position: 'bottom',
@@ -634,19 +630,77 @@ export class TicketsReportTimes
                 color: '#667085'
               }
             },
+
+            // ETIQUETAS SOBRE LAS BARRAS
+            datalabels: {
+              display: contexto => {
+                const valor = Number(
+                  contexto.dataset.data[contexto.dataIndex] ?? 0
+                );
+
+                return valor > 0;
+              },
+
+              anchor: 'end',
+              align: 'end',
+              offset: 4,
+              clamp: true,
+              clip: false,
+              color: '#344054',
+
+              font: {
+                size: 11,
+                weight: 'bold'
+              },
+
+              formatter: (valor: number, contexto) => {
+                const numero = Number(valor) || 0;
+
+                if (numero <= 0) {
+                  return '';
+                }
+
+                if (contexto.datasetIndex === 1) {
+                  return (
+                    numero.toLocaleString('es-PE', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    }) + ' h'
+                  );
+                }
+
+                return numero.toLocaleString('es-PE', {
+                  maximumFractionDigits: 0
+                });
+              }
+            },
+
             tooltip: {
               callbacks: {
                 label: contexto => {
                   const valor = Number(contexto.parsed.y ?? 0);
 
+                  if (contexto.datasetIndex === 1) {
+                    return (
+                      'Horas: ' +
+                      valor.toLocaleString('es-PE', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      }) + ' h'
+                    );
+                  }
+
                   return (
-                    `${contexto.dataset.label}: ` +
-                    valor.toLocaleString('es-PE')
+                    'Tickets distintos: ' +
+                    valor.toLocaleString('es-PE', {
+                      maximumFractionDigits: 0
+                    })
                   );
                 }
               }
             }
           },
+
           scales: {
             x: {
               grid: {
@@ -658,17 +712,56 @@ export class TicketsReportTimes
                 autoSkip: true
               }
             },
-            y: {
+
+            yTickets: {
+              type: 'linear',
+              position: 'left',
               beginAtZero: true,
+              grace: '15%',
+
+              title: {
+                display: true,
+                text: 'Tickets',
+                color: '#080808'
+              },
+
               ticks: {
-                color: '#667085',
+                color: '#000000',
                 precision: 0
               },
+
               grid: {
                 color: '#E5E9EE'
               }
+            },
+
+            yHoras: {
+              type: 'linear',
+              position: 'right',
+              beginAtZero: true,
+              grace: '15%',
+
+              title: {
+                display: true,
+                text: 'Horas',
+                color: '#080808'
+              },
+
+              ticks: {
+                color: '#000000',
+                callback: valor =>
+                  Number(valor).toLocaleString('es-PE', {
+                    maximumFractionDigits: 1
+                  }) + ' h'
+              },
+
+              grid: {
+                drawOnChartArea: false
+              }
             }
           },
+
+          // CONSERVAR FILTRO AL SELECCIONAR MES
           onClick: (_evento, elementos) => {
             const indice = elementos[0]?.index;
 
@@ -695,6 +788,8 @@ export class TicketsReportTimes
     this.actualizarGrafico();
   }
 
+
+
   private actualizarGrafico(): void {
     if (!this.chartVolumen) {
       return;
@@ -707,12 +802,19 @@ export class TicketsReportTimes
         this.etiquetaPeriodo(item.periodo)
       );
 
+    // BARRAS NARANJAS: TICKETS
     this.chartVolumen.data.datasets[0].data =
-      this.volumenMensual.map(item => item.tickets);
+      this.volumenMensual.map(item =>
+        Number(item.tickets) || 0
+      );
 
+    // BARRAS VERDES: HORAS TOTALES
     this.chartVolumen.data.datasets[1].data =
-      this.volumenMensual.map(item => item.acciones);
+      this.volumenMensual.map(item =>
+        Number(item.horas_totales) || 0
+      );
 
+    // COLORES SEGÚN EL MES SELECCIONADO
     this.chartVolumen.data.datasets[0].backgroundColor =
       this.volumenMensual.map(item =>
         !seleccionado || item.periodo === seleccionado
@@ -729,6 +831,8 @@ export class TicketsReportTimes
 
     this.chartVolumen.update();
   }
+
+
 
   private etiquetaPeriodo(periodo: string): string {
     const [anio, mes] = periodo.split('-').map(Number);
@@ -1141,5 +1245,25 @@ export class TicketsReportTimes
       evento.stopPropagation();
     }
   }
+
+
+  get horasTotalesKpi(): string {
+    const registros = this.periodoSeleccionado
+      ? this.volumenMensual.filter(
+        item => item.periodo === this.periodoSeleccionado
+      )
+      : this.volumenMensual;
+
+    const totalHoras = registros.reduce(
+      (total, item) => total + (Number(item.horas_totales) || 0),
+      0
+    );
+
+    return totalHoras.toLocaleString('es-PE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + ' h';
+  }
+
 
 }
