@@ -24,13 +24,6 @@ dist/
 desktop.ini
 Thumbs.db
 
-# Archivos temporales
-*.tar.gz
-*.zip
-
 # Paquetes comprimidos y despliegues
 *.tar.gz
 *.zip
-
-# Archivo específico del backend (ya cubierto por *.tar.gz)
-gestion-tickets-backend-update.tar.gz
