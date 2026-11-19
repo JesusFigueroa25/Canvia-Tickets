@@ -111,6 +111,28 @@ Ajuste de la sección 07 del 18/11/2026: las pruebas específicas del padre y de
 
 Pendiente: aceptación con datos reales y contraste de resultados en el entorno de negocio; validación visual en otros navegadores y con volúmenes cercanos al límite de imagen. La prueba local no acredita el funcionamiento de la ejecución de auditorías contra SQL Server.
 
+### Reporte PNG de Tiempos de Informes Mensuales
+
+Desde `fronted-tickets/`, con las dependencias existentes:
+
+```powershell
+npm test -- --watch=false --include="**/tickets-report-times.spec.ts" --include="**/tickets-report-times-report*.spec.ts"
+npm test -- --watch=false
+npm run build
+```
+
+Los tres specs nuevos del padre, reporte y utilidades cubren respuestas en distinto orden; espera de las seis consultas; tablas con más de 100 registros y última página parcial; cola de dos solicitudes; caché y reintento de páginas; timeout; fallo de cada consulta inicial; metadatos, registros duplicados e inconsistencias; filtros efectivos y copias independientes; cambio de mes y limpieza; versiones de datos y render; ausencia de resultados; independencia de la paginación visual; seis secciones y bloques de meses; Top 10; nombres extensos; fuentes y ciclos de pintura; límites y dimensiones inválidas; fallos de render/captura; doble clic, descarga repetida, limpieza del enlace y abandono de página. Los conteos distintos no se reconstruyen sumando grupos y las diferencias de redondeo se prueban expresamente.
+
+**Evidencia del 18/11/2026**, Node 24.20.0 y dependencias instaladas, sin FastAPI ni SQL Server:
+
+- Los **35 casos nuevos pasan**. La suite completa registra **66 aprobados y tres fallos** en specs no modificados: `App` no reconoce `app-landing`, `Login` carece de proveedor de `ActivatedRoute` y el reporte de Categorización aún espera el antiguo orden por incorrectas frente al código actual por total de tickets. No se corrigen esos módulos dentro de esta funcionalidad.
+- La compilación de desarrollo y la de producción finalizaron con código 0. La primera ejecución de producción falló por resolución de Google Fonts en el entorno restringido; se completó con acceso de red autorizado a los estilos globales existentes. Persisten advertencias de presupuesto del bundle inicial y de estilos. No se modificaron dependencias ni presupuestos.
+- Edge sin interfaz sirvió la compilación con respuestas ficticias locales, completó **144 registros mensuales por dimensión** y descargó un PNG real de **1400 × 7046 px**, revisado visualmente. Contiene exactamente seis secciones, doce meses, doce resolutores y doce proyectos en las matrices, con rankings de diez. Las cuatro tablas representan dos bloques semestrales por dimensión; no son páginas parciales.
+- El arnés detectó cero desbordamientos de tablas/paneles y cero textos SVG fuera de sus límites. No observó excepciones JavaScript. Verificó recuperación tras un fallo HTTP ficticio de la página adicional: el reintento consultó solo la página faltante. Dos descargas sucesivas no generaron HTTP adicional.
+- La selección dinámica de febrero redujo el detalle a doce registros por dimensión, mantuvo los doce meses del resumen ejecutivo y reflejó el mes efectivo en el reporte. Las evidencias y el arnés temporal están en `.angular/png-report-times-smoke/`, ignorado por Git.
+
+**Pendiente:** aceptación con datos reales; contraste con consultas SQL Server; filtros con proyectos/grupos reales; comparación visual en otros navegadores; rendimiento y legibilidad cerca del límite de imagen; cambios concurrentes de datos entre páginas. La lectura multipetición no equivale a un snapshot transaccional backend. Reglas y límites: [ARCHITECTURE.md](ARCHITECTURE.md#reporte-png-de-tiempos-de-informes-mensuales).
+
 ### Validaciones de Incidentes Consolidados
 
 Desde `fronted-tickets/`, ejecutar `npm test -- --watch=false` y `npm run build`.
