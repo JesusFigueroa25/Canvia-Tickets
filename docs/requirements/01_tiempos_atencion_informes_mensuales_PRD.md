@@ -260,4 +260,12 @@ Se prevé:
 
 ---
 
-**Nota de estado:** este PRD documenta el alcance solicitado y distingue las reglas explícitas de las decisiones técnicas todavía no aprobadas. No certifica que exista una implementación o pruebas ejecutadas.
+**Nota de estado:** el alcance original de este PRD distingue las reglas solicitadas de decisiones técnicas inicialmente pendientes. La evidencia posterior del reporte PNG se registra en el apartado siguiente; no acredita por sí sola la validación de los datos ni del backend originales.
+
+## 13. Reporte PNG implementado
+
+La página permite descargar el análisis en un PNG con seis secciones: KPIs, resumen ejecutivo mensual, horas por resolutor, detalle por resolutor, horas por proyecto y mes y detalle por proyecto. Se reutilizan las respuestas del dashboard y se completan las páginas faltantes mediante los endpoints existentes; no se altera el backend. Se conservan los filtros efectivos globales y el mes dinámico; las búsquedas y selecciones locales no forman parte del reporte. Las tablas incluyen todos los registros filtrados y los gráficos conservan sus rankings Top 10.
+
+La descarga espera consultas correctas, integridad de las tablas y confirmación del renderizado. El reporte protege versiones, errores, descargas repetidas y límites de imagen. Arquitectura, reglas actuales y dimensiones: [ARCHITECTURE.md](../ARCHITECTURE.md#reporte-png-de-tiempos-de-informes-mensuales). Resultados ejecutados y validaciones pendientes: [TEST_PLAN.md](../TEST_PLAN.md#reporte-png-de-tiempos-de-informes-mensuales).
+
+**Diferencias observadas frente al alcance inicial:** el repositorio vigente filtra por categoría sin restringir el tipo a `Service Request`; los proyectos afectan también al KPI y al volumen; el resumen ejecutivo conserva el rango completo al seleccionar un mes. Los cuatro KPIs visibles son tickets, horas, proyectos y resolutores. El reporte refleja estos comportamientos existentes sin modificar las fórmulas ni sustituir las decisiones históricas de este documento.

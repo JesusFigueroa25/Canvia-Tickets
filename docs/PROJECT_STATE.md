@@ -24,6 +24,14 @@ Implementado el botón «Descargar Reporte PNG» y un reporte agregado de siete 
 
 El 18/11/2026 se ejecutaron compilación Angular, pruebas unitarias y una descarga real en Edge con datos ficticios locales. No se validó contra SQL Server ni datos productivos. Consultar [arquitectura y límites](ARCHITECTURE.md#reporte-png-de-auditoría-de-categorización) y [resultados de pruebas](TEST_PLAN.md#reporte-png-de-auditoría-de-categorización). Se preservó la declaración local preexistente del componente en `AppModule`; no se añadieron dependencias.
 
+## Reporte PNG de Tiempos de Informes Mensuales
+
+Implementado en la página `tickets-report-times`: botón «Descargar PNG», seis secciones, rankings Top 10 y matrices completas. Reutiliza las seis respuestas iniciales y carga solo las páginas faltantes del detalle mediante los endpoints existentes; no añade dependencias ni cambios backend. Conserva el componente y la declaración local preexistentes, los filtros globales y dinámicos y las vistas del dashboard.
+
+La exportación requiere respuestas válidas, tablas completas y renderizado confirmado. Utiliza snapshots y versiones, permite reintentar páginas fallidas y descargas, descarta capturas obsoletas y rechaza imágenes excesivas sin recortar filas. Los filtros locales no se exportan. La paginación visual posterior es independiente del reporte preparado.
+
+La validación del 18/11/2026 incluye pruebas Angular, compilación y descarga real en Edge con datos ficticios locales. No acredita resultados de negocio ni funcionamiento contra SQL Server. Consultar [arquitectura y límites](ARCHITECTURE.md#reporte-png-de-tiempos-de-informes-mensuales) y [evidencia de pruebas](TEST_PLAN.md#reporte-png-de-tiempos-de-informes-mensuales). Persisten diferencias documentales del alcance original: la consulta actual no restringe `Ticket_type` a `Service Request` y la selección de proyectos afecta también al KPI y al volumen. Estas reglas no se modificaron.
+
 ## Tecnologías declaradas
 
 - Frontend: Angular `^22.2.x`, TypeScript `~6.0.2`, RxJS `~7.8.0`, Angular Material, Chart.js y `ng2-charts`. `package-lock.json` registra resoluciones; `package.json` no declara una versión de Node.

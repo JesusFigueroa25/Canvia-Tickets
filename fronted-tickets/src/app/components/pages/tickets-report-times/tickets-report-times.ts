@@ -2,7 +2,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, from, map, mergeMap, takeUntil, timeout } from 'rxjs';
+import { toPng } from 'html-to-image';
+import { TicketsReportTimesReportData, TicketsReportTimesTabla } from '../../../models/tickets-report-times';
+import { RegistroTiempo, resumenesIguales, validarPagina, validarReporte } from '../../charts/Consolidated/tickets-report-times-report/tickets-report-times-report.utils';
 import Chart from 'chart.js/auto';
 import { TicketsReportTimesDashboardFilters, TicketsReportTimesFilters, TicketsReportTimesGrafico, TicketsReportTimesKPI, TicketsReportTimesProjectTabla, TicketsReportTimesResolverTabla, TicketsReportTimesVolumenItem } from '../../../models/tickets-report-times';
 import { TicketsReportTimesService } from '../../../services/tickets-report-times.service';
@@ -120,6 +123,214 @@ export class TicketsReportTimes
   private readonly cancelarTablaResolutores$ =
     new Subject<void>();
 
+  @ViewChild('reporteImagen') reporteImagen?: ElementRef<HTMLElement>;
+  datosReporte: TicketsReportTimesReportData | null = null;
+  reporteRenderizado = false;
+  preparandoReporte = false;
+  exportandoReporte = false;
+  errorPreparacionReporte: string | null = null;
+  errorExportacion: string | null = null;
+  private destruido = false;
+  private versionReporte = 0;
+  private readonly cancelarReporte$ = new Subject<void>();
+  private respuestasReporte = new Set<string>();
+  private filtrosReporte: TicketsReportTimesDashboardFilters = {};
+  private fuentesReporte: Partial<TicketsReportTimesReportData> = {};
+  private paginasReporte = {
+    resolutores: new Map<number, TicketsReportTimesTabla<RegistroTiempo>>(),
+    proyectos: new Map<number, TicketsReportTimesTabla<RegistroTiempo>>(),
+  };
+  private basesReporte: Partial<Record<'resolutores' | 'proyectos', TicketsReportTimesTabla<RegistroTiempo>>> = {};
+
+  get reporteListo(): boolean {
+    return !this.destruido && this.filtrosListos && !this.cargandoFiltros &&
+      this.respuestasReporte.size === 6 && !this.preparandoReporte &&
+      !this.errorPreparacionReporte && this.reporteRenderizado &&
+      this.datosReporte?.version === this.versionReporte;
+  }
+
+  get errorConsultasReporte(): boolean {
+    return !!(this.errorKpis || this.errorVolumen || this.errorTablaResolutores ||
+      this.errorGraficoResolutores || this.errorTablaProyectos || this.errorGraficoProyectos);
+  }
+
+  private invalidarReporte(): void {
+    ++this.versionReporte;
+    this.respuestasReporte.clear();
+    this.datosReporte = null;
+    this.reporteRenderizado = false;
+    this.preparandoReporte = false;
+    this.errorPreparacionReporte = null;
+    this.errorExportacion = null;
+    this.fuentesReporte = {};
+    this.basesReporte = {};
+    this.paginasReporte.resolutores.clear();
+    this.paginasReporte.proyectos.clear();
+    this.cancelarReporte$.next();
+  }
+
+  private registrarRespuestaReporte(clave: string, version: number): void {
+    if (this.destruido || version !== this.solicitudDashboard || this.respuestasReporte.has(clave)) return;
+    try {
+      if (clave === 'kpis') this.fuentesReporte.kpis = structuredClone(this.kpis!);
+      if (clave === 'volumen') this.fuentesReporte.volumenMensual = structuredClone(this.volumenMensual);
+      if (clave === 'graficoResolutores') this.fuentesReporte.graficoResolutores = structuredClone(this.datosGraficoResolutores!);
+      if (clave === 'graficoProyectos') this.fuentesReporte.graficoProyectos = structuredClone(this.datosGraficoProyectos!);
+      if (clave === 'tablaResolutores' || clave === 'tablaProyectos') {
+        const dimension = clave === 'tablaResolutores' ? 'resolutores' : 'proyectos';
+        const tabla = structuredClone(clave === 'tablaResolutores' ? this.datosTablaResolutores! : this.datosTablaProyectos!);
+        this.basesReporte[dimension] = tabla;
+        if (tabla.tamano === 100) this.paginasReporte[dimension].set(tabla.pagina, tabla);
+      }
+      this.respuestasReporte.add(clave);
+      if (this.respuestasReporte.size === 6) this.prepararReporte();
+    } catch (error) { this.fallarPreparacionReporte(error); }
+  }
+
+  reintentarReporte(): void {
+    if (this.preparandoReporte || this.exportandoReporte || this.cargandoDashboard || this.destruido) return;
+    if (this.respuestasReporte.size !== 6) this.cargarDashboard();
+    else this.prepararReporte();
+  }
+
+  prepararReporte(): void {
+    if (this.destruido || this.preparandoReporte || this.respuestasReporte.size !== 6) return;
+    const version = this.solicitudDashboard;
+    const versionRender = ++this.versionReporte;
+    this.preparandoReporte = true;
+    this.reporteRenderizado = false;
+    this.datosReporte = null;
+    this.errorPreparacionReporte = null;
+    this.errorExportacion = null;
+    const trabajos: { dimension: 'resolutores' | 'proyectos'; pagina: number }[] = [];
+    try {
+      for (const dimension of ['resolutores', 'proyectos'] as const) {
+        const base = this.basesReporte[dimension]!;
+        validarPagina(base, base.pagina, base.tamano);
+        for (let pagina = 1; pagina <= Math.ceil(base.total / 100); pagina++) {
+          if (!this.paginasReporte[dimension].has(pagina)) trabajos.push({ dimension, pagina });
+        }
+        // Validate even an empty cached first page.
+        for (const pagina of this.paginasReporte[dimension].values()) validarPagina(pagina, pagina.pagina, 100);
+      }
+    } catch (error) {
+      this.fallarPreparacionReporte(error);
+      return;
+    }
+    from(trabajos).pipe(
+      mergeMap(trabajo => {
+        const respuesta: Observable<TicketsReportTimesTabla<RegistroTiempo>> = trabajo.dimension === 'resolutores'
+          ? this.reportTimesService.obtenerTiemposResolutores(this.filtrosReporte, trabajo.pagina, 100)
+          : this.reportTimesService.obtenerTiemposProyectos(this.filtrosReporte, trabajo.pagina, 100);
+        return respuesta.pipe(timeout(30000), map(pagina => {
+          validarPagina(pagina, trabajo.pagina, 100);
+          const base = this.basesReporte[trabajo.dimension]!;
+          if (pagina.total !== base.total || !resumenesIguales(pagina.resumen, base.resumen)) {
+            throw new Error('Los datos cambiaron entre páginas. Vuelve a aplicar los filtros.');
+          }
+          return { trabajo, pagina };
+        }));
+      }, 2),
+      takeUntil(this.cancelarReporte$),
+      takeUntil(this.destruir$),
+    ).subscribe({
+      next: ({ trabajo, pagina }) => {
+        if (version === this.solicitudDashboard && !this.destruido) this.paginasReporte[trabajo.dimension].set(trabajo.pagina, pagina);
+      },
+      error: error => { if (version === this.solicitudDashboard && !this.destruido) this.fallarPreparacionReporte(error); },
+      complete: () => {
+        if (version !== this.solicitudDashboard || this.destruido || this.respuestasReporte.size !== 6) return;
+        try {
+          const items = (dimension: 'resolutores' | 'proyectos') =>
+            [...this.paginasReporte[dimension].entries()].sort(([a], [b]) => a - b).flatMap(([, p]) => p.items);
+          const reporte: TicketsReportTimesReportData = {
+            kpis: this.fuentesReporte.kpis!, volumenMensual: this.fuentesReporte.volumenMensual!,
+            graficoResolutores: this.fuentesReporte.graficoResolutores!, graficoProyectos: this.fuentesReporte.graficoProyectos!,
+            version: versionRender, preparadoEn: new Date().toISOString(), filtros: structuredClone(this.filtrosReporte),
+            detalleResolutores: { resumen: this.basesReporte.resolutores!.resumen,
+              items: items('resolutores') as TicketsReportTimesReportData['detalleResolutores']['items'],
+              totalRegistros: this.basesReporte.resolutores!.total },
+            detalleProyectos: { resumen: this.basesReporte.proyectos!.resumen,
+              items: items('proyectos') as TicketsReportTimesReportData['detalleProyectos']['items'],
+              totalRegistros: this.basesReporte.proyectos!.total },
+          };
+          validarReporte(reporte);
+          this.datosReporte = reporte.kpis.total_tickets > 0 ? structuredClone(reporte) : null;
+          this.preparandoReporte = false;
+          this.changeDetector.markForCheck();
+        } catch (error) { this.fallarPreparacionReporte(error); }
+      },
+    });
+  }
+
+  private fallarPreparacionReporte(error: unknown): void {
+    this.preparandoReporte = false;
+    this.datosReporte = null;
+    this.reporteRenderizado = false;
+    this.errorPreparacionReporte = error instanceof Error && error.name === 'TimeoutError'
+      ? 'La consulta de una página tardó demasiado. Reintenta la preparación.'
+      : error instanceof Error && !(error instanceof TypeError)
+      ? error.message : 'No se pudo completar el reporte. Reintenta o actualiza los filtros.';
+    this.changeDetector.markForCheck();
+  }
+
+  confirmarRenderReporte(version: number): void {
+    if (!this.destruido && this.datosReporte?.version === version && version === this.versionReporte) {
+      this.reporteRenderizado = true;
+      this.changeDetector.markForCheck();
+    }
+  }
+
+  fallarRenderReporte(version: number): void {
+    if (version === this.versionReporte && !this.destruido) {
+      this.fallarPreparacionReporte(new Error('No se pudo renderizar el reporte. Reintenta la preparación.'));
+    }
+  }
+
+  async descargarReporte(): Promise<void> {
+    if (!this.reporteListo || this.exportandoReporte || !this.datosReporte) return;
+    const datos = this.datosReporte;
+    this.exportandoReporte = true;
+    this.errorExportacion = null;
+    this.changeDetector.markForCheck();
+    let enlace: HTMLAnchorElement | undefined;
+    try {
+      await document.fonts?.ready;
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      if (!this.reporteListo || this.datosReporte !== datos) throw new Error('obsoleto');
+      const elemento = this.reporteImagen?.nativeElement.querySelector<HTMLElement>('.report-document');
+      if (!elemento) throw new Error('documento');
+      const width = Math.ceil(elemento.scrollWidth), height = Math.ceil(elemento.scrollHeight);
+      const pixelRatio = height > 4000 ? 1 : 2;
+      if (width <= 0 || height <= 0) throw new Error('dimensiones');
+      if (width * pixelRatio > 16384 || height * pixelRatio > 16384 || width * height * pixelRatio ** 2 > 32000000) {
+        throw new Error('limite');
+      }
+      const imagen = await toPng(elemento, {
+        backgroundColor: '#F7F9FB', width, height, pixelRatio, skipFonts: true, skipAutoScale: true,
+        style: { position: 'static', left: 'auto', top: 'auto', transform: 'none', margin: '0' },
+      });
+      if (this.destruido) return;
+      if (!this.reporteListo || this.datosReporte !== datos) throw new Error('obsoleto');
+      if (!imagen.startsWith('data:image/png') || imagen.length < 100) throw new Error('imagen');
+      enlace = document.createElement('a');
+      enlace.href = imagen;
+      enlace.download = `CANVIA-Tiempos-Informes-Mensuales-${datos.filtros.desde ?? 'inicio'}_${datos.filtros.hasta ?? 'fin'}-${datos.filtros.periodo ?? 'todos'}-${this.formatearFecha(new Date())}.png`;
+      document.body.appendChild(enlace);
+      enlace.click();
+    } catch (error) {
+      if (!this.destruido) this.errorExportacion = error instanceof Error && error.message === 'obsoleto'
+        ? 'Los datos cambiaron durante la captura. Descarga el reporte actualizado.'
+        : error instanceof Error && error.message === 'limite'
+          ? 'El reporte supera el tamaño de imagen permitido. Reduce el rango de fechas o los proyectos.'
+          : 'No fue posible generar el PNG completo. Puedes reintentar la descarga.';
+    } finally {
+      enlace?.remove();
+      this.exportandoReporte = false;
+      if (!this.destruido) this.changeDetector.markForCheck();
+    }
+  }
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -153,6 +364,9 @@ export class TicketsReportTimes
   }
 
   ngOnDestroy(): void {
+    this.destruido = true;
+    this.invalidarReporte();
+    this.cancelarReporte$.complete();
     this.cancelarDashboard$.next();
     this.cancelarDashboard$.complete();
 
@@ -329,6 +543,9 @@ export class TicketsReportTimes
 
 
   limpiarFiltros(): void {
+    this.cancelarDashboard$.next();
+    ++this.solicitudDashboard;
+    this.invalidarReporte();
     this.periodoSeleccionado = null;
 
     this.filtrosForm.reset({
@@ -456,6 +673,8 @@ export class TicketsReportTimes
     this.cancelarDashboard$.next();
 
     const solicitudActual = ++this.solicitudDashboard;
+    this.invalidarReporte();
+    this.filtrosReporte = structuredClone(this.filtrosActuales);
 
     // Reiniciar paginación al cambiar los filtros.
     this.paginaTablaResolutores = 1;
@@ -495,6 +714,7 @@ export class TicketsReportTimes
 
           this.kpis = datos;
           this.cargandoKpis = false;
+          this.registrarRespuestaReporte('kpis', solicitudActual);
           this.changeDetector.markForCheck();
         },
         error: error => {
@@ -539,6 +759,7 @@ export class TicketsReportTimes
 
           this.volumenMensual = datos;
           this.cargandoVolumenMensual = false;
+          this.registrarRespuestaReporte('volumen', solicitudActual);
 
           this.actualizarGrafico();
           this.changeDetector.markForCheck();
@@ -919,6 +1140,7 @@ export class TicketsReportTimes
 
           this.datosTablaResolutores = datos;
           this.cargandoTablaResolutores = false;
+          this.registrarRespuestaReporte('tablaResolutores', solicitudActual);
 
           this.changeDetector.markForCheck();
         },
@@ -969,6 +1191,7 @@ export class TicketsReportTimes
 
           this.datosGraficoResolutores = datos;
           this.cargandoGraficoResolutores = false;
+          this.registrarRespuestaReporte('graficoResolutores', solicitudActual);
 
           this.changeDetector.markForCheck();
         },
@@ -1047,6 +1270,7 @@ export class TicketsReportTimes
 
           this.datosTablaProyectos = datos;
           this.cargandoTablaProyectos = false;
+          this.registrarRespuestaReporte('tablaProyectos', solicitudActual);
 
           this.changeDetector.markForCheck();
         },
@@ -1096,6 +1320,7 @@ export class TicketsReportTimes
 
           this.datosGraficoProyectos = datos;
           this.cargandoGraficoProyectos = false;
+          this.registrarRespuestaReporte('graficoProyectos', solicitudActual);
 
           this.changeDetector.markForCheck();
         },

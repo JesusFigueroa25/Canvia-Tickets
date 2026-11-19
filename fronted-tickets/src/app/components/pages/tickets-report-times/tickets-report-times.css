@@ -13,6 +13,14 @@
   --rt-green: #16835B;
 }
 
+.download-report-button { flex-shrink: 0; background: #FF620F !important; color: #FFF !important; }
+.download-report-button:disabled { background: #E5E9EE !important; color: #667085 !important; }
+.report-export-stage { position: fixed; left: -20000px; top: 0; width: 1400px; pointer-events: none; }
+.report-status { color: #667085; font-size: 13px; }
+.report-error { padding: 12px; margin-bottom: 16px; border: 1px solid #E5E9EE; border-radius: 8px; color: #B42318; background: #FFF; }
+.report-error button { margin-left: 12px; cursor: pointer; }
+@media (max-width: 768px) { .page-header { flex-wrap: wrap; } }
+
 /* PÁGINA */
 .tickets-report-times-page {
   width: 100%;

@@ -109,3 +109,24 @@ export interface TicketsReportTimesImportResult {
   total_acciones: number;
   mensaje: string;
 }
+
+/** Complete, independent snapshot. Table items are never a visible page only. */
+export interface TicketsReportTimesReportData {
+  version: number;
+  preparadoEn: string;
+  filtros: TicketsReportTimesDashboardFilters;
+  kpis: TicketsReportTimesKPI;
+  volumenMensual: TicketsReportTimesVolumenItem[];
+  graficoResolutores: TicketsReportTimesGrafico;
+  graficoProyectos: TicketsReportTimesGrafico;
+  detalleResolutores: {
+    resumen: TicketsReportTimesResumen;
+    items: TicketsReportTimesResolverItem[];
+    totalRegistros: number;
+  };
+  detalleProyectos: {
+    resumen: TicketsReportTimesResumen;
+    items: TicketsReportTimesProjectItem[];
+    totalRegistros: number;
+  };
+}

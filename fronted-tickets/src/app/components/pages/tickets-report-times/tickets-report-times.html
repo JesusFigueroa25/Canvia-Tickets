@@ -11,7 +11,26 @@
         y especialista.
       </p>
     </div>
+    <button mat-flat-button type="button" class="download-report-button" (click)="descargarReporte()"
+      [disabled]="!reporteListo || exportandoReporte">
+      <mat-icon>{{ exportandoReporte ? 'hourglass_top' : 'download' }}</mat-icon>
+      {{ exportandoReporte ? 'Generando PNG...' : 'Descargar PNG' }}
+    </button>
   </header>
+
+  <p class="report-status" *ngIf="preparandoReporte" role="status">Preparando reporte completo...</p>
+  <div class="report-error" *ngIf="errorPreparacionReporte || errorExportacion || (errorConsultasReporte && !datosReporte)" role="alert">
+    {{ errorPreparacionReporte || errorExportacion || 'Faltan consultas del reporte. Actualiza los datos para reintentar.' }}
+    <button type="button" (click)="errorExportacion && reporteListo ? descargarReporte() : reintentarReporte()"
+      [disabled]="preparandoReporte || exportandoReporte || cargandoDashboard">Reintentar</button>
+  </div>
+  <p class="report-status" *ngIf="!preparandoReporte && !datosReporte && !errorConsultasReporte && !errorPreparacionReporte && kpis?.total_tickets === 0" role="status">
+    No hay datos para exportar con los filtros aplicados.
+  </p>
+  <div #reporteImagen class="report-export-stage" aria-hidden="true" inert *ngIf="datosReporte as datos">
+    <app-tickets-report-times-report [datos]="datos" (renderizado)="confirmarRenderReporte($event)"
+      (errorRenderizado)="fallarRenderReporte($event)"></app-tickets-report-times-report>
+  </div>
 
   <!-- FILTROS -->
   <section class="filters-card">
