@@ -247,12 +247,16 @@ export class TicketsReportTimes
             kpis: this.fuentesReporte.kpis!, volumenMensual: this.fuentesReporte.volumenMensual!,
             graficoResolutores: this.fuentesReporte.graficoResolutores!, graficoProyectos: this.fuentesReporte.graficoProyectos!,
             version: versionRender, preparadoEn: new Date().toISOString(), filtros: structuredClone(this.filtrosReporte),
-            detalleResolutores: { resumen: this.basesReporte.resolutores!.resumen,
+            detalleResolutores: {
+              resumen: this.basesReporte.resolutores!.resumen,
               items: items('resolutores') as TicketsReportTimesReportData['detalleResolutores']['items'],
-              totalRegistros: this.basesReporte.resolutores!.total },
-            detalleProyectos: { resumen: this.basesReporte.proyectos!.resumen,
+              totalRegistros: this.basesReporte.resolutores!.total
+            },
+            detalleProyectos: {
+              resumen: this.basesReporte.proyectos!.resumen,
               items: items('proyectos') as TicketsReportTimesReportData['detalleProyectos']['items'],
-              totalRegistros: this.basesReporte.proyectos!.total },
+              totalRegistros: this.basesReporte.proyectos!.total
+            },
           };
           validarReporte(reporte);
           this.datosReporte = reporte.kpis.total_tickets > 0 ? structuredClone(reporte) : null;
@@ -270,7 +274,7 @@ export class TicketsReportTimes
     this.errorPreparacionReporte = error instanceof Error && error.name === 'TimeoutError'
       ? 'La consulta de una página tardó demasiado. Reintenta la preparación.'
       : error instanceof Error && !(error instanceof TypeError)
-      ? error.message : 'No se pudo completar el reporte. Reintenta o actualiza los filtros.';
+        ? error.message : 'No se pudo completar el reporte. Reintenta o actualiza los filtros.';
     this.changeDetector.markForCheck();
   }
 
@@ -1472,22 +1476,11 @@ export class TicketsReportTimes
   }
 
 
-  get horasTotalesKpi(): string {
-    const registros = this.periodoSeleccionado
-      ? this.volumenMensual.filter(
-        item => item.periodo === this.periodoSeleccionado
-      )
-      : this.volumenMensual;
-
-    const totalHoras = registros.reduce(
-      (total, item) => total + (Number(item.horas_totales) || 0),
-      0
-    );
-
-    return totalHoras.toLocaleString('es-PE', {
+  formatearDecimal(valor: number): string {
+    return Number(valor ?? 0).toLocaleString('es-PE', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    }) + ' h';
+    });
   }
 
 

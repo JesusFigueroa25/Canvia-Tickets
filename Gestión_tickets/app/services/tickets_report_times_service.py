@@ -123,15 +123,56 @@ def obtener_opciones_filtros(db: Session, grupo_resolutor: str | None = "BASE DE
     return repository.obtener_opciones_filtros(db, grupo_resolutor)
 
 
-def obtener_kpis(db: Session, filtros: TicketsReportTimesDashboardFilters):
+def obtener_kpis(
+    db: Session,
+    filtros: TicketsReportTimesDashboardFilters
+):
+
     datos = repository.obtener_kpis(db, filtros)
-    total = int(datos["total_tickets"] or 0)
+
+    # 1. INDICADORES GENERALES
+    total_tickets = int(datos["total_tickets"] or 0)
+    total_proyectos = int(datos["total_proyectos"] or 0)
+    total_resolutores = int(datos["total_resolutores"] or 0)
+    horas = Decimal(str(datos["horas_totales"] or 0))
+    horas_totales = _horas(horas)
+
+    # 2. PROMEDIOS MENSUALES
+    meses = int(datos["meses_con_datos"] or 0)
+    tickets_mensuales = int(datos["tickets_mensuales_acumulados"] or 0)
+    if meses > 0:
+        promedio_horas = _horas(
+            horas / Decimal(meses)
+        )
+
+        promedio_tickets = float(
+            (
+                Decimal(tickets_mensuales)
+                / Decimal(meses)
+            ).quantize(Decimal("0.01"))
+        )
+    else:
+        promedio_horas = 0.0
+        promedio_tickets = 0.0
+
+    # 3. COMPATIBILIDAD CON INDICADORES ANTIGUOS
     criticos = int(datos["alta_criticidad"] or 0)
+    porcentaje_criticos = (
+        round(100 * criticos / total_tickets, 2)
+        if total_tickets > 0
+        else 0.0
+    )
+
+    # 4. RESPUESTA DEL ENDPOINT
     return {
-        "total_tickets": total,
-        "total_proyectos": int(datos["total_proyectos"] or 0),
+        "total_tickets": total_tickets,
+        "total_proyectos": total_proyectos,
+        "horas_totales": horas_totales,
+        "total_resolutores": total_resolutores,
+        "promedio_horas": promedio_horas,
+        "promedio_tickets": promedio_tickets,
         "alta_criticidad": criticos,
-        "porcentaje_alta_criticidad": round(100 * criticos / total, 2) if total else 0.0,
+        "porcentaje_alta_criticidad": porcentaje_criticos,
     }
 
 
