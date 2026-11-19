@@ -19,13 +19,12 @@ export interface TicketsReportTimesFilters {
 export interface TicketsReportTimesKPI {
   total_tickets: number;
   total_proyectos: number;
-
   horas_totales: number;
+  segundos_totales: number;
   total_resolutores: number;
   promedio_horas: number;
+  promedio_segundos: number;
   promedio_tickets: number;
-
-  // Compatibilidad temporal con el backend
   alta_criticidad: number;
   porcentaje_alta_criticidad: number;
 }
@@ -37,12 +36,14 @@ export interface TicketsReportTimesVolumenItem {
   tickets: number;
   acciones: number;
   horas_totales: number;
+  segundos_totales: number;
 }
 
 export interface TicketsReportTimesResumen {
   tickets_distintos: number;
   acciones: number;
   horas_totales: number;
+  segundos_totales: number;
   proyectos_distintos: number;
   resolutores_distintos: number;
 }
@@ -55,6 +56,7 @@ export interface TicketsReportTimesResolverItem {
   tickets: number;
   acciones: number;
   horas_totales: number;
+  segundos_totales: number;
 }
 
 export interface TicketsReportTimesProjectItem {
@@ -66,6 +68,8 @@ export interface TicketsReportTimesProjectItem {
   acciones: number;
   resolutores_distintos: number;
   horas_totales: number;
+  segundos_totales: number;
+
 }
 
 export interface TicketsReportTimesTabla<T> {
@@ -86,11 +90,13 @@ export type TicketsReportTimesProjectTabla =
 export interface TicketsReportTimesGraficoPunto {
   periodo: string;
   horas: number;
+  segundos: number;
 }
 
 export interface TicketsReportTimesGraficoSerie {
   nombre: string;
   horas_totales: number;
+  segundos_totales: number;
   mensual: TicketsReportTimesGraficoPunto[];
 }
 

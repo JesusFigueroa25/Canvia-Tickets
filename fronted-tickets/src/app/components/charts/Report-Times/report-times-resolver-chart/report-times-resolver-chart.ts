@@ -2,6 +2,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { formatearTiempo } from '../../../../utils/formatear-tiempo';
 import { TicketsReportTimesGrafico, TicketsReportTimesGraficoSerie } from '../../../../models/tickets-report-times';
 
 @Component({
@@ -154,8 +155,19 @@ export class ReportTimesResolverChart implements OnChanges {
               0
             );
 
-          return totalHoras > 0
-            ? `${this.formatearHoras(totalHoras)} h`
+          const registro = this.registrosVisibles[indiceResolutor];
+          if (!registro) return '';
+
+          const totalSegundos = this.periodosMostrados.reduce(
+            (total, periodo, indice) =>
+              total + (context.chart.isDatasetVisible(indice)
+                ? this.segundosEnPeriodo(registro, periodo)
+                : 0),
+            0
+          );
+
+          return totalHoras > 0 || totalSegundos > 0
+            ? formatearTiempo(totalSegundos, totalHoras)
             : '';
         }
       },
@@ -183,7 +195,10 @@ export class ReportTimesResolverChart implements OnChanges {
 
             const horas = Number(context.parsed.x ?? 0);
 
-            return `${this.nombreMes(periodo)}: ${this.formatearHoras(horas)} h`;
+            const registro = this.registrosVisibles[context.dataIndex];
+            return `${this.nombreMes(periodo)}: ${formatearTiempo(
+              registro ? this.segundosEnPeriodo(registro, periodo) : 0, horas
+            )}`;
           },
 
           afterBody: items => {
@@ -195,7 +210,7 @@ export class ReportTimesResolverChart implements OnChanges {
             }
 
             return [
-              `Total del resolutor: ${this.formatearHoras(registro.horas_totales)} h`
+              `Total del resolutor: ${formatearTiempo(registro.segundos_totales, registro.horas_totales)}`
             ];
           }
         }
@@ -294,6 +309,15 @@ export class ReportTimesResolverChart implements OnChanges {
     return registro.mensual.find(
       item => item.periodo === periodo
     )?.horas ?? 0;
+  }
+
+  private segundosEnPeriodo(
+    registro: TicketsReportTimesGraficoSerie,
+    periodo: string
+  ): number {
+    return registro.mensual.find(
+      item => item.periodo === periodo
+    )?.segundos ?? 0;
   }
 
   private actualizarGrafico(): void {

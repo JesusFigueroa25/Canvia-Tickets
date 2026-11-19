@@ -8,6 +8,7 @@ import {
 
 import { ChartData, ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { formatearTiempo } from '../../../../utils/formatear-tiempo';
 
 import {
   TicketsReportTimesGrafico,
@@ -27,6 +28,7 @@ export class ReportTimesProjectChart implements OnChanges {
   @Input() error: string | null = null;
 
   readonly chartPlugins = [ChartDataLabels];
+  readonly formatearTiempo = formatearTiempo;
 
   readonly colores = [
     '#FF620F',
@@ -111,25 +113,19 @@ export class ReportTimesProjectChart implements OnChanges {
           weight: 'bold'
         },
 
-        formatter: (valor: number) => {
+        formatter: (valor: number, contexto) => {
           const horas = Number(valor) || 0;
+          if (horas <= 0) return '';
 
-          if (horas <= 0) {
-            return '';
-          }
+          const serie = this.seriesVisibles[contexto.datasetIndex];
+          const periodo = this.datos?.periodos[contexto.dataIndex];
+          if (!serie || !periodo) return '';
 
-          return (
-            horas.toLocaleString('es-PE', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            }) + ' h'
-          );
+          return formatearTiempo(this.segundosEnPeriodo(serie, periodo), horas);
         }
       },
 
 
-      /*
-      
       tooltip: {
         enabled: true,
         backgroundColor: '#101828',
@@ -156,7 +152,11 @@ export class ReportTimesProjectChart implements OnChanges {
 
             return [
               `Proyecto: ${this.nombreVisibleProyecto(proyecto?.nombre ?? '')}`,
-              `Horas: ${this.formatearHoras(horas)} h`
+              `Tiempo: ${formatearTiempo(
+                proyecto && this.datos?.periodos[context.dataIndex]
+                  ? this.segundosEnPeriodo(proyecto, this.datos.periodos[context.dataIndex])
+                  : 0, horas
+              )}`
             ];
           },
 
@@ -169,12 +169,10 @@ export class ReportTimesProjectChart implements OnChanges {
               return '';
             }
 
-            return `Total del proyecto: ${this.formatearHoras(proyecto.horas_totales)} h`;
+            return `Total del proyecto: ${formatearTiempo(proyecto.segundos_totales, proyecto.horas_totales)}`;
           }
         }
       }
-
-      */
     },
 
     scales: {
@@ -291,6 +289,17 @@ export class ReportTimesProjectChart implements OnChanges {
       (total, serie) => total + serie.horas_totales,
       0
     );
+  }
+
+  get totalSegundosVisibles(): number {
+    return this.seriesVisibles.reduce(
+      (total, serie) => total + serie.segundos_totales,
+      0
+    );
+  }
+
+  private segundosEnPeriodo(serie: TicketsReportTimesGraficoSerie, periodo: string): number {
+    return serie.mensual.find(item => item.periodo === periodo)?.segundos ?? 0;
   }
 
   get totalProyectosVisibles(): number {

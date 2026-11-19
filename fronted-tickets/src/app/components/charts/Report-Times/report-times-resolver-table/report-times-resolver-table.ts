@@ -11,11 +11,13 @@ import {
 import {
   TicketsReportTimesResolverTabla
 } from '../../../../models/tickets-report-times';
+import { formatearTiempo } from '../../../../utils/formatear-tiempo';
 
 type Metrica = 'horas_totales' | 'acciones' | 'tickets';
 
 interface IndicadoresMes {
   horas_totales: number;
+  segundos_totales: number;
   acciones: number;
   tickets: number;
 }
@@ -65,6 +67,7 @@ export class ReportTimesResolverTable implements OnChanges {
   private crearIndicadores(): IndicadoresMes {
     return {
       horas_totales: 0,
+      segundos_totales: 0,
       acciones: 0,
       tickets: 0
     };
@@ -99,15 +102,17 @@ export class ReportTimesResolverTable implements OnChanges {
 
       const valores: IndicadoresMes = {
         horas_totales: Number(item.horas_totales) || 0,
+        segundos_totales: Number(item.segundos_totales) || 0,
         acciones: Number(item.acciones) || 0,
         tickets: Number(item.tickets) || 0
       };
 
       for (const metrica of [
         'horas_totales',
+        'segundos_totales',
         'acciones',
         'tickets'
-      ] as Metrica[]) {
+      ] as (keyof IndicadoresMes)[]) {
         fila.mensual[periodo][metrica] += valores[metrica];
         fila.total[metrica] += valores[metrica];
       }
@@ -202,13 +207,28 @@ export class ReportTimesResolverTable implements OnChanges {
     return fila.mensual[periodo]?.[this.metrica] ?? 0;
   }
 
+  obtenerSegundos(fila: FilaMatrizResolutor, periodo: string): number {
+    return fila.mensual[periodo]?.segundos_totales ?? 0;
+  }
+
   obtenerTotal(fila: FilaMatrizResolutor): number {
     return fila.total[this.metrica];
+  }
+
+  obtenerTotalSegundos(fila: FilaMatrizResolutor): number {
+    return fila.total.segundos_totales;
   }
 
   totalMes(periodo: string): number {
     return this.filasVisibles.reduce(
       (total, fila) => total + this.obtenerValor(fila, periodo),
+      0
+    );
+  }
+
+  totalMesSegundos(periodo: string): number {
+    return this.filasVisibles.reduce(
+      (total, fila) => total + this.obtenerSegundos(fila, periodo),
       0
     );
   }
@@ -220,12 +240,16 @@ export class ReportTimesResolverTable implements OnChanges {
     );
   }
 
-  formatearValor(valor: number): string {
+  get totalVisibleSegundos(): number {
+    return this.filasVisibles.reduce(
+      (total, fila) => total + this.obtenerTotalSegundos(fila),
+      0
+    );
+  }
+
+  formatearValor(valor: number, segundos: number): string {
     if (this.metrica === 'horas_totales') {
-      return valor.toLocaleString('es-PE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }) + ' h';
+      return formatearTiempo(segundos, valor);
     }
 
     return valor.toLocaleString('es-PE', {

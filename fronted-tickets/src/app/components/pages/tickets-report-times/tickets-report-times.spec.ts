@@ -55,7 +55,7 @@ describe('Tiempos: preparación y descarga PNG', () => {
     vi.mocked(toPng)
       .mockReset()
       .mockResolvedValue('data:image/png;base64,' + 'a'.repeat(150));
-    click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => { });
     const documento = document.createElement('section');
     documento.className = 'report-document';
     Object.defineProperties(documento, {
@@ -266,16 +266,28 @@ describe('Tiempos: preparación y descarga PNG', () => {
         tickets_distintos: 12,
         acciones: 24,
         horas_totales: 15,
+        segundos_totales: 54000,
       };
     }
     datos.kpis.total_tickets = 12;
+    datos.kpis.horas_totales = 15;
+    datos.kpis.segundos_totales = 54000;
+    datos.kpis.promedio_horas = 15;
+    datos.kpis.promedio_segundos = 54000;
+    datos.kpis.promedio_tickets = 12;
     for (const g of [datos.graficoResolutores, datos.graficoProyectos]) {
       g.periodos = ['2026-02'];
       g.series = g.series.map((s) => ({
         ...s,
         horas_totales: 1.25,
-        mensual: [{ periodo: '2026-02', horas: 1.25 }],
-      }));
+        segundos_totales: 4500,
+        mensual: [{
+          periodo: '2026-02',
+          horas: 1.25,
+          segundos: 4500
+        }]
+      })
+      );
     }
     pagina.cambiarPeriodo('2026-02');
     expect(pagina.reporteListo).toBe(false);
