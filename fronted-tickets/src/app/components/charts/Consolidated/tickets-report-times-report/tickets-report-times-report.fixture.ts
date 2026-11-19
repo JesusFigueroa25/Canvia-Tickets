@@ -54,10 +54,14 @@ export function reporteTiemposFicticio(meses = 12, entidades = 12): TicketsRepor
       proyectos: [],
     },
     kpis: {
-      total_tickets: filas.length,
-      total_proyectos: entidades,
+      total_tickets: 150,
+      total_proyectos: 8,
+      horas_totales: 502.53,
+      total_resolutores: 16,
+      promedio_horas: 50.25,
+      promedio_tickets: 15,
       alta_criticidad: 0,
-      porcentaje_alta_criticidad: 0,
+      porcentaje_alta_criticidad: 0
     },
     volumenMensual: periodos.map((periodo, i) => ({
       anio: 2026,

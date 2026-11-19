@@ -40,9 +40,18 @@ class TicketsReportTimesFiltersOut(BaseModel):
     proyectos_predeterminados: list[str]
 
 
+    
 class TicketsReportTimesKPIOut(BaseModel):
     total_tickets: int
     total_proyectos: int
+
+    # Nuevos indicadores
+    horas_totales: float
+    total_resolutores: int
+    promedio_horas: float
+    promedio_tickets: float
+
+    # Compatibilidad temporal con el contrato anterior
     alta_criticidad: int
     porcentaje_alta_criticidad: float
 

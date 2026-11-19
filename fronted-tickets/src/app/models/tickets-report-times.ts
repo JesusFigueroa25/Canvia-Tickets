@@ -19,6 +19,13 @@ export interface TicketsReportTimesFilters {
 export interface TicketsReportTimesKPI {
   total_tickets: number;
   total_proyectos: number;
+
+  horas_totales: number;
+  total_resolutores: number;
+  promedio_horas: number;
+  promedio_tickets: number;
+
+  // Compatibilidad temporal con el backend
   alta_criticidad: number;
   porcentaje_alta_criticidad: number;
 }

@@ -11,20 +11,28 @@
         y especialista.
       </p>
     </div>
-    <button mat-flat-button type="button" class="download-report-button" (click)="descargarReporte()"
+    <!-- Boton Descargar reporte -->
+    <!-- 
+      <button mat-flat-button type="button" class="download-report-button" (click)="descargarReporte()"
       [disabled]="!reporteListo || exportandoReporte">
       <mat-icon>{{ exportandoReporte ? 'hourglass_top' : 'download' }}</mat-icon>
       {{ exportandoReporte ? 'Generando PNG...' : 'Descargar PNG' }}
     </button>
+  -->
+
   </header>
 
   <p class="report-status" *ngIf="preparandoReporte" role="status">Preparando reporte completo...</p>
-  <div class="report-error" *ngIf="errorPreparacionReporte || errorExportacion || (errorConsultasReporte && !datosReporte)" role="alert">
-    {{ errorPreparacionReporte || errorExportacion || 'Faltan consultas del reporte. Actualiza los datos para reintentar.' }}
+  <div class="report-error"
+    *ngIf="errorPreparacionReporte || errorExportacion || (errorConsultasReporte && !datosReporte)" role="alert">
+    {{ errorPreparacionReporte || errorExportacion || 'Faltan consultas del reporte. Actualiza los datos para
+    reintentar.' }}
     <button type="button" (click)="errorExportacion && reporteListo ? descargarReporte() : reintentarReporte()"
       [disabled]="preparandoReporte || exportandoReporte || cargandoDashboard">Reintentar</button>
   </div>
-  <p class="report-status" *ngIf="!preparandoReporte && !datosReporte && !errorConsultasReporte && !errorPreparacionReporte && kpis?.total_tickets === 0" role="status">
+  <p class="report-status"
+    *ngIf="!preparandoReporte && !datosReporte && !errorConsultasReporte && !errorPreparacionReporte && kpis?.total_tickets === 0"
+    role="status">
     No hay datos para exportar con los filtros aplicados.
   </p>
   <div #reporteImagen class="report-export-stage" aria-hidden="true" inert *ngIf="datosReporte as datos">
@@ -228,21 +236,32 @@
   <!-- INDICADORES -->
   <section class="kpis-section" *ngIf="kpis">
 
-    <app-kpi-card titulo="Total de Tickets" [valor]="kpis.total_tickets" icono="confirmation_number"
-      color="orange"></app-kpi-card>
-
-    <app-kpi-card titulo="Horas Totales" [valor]="horasTotalesKpi" icono="schedule" color="green">
+    <!-- TOTAL TICKETS -->
+    <app-kpi-card titulo="Total de Tickets" [valor]="kpis.total_tickets" icono="confirmation_number" color="orange">
     </app-kpi-card>
 
-    <app-kpi-card titulo="Total de Proyectos" [valor]="kpis.total_proyectos" icono="business"
-      color="green"></app-kpi-card>
-
-
-    <app-kpi-card titulo="Total Resolutores" [valor]="cargandoTablaResolutores
-    ? '...'
-    : (datosTablaResolutores?.resumen?.resolutores_distintos ?? 0)" icono="groups" color="orange">
+    <!-- HORAS TOTALES -->
+    <app-kpi-card titulo="Horas Totales" [valor]="formatearDecimal(kpis.horas_totales) + ' h'" icono="schedule"
+      color="green">
     </app-kpi-card>
 
+    <!-- TOTAL PROYECTOS -->
+    <app-kpi-card titulo="Total de Proyectos" [valor]="kpis.total_proyectos" icono="business" color="green">
+    </app-kpi-card>
+
+    <!-- TOTAL RESOLUTORES -->
+    <app-kpi-card titulo="Total Resolutores" [valor]="kpis.total_resolutores" icono="groups" color="orange">
+    </app-kpi-card>
+
+    <!-- PROMEDIO DE HORAS MENSUALES -->
+    <app-kpi-card titulo="Promedio Horas/Mes" [valor]="formatearDecimal(kpis.promedio_horas) + ' h'" icono="access_time"
+      color="green">
+    </app-kpi-card>
+
+    <!-- PROMEDIO DE TICKETS MENSUALES -->
+    <app-kpi-card titulo="Promedio Tickets/Mes" [valor]="formatearDecimal(kpis.promedio_tickets)" icono="analytics"
+      color="orange">
+    </app-kpi-card>
 
   </section>
 

@@ -181,17 +181,15 @@ def contar_total_acciones(db: Session) -> int:
 
 
 
-# Seleccionados inicialmente en las dos tablas y los dos gráficos.
-# Los KPIs y el volumen mensual NO restringen por esta lista.
 PROYECTOS_PREDETERMINADOS: tuple[str, ...] = (
     "104842 KOMATSU PROY CLOUD DTA CENT",
     "105811 ASOCIACION DE AFP PROY CLOUD HOST",
     "103532 SAN MIGUEL FRUIT PROY CLOUD IAAS",
     "103948 EUROMOTORS PROY CLOUD OUTSOUR",
-    "104859 CAMARACOMP PROY CLOUD OUT",
-    "106255 SEDAPAL PROY CLOUD SERV HOSTING (O)",
-    "100988 UNICON PROY CLOUD HOST PLATAF",
-    "104474 CELIMA PROY CLOUD HOST SAP",
+    #"104859 CAMARACOMP PROY CLOUD OUT",
+    #"106255 SEDAPAL PROY CLOUD SERV HOSTING (O)",
+    #"100988 UNICON PROY CLOUD HOST PLATAF",
+    #"104474 CELIMA PROY CLOUD HOST SAP",
 )
 
 TIPO_REQUERIMIENTO = "Service Request"
@@ -302,21 +300,86 @@ def obtener_opciones_filtros(db: Session, grupo_resolutor: str | None = "BASE DE
 def obtener_kpis(db: Session, filtros: TicketsReportTimesDashboardFilters):
     modelo = TicketReportTime
     proyecto_valido = func.nullif(func.trim(modelo.Proyecto), "")
+    resolutor_valido = func.nullif(func.trim(modelo.Nombre_Resolutor), "")
+    
+    # 1. INDICADORES GENERALES
     stmt = select(
-        func.count(func.distinct(modelo.Ticket_ID)).label("total_tickets"),
-        func.count(func.distinct(proyecto_valido)).label("total_proyectos"),
-        func.coalesce(func.count(func.distinct(case(
-            (modelo.Prioridad == "1-Critical", modelo.Ticket_ID), else_=None
-        ))), 0).label("alta_criticidad"),
-    ).select_from(modelo)
+        func.count(
+            func.distinct(modelo.Ticket_ID)
+        ).label("total_tickets"),
 
+        func.count(
+            func.distinct(proyecto_valido)
+        ).label("total_proyectos"),
+
+        func.coalesce(
+            func.sum(modelo.Horas), 0
+        ).label("horas_totales"),
+
+        func.count(
+            func.distinct(resolutor_valido)
+        ).label("total_resolutores"),
+
+        # Compatibilidad con el KPI anterior
+        func.count(
+            func.distinct(
+                case(
+                    (
+                        modelo.Prioridad == "1-Critical",
+                        modelo.Ticket_ID
+                    ),
+                    else_=None
+                )
+            )
+        ).label("alta_criticidad"),
+
+    ).select_from(modelo)
     stmt = _aplicar_filtros(
         stmt,
         filtros,
         aplicar_proyectos=True
     )
-    
-    return db.execute(stmt).mappings().one()
+    resumen = db.execute(stmt).mappings().one()
+
+    # 2. TICKETS DISTINTOS POR MES
+    anio = func.year(modelo.Fecha_Creacion)
+    mes = func.month(modelo.Fecha_Creacion)
+    stmt_mensual = select(
+        anio.label("anio"),
+        mes.label("mes"),
+
+        func.count(
+            func.distinct(modelo.Ticket_ID)
+        ).label("tickets")
+
+    ).select_from(modelo)
+    stmt_mensual = _aplicar_filtros(
+        stmt_mensual,
+        filtros,
+        aplicar_proyectos=True
+    )
+    stmt_mensual = (
+        stmt_mensual
+        .group_by(anio, mes)
+        .order_by(anio, mes)
+    )
+    registros_mensuales = (
+        db.execute(stmt_mensual).mappings().all()
+    )
+    meses_con_datos = len(registros_mensuales)
+    tickets_mensuales_acumulados = sum(
+        int(registro["tickets"] or 0)
+        for registro in registros_mensuales
+    )
+
+    # 3. RESULTADO
+    return {
+        **dict(resumen),
+        "meses_con_datos": meses_con_datos,
+        "tickets_mensuales_acumulados": (
+            tickets_mensuales_acumulados
+        )
+    }
 
 
 def obtener_volumen_mensual(db: Session, filtros: TicketsReportTimesDashboardFilters):
