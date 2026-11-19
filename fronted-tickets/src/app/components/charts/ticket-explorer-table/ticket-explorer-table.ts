@@ -1,17 +1,6 @@
 
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-
+import { Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-
-
 
 export type TipoDashboardTickets =
   | 'incident-consolidated'
@@ -19,8 +8,6 @@ export type TipoDashboardTickets =
   | 'requirement-consolidated'
   | 'requirement-sla'
   | 'task-consolidated';
-
-
 
 export interface TablaTicketsPaginados {
   tickets: object[];
@@ -30,14 +17,12 @@ export interface TablaTicketsPaginados {
   total_paginas: number;
 }
 
-
 interface ColumnaTicket {
   clave: string;
   titulo: string;
   fecha?: boolean;
   larga?: boolean;
 }
-
 
 // COLUMNAS DE INCIDENTES CONSOLIDADOS
 const COLUMNAS_CONSOLIDADOS: ColumnaTicket[] = [
