@@ -7,6 +7,7 @@ export type TipoDashboardTickets =
   | 'incident-sla'
   | 'requirement-consolidated'
   | 'requirement-sla'
+  | 'change-consolidated'
   | 'task-consolidated';
 
 export interface TablaTicketsPaginados {
@@ -205,7 +206,6 @@ export class TicketExplorerTable implements OnChanges {
 
   // NOMBRE DEL DASHBOARD
   get nombreDashboard(): string {
-
     switch (this.tipoDashboard) {
 
       case 'incident-consolidated':
@@ -223,6 +223,11 @@ export class TicketExplorerTable implements OnChanges {
       case 'task-consolidated':
         return 'Tareas Consolidadas';
 
+      case 'change-consolidated':
+        return 'Cambios Consolidados';
+
+      default:
+        return 'Explorador de Tickets';
     }
   }
 
