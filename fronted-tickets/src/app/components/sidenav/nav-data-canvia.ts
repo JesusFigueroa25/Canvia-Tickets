@@ -20,6 +20,11 @@ export const navbarDataCanvia = [
     label: 'Análisis de Incidentes'
   },
   {
+    routeLink: 'cambios-consolidados',
+    icon: 'published_with_changes',
+    label: 'Cambios Consolidados'
+  },
+  {
     routeLink: 'tareas-consolidados',
     icon: 'assignment',
     label: 'Tareas Consolidados'

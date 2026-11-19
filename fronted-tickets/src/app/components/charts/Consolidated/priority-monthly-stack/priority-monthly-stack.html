@@ -6,7 +6,9 @@
 
         <h2>
             {{
-            entidadConsolidado === 'tareas'
+            entidadConsolidado === 'cambios'
+            ? 'N.º de Cambios por Prioridad'
+            : entidadConsolidado === 'tareas'
             ? 'N.º de Tareas por Prioridad'
             : entidadConsolidado === 'requerimientos'
             ? 'N.º de Requerimientos por Prioridad'
@@ -16,7 +18,9 @@
 
         <p>
             {{
-            entidadConsolidado === 'tareas'
+            entidadConsolidado === 'cambios'
+            ? 'Composición mensual de cambios por criticidad. Las columnas representan el 100% de cada mes.'
+            : entidadConsolidado === 'tareas'
             ? 'Composición mensual de tareas por criticidad. Las columnas representan el 100% de cada mes.'
             : entidadConsolidado === 'requerimientos'
             ? 'Composición mensual de requerimientos por criticidad. Las columnas representan el 100% de cada mes.'

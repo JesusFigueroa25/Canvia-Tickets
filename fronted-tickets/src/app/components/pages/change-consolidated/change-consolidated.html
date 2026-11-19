@@ -1,0 +1,392 @@
+<div class="change-consolidated-page">
+  <header class="page-header">
+    <div class="page-header-content">
+      <h1>Cambios Consolidados</h1>
+      <p>Análisis de tickets de cambios, su criticidad y los proyectos involucrados.</p>
+    </div>
+  </header>
+
+  <section class="filters-card" aria-label="Filtros de Cambios Consolidados">
+    <div class="filters-heading">
+      <div>
+        <h2>Filtros del dashboard</h2>
+        <p>Consulta los cambios según su fecha de creación y criterios operativos.</p>
+      </div>
+      <mat-icon aria-hidden="true">tune</mat-icon>
+    </div>
+
+    <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      <div class="date-range-fields">
+        <div class="filter-field">
+          <label for="change-desde">Desde</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input id="change-desde" matInput [matDatepicker]="pickerDesde" formControlName="desde" [min]="fechaMinima"
+              [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDesde></mat-datepicker>
+            <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">Selecciona la fecha Desde.</mat-error>
+            <mat-error
+              *ngIf="filtrosForm.get('desde')?.hasError('matDatepickerMin') || filtrosForm.get('desde')?.hasError('matDatepickerMax')">
+              Fecha fuera del rango disponible.
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="filter-field">
+          <label for="change-hasta">Hasta</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input id="change-hasta" matInput [matDatepicker]="pickerHasta" formControlName="hasta" [min]="fechaMinima"
+              [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+            <mat-datepicker #pickerHasta></mat-datepicker>
+            <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">Selecciona la fecha Hasta.</mat-error>
+            <mat-error
+              *ngIf="filtrosForm.get('hasta')?.hasError('matDatepickerMin') || filtrosForm.get('hasta')?.hasError('matDatepickerMax')">
+              Fecha fuera del rango disponible.
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="filter-field">
+        <label for="change-prioridad">Prioridad</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="change-prioridad" formControlName="prioridad" placeholder="Todas">
+            <mat-option [value]="null">Todas</mat-option>
+            <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">{{ prioridad
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="change-motivo">Motivo</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="change-motivo" formControlName="motivo" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let motivo of opcionesFiltros.motivos" [value]="motivo" [title]="motivo">{{ motivo
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="change-grupo">Grupo Resolutor</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="change-grupo" formControlName="grupo_resolutor" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo" [title]="grupo">{{
+              grupo }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- 
+         <div class="filter-field">
+        <label for="change-estado">Estado</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="change-estado" formControlName="estado" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let estado of opcionesFiltros.estados" [value]="estado">{{ estado }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-field">
+        <label for="change-tipo">Tipo de Cambio</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="change-tipo" formControlName="tipo_cambio" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let tipo of opcionesFiltros.tipos_cambio" [value]="tipo">{{ tipo }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      -->
+
+
+      <div class="filter-field">
+        <label for="change-proyecto">Proyecto</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select id="change-proyecto" formControlName="proyecto" placeholder="Todos los proyectos"
+            panelClass="change-project-panel" (openedChange)="alAbrirComboProyecto($event)">
+            <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
+              <mat-icon aria-hidden="true">search</mat-icon>
+              <input type="text" placeholder="Buscar proyecto..." aria-label="Buscar proyecto"
+                [value]="busquedaProyecto" (input)="buscarProyecto($event)" (click)="$event.stopPropagation()">
+              <button *ngIf="busquedaProyecto" type="button" class="combo-clear"
+                (click)="limpiarBusquedaProyecto($event)" aria-label="Limpiar búsqueda">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            <mat-option [value]="null">Todos los proyectos</mat-option>
+            <mat-option *ngFor="let proyecto of proyectosFiltrados" [value]="proyecto" [title]="proyecto">
+              {{ proyecto }}
+            </mat-option>
+            <mat-option *ngIf="proyectosFiltrados.length === 0" disabled>No se encontraron proyectos</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-stroked-button type="button" class="clear-button" (click)="limpiarFiltros()"
+          [disabled]="!filtrosListos || cargandoFiltros">
+          <mat-icon>restart_alt</mat-icon>
+          Limpiar
+        </button>
+        <button mat-flat-button type="submit" class="apply-button"
+          [disabled]="!filtrosListos || cargandoFiltros || filtrosForm.invalid">
+          <mat-icon>filter_alt</mat-icon>
+          Aplicar
+        </button>
+      </div>
+    </form>
+
+    <p class="range-error" role="alert" *ngIf="filtrosForm.hasError('rangoFechasInvalido') && filtrosForm.touched">
+      <mat-icon>error_outline</mat-icon>
+      La fecha Desde no puede ser posterior a Hasta.
+    </p>
+    <p class="available-range" *ngIf="opcionesFiltros.fecha_min && opcionesFiltros.fecha_max">
+      <mat-icon>info_outline</mat-icon>
+      Datos disponibles: {{ opcionesFiltros.fecha_min }} al {{ opcionesFiltros.fecha_max }}
+    </p>
+  </section>
+
+  <section class="status-card loading-card" *ngIf="cargandoFiltros" role="status">
+    <span class="loading-indicator"></span>
+    Cargando filtros de Cambios Consolidados...
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorFiltros" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorFiltros }}</span>
+    <button mat-stroked-button type="button" (click)="cargarOpcionesFiltros()">Reintentar</button>
+  </section>
+
+  <section class="status-card empty-card" *ngIf="!cargandoFiltros && !errorFiltros && !filtrosListos" role="status">
+    <mat-icon>info_outline</mat-icon>
+    No se encontraron fechas disponibles para consultar cambios.
+  </section>
+
+  <section class="status-card loading-card" *ngIf="cargandoDashboard" role="status" aria-live="polite">
+
+    <span class="loading-indicator"></span>
+    Actualizando información del dashboard de Cambios Consolidados...
+
+  </section>
+
+  <section class="status-card error-card" *ngIf="errorKpis" role="alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorKpis }}</span>
+    <button mat-stroked-button type="button" (click)="aplicarFiltros()">Reintentar</button>
+  </section>
+
+  <section class="status-card error-card" *ngFor="let mensaje of mensajesErrores" role="alert">
+
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ mensaje }}</span>
+
+  </section>
+
+  <section class="kpis-wrapper" *ngIf="kpis as indicadores" aria-label="Indicadores de Cambios Consolidados">
+    <div class="section-heading">
+      <div>
+        <h2>Indicadores generales</h2>
+        <p>Resumen de los tickets de cambios bajo los filtros seleccionados.</p>
+      </div>
+    </div>
+
+    <div class="kpis-section">
+      <app-kpi-card titulo="Total de Cambios" [valor]="indicadores.total_tickets" icono="confirmation_number"
+        color="orange"></app-kpi-card>
+      <app-kpi-card titulo="Total de Proyectos" [valor]="indicadores.total_proyectos" icono="business"
+        color="green"></app-kpi-card>
+      <app-kpi-card titulo="Alta Criticidad" [valor]="indicadores.alta_criticidad" icono="priority_high"
+        color="orange"></app-kpi-card>
+      <app-kpi-card titulo="% Alta Criticidad" [valor]="indicadores.porcentaje_alta_criticidad + '%'" icono="percent"
+        color="orange"></app-kpi-card>
+    </div>
+  </section>
+
+  <section class="status-card empty-card" *ngIf="kpis?.total_tickets === 0 && !cargandoKpis" role="status">
+    <mat-icon>info_outline</mat-icon>
+    No se encontraron cambios para los filtros seleccionados.
+  </section>
+
+  <!-- Los componentes hijos se incorporarán en la siguiente etapa. -->
+
+  <!-- EXPLORADOR POR PROYECTOS Y VOLUMEN MENSUAL-->
+  <section class="charts-scroll" *ngIf="filtrosListos">
+
+    <div class="chart-scroll-item table-expandable" id="fullscreen-proyectos-change" #proyectosChangeFs>
+
+      <app-project-explorer-table modo="consolidado" entidadConsolidado="cambios" modoBusqueda="combo"
+        [datosConsolidados]="proyectos" [opcionesProyectos]="opcionesProyectos"
+        [proyectoSeleccionado]="proyectoSeleccionado" (proyectoChange)="cambiarProyecto($event)"
+        [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
+        (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-proyectos-change'"
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(proyectosChangeFs)">
+      </app-project-explorer-table>
+
+    </div>
+
+    <div class="chart-scroll-item chart-expandable" id="fullscreen-volumen-change" #volumenChangeFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenChangeFs)" [title]="graficoExpandido === 'fullscreen-volumen-change'
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'" aria-label="Ampliar volumen mensual de cambios">
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-volumen-change'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+      </button>
+
+      <app-volume-month modo="consolidado" entidadConsolidado="cambios" [datosConsolidados]="volumenMensual"
+        [habilitarFiltroMes]="true" [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenMensual"
+        (periodoChange)="cambiarPeriodo($event)">
+      </app-volume-month>
+
+    </div>
+
+  </section>
+
+
+  <!-- DISTRIBUCIONES-->
+  <section class="charts-scroll" *ngIf="filtrosListos">
+
+    <!-- TIPO DE CAMBIO -->
+    <div class="chart-scroll-item chart-expandable" id="fullscreen-tipos-change" #tiposChangeFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tiposChangeFs)"
+        aria-label="Ampliar distribución por tipo de cambio">
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-tipos-change'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+      </button>
+
+      <app-category-distribution titulo="Distribución por Tipo de Cambio"
+        descripcion="Cantidad de cambios según su tipo: Normal, Standard, Emergency y otros." orientacion="vertical"
+        [datos]="tiposCambioGrafico" [seleccionMultiple]="true" [tiposSeleccionados]="tiposCambioSeleccionados"
+        textoSeleccionMultiple="tipos de cambio" [cargando]="cargandoTipos" (tiposChange)="cambiarTiposCambio($event)">
+      </app-category-distribution>
+
+    </div>
+
+    <!-- CATEGORIA NIVEL 3 -->
+    <div class="chart-scroll-item chart-expandable" id="fullscreen-categorias-change" #categoriasChangeFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(categoriasChangeFs)"
+        aria-label="Ampliar distribución por categoría">
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-categorias-change'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+      </button>
+
+      <app-category-distribution titulo="Distribución por Categoría"
+        descripcion="Categorías de nivel 3 con mayor volumen de cambios." orientacion="horizontal"
+        [datos]="categoriasGrafico" [cargando]="cargandoCategorias">
+      </app-category-distribution>
+
+    </div>
+
+    <!-- PRIORIDAD -->
+    <div class="chart-scroll-item chart-expandable" id="fullscreen-prioridades-change" #prioridadesChangeFs>
+
+      <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadesChangeFs)"
+        aria-label="Ampliar distribución por prioridad">
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-prioridades-change'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+      </button>
+
+      <app-category-distribution titulo="Distribución por Prioridad"
+        descripcion="Cantidad de cambios según su nivel de criticidad." orientacion="vertical"
+        [coloresPorPrioridad]="true" [ordenPrioridad]="true" [datos]="prioridadesGrafico"
+        [cargando]="cargandoPrioridades">
+      </app-category-distribution>
+
+    </div>
+
+  </section>
+
+
+  <!-- TOP 10: PROYECTOS POR MES-->
+  <section class="chart-full-width chart-expandable" id="fullscreen-top-proyectos-change" #topProyectosChangeFs
+    *ngIf="filtrosListos">
+
+    <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(topProyectosChangeFs)"
+      aria-label="Ampliar Top 10 de cambios por proyecto y mes">
+      <mat-icon>
+        {{ graficoExpandido === 'fullscreen-top-proyectos-change'
+        ? 'fullscreen_exit'
+        : 'fullscreen' }}
+      </mat-icon>
+    </button>
+
+    <app-project-monthly-top entidadConsolidado="cambios" [datos]="topProyectos"
+      [proyectoSeleccionado]="proyectoSeleccionado" [periodoSeleccionado]="periodoSeleccionado">
+    </app-project-monthly-top>
+
+  </section>
+
+
+  <!-- CAMBIOS POR PRIORIDAD MENSUAL-->
+  <section class="chart-full-width chart-expandable" id="fullscreen-prioridad-mensual-change" #prioridadMensualChangeFs
+    *ngIf="filtrosListos">
+
+    <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadMensualChangeFs)"
+      aria-label="Ampliar cambios por prioridad mensual">
+      <mat-icon>
+        {{ graficoExpandido === 'fullscreen-prioridad-mensual-change'
+        ? 'fullscreen_exit'
+        : 'fullscreen' }}
+      </mat-icon>
+    </button>
+
+    <app-priority-monthly-stack entidadConsolidado="cambios" [datos]="prioridadMensual">
+    </app-priority-monthly-stack>
+
+  </section>
+
+
+
+  <!-- =====================================================
+     EXPLORADOR DE TICKETS - CAMBIOS CONSOLIDADOS
+===================================================== -->
+  <section class="tickets-section" *ngIf="filtrosListos" aria-label="Explorador de Tickets de Cambios">
+
+    <div class="tickets-expandable" id="fullscreen-tickets-change" #ticketsChangeFs>
+
+      <!-- Botón pantalla completa -->
+      <button type="button" class="tickets-expand-btn" (click)="alternarPantallaCompleta(ticketsChangeFs)" [title]="graficoExpandido === 'fullscreen-tickets-change'
+        ? 'Salir de pantalla completa'
+        : 'Ver en pantalla completa'" [attr.aria-label]="graficoExpandido === 'fullscreen-tickets-change'
+        ? 'Salir de pantalla completa'
+        : 'Ampliar explorador de tickets'">
+
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-tickets-change'
+          ? 'fullscreen_exit'
+          : 'fullscreen' }}
+        </mat-icon>
+
+      </button>
+
+      <!-- Tabla reutilizable -->
+      <app-ticket-explorer-table tipoDashboard="change-consolidated" [datos]="ticketsDetalle"
+        [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
+        (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)">
+      </app-ticket-explorer-table>
+
+    </div>
+
+  </section>
+
+
+</div>

@@ -13,7 +13,8 @@ from app.controllers import (etl_test_controller,
                              task_consolidated_controller,
                              daily_report_controller,
                              tickets_manual_updates_controller,
-                             tickets_report_times_controller
+                             tickets_report_times_controller,
+                             change_consolidated_controller,
                              )
 from app.database.database import Base, engine
 from app.models.import_run_model import ImportRun
@@ -33,6 +34,7 @@ app.include_router(task_consolidated_controller.router)
 app.include_router(daily_report_controller.router)
 app.include_router(tickets_manual_updates_controller.router)
 app.include_router(tickets_report_times_controller.router)
+app.include_router(change_consolidated_controller.router)
 
 @app.get("/")
 def root():
