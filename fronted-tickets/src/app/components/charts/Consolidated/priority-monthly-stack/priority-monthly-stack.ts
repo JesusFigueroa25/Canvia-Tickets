@@ -12,7 +12,7 @@ import { IncidentConsolidatedPrioridadMensualItem } from '../../../../models/inc
 export class PriorityMonthlyStack implements OnChanges {
 
   @Input() datos: IncidentConsolidatedPrioridadMensualItem[] = [];
-  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'tareas' = 'incidentes';
+  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'tareas' | 'cambios' = 'incidentes';
   registros: IncidentConsolidatedPrioridadMensualItem[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {

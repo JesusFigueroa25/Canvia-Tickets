@@ -33,7 +33,7 @@ export class ProjectExplorerTable
   implements OnChanges, AfterViewInit {
 
   @Input() datosConsolidados: IncidentConsolidatedProyectoItem[] | DailyReportProyectoItem[] = [];
-  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'diario' | 'tareas' = 'incidentes';
+  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'diario' | 'tareas' | 'cambios' = 'incidentes';
   @Input() modo: 'sla' | 'consolidado' = 'sla';
   @Input() datos: IncidentSLAProyectoItem[] = [];
 

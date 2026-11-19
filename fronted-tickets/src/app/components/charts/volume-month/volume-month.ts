@@ -17,7 +17,7 @@ export class VolumeMonth implements OnChanges {
   @Input() datos: (IncidentSLAVolumenItem | RequirementSLAVolumenItem)[] = [];
   @Input() datosConsolidados: IncidentConsolidatedVolumenItem[] = [];
   @Input() modo: 'sla' | 'consolidado' = 'sla';
-  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'tareas' = 'incidentes';
+  @Input() entidadConsolidado: 'incidentes' | 'requerimientos' | 'tareas' | 'cambios' = 'incidentes';
   @Input() entidadSla: 'incidentes' | 'requerimientos' = 'incidentes';
 
   // FILTRO DINAMICO - SOLO INCIDENTES CONSOLIDADOS
@@ -86,7 +86,8 @@ export class VolumeMonth implements OnChanges {
       return (
         this.entidadConsolidado === 'incidentes' ||
         this.entidadConsolidado === 'requerimientos' ||
-        this.entidadConsolidado === 'tareas'
+        this.entidadConsolidado === 'tareas' ||
+        this.entidadConsolidado === 'cambios'
       );
     }
 

@@ -7,7 +7,9 @@
                 {{
                 modo === 'consolidado'
                 ? (
-                entidadConsolidado === 'tareas'
+                entidadConsolidado === 'cambios'
+                ? 'Volumen Mensual de Cambios'
+                : entidadConsolidado === 'tareas'
                 ? 'Volumen Mensual de Tareas'
                 : entidadConsolidado === 'requerimientos'
                 ? 'Volumen Mensual de Requerimientos'
@@ -25,7 +27,9 @@
                 {{
                 modo === 'consolidado'
                 ? (
-                entidadConsolidado === 'tareas'
+                entidadConsolidado === 'cambios'
+                ? 'Evolución del volumen de cambios registrados por mes.'
+                : entidadConsolidado === 'tareas'
                 ? 'Evolución del volumen de tareas registradas por mes.'
                 : entidadConsolidado === 'requerimientos'
                 ? 'Evolución del volumen de requerimientos registrados por mes.'
@@ -38,7 +42,6 @@
                 )
                 }}
             </p>
-
 
             <!-- FILTRO DINAMICO MENSUAL -->
             <p *ngIf="filtroMesActivo" class="selection-hint">

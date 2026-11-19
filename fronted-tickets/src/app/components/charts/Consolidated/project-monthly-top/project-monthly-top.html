@@ -15,7 +15,9 @@
             <ng-container *ngIf="vistaMensual; else descripcionGeneral">
                 Evolución mensual de
                 {{
-                entidadConsolidado === 'tareas'
+                entidadConsolidado === 'cambios'
+                ? 'cambios'
+                : entidadConsolidado === 'tareas'
                 ? 'tareas'
                 : entidadConsolidado === 'diario'
                 ? 'tickets de incidentes, requerimientos y tareas'
@@ -29,7 +31,9 @@
 
             <ng-template #descripcionGeneral>
                 {{
-                entidadConsolidado === 'tareas'
+                entidadConsolidado === 'cambios'
+                ? 'Comparación mensual de los 10 proyectos con mayor cantidad de cambios.'
+                : entidadConsolidado === 'tareas'
                 ? 'Comparación mensual de los 10 proyectos con mayor cantidad de tareas.'
                 : entidadConsolidado === 'diario'
                 ? 'Comparación mensual de los 10 proyectos con mayor volumen de incidentes, requerimientos y tareas.'

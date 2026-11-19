@@ -15,6 +15,7 @@ import { IncidentCauseAnalysis } from './components/pages/incident-cause-analysi
 import { DailyReport } from './components/pages/daily-report/daily-report';
 import { TaskConsolidated } from './components/pages/task-consolidated/task-consolidated';
 import { TicketsReportTimes } from './components/pages/tickets-report-times/tickets-report-times';
+import { ChangeConsolidated } from './components/pages/change-consolidated/change-consolidated';
 
 const routes: Routes = [
   { path: "", component: Landing },
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: "report-diary", component: DailyReport },
   { path: "tareas-consolidados", component: TaskConsolidated },
   { path: "tickets-report-times", component: TicketsReportTimes },
+  { path: "cambios-consolidados", component: ChangeConsolidated },
 ];
 
 @NgModule({
