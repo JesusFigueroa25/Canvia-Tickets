@@ -14,7 +14,7 @@
       <label class="metric-control">
         <span>Indicador</span>
         <select [value]="metrica" (change)="cambiarMetrica($event)" aria-label="Seleccionar indicador">
-          <option value="horas_totales">Horas</option>
+          <option value="horas_totales">Tiempo</option>
           <option value="acciones">Acciones</option>
           <option value="tickets">Tickets</option>
         </select>
@@ -110,11 +110,11 @@
 
           <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column"
             [class.zero-value]="obtenerValor(fila, periodo) === 0">
-            {{ formatearValor(obtenerValor(fila, periodo)) }}
+            {{ formatearValor(obtenerValor(fila, periodo), obtenerSegundos(fila, periodo)) }}
           </td>
 
           <td class="total-column row-total">
-            {{ formatearValor(obtenerTotal(fila)) }}
+            {{ formatearValor(obtenerTotal(fila), obtenerTotalSegundos(fila)) }}
           </td>
         </tr>
 
@@ -133,11 +133,11 @@
           <td class="name-column">TOTAL VISIBLE</td>
 
           <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column">
-            {{ formatearValor(totalMes(periodo)) }}
+            {{ formatearValor(totalMes(periodo), totalMesSegundos(periodo)) }}
           </td>
 
           <td class="total-column grand-total">
-            {{ formatearValor(totalVisible) }}
+            {{ formatearValor(totalVisible, totalVisibleSegundos) }}
           </td>
         </tr>
       </tfoot>

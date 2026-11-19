@@ -18,17 +18,45 @@
     <h2><b>01</b> KPIs de Análisis de Tiempos</h2>
     <div class="kpis">
       <div>
-        <span>Total de Tickets</span><strong>{{ numero(d.kpis.total_tickets) }}</strong>
+        <span>Total de Tickets</span>
+        <strong>{{ numero(d.kpis.total_tickets) }}</strong>
       </div>
+
       <div class="green">
-        <span>Horas Totales</span><strong>{{ horas(horasTotales) }}</strong>
+        <span>Tiempo Total Registrado</span>
+        <strong>
+          {{ formatearTiempo(
+          d.kpis.segundos_totales,
+          d.kpis.horas_totales
+          ) }}
+        </strong>
       </div>
+
       <div class="green">
-        <span>Total de Proyectos</span><strong>{{ numero(d.kpis.total_proyectos) }}</strong>
+        <span>Total de Proyectos</span>
+        <strong>{{ numero(d.kpis.total_proyectos) }}</strong>
       </div>
+
       <div>
-        <span>Total Resolutores</span
-        ><strong>{{ numero(d.detalleResolutores.resumen.resolutores_distintos) }}</strong>
+        <span>Total Resolutores</span>
+        <strong>{{ numero(d.kpis.total_resolutores) }}</strong>
+      </div>
+
+      <div class="green">
+        <span>Promedio Tiempo/Mes</span>
+        <strong>
+          {{ formatearTiempo(
+          d.kpis.promedio_segundos,
+          d.kpis.promedio_horas
+          ) }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Promedio Tickets/Mes</span>
+        <strong>
+          {{ d.kpis.promedio_tickets | number:'1.2-2' }}
+        </strong>
       </div>
     </div>
   </article>
@@ -39,9 +67,8 @@
       Tickets distintos y horas registradas por mes. Se conserva el rango global completo; el mes de
       análisis se resalta, mientras los KPIs y el detalle corresponden al mes seleccionado.
     </p>
-    <ng-container *ngFor="let g of volumen"
-      ><ng-container *ngTemplateOutlet="barras; context: { $implicit: g }"></ng-container
-    ></ng-container>
+    <ng-container *ngFor="let g of volumen"><ng-container
+        *ngTemplateOutlet="barras; context: { $implicit: g }"></ng-container></ng-container>
   </article>
 
   <article class="report-panel">
@@ -53,47 +80,34 @@
     </p>
     <div class="chart-block" *ngFor="let bloque of bloquesResolutores">
       <div class="legend">
-        <span *ngFor="let p of bloque.periodos"
-          ><i
-            [style.background]="coloresResolutores[d.graficoResolutores.periodos.indexOf(p) % 10]"
-          ></i
-          >{{ mes(p) }}</span
-        >
+        <span *ngFor="let p of bloque.periodos"><i
+            [style.background]="coloresResolutores[d.graficoResolutores.periodos.indexOf(p) % 10]"></i>{{ mes(p)
+          }}</span>
       </div>
-      <svg
-        role="img"
-        aria-label="Horas por resolutor y mes"
-        [attr.viewBox]="'0 0 1280 ' + altoResolutores(bloque.series)"
-      >
-        <g
-          *ngFor="let s of bloque.series; let i = index"
-          [attr.transform]="'translate(0,' + inicioFila(bloque.series, i) + ')'"
-        >
+      <svg role="img" aria-label="Horas por resolutor y mes"
+        [attr.viewBox]="'0 0 1280 ' + altoResolutores(bloque.series)">
+        <g *ngFor="let s of bloque.series; let i = index"
+          [attr.transform]="'translate(0,' + inicioFila(bloque.series, i) + ')'">
           <text x="0" y="23" class="entity-label">
-            <tspan
-              *ngFor="let linea of lineas(s.nombre); let n = index"
-              x="0"
-              [attr.dy]="n ? 17 : 0"
-            >
+            <tspan *ngFor="let linea of lineas(s.nombre); let n = index" x="0" [attr.dy]="n ? 17 : 0">
               {{ linea }}
             </tspan>
           </text>
           <rect x="365" y="10" width="710" height="25" rx="4" fill="#F1F4F7"></rect>
-          <rect
-            *ngFor="let p of bloque.periodos; let j = index"
-            [attr.x]="365 + (inicioSegmento(s, bloque.periodos, j) / bloque.maximo) * 710"
-            y="10"
-            [attr.width]="(horasMes(s, p) / bloque.maximo) * 710"
-            height="25"
-            [attr.fill]="coloresResolutores[d.graficoResolutores.periodos.indexOf(p) % 10]"
-          ></rect>
+          <rect *ngFor="let p of bloque.periodos; let j = index"
+            [attr.x]="365 + (inicioSegmento(s, bloque.periodos, j) / bloque.maximo) * 710" y="10"
+            [attr.width]="(horasMes(s, p) / bloque.maximo) * 710" height="25"
+            [attr.fill]="coloresResolutores[d.graficoResolutores.periodos.indexOf(p) % 10]"></rect>
           <text x="1090" y="28" class="value-label">
-            {{ horas(totalBloque(s, bloque.periodos)) }}
+            {{ formatearTiempo(
+            segundosBloque(s, bloque.periodos),
+            totalBloque(s, bloque.periodos)
+            ) }}
           </text>
         </g>
       </svg>
       <p class="note">
-        Total al final de cada barra: horas de los meses de este bloque. Unidad: horas.
+        Total al final de cada barra: tiempo registrado del bloque, en minutos u horas.
       </p>
     </div>
   </article>
@@ -103,14 +117,12 @@
     <p class="note">
       {{ resolutores.length }} resolutores · {{ d.detalleResolutores.totalRegistros }} registros
       mensuales · {{ numero(d.detalleResolutores.resumen.acciones) }} acciones. Todos los registros
-      filtrados. Indicador: horas.
+      filtrados. Indicador: tiempo.
     </p>
-    <ng-container
-      *ngTemplateOutlet="
+    <ng-container *ngTemplateOutlet="
         matriz;
         context: { filas: resolutores, bloques: mesesResolutores, proyecto: false }
-      "
-    ></ng-container>
+      "></ng-container>
   </article>
 
   <article class="report-panel">
@@ -120,9 +132,8 @@
       {{ d.graficoProyectos.series.length }} proyectos mostrados. El ranking es una selección; la
       tabla incluye todos los proyectos.
     </p>
-    <ng-container *ngFor="let g of graficosProyectos"
-      ><ng-container *ngTemplateOutlet="barras; context: { $implicit: g }"></ng-container
-    ></ng-container>
+    <ng-container *ngFor="let g of graficosProyectos"><ng-container
+        *ngTemplateOutlet="barras; context: { $implicit: g }"></ng-container></ng-container>
   </article>
 
   <article class="report-panel">
@@ -130,14 +141,12 @@
     <p class="note">
       {{ proyectos.length }} proyectos · {{ d.detalleProyectos.totalRegistros }} registros mensuales
       · {{ numero(d.detalleProyectos.resumen.acciones) }} acciones. Todos los registros filtrados.
-      Indicador: horas. Los nombres se muestran sin el código ALP.
+      Indicador: tiempo. Los nombres se muestran sin el código ALP.
     </p>
-    <ng-container
-      *ngTemplateOutlet="
+    <ng-container *ngTemplateOutlet="
         matriz;
         context: { filas: proyectos, bloques: mesesProyectos, proyecto: true }
-      "
-    ></ng-container>
+      "></ng-container>
   </article>
   <footer>
     CANVIA · Reporte de tiempos de informes mensuales
@@ -149,122 +158,120 @@
       <div class="legend">
         <span *ngFor="let l of g.leyenda"><i [style.background]="l.color"></i>{{ l.nombre }}</span>
       </div>
-      <svg
-        viewBox="0 0 1280 400"
-        role="img"
-        [attr.aria-label]="
+      <svg viewBox="0 0 1280 400" role="img" [attr.aria-label]="
           g.maximoSecundario !== undefined
             ? 'Tickets y horas mensuales con escalas independientes'
             : 'Horas por proyecto y mes'
-        "
-      >
-        <g
-          *ngFor="
+        ">
+        <g *ngFor="
             let fraccion of g.maximoSecundario !== undefined && g.maximo < 4
               ? [0, 1]
               : [0, 0.25, 0.5, 0.75, 1]
-          "
-        >
-          <line
-            x1="90"
-            x2="1170"
-            [attr.y1]="330 - fraccion * 230"
-            [attr.y2]="330 - fraccion * 230"
-            stroke="#E5E9EE"
-          ></line>
+          ">
+          <line x1="90" x2="1170" [attr.y1]="330 - fraccion * 230" [attr.y2]="330 - fraccion * 230" stroke="#E5E9EE">
+          </line>
           <text x="78" [attr.y]="335 - fraccion * 230" text-anchor="end" class="axis-label">
             {{
-              g.maximoSecundario !== undefined
-                ? numero(fraccion * g.maximo)
-                : horas(fraccion * g.maximo)
+            g.maximoSecundario !== undefined
+            ? numero(fraccion * g.maximo)
+            : horas(fraccion * g.maximo)
             }}
           </text>
-          <text
-            *ngIf="g.maximoSecundario !== undefined"
-            x="1182"
-            [attr.y]="335 - fraccion * 230"
-            class="axis-label"
-          >
+          <text *ngIf="g.maximoSecundario !== undefined" x="1182" [attr.y]="335 - fraccion * 230" class="axis-label">
             {{ horas(fraccion * g.maximoSecundario) }}
           </text>
         </g>
         <text x="90" y="30" class="axis-title">
           {{ g.maximoSecundario !== undefined ? 'Tickets' : 'Horas registradas' }}
         </text>
-        <text
-          *ngIf="g.maximoSecundario !== undefined"
-          x="1170"
-          y="30"
-          text-anchor="end"
-          class="axis-title"
-        >
+        <text *ngIf="g.maximoSecundario !== undefined" x="1170" y="30" text-anchor="end" class="axis-title">
           Horas · escala derecha
         </text>
         <g *ngFor="let b of g.barras">
-          <rect
-            [attr.x]="b.x"
-            [attr.y]="b.y"
-            [attr.width]="b.ancho"
-            [attr.height]="b.alto"
-            [attr.fill]="b.color"
-            rx="3"
-          ></rect>
-          <text
-            [attr.x]="b.x + b.ancho / 2"
-            [attr.y]="b.y - 8"
-            [attr.text-anchor]="g.compacto ? 'start' : 'middle'"
+          <rect [attr.x]="b.x" [attr.y]="b.y" [attr.width]="b.ancho" [attr.height]="b.alto" [attr.fill]="b.color"
+            rx="3"></rect>
+          <text [attr.x]="b.x + b.ancho / 2" [attr.y]="b.y - 8" [attr.text-anchor]="g.compacto ? 'start' : 'middle'"
             [attr.transform]="
               g.compacto ? 'rotate(-65 ' + (b.x + b.ancho / 2) + ' ' + (b.y - 8) + ')' : null
-            "
-            class="value-label"
-            [class.compact]="g.compacto"
-          >
+            " class="value-label" [class.compact]="g.compacto">
             {{ b.texto }}
           </text>
         </g>
-        <text
-          *ngFor="let p of g.periodos; let i = index"
-          [attr.x]="90 + (1080 / g.periodos.length) * (i + 0.5)"
-          y="365"
-          text-anchor="middle"
-          class="axis-label"
-        >
+        <text *ngFor="let p of g.periodos; let i = index" [attr.x]="90 + (1080 / g.periodos.length) * (i + 0.5)" y="365"
+          text-anchor="middle" class="axis-label">
           {{ mes(p) }}
         </text>
       </svg>
     </div>
   </ng-template>
 
+
   <ng-template #matriz let-filas="filas" let-bloques="bloques" let-esProyecto="proyecto">
+
     <div class="matrix-block" *ngFor="let periodos of bloques">
       <table>
         <thead>
           <tr>
-            <th>{{ esProyecto ? 'Proyecto / Cliente' : 'Resolutor' }}</th>
-            <th *ngFor="let p of periodos">{{ mes(p) }}</th>
+            <th>
+              {{ esProyecto ? 'Proyecto / Cliente' : 'Resolutor' }}
+            </th>
+            <th *ngFor="let p of periodos">
+              {{ mes(p) }}
+            </th>
             <th>Total del período</th>
           </tr>
         </thead>
+
         <tbody>
           <tr *ngFor="let fila of filas">
-            <td>{{ esProyecto ? proyecto(fila.nombre) : fila.nombre }}</td>
-            <td *ngFor="let p of periodos">{{ horas(fila.mensual[p] ?? 0) }}</td>
-            <td class="total">{{ horas(fila.total) }}</td>
+            <td>
+              {{ esProyecto ? proyecto(fila.nombre) : fila.nombre }}
+            </td>
+
+            <td *ngFor="let p of periodos">
+              {{ formatearTiempo(
+              fila.mensualSegundos[p] ?? 0,
+              fila.mensual[p] ?? 0
+              ) }}
+            </td>
+
+            <td class="total">
+              {{ formatearTiempo(
+              fila.totalSegundos,
+              fila.total
+              ) }}
+            </td>
           </tr>
         </tbody>
+
         <tfoot>
           <tr>
-            <td>Total de horas</td>
-            <td *ngFor="let p of periodos">{{ horas(totalMes(filas, p)) }}</td>
-            <td>{{ horas(totalFilas(filas)) }}</td>
+            <td>Tiempo total</td>
+
+            <td *ngFor="let p of periodos">
+              {{ formatearTiempo(
+              totalMesSegundos(filas, p),
+              totalMes(filas, p)
+              ) }}
+            </td>
+
+            <td>
+              {{ formatearTiempo(
+              totalFilasSegundos(filas),
+              totalFilas(filas)
+              ) }}
+            </td>
           </tr>
         </tfoot>
       </table>
+
       <p class="note">
-        La columna «Total del período» comprende todos los meses del análisis y se repite en cada
-        bloque. Se suman las horas de las celdas; pueden existir diferencias de redondeo respecto de
-        los agregados generales. Los tickets distintos generales no se obtienen sumando conteos por
-        resolutor o proyecto.
+        La columna «Total del período» comprende todos los meses
+        del análisis y se repite en cada bloque. Las duraciones
+        se acumulan utilizando los segundos originales; los valores
+        mayores o iguales a una hora se muestran en horas.
+        Los tickets distintos generales no se obtienen sumando
+        conteos por resolutor o proyecto.
       </p>
     </div>
   </ng-template>

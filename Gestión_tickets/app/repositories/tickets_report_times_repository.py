@@ -216,6 +216,18 @@ def _resolutor_sql():
         literal_column("N'Sin especificar'")
     )
 
+def _segundos_efectivos_sql():
+    """
+    Usa los segundos originales.
+    Si están ausentes, recupera la duración desde Horas.
+    """
+    modelo = TicketReportTime
+
+    return func.coalesce(
+        modelo.Segundos,
+        modelo.Horas * 3600,
+        0
+    )
 
 
 def _base_informes(consulta):
@@ -299,10 +311,10 @@ def obtener_opciones_filtros(db: Session, grupo_resolutor: str | None = "BASE DE
 
 def obtener_kpis(db: Session, filtros: TicketsReportTimesDashboardFilters):
     modelo = TicketReportTime
+
     proyecto_valido = func.nullif(func.trim(modelo.Proyecto), "")
     resolutor_valido = func.nullif(func.trim(modelo.Nombre_Resolutor), "")
-    
-    # 1. INDICADORES GENERALES
+
     stmt = select(
         func.count(
             func.distinct(modelo.Ticket_ID)
@@ -316,11 +328,14 @@ def obtener_kpis(db: Session, filtros: TicketsReportTimesDashboardFilters):
             func.sum(modelo.Horas), 0
         ).label("horas_totales"),
 
+        func.coalesce(
+            func.sum(_segundos_efectivos_sql()), 0
+        ).label("segundos_totales"),
+
         func.count(
             func.distinct(resolutor_valido)
         ).label("total_resolutores"),
 
-        # Compatibilidad con el KPI anterior
         func.count(
             func.distinct(
                 case(
@@ -334,156 +349,325 @@ def obtener_kpis(db: Session, filtros: TicketsReportTimesDashboardFilters):
         ).label("alta_criticidad"),
 
     ).select_from(modelo)
+
     stmt = _aplicar_filtros(
-        stmt,
-        filtros,
-        aplicar_proyectos=True
+        stmt, filtros, aplicar_proyectos=True
     )
+
     resumen = db.execute(stmt).mappings().one()
 
-    # 2. TICKETS DISTINTOS POR MES
     anio = func.year(modelo.Fecha_Creacion)
     mes = func.month(modelo.Fecha_Creacion)
+
     stmt_mensual = select(
         anio.label("anio"),
         mes.label("mes"),
-
         func.count(
             func.distinct(modelo.Ticket_ID)
         ).label("tickets")
-
     ).select_from(modelo)
+
     stmt_mensual = _aplicar_filtros(
-        stmt_mensual,
-        filtros,
-        aplicar_proyectos=True
+        stmt_mensual, filtros, aplicar_proyectos=True
     )
+
     stmt_mensual = (
         stmt_mensual
         .group_by(anio, mes)
         .order_by(anio, mes)
     )
-    registros_mensuales = (
-        db.execute(stmt_mensual).mappings().all()
-    )
-    meses_con_datos = len(registros_mensuales)
-    tickets_mensuales_acumulados = sum(
-        int(registro["tickets"] or 0)
-        for registro in registros_mensuales
-    )
 
-    # 3. RESULTADO
+    registros_mensuales = db.execute(
+        stmt_mensual
+    ).mappings().all()
+
     return {
         **dict(resumen),
-        "meses_con_datos": meses_con_datos,
-        "tickets_mensuales_acumulados": (
-            tickets_mensuales_acumulados
+        "meses_con_datos": len(registros_mensuales),
+        "tickets_mensuales_acumulados": sum(
+            int(r["tickets"] or 0)
+            for r in registros_mensuales
         )
     }
 
-
-def obtener_volumen_mensual(db: Session, filtros: TicketsReportTimesDashboardFilters):
+def obtener_volumen_mensual(
+    db: Session,
+    filtros: TicketsReportTimesDashboardFilters
+):
     modelo = TicketReportTime
-    anio, mes = func.year(modelo.Fecha_Creacion), func.month(modelo.Fecha_Creacion)
+
+    anio = func.year(modelo.Fecha_Creacion)
+    mes = func.month(modelo.Fecha_Creacion)
+
     stmt = select(
-        anio.label("anio"), mes.label("mes"),
-        func.count(func.distinct(modelo.Ticket_ID)).label("tickets"),
+        anio.label("anio"),
+        mes.label("mes"),
+
+        func.count(
+            func.distinct(modelo.Ticket_ID)
+        ).label("tickets"),
+
         func.count().label("acciones"),
+
         func.sum(modelo.Horas).label("horas_totales"),
+
+        func.sum(
+            _segundos_efectivos_sql()
+        ).label("segundos_totales"),
+
     ).select_from(modelo)
-    # El gráfico mantiene la serie completa al seleccionar un período en el dashboard.
+
     stmt = _aplicar_filtros(
         stmt,
         filtros,
         aplicar_proyectos=True,
         aplicar_periodo=False
     )
-    stmt = stmt.group_by(anio, mes).order_by(anio, mes)
+
+    stmt = (
+        stmt.group_by(anio, mes)
+        .order_by(anio, mes)
+    )
+
     return db.execute(stmt).mappings().all()
 
 
-def obtener_resumen(db: Session, filtros: TicketsReportTimesDashboardFilters):
+def obtener_resumen(
+    db: Session,
+    filtros: TicketsReportTimesDashboardFilters
+):
     modelo = TicketReportTime
+
     stmt = select(
-        func.count(func.distinct(modelo.Ticket_ID)).label("tickets_distintos"),
+        func.count(
+            func.distinct(modelo.Ticket_ID)
+        ).label("tickets_distintos"),
+
         func.count().label("acciones"),
-        func.coalesce(func.sum(modelo.Horas), 0).label("horas_totales"),
-        func.count(func.distinct(func.nullif(func.trim(modelo.Proyecto), ""))).label("proyectos_distintos"),
-        func.count(func.distinct(func.nullif(func.trim(modelo.Nombre_Resolutor), ""))).label("resolutores_distintos"),
+
+        func.coalesce(
+            func.sum(modelo.Horas), 0
+        ).label("horas_totales"),
+
+        func.coalesce(
+            func.sum(_segundos_efectivos_sql()), 0
+        ).label("segundos_totales"),
+
+        func.count(
+            func.distinct(
+                func.nullif(func.trim(modelo.Proyecto), "")
+            )
+        ).label("proyectos_distintos"),
+
+        func.count(
+            func.distinct(
+                func.nullif(func.trim(modelo.Nombre_Resolutor), "")
+            )
+        ).label("resolutores_distintos"),
+
     ).select_from(modelo)
-    stmt = _aplicar_filtros(stmt, filtros, aplicar_proyectos=True)
+
+    stmt = _aplicar_filtros(
+        stmt, filtros, aplicar_proyectos=True
+    )
+
     return db.execute(stmt).mappings().one()
 
 
-def obtener_tabla(db: Session, filtros: TicketsReportTimesDashboardFilters,
-                  dimension: str, pagina: int, tamano: int):
-    """Agregación mensual paginada en SQL Server: dimension=resolutor|proyecto."""
+def obtener_tabla(
+    db: Session,
+    filtros: TicketsReportTimesDashboardFilters,
+    dimension: str,
+    pagina: int,
+    tamano: int
+):
+    """Agregación mensual paginada por resolutor o proyecto."""
+
     if dimension not in {"resolutor", "proyecto"}:
         raise ValueError("Dimensión inválida")
+
     modelo = TicketReportTime
-    anio, mes = func.year(modelo.Fecha_Creacion), func.month(modelo.Fecha_Creacion)
-    nombre = _resolutor_sql() if dimension == "resolutor" else _proyecto_sql()
+
+    anio = func.year(modelo.Fecha_Creacion)
+    mes = func.month(modelo.Fecha_Creacion)
+
+    nombre = (
+        _resolutor_sql()
+        if dimension == "resolutor"
+        else _proyecto_sql()
+    )
+
     horas = func.sum(modelo.Horas)
+    segundos = func.sum(_segundos_efectivos_sql())
+
     campos = [
-        anio.label("anio"), mes.label("mes"), nombre.label(dimension),
-        func.count(func.distinct(modelo.Ticket_ID)).label("tickets"),
+        anio.label("anio"),
+        mes.label("mes"),
+        nombre.label(dimension),
+
+        func.count(
+            func.distinct(modelo.Ticket_ID)
+        ).label("tickets"),
+
         func.count().label("acciones"),
+
         horas.label("horas_totales"),
+        segundos.label("segundos_totales"),
     ]
+
     if dimension == "proyecto":
-        campos.append(func.count(func.distinct(
-            func.nullif(func.trim(modelo.Nombre_Resolutor), "")
-        )).label("resolutores_distintos"))
+        campos.append(
+            func.count(
+                func.distinct(
+                    func.nullif(
+                        func.trim(modelo.Nombre_Resolutor),
+                        ""
+                    )
+                )
+            ).label("resolutores_distintos")
+        )
 
     base = select(*campos).select_from(modelo)
-    base = _aplicar_filtros(base, filtros, aplicar_proyectos=True)
+
+    base = _aplicar_filtros(
+        base, filtros, aplicar_proyectos=True
+    )
+
     base = base.group_by(anio, mes, nombre)
-    total = db.execute(select(func.count()).select_from(base.subquery())).scalar_one()
-    stmt = base.order_by(anio.desc(), mes.desc(), horas.desc(), nombre.asc())
-    stmt = stmt.offset((pagina - 1) * tamano).limit(tamano)
+
+    total = db.execute(
+        select(func.count()).select_from(base.subquery())
+    ).scalar_one()
+
+    stmt = base.order_by(
+        anio.desc(),
+        mes.desc(),
+        horas.desc(),
+        nombre.asc()
+    )
+
+    stmt = stmt.offset(
+        (pagina - 1) * tamano
+    ).limit(tamano)
+
     items = db.execute(stmt).mappings().all()
-    return {"items": items, "total": int(total)}
+
+    return {
+        "items": items,
+        "total": int(total)
+    }
 
 
-def obtener_grafico(db: Session, filtros: TicketsReportTimesDashboardFilters,
-                     dimension: str, limite: int):
-    """Top N global por horas, luego horas mensuales de cada elemento elegido."""
+def obtener_grafico(
+    db: Session,
+    filtros: TicketsReportTimesDashboardFilters,
+    dimension: str,
+    limite: int
+):
+    """Top N por horas y distribución mensual de los seleccionados."""
+
     if dimension not in {"resolutor", "proyecto"}:
         raise ValueError("Dimensión inválida")
+
     modelo = TicketReportTime
-    nombre = _resolutor_sql() if dimension == "resolutor" else _proyecto_sql()
-    anio, mes = func.year(modelo.Fecha_Creacion), func.month(modelo.Fecha_Creacion)
+
+    nombre = (
+        _resolutor_sql()
+        if dimension == "resolutor"
+        else _proyecto_sql()
+    )
+
+    anio = func.year(modelo.Fecha_Creacion)
+    mes = func.month(modelo.Fecha_Creacion)
+
     total_horas = func.sum(modelo.Horas)
+    total_segundos = func.sum(_segundos_efectivos_sql())
 
     ranking_stmt = select(
-        nombre.label("nombre"), total_horas.label("horas_totales")
+        nombre.label("nombre"),
+        total_horas.label("horas_totales"),
+        total_segundos.label("segundos_totales")
     ).select_from(modelo)
-    ranking_stmt = _aplicar_filtros(ranking_stmt, filtros, aplicar_proyectos=True)
-    ranking_stmt = ranking_stmt.group_by(nombre).order_by(total_horas.desc(), nombre.asc()).limit(limite)
-    ranking = [dict(r) for r in db.execute(ranking_stmt).mappings().all()]
 
-    # Conservar los períodos de todos los proyectos / especialistas filtrados.
-    periodos_stmt = select(anio.label("anio"), mes.label("mes")).select_from(modelo)
-    periodos_stmt = _aplicar_filtros(periodos_stmt, filtros, aplicar_proyectos=True)
-    periodos_stmt = periodos_stmt.group_by(anio, mes).order_by(anio, mes)
+    ranking_stmt = _aplicar_filtros(
+        ranking_stmt, filtros, aplicar_proyectos=True
+    )
+
+    ranking_stmt = (
+        ranking_stmt
+        .group_by(nombre)
+        .order_by(total_horas.desc(), nombre.asc())
+        .limit(limite)
+    )
+
+    ranking = [
+        dict(r)
+        for r in db.execute(ranking_stmt).mappings().all()
+    ]
+
+    periodos_stmt = select(
+        anio.label("anio"),
+        mes.label("mes")
+    ).select_from(modelo)
+
+    periodos_stmt = _aplicar_filtros(
+        periodos_stmt, filtros, aplicar_proyectos=True
+    )
+
+    periodos_stmt = (
+        periodos_stmt
+        .group_by(anio, mes)
+        .order_by(anio, mes)
+    )
+
     fechas = db.execute(periodos_stmt).mappings().all()
     periodos = []
+
     if fechas:
-        ini = int(fechas[0]["anio"]) * 12 + int(fechas[0]["mes"]) - 1
-        fin = int(fechas[-1]["anio"]) * 12 + int(fechas[-1]["mes"]) - 1
+        ini = (
+            int(fechas[0]["anio"]) * 12
+            + int(fechas[0]["mes"]) - 1
+        )
+
+        fin = (
+            int(fechas[-1]["anio"]) * 12
+            + int(fechas[-1]["mes"]) - 1
+        )
+
         for indice in range(ini, fin + 1):
             year, m0 = divmod(indice, 12)
             periodos.append(f"{year:04d}-{m0 + 1:02d}")
 
     mensual = []
     nombres = [r["nombre"] for r in ranking]
+
     if nombres:
         stmt = select(
-            nombre.label("nombre"), anio.label("anio"), mes.label("mes"),
+            nombre.label("nombre"),
+            anio.label("anio"),
+            mes.label("mes"),
+
             func.sum(modelo.Horas).label("horas"),
+
+            func.sum(
+                _segundos_efectivos_sql()
+            ).label("segundos"),
+
         ).select_from(modelo)
-        stmt = _aplicar_filtros(stmt, filtros, aplicar_proyectos=True)
-        stmt = stmt.where(nombre.in_(nombres)).group_by(nombre, anio, mes)
+
+        stmt = _aplicar_filtros(
+            stmt, filtros, aplicar_proyectos=True
+        )
+
+        stmt = (
+            stmt.where(nombre.in_(nombres))
+            .group_by(nombre, anio, mes)
+        )
+
         mensual = db.execute(stmt).mappings().all()
 
-    return {"ranking": ranking, "mensual": mensual, "periodos": periodos}
+    return {
+        "ranking": ranking,
+        "mensual": mensual,
+        "periodos": periodos
+    }

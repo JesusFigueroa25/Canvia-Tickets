@@ -40,18 +40,19 @@ class TicketsReportTimesFiltersOut(BaseModel):
     proyectos_predeterminados: list[str]
 
 
-    
 class TicketsReportTimesKPIOut(BaseModel):
     total_tickets: int
     total_proyectos: int
 
-    # Nuevos indicadores
     horas_totales: float
+    segundos_totales: float
     total_resolutores: int
+
     promedio_horas: float
+    promedio_segundos: float
     promedio_tickets: float
 
-    # Compatibilidad temporal con el contrato anterior
+    # Compatibilidad temporal
     alta_criticidad: int
     porcentaje_alta_criticidad: float
 
@@ -63,12 +64,14 @@ class TicketsReportTimesVolumenItem(BaseModel):
     tickets: int
     acciones: int
     horas_totales: float
+    segundos_totales: float
 
 
 class TicketsReportTimesResumen(BaseModel):
     tickets_distintos: int
     acciones: int
     horas_totales: float
+    segundos_totales: float
     proyectos_distintos: int
     resolutores_distintos: int
 
@@ -81,6 +84,7 @@ class TicketsReportTimesResolverItem(BaseModel):
     tickets: int
     acciones: int
     horas_totales: float
+    segundos_totales: float
 
 
 class TicketsReportTimesProjectItem(BaseModel):
@@ -92,6 +96,7 @@ class TicketsReportTimesProjectItem(BaseModel):
     acciones: int
     resolutores_distintos: int
     horas_totales: float
+    segundos_totales: float
 
 
 class TicketsReportTimesResolverTablaOut(BaseModel):
@@ -115,11 +120,13 @@ class TicketsReportTimesProjectTablaOut(BaseModel):
 class TicketsReportTimesGraficoPunto(BaseModel):
     periodo: str
     horas: float
+    segundos: float
 
 
 class TicketsReportTimesGraficoSerie(BaseModel):
-    nombre: str  # Nombre del resolutor o proyecto, según el endpoint
+    nombre: str
     horas_totales: float
+    segundos_totales: float
     mensual: list[TicketsReportTimesGraficoPunto]
 
 

@@ -241,8 +241,8 @@
     </app-kpi-card>
 
     <!-- HORAS TOTALES -->
-    <app-kpi-card titulo="Horas Totales" [valor]="formatearDecimal(kpis.horas_totales) + ' h'" icono="schedule"
-      color="green">
+    <app-kpi-card titulo="Tiempo Total Registrado" [valor]="formatearTiempo(kpis.segundos_totales, kpis.horas_totales)"
+      icono="schedule" color="green">
     </app-kpi-card>
 
     <!-- TOTAL PROYECTOS -->
@@ -254,8 +254,8 @@
     </app-kpi-card>
 
     <!-- PROMEDIO DE HORAS MENSUALES -->
-    <app-kpi-card titulo="Promedio Horas/Mes" [valor]="formatearDecimal(kpis.promedio_horas) + ' h'" icono="access_time"
-      color="green">
+    <app-kpi-card titulo="Promedio Tiempo/Mes" [valor]="formatearTiempo(kpis.promedio_segundos,kpis.promedio_horas)"
+      icono="access_time" color="green">
     </app-kpi-card>
 
     <!-- PROMEDIO DE TICKETS MENSUALES -->

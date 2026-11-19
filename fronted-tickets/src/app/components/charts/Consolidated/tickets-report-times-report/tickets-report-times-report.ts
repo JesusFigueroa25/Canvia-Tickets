@@ -1,3 +1,4 @@
+import { formatearTiempo } from '../../../../utils/formatear-tiempo';
 import {
   Component,
   ElementRef,
@@ -43,6 +44,7 @@ export class TicketsReportTimesReport implements OnChanges, OnDestroy {
   @Output() errorRenderizado = new EventEmitter<number>();
   @ViewChild('documento') documento?: ElementRef<HTMLElement>;
   private revision = 0;
+  readonly formatearTiempo = formatearTiempo;
   readonly coloresResolutores = [
     '#FF620F',
     '#FFB184',
@@ -129,7 +131,10 @@ export class TicketsReportTimesReport implements OnChanges, OnDestroy {
               ancho: 32,
               alto: (m.horas_totales / maximoSecundario) * 230,
               color: !f.periodo || m.periodo === f.periodo ? '#16835B' : '#B8DDCE',
-              texto: this.horas(m.horas_totales),
+              texto: this.formatearTiempo(
+                m.segundos_totales,
+                m.horas_totales
+              ),
             },
           ]),
         };
@@ -175,7 +180,12 @@ export class TicketsReportTimesReport implements OnChanges, OnDestroy {
             ancho: ancho * 0.85,
             alto: (valor / maximo) * 230,
             color: this.coloresProyectos[j % 10],
-            texto: valor > 0 ? this.horas(valor) : '',
+            texto: valor > 0
+              ? this.formatearTiempo(
+                this.segundosMes(s, p),
+                valor
+              )
+              : '',
           };
         }),
       ),
@@ -220,6 +230,46 @@ export class TicketsReportTimesReport implements OnChanges, OnDestroy {
   horasMes(s: TicketsReportTimesGrafico['series'][number], p: string): number {
     return s.mensual.find((m) => m.periodo === p)?.horas ?? 0;
   }
+
+  segundosMes(
+    serie: TicketsReportTimesGrafico['series'][number],
+    periodo: string
+  ): number {
+    return serie.mensual.find(
+      item => item.periodo === periodo
+    )?.segundos ?? 0;
+  }
+
+  segundosBloque(
+    serie: TicketsReportTimesGrafico['series'][number],
+    periodos: string[]
+  ): number {
+    return periodos.reduce(
+      (total, periodo) =>
+        total + this.segundosMes(serie, periodo),
+      0
+    );
+  }
+
+  totalMesSegundos(
+    filas: FilaTiempo[],
+    periodo: string
+  ): number {
+    return filas.reduce(
+      (total, fila) =>
+        total + (fila.mensualSegundos[periodo] ?? 0),
+      0
+    );
+  }
+
+  totalFilasSegundos(filas: FilaTiempo[]): number {
+    return filas.reduce(
+      (total, fila) => total + fila.totalSegundos,
+      0
+    );
+  }
+
+
   totalBloque(s: TicketsReportTimesGrafico['series'][number], periodos: string[]): number {
     return periodos.reduce((t, p) => t + this.horasMes(s, p), 0);
   }
@@ -232,9 +282,9 @@ export class TicketsReportTimesReport implements OnChanges, OnDestroy {
   }
   lineas(nombre: string): string[] {
     const palabras = nombre
-        .trim()
-        .split(/\s+/)
-        .flatMap((p) => p.match(/.{1,40}/gu) ?? []),
+      .trim()
+      .split(/\s+/)
+      .flatMap((p) => p.match(/.{1,40}/gu) ?? []),
       resultado: string[] = [];
     let linea = '';
     for (const palabra of palabras) {

@@ -1,4 +1,4 @@
-
+import { formatearTiempo } from '../../../utils/formatear-tiempo';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -21,7 +21,7 @@ export class TicketsReportTimes
 
   private readonly grupoPorDefecto = 'BASE DE DATOS Y EBS';
   readonly opcionTodosProyectos = '__TODOS_PROYECTOS__';
-
+  readonly formatearTiempo = formatearTiempo;
 
   @ViewChild('volumenCanvas')
   volumenCanvas!: ElementRef<HTMLCanvasElement>;
@@ -886,12 +886,14 @@ export class TicketsReportTimes
                 }
 
                 if (contexto.datasetIndex === 1) {
-                  return (
-                    numero.toLocaleString('es-PE', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                    }) + ' h'
-                  );
+                  const registro = this.volumenMensual[contexto.dataIndex];
+
+                  return registro
+                    ? formatearTiempo(
+                      registro.segundos_totales,
+                      registro.horas_totales
+                    )
+                    : '';
                 }
 
                 return numero.toLocaleString('es-PE', {
@@ -906,21 +908,23 @@ export class TicketsReportTimes
                   const valor = Number(contexto.parsed.y ?? 0);
 
                   if (contexto.datasetIndex === 1) {
-                    return (
-                      'Horas: ' +
-                      valor.toLocaleString('es-PE', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      }) + ' h'
-                    );
+                    const registro = this.volumenMensual[contexto.dataIndex];
+
+                    return 'Tiempo registrado: ' +
+                      (
+                        registro
+                          ? formatearTiempo(
+                            registro.segundos_totales,
+                            registro.horas_totales
+                          )
+                          : '—'
+                      );
                   }
 
-                  return (
-                    'Tickets distintos: ' +
+                  return 'Tickets distintos: ' +
                     valor.toLocaleString('es-PE', {
                       maximumFractionDigits: 0
-                    })
-                  );
+                    });
                 }
               }
             }
