@@ -32,3 +32,15 @@ Este repositorio reúne una SPA Angular (`fronted-tickets/`) y una API FastAPI (
 - `docs/DEPLOYMENT.md`: despliegue y operación.
 
 Actualiza la documentación técnica correspondiente cuando un cambio autorizado altere arquitectura o comportamiento observable. Evita duplicar detalles: enlaza al documento que mantiene la fuente de verdad.
+
+## Flujo de desarrollo
+
+- Consulta docs/INDEX.md para localizar documentación.
+- Para nuevas funcionalidades, revisa el PRD
+  correspondiente en docs/requirements/.
+- Utiliza Plan Mode para cambios complejos.
+- Ejecuta las pruebas pertinentes antes de finalizar.
+- Utiliza ramas feat/, fix/, refactor/, docs/,
+  perf/ o test/, según el alcance.
+- Sigue Conventional Commits.
+- No realices push sin autorización explícita.
