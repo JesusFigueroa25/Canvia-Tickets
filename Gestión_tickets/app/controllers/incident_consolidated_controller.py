@@ -123,7 +123,7 @@ def obtener_rendimiento_resolutores(
 ):
     return incident_consolidated_service.obtener_rendimiento_resolutores(
         db,filtros,pagina=pagina,tamano=tamano
-    )
+    ) 
 
 
 #Número de Tickets por Resolutor
