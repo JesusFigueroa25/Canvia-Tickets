@@ -348,7 +348,7 @@
         <div class="charts-grid">
 
             <!-- Nro Incidentes por Mes -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-volumen" #volumenFs>
+            <div class="chart-grid-item chart-expandable" id="fullscreen-volumen " #volumenFs *ngIf="volumenMensual">
                 <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenFs)"
                     [title]="graficoExpandido === 'fullscreen-volumen' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
                     aria-label="Ampliar o reducir gráfico de incidentes por mes">

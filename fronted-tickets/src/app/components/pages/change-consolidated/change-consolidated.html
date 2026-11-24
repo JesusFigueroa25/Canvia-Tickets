@@ -211,8 +211,6 @@
     No se encontraron cambios para los filtros seleccionados.
   </section>
 
-  <!-- Los componentes hijos se incorporarán en la siguiente etapa. -->
-
   <!-- EXPLORADOR POR PROYECTOS Y VOLUMEN MENSUAL-->
   <section class="charts-scroll" *ngIf="filtrosListos">
 
@@ -355,6 +353,134 @@
   </section>
 
 
+
+  <!-- =====================================================
+       PRD 05 - ANÁLISIS DE ACTIVIDADES Y HORAS DE CAMBIOS
+  ====================================================== -->
+  <section class="change-analysis-section" *ngIf="filtrosListos"
+    aria-label="Análisis de actividades y horas de cambios">
+
+    <header class="change-analysis-heading">
+      <div class="change-analysis-heading-text">
+        <span class="change-analysis-eyebrow">OPERACIÓN DE BASES DE DATOS</span>
+        <h2>Análisis de actividades y horas</h2>
+        <p>Clasificación de actividades y análisis de tiempos de atención en cambios con participación de BD.</p>
+      </div>
+
+      <div class="change-analysis-controls">
+        <label class="change-analysis-toggle" for="change-incluir-validacion">
+          <input id="change-incluir-validacion" #incluirValidacionInput type="checkbox"
+            [checked]="incluirSoloValidacion"
+            [disabled]="cargandoFiltros"
+            (change)="cambiarIncluirSoloValidacion(incluirValidacionInput.checked)">
+          <span>Incluir cambios de solo validación</span>
+        </label>
+        <span class="change-analysis-loading" *ngIf="cargandoAnalisis" role="status">
+          <span class="loading-indicator" aria-hidden="true"></span>
+          Actualizando análisis...
+        </span>
+      </div>
+    </header>
+
+    <!-- BLOQUE 1 - TABLA DE ACTIVIDADES -->
+    <div class="change-analysis-panel change-analysis-table table-expandable"
+      id="fullscreen-actividades-bd-change" #actividadesBDFs>
+
+      <button type="button" class="chart-expand-btn"
+        (click)="alternarPantallaCompleta(actividadesBDFs)"
+        [title]="graficoExpandido === 'fullscreen-actividades-bd-change'
+          ? 'Salir de pantalla completa' : 'Ver tabla en pantalla completa'"
+        [attr.aria-label]="graficoExpandido === 'fullscreen-actividades-bd-change'
+          ? 'Salir de pantalla completa de actividades BD'
+          : 'Ampliar tabla de actividades BD'">
+        <mat-icon aria-hidden="true">{{ graficoExpandido === 'fullscreen-actividades-bd-change'
+          ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+      </button>
+
+      <app-change-activities-table
+        [datos]="actividadesBD"
+        [cargando]="cargandoActividadesBD"
+        [error]="errorActividadesBD"
+        (paginaChange)="cambiarPaginaActividadesBD($event)">
+      </app-change-activities-table>
+    </div>
+
+    <!-- BLOQUE 2 - TABLA DE HORAS POR CAMBIO -->
+    <div class="change-analysis-panel change-analysis-table table-expandable"
+      id="fullscreen-horas-cambio-change" #horasCambioFs>
+
+      <button type="button" class="chart-expand-btn"
+        (click)="alternarPantallaCompleta(horasCambioFs)"
+        [title]="graficoExpandido === 'fullscreen-horas-cambio-change'
+          ? 'Salir de pantalla completa' : 'Ver tabla en pantalla completa'"
+        [attr.aria-label]="graficoExpandido === 'fullscreen-horas-cambio-change'
+          ? 'Salir de pantalla completa de horas por cambio'
+          : 'Ampliar tabla de horas por cambio'">
+        <mat-icon aria-hidden="true">{{ graficoExpandido === 'fullscreen-horas-cambio-change'
+          ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+      </button>
+
+      <app-change-hours-detail-table
+        [datos]="horasPorCambio"
+        [cargando]="cargandoHorasCambio"
+        [error]="errorHorasCambio"
+        (paginaChange)="cambiarPaginaHorasCambio($event)">
+      </app-change-hours-detail-table>
+    </div>
+
+    <!-- BLOQUES 3 Y 4 - GRÁFICOS ANALÍTICOS -->
+    <div class="change-analysis-charts">
+
+      <div class="change-analysis-panel change-analysis-chart chart-expandable"
+        id="fullscreen-horas-resolutor-change" #horasResolutorFs>
+
+        <button type="button" class="chart-expand-btn"
+          (click)="alternarPantallaCompleta(horasResolutorFs)"
+          [title]="graficoExpandido === 'fullscreen-horas-resolutor-change'
+            ? 'Salir de pantalla completa' : 'Ver gráfico en pantalla completa'"
+          [attr.aria-label]="graficoExpandido === 'fullscreen-horas-resolutor-change'
+            ? 'Salir de pantalla completa de horas por resolutor'
+            : 'Ampliar gráfico de horas por resolutor'">
+          <mat-icon aria-hidden="true">{{ graficoExpandido === 'fullscreen-horas-resolutor-change'
+            ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+        </button>
+
+        <app-change-resolver-hours-chart
+          [datos]="horasPorResolutor"
+          [cargando]="cargandoHorasResolutor"
+          [error]="errores.horasResolutor">
+        </app-change-resolver-hours-chart>
+      </div>
+
+      <div class="change-analysis-panel change-analysis-chart chart-expandable"
+        id="fullscreen-horas-mensuales-change" #horasMensualesFs>
+
+        <button type="button" class="chart-expand-btn"
+          (click)="alternarPantallaCompleta(horasMensualesFs)"
+          [title]="graficoExpandido === 'fullscreen-horas-mensuales-change'
+            ? 'Salir de pantalla completa' : 'Ver gráfico en pantalla completa'"
+          [attr.aria-label]="graficoExpandido === 'fullscreen-horas-mensuales-change'
+            ? 'Salir de pantalla completa de horas mensuales'
+            : 'Ampliar gráfico de horas mensuales'">
+          <mat-icon aria-hidden="true">{{ graficoExpandido === 'fullscreen-horas-mensuales-change'
+            ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+        </button>
+
+        <app-change-monthly-hours-chart
+          [datos]="horasMensuales"
+          [cargando]="cargandoHorasMensuales"
+          [error]="errores.horasMensuales">
+        </app-change-monthly-hours-chart>
+      </div>
+
+    </div>
+
+    <p class="change-analysis-footnote">
+      Las horas se calculan con la regla SQL validada de eliminación de solapamientos por resolutor.
+      El análisis incluye cambios con participación de BD aunque el grupo principal sea distinto.
+      Las sumas de horas redondeadas por mes o cambio pueden variar en centésimas frente al total general.
+    </p>
+  </section>
 
   <!-- =====================================================
      EXPLORADOR DE TICKETS - CAMBIOS CONSOLIDADOS

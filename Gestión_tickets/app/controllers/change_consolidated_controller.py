@@ -1,5 +1,3 @@
-"""Endpoints del módulo Cambios Consolidados."""
-
 import logging
 from datetime import date
 
@@ -20,6 +18,10 @@ from app.schemas.change_consolidated_schema import (
     ChangeConsolidatedTopProyectosOut,
     ChangeConsolidatedPrioridadMensualItem,
     ChangeConsolidatedTicketsOut,
+    ChangeConsolidatedActividadesBDOut,
+    ChangeConsolidatedHorasCambioOut,
+    ChangeConsolidatedHorasResolutorItem,
+    ChangeConsolidatedHorasMensualesItem,
 )
 from app.services import change_consolidated_service
 
@@ -181,4 +183,61 @@ def obtener_tickets(
 ):
     return change_consolidated_service.obtener_tickets(
         db, filtros, pagina=pagina, tamano=tamano
+    )
+
+# ================================================================
+# PRD 05 - ANALISIS DE ACTIVIDADES Y HORAS DE CAMBIOS
+# ================================================================
+
+@router.get("/actividades-bd", response_model=ChangeConsolidatedActividadesBDOut)
+def obtener_actividades_bd(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(10, ge=1, le=100),
+    incluir_solo_validacion: bool = Query(True),
+    filtros: ChangeConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return change_consolidated_service.obtener_actividades_bd(
+        db, filtros, pagina, tamano, incluir_solo_validacion
+    )
+
+
+@router.get("/horas-por-cambio", response_model=ChangeConsolidatedHorasCambioOut)
+def obtener_horas_por_cambio(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(10, ge=1, le=100),
+    incluir_solo_validacion: bool = Query(True),
+    filtros: ChangeConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return change_consolidated_service.obtener_horas_por_cambio(
+        db, filtros, pagina, tamano, incluir_solo_validacion
+    )
+
+
+@router.get(
+    "/horas-por-resolutor",
+    response_model=list[ChangeConsolidatedHorasResolutorItem],
+)
+def obtener_horas_por_resolutor(
+    incluir_solo_validacion: bool = Query(True),
+    filtros: ChangeConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return change_consolidated_service.obtener_horas_por_resolutor(
+        db, filtros, incluir_solo_validacion
+    )
+
+
+@router.get(
+    "/horas-mensuales",
+    response_model=list[ChangeConsolidatedHorasMensualesItem],
+)
+def obtener_horas_mensuales(
+    incluir_solo_validacion: bool = Query(True),
+    filtros: ChangeConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return change_consolidated_service.obtener_horas_mensuales(
+        db, filtros, incluir_solo_validacion
     )

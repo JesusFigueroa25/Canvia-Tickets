@@ -138,3 +138,96 @@ export interface ChangeConsolidatedTicketsOut {
   tamano: number;
   total_paginas: number;
 }
+
+// =====================================================
+// PRD 05 - ANÁLISIS DE ACTIVIDADES Y HORAS DE CAMBIOS
+// =====================================================
+
+// BLOQUE 1: Actividades de bases de datos
+
+export interface ChangeConsolidatedActividadBDItem
+  extends ChangeConsolidatedTicketItem {
+
+  Total_Tareas_BD: number;
+  Total_Tareas_Wintel: number;
+
+  Tipo_Participacion: string;
+  Clasificacion_Evidencia: string;
+  Tipo_Actividad: string;
+
+  Es_Subida_Bajada: number;
+  Es_Baja_Instancia: number;
+  Es_Validacion: number;
+
+  Ticket_Evidencia: string | null;
+}
+
+export interface ChangeConsolidatedActividadesBDOut {
+  cambios: ChangeConsolidatedActividadBDItem[];
+  total: number;
+  pagina: number;
+  tamano: number;
+  total_paginas: number;
+}
+
+
+// BLOQUE 2: Horas totales por cambio
+
+export interface ChangeConsolidatedHorasCambioItem {
+  Ticket_ID: string;
+  Fecha_Creacion: string;
+
+  ALP: string | null;
+  Proyecto: string | null;
+  Descripcion: string | null;
+
+  Grupo_Resolutor: string | null;
+  Nombre_Resolutor: string | null;
+  Estado: string | null;
+
+  Tipo_Participacion: string;
+  Tipo_Actividad: string;
+  Clasificacion_Evidencia: string;
+
+  Total_Tareas_BD: number;
+  Total_Tareas_Wintel: number;
+
+  Registros_Tiempo_BD: number;
+  Total_Resolutores_BD: number;
+
+  Horas_Totales: number;
+}
+
+export interface ChangeConsolidatedHorasCambioOut {
+  cambios: ChangeConsolidatedHorasCambioItem[];
+  total: number;
+  pagina: number;
+  tamano: number;
+  total_paginas: number;
+}
+
+
+// BLOQUE 3: Horas totales por resolutor
+
+export interface ChangeConsolidatedHorasResolutorItem {
+  Resolutor: string;
+  Total_Registros: number;
+  Total_Tareas: number;
+  Horas_Totales: number | null;
+}
+
+
+// BLOQUE 4: Horas totales por mes
+
+export interface ChangeConsolidatedHorasMensualesItem {
+  Anio: number;
+  Mes: number;
+  Periodo: string;
+
+  Total_Cambios: number;
+  Total_Tareas: number;
+  Total_Resolutores: number;
+
+  Horas_Totales: number;
+  Promedio_Horas_Por_Cambio: number;
+}

@@ -397,3 +397,63 @@ def obtener_categorias(
             db, filtros, limite
         )
     ]
+
+# ================================================================
+# PRD 05 - ANALISIS DE ACTIVIDADES Y HORAS DE CAMBIOS
+# ================================================================
+
+def _respuesta_paginada_cambios(datos: dict, pagina: int, tamano: int) -> dict:
+    total = int(datos["total"])
+    return {
+        "cambios": datos["cambios"],
+        "total": total,
+        "pagina": pagina,
+        "tamano": tamano,
+        "total_paginas": (total + tamano - 1) // tamano,
+    }
+
+
+def obtener_actividades_bd(
+    db: Session,
+    filtros: ChangeConsolidatedDashboardFilters,
+    pagina: int = 1,
+    tamano: int = 10,
+    incluir_solo_validacion: bool = True,
+) -> dict:
+    datos = change_consolidated_repository.obtener_actividades_bd(
+        db, filtros, pagina, tamano, incluir_solo_validacion
+    )
+    return _respuesta_paginada_cambios(datos, pagina, tamano)
+
+
+def obtener_horas_por_cambio(
+    db: Session,
+    filtros: ChangeConsolidatedDashboardFilters,
+    pagina: int = 1,
+    tamano: int = 10,
+    incluir_solo_validacion: bool = True,
+) -> dict:
+    datos = change_consolidated_repository.obtener_horas_por_cambio(
+        db, filtros, pagina, tamano, incluir_solo_validacion
+    )
+    return _respuesta_paginada_cambios(datos, pagina, tamano)
+
+
+def obtener_horas_por_resolutor(
+    db: Session,
+    filtros: ChangeConsolidatedDashboardFilters,
+    incluir_solo_validacion: bool = True,
+) -> list[dict]:
+    return change_consolidated_repository.obtener_horas_por_resolutor(
+        db, filtros, incluir_solo_validacion
+    )
+
+
+def obtener_horas_mensuales(
+    db: Session,
+    filtros: ChangeConsolidatedDashboardFilters,
+    incluir_solo_validacion: bool = True,
+) -> list[dict]:
+    return change_consolidated_repository.obtener_horas_mensuales(
+        db, filtros, incluir_solo_validacion
+    )
