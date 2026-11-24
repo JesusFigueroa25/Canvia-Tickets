@@ -96,6 +96,9 @@ import { ChangeActivitiesTable } from './components/charts/change-analysis/chang
 import { ChangeHoursDetailTable } from './components/charts/change-analysis/change-hours-detail-table/change-hours-detail-table';
 import { ChangeResolverHoursChart } from './components/charts/change-analysis/change-resolver-hours-chart/change-resolver-hours-chart';
 import { ChangeMonthlyHoursChart } from './components/charts/change-analysis/change-monthly-hours-chart/change-monthly-hours-chart';
+import { IncidentMonthlyReport } from './components/charts/Consolidated/incident-monthly-report/incident-monthly-report';
+import { IncidentProjectReport } from './components/charts/Consolidated/incident-project-report/incident-project-report';
+import { IncidentProjectMonthlyReport } from './components/charts/Consolidated/incident-project-monthly-report/incident-project-monthly-report';
 
 @NgModule({
   declarations: [
@@ -185,6 +188,9 @@ import { ChangeMonthlyHoursChart } from './components/charts/change-analysis/cha
     ChangeHoursDetailTable,
     ChangeResolverHoursChart,
     ChangeMonthlyHoursChart,
+    IncidentMonthlyReport,
+    IncidentProjectReport,
+    IncidentProjectMonthlyReport,
   ],
   imports: [
     BrowserAnimationsModule,

@@ -1,0 +1,60 @@
+@import '../incident-monthly-report/incident-monthly-report.css';
+
+.report-document { padding: 16px; }
+.report-header { min-height: 116px; gap: 16px; padding: 14px 20px 14px 18px; }
+.infrastructure-icon { flex-basis: 76px; }
+.infrastructure-icon svg { width: 76px; height: 76px; }
+.hero-separator { height: 76px; }
+.header-copy { padding-right: 78px; }
+h1 { font-size: 32px; }
+.project-name { margin: 5px 0 0; font-size: 18px; line-height: 1.3; overflow-wrap: anywhere; }
+.report-period { margin-top: 5px; font-size: 15px; }
+.brand { font-size: 11px; }
+.kpis { gap: 12px; margin-top: 12px; }
+.kpi { min-height: 103px; padding: 12px 15px; gap: 12px; }
+.kpi-icon, .kpi-icon svg { width: 50px; height: 50px; }
+.kpi-separator { height: 59px; }
+.kpi-label { font-size: 14px; }
+.kpi strong { margin: 3px 0; font-size: 35px; }
+.kpi.orange strong, .kpi.green strong { font-size: 27px; }
+.kpi.green strong.not-comparable { font-size: 23px; color: #586579; }
+.kpi small { font-size: 11px; }
+.reference-months { margin-top: 3px; font-weight: 700; }
+.selected-project-grid { display: grid; grid-template-columns: minmax(0, 1.632fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; align-items: stretch; }
+.selected-project-executive { min-width: 0; display: grid; align-content: start; gap: 12px; }
+.report-panel { border-radius: 13px; }
+.panel-heading { min-height: 46px; padding: 8px 28px 8px 13px; gap: 10px; border-radius: 12px 12px 0 0; }
+.panel-heading h2 { font-size: 18px; }
+.panel-heading > svg { width: 27px; height: 27px; }
+.panel-heading::after { width: 23px; }
+.chart-body { padding: 10px 12px 12px; }
+.project-monthly-chart { display: block; width: 100%; height: auto; }
+.chart-note { margin: 2px 0 10px; color: #667085; font-size: 11px; line-height: 1.4; }
+.variation-summary { min-width: 0; max-width: 100%; padding: 8px; border-radius: 9px; background: #F7F9FB; border: 1px solid #E5EBF0; }
+.variation-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 10px; margin-bottom: 6px; }
+.variation-heading h3 { margin: 0; font-size: 12px; color: #16835B; }
+.variation-heading > span { color: #667085; font-size: 10px; }
+.variation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(116px, 1fr)); gap: 6px; min-width: 0; }
+.variation-item { min-width: 0; padding: 6px 7px; border: 1px solid #D6EBDD; border-radius: 7px; color: #12633F; background: #EAF5ED; }
+.variation-item.reduccion { color: #B42318; background: #FDEDEB; border-color: #F6D5D0; }
+.variation-item.cero, .variation-item.no_comparable { color: #586579; background: #EEF2F6; border-color: #DFE6ED; }
+.variation-month { display: block; margin-bottom: 2px; font-size: 11px; line-height: 1.3; font-weight: 600; }
+.variation-change { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.variation-icon { display: block; flex: 0 0 16px; width: 16px; height: 16px; }
+.variation-value { min-width: 0; font-size: 15px; line-height: 1.25; font-weight: 800; overflow-wrap: anywhere; }
+.variation-value.unavailable { font-size: 11px; font-weight: 600; }
+.project-findings { padding: 0 13px; }
+.project-finding { display: flex; align-items: flex-start; gap: 10px; padding: 11px 0; border-bottom: 1px solid #E8EDF2; }
+.project-finding:last-child { border-bottom: 0; }
+.project-finding-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 35px; height: 35px; border-radius: 9px; background: #EAF5ED; color: #16835B; }
+.project-finding:nth-child(2) .project-finding-icon { background: #FFF1E6; color: #FF620F; }
+.project-finding-icon svg { width: 25px; height: 25px; }
+.project-finding p { margin: 0; min-width: 0; font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.project-finding strong { color: #263447; font-weight: 800; }
+.actions-body { padding: 12px 14px; font-size: 13px; line-height: 1.4; }
+.project-conclusion { margin: 0; overflow-wrap: anywhere; }
+.project-recommendations { margin: 8px 0 0; padding-left: 18px; }
+.project-recommendations li { margin-top: 6px; overflow-wrap: anywhere; }
+.report-meta { padding: 9px 2px 0; font-size: 10px; }
+.methodology { margin-top: 7px; font-size: 9px; line-height: 1.4; }
+footer { font-size: 8px; margin-top: 5px; padding-top: 5px; }

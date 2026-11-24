@@ -1,0 +1,61 @@
+@import '../incident-monthly-report/incident-monthly-report.css';
+
+.report-document { padding: 16px; }
+.report-header { min-height: 106px; padding: 12px 22px 12px 18px; gap: 16px; }
+.infrastructure-icon { flex-basis: 76px; }
+.infrastructure-icon svg { width: 76px; height: 76px; }
+.hero-separator { height: 64px; }
+h1 { font-size: 34px; }
+.report-period { margin-top: 6px; font-size: 18px; overflow-wrap: anywhere; }
+.report-meta { padding: 6px 2px 8px; font-size: 10px; }
+.kpis { gap: 12px; }
+.kpi { min-height: 98px; padding: 12px 15px; gap: 13px; border-radius: 13px; }
+.kpi-icon, .kpi-icon svg { width: 50px; height: 50px; }
+.kpi-separator { height: 57px; }
+.kpi-label { font-size: 13px; }
+.kpi strong { font-size: 35px; margin: 3px 0; }
+.kpi.orange strong, .kpi.green strong { font-size: 25px; }
+.kpi small { font-size: 11px; }
+.kpi.orange .kpi-content strong.kpi-project-name { max-width: 100%; white-space: normal; overflow-wrap: anywhere; font-size: 20px; line-height: 1.15; letter-spacing: -0.3px; }
+.project-main-grid { display: grid; grid-template-columns: minmax(0, 1.857fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; align-items: stretch; }
+.project-lower-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; align-items: stretch; }
+.report-panel { border-radius: 13px; }
+.panel-heading { min-height: 45px; gap: 9px; padding: 8px 25px 8px 12px; border-radius: 12px 12px 0 0; }
+.panel-heading h2 { font-size: 17px; line-height: 1.15; }
+.panel-heading > svg { width: 25px; height: 25px; }
+.panel-heading::after { width: 22px; }
+.top-body { padding: 8px 12px 9px; }
+.month-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 5px; color: #475467; font-size: 10px; }
+.month-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.month-legend i, .donut-legend i { display: block; width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.project-grouped-chart, .project-trend-chart { display: block; width: 100%; height: auto; overflow: visible; }
+.project-name-key { display: flex; flex-wrap: wrap; gap: 3px 14px; font-size: 10px; line-height: 1.4; color: #475467; }
+.project-name-key span { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.ranking-scope, .dense-label-note { margin: 5px 0 0; font-size: 10px; line-height: 1.4; color: #667085; }
+.donut-panel { display: flex; flex-direction: column; }
+.donut-body { flex: 1; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); align-items: center; gap: 7px; padding: 10px; }
+.project-donut { display: block; width: 100%; height: auto; }
+.donut-legend { min-width: 0; }
+.donut-legend-row { display: grid; grid-template-columns: 8px minmax(0, 1fr); align-items: start; column-gap: 6px; padding: 6px 0; border-bottom: 1px solid #EDF1F5; font-size: 11px; line-height: 1.25; }
+.donut-legend-row:last-child { border-bottom: 0; }
+.donut-legend-row i { width: 8px; height: 8px; margin-top: 3px; }
+.donut-project-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.donut-quantity { grid-column: 2; display: flex; align-items: baseline; gap: 8px; margin-top: 2px; }
+.donut-quantity b { font-size: 12px; }
+.donut-quantity small { color: #667085; font-size: 10px; }
+.donut-scope { margin: 0; padding: 0 12px 9px; }
+.trend-body { padding: 8px 10px 10px; }
+.project-findings { padding: 0 12px; }
+.project-finding { display: flex; gap: 9px; padding: 10px 0; align-items: flex-start; border-bottom: 1px solid #EDF1F5; }
+.project-finding:last-child { border-bottom: 0; }
+.project-finding-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 34px; height: 34px; border-radius: 8px; color: #16835B; background: #EAF5ED; }
+.project-finding-icon svg { width: 24px; height: 24px; }
+.project-finding p { min-width: 0; margin: 0; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+.project-finding strong { font-weight: 800; }
+.actions-body { padding: 10px 12px; color: #344054; font-size: 12px; line-height: 1.4; }
+.project-conclusion { margin: 0; overflow-wrap: anywhere; }
+.actions-body h3 { margin: 8px 0 4px; color: #16835B; font-size: 13px; }
+.project-recommendations { margin: 0; padding-left: 18px; }
+.project-recommendations li { padding-left: 2px; margin-top: 5px; overflow-wrap: anywhere; }
+.methodology { margin-top: 8px; font-size: 9px; line-height: 1.4; }
+footer { margin-top: 5px; padding-top: 5px; font-size: 8px; }

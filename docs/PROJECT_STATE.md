@@ -32,6 +32,18 @@ La exportación requiere respuestas válidas, tablas completas y renderizado con
 
 La validación del 18/11/2026 incluye pruebas Angular, compilación y descarga real en Edge con datos ficticios locales. No acredita resultados de negocio ni funcionamiento contra SQL Server. Consultar [arquitectura y límites](ARCHITECTURE.md#reporte-png-de-tiempos-de-informes-mensuales) y [evidencia de pruebas](TEST_PLAN.md#reporte-png-de-tiempos-de-informes-mensuales). Persisten diferencias documentales del alcance original: la consulta actual no restringe `Ticket_type` a `Service Request` y la selección de proyectos afecta también al KPI y al volumen. Estas reglas no se modificaron.
 
+## Reporte PNG R02 de Incidentes Consolidados
+
+Implementado «Reporte 2» en Empresa: análisis general por proyecto con filtros globales efectivos y exclusiones, sin selección individual ni otros filtros dinámicos. Incluye tres KPI, Top 10 con barras verticales agrupadas, dona Top 5 + Otros sobre la distribución completa, tendencia y textos ejecutivos generados mediante reglas. Reutiliza la arquitectura y presentación de R01 sin modificar sus archivos; no cambia backend ni dependencias. El módulo contempla exactamente cuatro reportes; el estado de R03 se detalla a continuación y R04 permanece pendiente.
+
+El 24/11/2026 se aprobaron 71 pruebas relacionadas R01/R02 y la compilación Angular. Se descargaron PNG reales en Edge con datos ficticios, incluyendo nombres largos, un proyecto y rangos extensos; se verificó también la regresión de R01. No se consultó SQL Server ni se validaron datos productivos. Detalles y límites en la [arquitectura](ARCHITECTURE.md#reporte-png-r02-de-incidentes-consolidados) y la [evidencia de pruebas](TEST_PLAN.md#reporte-png-r02-de-incidentes-consolidados).
+
+## Reporte PNG R03 de Incidentes Consolidados
+
+Implementado «Reporte 3» junto a R02 en Empresa, habilitado por `proyectoSeleccionado` y fechas efectivas válidas. Consulta KPI y ranking filtrados por el proyecto, valida los totales y prepara su propia instantánea. Muestra tres KPI, un único gráfico mensual completo y tres hallazgos/conclusión/tres recomendaciones en composición horizontal 62/38. Conserva nombres íntegros y bloquea rangos ilegibles sin recortar. No modifica R01/R02, backend ni dependencias.
+
+El 24/11/2026 se aprobaron las **42 pruebas nuevas R03** y la compilación Angular. El conjunto relacionado registró **113 aprobadas y un fallo previo de R02**, comprobado también antes de R03. Edge descargó PNG ficticios de uno a cuarenta meses, nombres extensos y extremos parciales, y bloqueó sesenta meses y denominadores incoherentes. No se consultaron bases de datos ni se validó información productiva. Consultar [arquitectura](ARCHITECTURE.md#reporte-png-r03-de-incidentes-consolidados) y [pruebas](TEST_PLAN.md#reporte-png-r03-de-incidentes-consolidados).
+
 ## Tecnologías declaradas
 
 - Frontend: Angular `^22.2.x`, TypeScript `~6.0.2`, RxJS `~7.8.0`, Angular Material, Chart.js y `ng2-charts`. `package-lock.json` registra resoluciones; `package.json` no declara una versión de Node.

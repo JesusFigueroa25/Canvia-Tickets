@@ -1,0 +1,56 @@
+<ng-template #encabezado let-titulo="titulo" let-icono="icono">
+  <header class="panel-heading"><svg viewBox="0 0 28 28" fill="none" stroke="#FF7A25" stroke-width="2" aria-hidden="true"><path [attr.d]="icono" /></svg><h2>{{ titulo }}</h2></header>
+</ng-template>
+<section #documento class="report-document" *ngIf="datos as d">
+  <header class="report-header">
+    <div class="infrastructure-icon" aria-hidden="true"><svg viewBox="0 0 120 112" fill="none">
+      <path d="M28 48H23a15 15 0 0 1-1-30A25 25 0 0 1 69 15a18 18 0 0 1 17 33H80" stroke="#EAF2FB" stroke-width="4" />
+      <g stroke="#DCEAF7" stroke-width="2.5" fill="#113A60"><rect x="25" y="38" width="63" height="19" rx="5" /><rect x="25" y="61" width="63" height="19" rx="5" /><rect x="25" y="84" width="63" height="19" rx="5" /></g>
+      <path d="M48 47h28M48 70h28M48 93h28" stroke="#9CC0DD" stroke-width="3" /><g fill="#FF620F"><circle cx="36" cy="47" r="3" /><circle cx="36" cy="70" r="3" /><circle cx="36" cy="93" r="3" /></g>
+    </svg></div>
+    <div class="hero-separator" aria-hidden="true"></div>
+    <div class="header-copy"><h1>Tickets por Mes - Proyecto Seleccionado</h1><p class="project-name">{{ d.filtros.grupo_resolutor || 'Todos los grupos' }} | {{ d.proyecto }}</p><p class="report-period">Período: {{ periodo }}</p></div>
+    <svg class="header-decoration" viewBox="0 0 300 180" preserveAspectRatio="none" aria-hidden="true"><path d="M150-20C15 40 208 95 75 200H300V-20Z" fill="#163D63" /><path d="M205-20C65 45 254 102 125 200H300V-20Z" fill="#22557E" /><path d="M252-20C126 56 302 115 192 200H300V-20Z" fill="#FF620F" /><path d="M280-20C181 55 334 120 242 200H300V-20Z" fill="#EF8B33" /></svg>
+    <span class="brand">CANVIA · R03</span>
+  </header>
+  <section class="kpis" aria-label="Indicadores del proyecto seleccionado">
+    <div class="kpi"><div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6V4Zm8 3v2m0 3v2m0 3v1" /></svg></div><div class="kpi-separator"></div><div class="kpi-content"><span class="kpi-label">Total de tickets (período)</span><strong>{{ numero(d.mensual.total) }}</strong><small>Todos los meses del rango aplicado</small></div></div>
+    <div class="kpi orange"><div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 24V4m0 20h21M9 19v-7m6 7V7m6 12V3" /></svg></div><div class="kpi-separator"></div><div class="kpi-content"><span class="kpi-label">Mayor registro</span><strong>{{ d.mensual.maximos[0]?.etiqueta }}</strong><small>{{ numero(d.mensual.maximos[0]?.tickets || 0) }} tickets<span *ngIf="d.mensual.maximos.length > 1"> · +{{ d.mensual.maximos.length - 1 }} meses empatados</span></small></div></div>
+    <div class="kpi green"><div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 23h23M5 18l6-7 6 3 7-10M18 4h6v6" /></svg></div><div class="kpi-separator"></div><div class="kpi-content"><span class="kpi-label">Variación del período</span><ng-container *ngIf="d.variacionPeriodo as v; else noComparable"><strong>{{ v.porcentaje === null ? 'No calculable' : porcentaje(v.porcentaje) + ' %' }}</strong><small>{{ v.diferencia > 0 ? '+' : '' }}{{ numero(v.diferencia) }} tickets<span *ngIf="v.porcentaje === null"> · base cero</span></small><small class="reference-months">{{ v.desde.etiqueta }} → {{ v.hasta.etiqueta }}</small></ng-container><ng-template #noComparable><strong class="not-comparable">No comparable</strong><small>Se requieren dos meses completos consecutivos</small></ng-template></div></div>
+  </section>
+  <div class="selected-project-grid">
+    <article class="report-panel chart-panel">
+      <ng-container *ngTemplateOutlet="encabezado; context: {titulo: 'Evolución mensual de tickets', icono: 'M4 24V4m0 20h21M9 19v-7m6 7V7m6 12V3'}"></ng-container>
+      <div class="chart-body">
+        <svg *ngIf="legible" class="project-monthly-chart" [attr.viewBox]="'0 0 1000 ' + altoSvg" font-family="Arial, Helvetica, sans-serif" role="img" aria-label="Evolución mensual del proyecto seleccionado, incluidos meses cero y parciales">
+          <defs><linearGradient *ngFor="let b of barras; let i = index" [attr.id]="gradiente(i)" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" [attr.stop-color]="color(i)" stop-opacity="0.62" /><stop offset="100%" [attr.stop-color]="color(i)" /></linearGradient></defs>
+          <g *ngFor="let fraccion of fracciones"><line [attr.x1]="izquierda" x2="980" [attr.y1]="base - fraccion * 240" [attr.y2]="base - fraccion * 240" stroke="#E5EBF0" stroke-width="1.2" /><text [attr.x]="izquierda - 14" [attr.y]="base - fraccion * 240 + 5" text-anchor="end" font-size="15" fill="#586579">{{ numero(maximo * fraccion) }}</text></g>
+          <g *ngFor="let b of barras; let i = index">
+            <rect class="month-project-bar" [attr.x]="b.x" [attr.y]="b.y" [attr.width]="b.ancho" [attr.height]="b.alto" [attr.fill]="'url(#' + gradiente(i) + ')'" rx="4"><title>{{ d.mensual.meses[i].etiqueta }}: {{ numero(b.valor) }} tickets · {{ b.estado }}</title></rect>
+            <text class="month-project-value" [attr.x]="b.centro" [attr.y]="b.y - 10" [attr.text-anchor]="valoresVerticales ? 'start' : 'middle'" [attr.transform]="valoresVerticales ? 'rotate(-90 ' + b.centro + ' ' + (b.y - 10) + ')' : null" [attr.font-size]="fuenteValor" fill="#263447" font-weight="700">{{ numero(b.valor) }}</text>
+            <text class="month-project-label" [attr.x]="b.centro" [attr.y]="base + 27" [attr.transform]="mesesVerticales ? 'rotate(-90 ' + b.centro + ' ' + (base + 27) + ')' : null" [attr.text-anchor]="mesesVerticales ? 'end' : 'middle'" font-size="14" fill="#344054" font-weight="700"><ng-container *ngIf="mesesVerticales; else mesHorizontal">{{ b.mes }} {{ b.anio }}{{ b.estado === 'completo' ? '' : '*' }}</ng-container><ng-template #mesHorizontal><tspan>{{ b.mes }}{{ b.estado === 'completo' ? '' : '*' }}</tspan><tspan [attr.x]="b.centro" dy="22" font-size="14" font-weight="400">{{ b.anio }}</tspan></ng-template></text>
+          </g>
+        </svg>
+        <p class="chart-note">* Mes parcial o cobertura no confirmada. Todos los meses y sus cantidades están representados; las comparaciones excluyen meses no completos.</p>
+        <section class="variation-summary" *ngIf="variacionesVisuales.length" aria-label="Variación mensual respecto al mes anterior">
+          <div class="variation-heading"><h3>Variación mensual</h3><span>Respecto al mes anterior</span></div>
+          <div class="variation-grid" role="list">
+            <div class="variation-item" *ngFor="let v of variacionesVisuales" [ngClass]="v.tipo" role="listitem" [attr.aria-label]="v.referencia + ': ' + v.valor">
+              <span class="variation-month">{{ v.mes }}</span>
+              <div class="variation-change"><svg class="variation-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path [attr.d]="v.tipo === 'aumento' ? 'M10 17V3M4 9l6-6 6 6' : v.tipo === 'reduccion' ? 'M10 3v14M4 11l6 6 6-6' : 'M4 10h12'" /></svg><strong class="variation-value" [class.unavailable]="v.noCalculable">{{ v.valor }}</strong></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </article>
+    <div class="selected-project-executive">
+      <article class="report-panel findings-panel"><ng-container *ngTemplateOutlet="encabezado; context: {titulo: 'Principales hallazgos', icono: 'M10 21h8m-7 4h6M9 17c-7-7-2-14 5-14s12 7 5 14l-1 3h-8l-1-3Z'}"></ng-container>
+        <div class="project-findings"><div class="project-finding" *ngFor="let h of hallazgos; let i = index"><span class="project-finding-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2"><path [attr.d]="i === 0 ? 'M4 22h21M6 17l6-7 5 3 7-9' : i === 1 ? 'M4 24V4m0 20h21M9 19v-7m6 7V7m6 12V3' : 'M14 3a11 11 0 1 0 0 22 11 11 0 0 0 0-22Zm0 5v7m0 4v1'" /></svg></span><p><ng-container *ngFor="let parte of h.partes"><strong *ngIf="parte.destacado">{{ parte.texto }}</strong><span *ngIf="!parte.destacado">{{ parte.texto }}</span></ng-container></p></div></div>
+      </article>
+      <article class="report-panel actions-panel"><ng-container *ngTemplateOutlet="encabezado; context: {titulo: 'Conclusión y recomendaciones', icono: 'M7 3h12v21H4V6h3m0-3v3h9V3M8 12l3 3 6-6M8 20h8'}"></ng-container><div class="actions-body"><p class="project-conclusion">{{ d.conclusion }}</p><ol class="project-recommendations"><li *ngFor="let r of d.recomendaciones">{{ r }}</li></ol></div></article>
+    </div>
+  </div>
+  <div class="report-meta"><span *ngFor="let f of filtros">{{ f }}</span></div>
+  <p class="methodology">Conteos por fecha de apertura. Se omiten mes, resolutor, descripción, tipos, detalle y ticket seleccionados. Disponibilidad general: {{ d.mensual.disponibilidad.fecha_min || 'No confirmada' }} — {{ d.mensual.disponibilidad.fecha_max || 'No confirmada' }}. Los meses completos deben estar cerrados en Lima y cubiertos por fechas y disponibilidad; esto no acredita exhaustividad de importaciones ni cobertura específica del proyecto. KPI y serie son consultas independientes reconciliadas, sin garantía transaccional.</p>
+  <footer>CANVIA · Incidentes Consolidados · R03 · Preparado: {{ d.preparadoEn }}</footer>
+</section>

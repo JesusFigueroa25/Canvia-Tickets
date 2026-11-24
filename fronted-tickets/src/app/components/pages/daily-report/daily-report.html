@@ -198,6 +198,45 @@
 
 
 
+  <!-- RESUMEN EJECUTIVO MENSUAL: datos agrupados desde el resumen diario -->
+  <section class="monthly-report-section" *ngIf="kpis && !errorDashboard" aria-label="Resumen Ejecutivo Mensual">
+    <div class="daily-report-fullscreen monthly-report-fullscreen" id="fullscreen-resumen-mensual" #resumenMensualFs>
+      <div class="monthly-report-card">
+        <header class="monthly-report-header">
+          <div class="monthly-report-heading">
+            <h2>Resumen Ejecutivo Mensual</h2>
+            <p>Distribución mensual de tickets, incidentes, requerimientos y tareas según Fecha Acción.</p>
+          </div>
+          <div class="monthly-report-actions">
+            <label class="monthly-report-select">
+              <span>Mes de análisis</span>
+              <select [value]="mesResumenSeleccionado ?? ''" [disabled]="cargandoDashboard || !resumenMensual.length"
+                (change)="seleccionarMesResumen($any($event.target).value || null)">
+                <option value="">Todos los meses</option>
+                <option *ngFor="let mes of resumenMensual" [value]="mes.periodo">
+                  {{ nombreMesResumen(mes.periodo) }}
+                </option>
+              </select>
+            </label>
+            <button type="button" class="monthly-report-expand-btn" (click)="alternarPantallaCompleta(resumenMensualFs)"
+              [attr.aria-label]="graficoExpandido === 'fullscreen-resumen-mensual' ? 'Salir de pantalla completa' : 'Ampliar resumen mensual'"
+              [title]="graficoExpandido === 'fullscreen-resumen-mensual' ? 'Salir de pantalla completa' : 'Ver en pantalla completa'">
+              <mat-icon>{{ graficoExpandido === 'fullscreen-resumen-mensual' ? 'fullscreen_exit' : 'fullscreen'
+                }}</mat-icon>
+            </button>
+          </div>
+        </header>
+        <div class="monthly-report-chart" *ngIf="resumenMensual.length; else resumenMensualVacio">
+          <canvas baseChart [data]="datosGraficoMensual" [options]="opcionesGraficoMensual" type="bar" role="img"
+            aria-label="Tickets, incidentes, requerimientos y tareas por mes"></canvas>
+        </div>
+        <ng-template #resumenMensualVacio>
+          <div class="monthly-report-empty">No hay registros mensuales para los filtros seleccionados.</div>
+        </ng-template>
+      </div>
+    </div>
+  </section>
+
   <!-- TABLA Y GRÁFICO DEL REPORTE DIARIO -->
   <section class="daily-report-visuals" *ngIf="kpis && !errorDashboard">
 

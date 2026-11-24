@@ -1,0 +1,249 @@
+<ng-template #encabezado let-icono="icono" let-titulo="titulo">
+  <header class="panel-heading">
+    <svg viewBox="0 0 28 28" fill="none" stroke="#FF7A25" stroke-width="2.2" stroke-linecap="round"
+      stroke-linejoin="round" aria-hidden="true">
+      <path [attr.d]="icono" />
+    </svg>
+    <h2>{{ titulo }}</h2>
+  </header>
+</ng-template>
+
+<section #documento class="report-document" *ngIf="datos as d">
+  <header class="report-header">
+    <div class="infrastructure-icon" aria-hidden="true">
+      <svg viewBox="0 0 120 112" fill="none">
+        <path d="M28 48H23a15 15 0 0 1-1-30A25 25 0 0 1 69 15a18 18 0 0 1 17 33H80" stroke="#EAF2FB" stroke-width="4"
+          stroke-linecap="round" />
+        <rect x="25" y="38" width="63" height="19" rx="5" fill="#113A60" stroke="#DCEAF7" stroke-width="2.5" />
+        <rect x="25" y="61" width="63" height="19" rx="5" fill="#113A60" stroke="#DCEAF7" stroke-width="2.5" />
+        <rect x="25" y="84" width="63" height="19" rx="5" fill="#113A60" stroke="#DCEAF7" stroke-width="2.5" />
+        <path d="M48 47h28M48 70h28M48 93h28" stroke="#9CC0DD" stroke-width="3" stroke-linecap="round" />
+        <circle cx="36" cy="47" r="3" fill="#FF620F" />
+        <circle cx="36" cy="70" r="3" fill="#FF620F" />
+        <circle cx="36" cy="93" r="3" fill="#FF620F" />
+      </svg>
+    </div>
+    <div class="hero-separator" aria-hidden="true"></div>
+    <div class="header-copy">
+      <h1>Análisis de Tickets por Proyecto</h1>
+      <p class="report-period">{{ subtitulo }}</p>
+    </div>
+    <svg class="header-decoration" viewBox="0 0 300 180" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M150-20C15 40 208 95 75 200H300V-20Z" fill="#163D63" />
+      <path d="M205-20C65 45 254 102 125 200H300V-20Z" fill="#22557E" />
+      <path d="M252-20C126 56 302 115 192 200H300V-20Z" fill="#FF620F" />
+      <path d="M280-20C181 55 334 120 242 200H300V-20Z" fill="#EF8B33" />
+    </svg>
+    <span class="brand">CANVIA · R02</span>
+  </header>
+  <div class="report-meta"><span *ngFor="let filtro of filtros">{{ filtro }}</span></div>
+
+  <section class="kpis" aria-label="Indicadores de tickets por proyecto">
+    <div class="kpi">
+      <div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.6">
+          <path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6V4Zm8 3v2m0 3v2m0 3v1" />
+        </svg></div>
+      <div class="kpi-separator" aria-hidden="true"></div>
+      <div class="kpi-content"><span class="kpi-label">Total de Tickets (Periodo)</span><strong>{{ numero(d.total)
+          }}</strong><small>Todos los proyectos filtrados</small></div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor"
+          stroke-width="1.7">
+          <path [attr.d]="iconos.grafico" />
+        </svg></div>
+      <div class="kpi-separator" aria-hidden="true"></div>
+      <div class="kpi-content"><span class="kpi-label">Proyecto con mayor demanda</span><strong
+          class="kpi-project-name">{{ d.lideres[0]?.proyecto }}</strong>
+        <small>{{ numero(d.lideres[0]?.cantidad || 0) }} tickets<span *ngIf="d.lideres.length > 1"> · +{{
+            d.lideres.length - 1 }} proyectos empatados</span></small>
+      </div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor"
+          stroke-width="1.7">
+          <path [attr.d]="iconos.tendencia" />
+        </svg></div>
+      <div class="kpi-separator" aria-hidden="true"></div>
+      <div class="kpi-content"><span class="kpi-label">Mes de mayor registro</span><strong>{{
+          d.mensual.maximos[0]?.etiqueta }}</strong>
+        <small>{{ numero(d.mensual.maximos[0]?.tickets || 0) }} tickets<span *ngIf="d.mensual.maximos.length > 1"> · +{{
+            d.mensual.maximos.length - 1 }} meses empatados</span></small>
+      </div>
+    </div>
+  </section>
+
+  <div class="project-main-grid">
+    <article class="report-panel top-panel">
+      <ng-container
+        *ngTemplateOutlet="encabezado; context: {icono: iconos.grafico, titulo: 'Tickets mensuales por proyecto'}"></ng-container>
+      <div class="top-body">
+        <div class="top-block" *ngIf="graficoTop as g">
+          <div class="month-legend"><span *ngFor="let m of g.meses"><i [style.background]="m.color"></i>{{ m.etiqueta
+              }}</span></div>
+          <svg class="project-grouped-chart" [attr.viewBox]="'0 0 1100 ' + g.alto"
+            font-family="Arial, Helvetica, sans-serif" role="img"
+            aria-label="Barras verticales agrupadas por proyecto y mes">
+            <defs>
+              <linearGradient *ngFor="let m of g.meses" [attr.id]="g.id + '-m' + m.indice" x1="0%" y1="0%" x2="0%"
+                y2="100%">
+                <stop offset="0%" [attr.stop-color]="claro(m.indice)" />
+                <stop offset="100%" [attr.stop-color]="m.color" />
+              </linearGradient>
+            </defs>
+            <g *ngFor="let fraccion of fracciones">
+              <line x1="82" x2="1080" [attr.y1]="240 - fraccion * 190" [attr.y2]="240 - fraccion * 190" stroke="#E5EBF0"
+                stroke-width="1.2" />
+              <text x="70" [attr.y]="245 - fraccion * 190" text-anchor="end" fill="#586579" font-size="15">{{
+                numero(g.maximo * fraccion) }}</text>
+            </g>
+            <g *ngFor="let grupo of g.grupos">
+              <title>{{ grupo.nombre }}</title>
+              <g *ngFor="let b of grupo.barras">
+                <rect class="project-month-bar" [attr.x]="b.x" [attr.y]="b.y" [attr.width]="b.ancho"
+                  [attr.height]="b.alto" [attr.rx]="b.ancho > 9 ? 3 : 1"
+                  [attr.fill]="'url(#' + g.id + '-m' + b.mes + ')'">
+                  <title>{{ grupo.nombre }} · {{ g.meses[b.mes].etiqueta }}: {{ numero(b.valor) }}</title>
+                </rect>
+
+
+                <text *ngIf="b.etiquetar" class="project-bar-value" [attr.x]="b.etiquetaX" [attr.y]="b.y - 4"
+                  text-anchor="middle" fill="#263447" font-size="7" font-weight="600">
+                  {{ numero(b.valor) }}
+                </text>
+
+
+              </g>
+              <text class="top-project-label" [attr.x]="grupo.centro" y="266" text-anchor="middle" fill="#344054"
+                font-size="15" font-weight="600">
+                <tspan *ngFor="let linea of grupo.lineas; let i = index" [attr.x]="grupo.centro"
+                  [attr.dy]="i === 0 ? 0 : 16">{{ linea }}</tspan>
+              </text>
+            </g>
+          </svg>
+          <div class="project-name-key"><ng-container *ngFor="let grupo of g.grupos"><span *ngIf="grupo.clave"><b>{{
+                  grupo.clave }}:</b> {{ grupo.nombre }}</span></ng-container></div>
+
+          <p class="dense-label-note">
+            Las etiquetas muestran la cantidad de tickets de cada proyecto por mes.
+            Los valores iguales a cero no se etiquetan.
+          </p>
+
+        </div>
+        <p class="ranking-scope">Subtotal Top 10: <b>{{ numero(d.subtotalTop) }}</b> · Total general: <b>{{
+            numero(d.total) }}</b>. El ranking representa un subconjunto del período.</p>
+      </div>
+    </article>
+
+    <article class="report-panel donut-panel">
+      <ng-container
+        *ngTemplateOutlet="encabezado; context: {icono: iconos.dona, titulo: 'Participación de tickets por proyecto'}"></ng-container>
+      <div class="donut-body">
+        <svg class="project-donut" viewBox="0 0 220 220" font-family="Arial, Helvetica, sans-serif" role="img"
+          aria-label="Participación de los cinco proyectos principales y Otros sobre todos los proyectos">
+          <circle cx="110" cy="110" r="72" fill="none" stroke="#EDF1F5" stroke-width="28" />
+          <ng-container *ngFor="let s of segmentos">
+            <circle *ngIf="s.cantidad > 0" class="donut-segment" cx="110" cy="110" r="72" fill="none"
+              [attr.stroke]="s.color" stroke-width="28" [attr.stroke-dasharray]="s.trazo"
+              [attr.stroke-dashoffset]="s.offset" transform="rotate(-90 110 110)" />
+          </ng-container>
+          <text x="110" y="108" text-anchor="middle" fill="#263447" [attr.font-size]="fuenteDona" font-weight="700">{{
+            numero(d.total) }}</text>
+          <text x="110" y="130" text-anchor="middle" fill="#667085" font-size="12">tickets del período</text>
+        </svg>
+        <div class="donut-legend" role="list">
+          <div class="donut-legend-row" role="listitem" *ngFor="let s of segmentos">
+            <i [style.background]="s.color"></i><span class="donut-project-name">{{ s.nombre }}</span>
+            <span class="donut-quantity"><b>{{ numero(s.cantidad) }}</b><small>{{ porcentaje(s.porcentaje) }}
+                %</small></span>
+          </div>
+        </div>
+      </div>
+      <p class="ranking-scope donut-scope">Top 5 + Otros · Denominador: {{ numero(d.total) }} tickets, distribución
+        completa.</p>
+    </article>
+  </div>
+
+  <div class="project-lower-grid">
+    <article class="report-panel trend-panel">
+      <ng-container
+        *ngTemplateOutlet="encabezado; context: {icono: iconos.tendencia, titulo: 'Tendencia general mensual'}"></ng-container>
+      <div class="trend-body">
+        <svg class="project-trend-chart" *ngIf="tendencia as g" viewBox="0 0 640 260"
+          font-family="Arial, Helvetica, sans-serif" role="img"
+          aria-label="Gráfico de línea: tendencia mensual de todos los proyectos filtrados">
+          <defs>
+            <linearGradient [attr.id]="'r02-area-' + d.version" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#16835B" stop-opacity="0.2" />
+              <stop offset="100%" stop-color="#16835B" stop-opacity="0.02" />
+            </linearGradient>
+          </defs>
+          <g *ngFor="let fraccion of fracciones">
+            <line x1="80" x2="590" [attr.y1]="185 - fraccion * 130" [attr.y2]="185 - fraccion * 130" stroke="#E5EBF0"
+              stroke-width="1.2" />
+            <text x="66" [attr.y]="190 - fraccion * 130" text-anchor="end" fill="#586579" font-size="16">{{
+              numero(g.maximo * fraccion) }}</text>
+          </g>
+          <polygon [attr.points]="g.area" [attr.fill]="'url(#r02-area-' + d.version + ')'" />
+          <polyline class="trend-line" [attr.points]="g.linea" fill="none" stroke="#16835B" stroke-width="3.5"
+            stroke-linecap="round" stroke-linejoin="round" />
+          <g *ngFor="let m of g.meses">
+            <circle class="trend-month-point" [attr.cx]="m.x" [attr.cy]="m.y" r="4.5"
+              [attr.fill]="m.estado === 'completo' ? '#16835B' : '#FFFFFF'" stroke="#16835B" stroke-width="2">
+              <title>{{ d.mensual.meses[m.indice].etiqueta }}: {{ numero(m.valor) }} · {{ m.estado }}</title>
+            </circle>
+            <text *ngIf="m.etiquetar" class="trend-point-value" [attr.x]="m.x" [attr.y]="m.y - 13"
+              [attr.text-anchor]="g.meses.length === 1 ? 'middle' : m.indice === 0 ? 'start' : m.indice === g.meses.length - 1 ? 'end' : 'middle'"
+              fill="#263447" font-size="19" font-weight="700">{{ numero(m.valor) }}</text>
+            <text *ngIf="m.mostrarMes" class="trend-month-label" [attr.x]="m.x" y="214" text-anchor="middle"
+              fill="#344054" [attr.font-size]="g.fuenteMes" font-weight="700">
+              <tspan>{{ m.etiqueta }}</tspan>
+              <tspan [attr.x]="m.x" dy="21" font-size="13" font-weight="400">{{ m.anio }}</tspan>
+            </text>
+          </g>
+        </svg>
+        <p class="ranking-scope">Todos los meses visibles · Puntos huecos: mes parcial o cobertura no confirmada. La
+          línea describe registros; no implica una tendencia sostenida.</p>
+      </div>
+    </article>
+    <article class="report-panel insights-panel">
+      <ng-container
+        *ngTemplateOutlet="encabezado; context: {icono: iconos.hallazgos, titulo: 'Principales hallazgos'}"></ng-container>
+      <div class="project-findings">
+        <div class="project-finding" *ngFor="let h of hallazgos; let i = index">
+          <span class="project-finding-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path [attr.d]="i === 0 ? iconos.grafico : i === 1 ? iconos.dona : iconos.tendencia" />
+            </svg></span>
+          <p><ng-container *ngFor="let parte of h.partes"><strong *ngIf="parte.destacado">{{ parte.texto
+                }}</strong><span *ngIf="!parte.destacado">{{ parte.texto }}</span></ng-container></p>
+        </div>
+      </div>
+    </article>
+    <article class="report-panel actions-panel">
+      <ng-container
+        *ngTemplateOutlet="encabezado; context: {icono: iconos.conclusion, titulo: 'Conclusión y recomendación'}"></ng-container>
+      <div class="actions-body">
+        <p class="project-conclusion">{{ d.conclusion }}</p>
+        <h3>Recomendaciones</h3>
+        <ol class="project-recommendations">
+          <li *ngFor="let recomendacion of d.recomendaciones">{{ recomendacion }}</li>
+        </ol>
+      </div>
+    </article>
+  </div>
+
+  <p class="methodology">
+    Conteos por fecha de apertura. Se aplican exclusivamente filtros globales y exclusiones; se omiten las selecciones
+    dinámicas de mes, proyecto, resolutor, descripción, tipos, detalle y ticket.
+    Todos los meses del rango se muestran, incluidos ceros y parciales. Solo se comparan meses completos consecutivos
+    con cobertura disponible.
+    Disponibilidad general: {{ d.mensual.disponibilidad.fecha_min || 'No confirmada' }} — {{
+    d.mensual.disponibilidad.fecha_max || 'No confirmada' }}.
+    La cobertura de calendario no acredita exhaustividad de importaciones ni continuidad de cargas. Los cuatro agregados
+    son consultas independientes, reconciliadas antes de exportar, sin garantía de instantánea transaccional.
+    Los porcentajes usan cantidades sin redondear; sus etiquetas a dos decimales pueden no sumar exactamente 100 %.
+  </p>
+  <footer>CANVIA · Incidentes Consolidados · R02 · Preparado: {{ d.preparadoEn }}</footer>
+</section>

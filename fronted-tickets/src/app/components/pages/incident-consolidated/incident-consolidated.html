@@ -36,14 +36,13 @@
                     Alertas
                 </button>
 
-                <button type="button" (click)="irASeccion('detalle-alertas')">
+                <!--    <button type="button" (click)="irASeccion('detalle-alertas')">
                     Detalle Alertas
-                </button>
+                </button> -->
+
 
                 <button type="button" (click)="irASeccion('explorador-tickets')">
-
                     Explorador de Tickets
-
                 </button>
 
             </nav>
@@ -338,12 +337,38 @@
     <!-- Gráficos Principales -->
     <section id="graficos-principales" class="dashboard-section">
 
-        <header class="section-header">
-            <h1>Gráficos Principales</h1>
+        <header class="section-header monthly-report-header">
+            <div class="monthly-report-heading">
+                <h1>Gráficos Principales</h1>
+                <button mat-flat-button type="button" class="monthly-download-button"
+                    [disabled]="!reporteMensualListo || exportandoReporteMensual" (click)="descargarReporteMensual()"
+                    aria-label="Descargar reporte de Análisis de Tickets Mensuales en PNG">
+                    {{ exportandoReporteMensual ? 'Descargando…' : 'Descargar' }}
+                </button>
+            </div>
             <p>
                 Volumen mensual y distribución general de incidentes.
             </p>
         </header>
+
+        <p class="monthly-report-status" role="status" aria-live="polite"
+            *ngIf="estadoReporteMensual === 'cargando' || estadoReporteMensual === 'preparando' || exportandoReporteMensual">
+            {{ exportandoReporteMensual ? 'Generando imagen PNG…' : estadoReporteMensual === 'cargando' ? 'Cargando
+            datos del reporte mensual…' : 'Preparando reporte mensual…' }}
+        </p>
+        <p class="monthly-report-status" role="status" *ngIf="estadoReporteMensual === 'sin_datos'">Sin incidentes para
+            generar el reporte mensual.</p>
+        <div class="monthly-report-error" role="alert" *ngIf="errorReporteMensual || errorExportacionMensual">
+            {{ errorReporteMensual || errorExportacionMensual }}
+            <button type="button" [disabled]="exportandoReporteMensual || cargandoVolumenMensual"
+                (click)="errorReporteMensual ? reintentarReporteMensual() : descargarReporteMensual()">Reintentar</button>
+        </div>
+
+        <div #reporteMensualImagen class="monthly-report-export-stage" aria-hidden="true" inert
+            *ngIf="datosReporteMensual as datos">
+            <app-incident-monthly-report [datos]="datos" (renderizado)="confirmarRenderMensual($event)"
+                (errorRenderizado)="fallarRenderMensual($event)"></app-incident-monthly-report>
+        </div>
 
         <div class="charts-grid">
 
@@ -416,9 +441,48 @@
     <!-- EMPRESA -->
     <section id="empresa" class="dashboard-section">
         <header class="section-header">
-            <h1>Empresa</h1>
+            <div class="project-report-heading monthly-report-heading">
+                <h1>Empresa</h1>
+                <div class="empresa-report-actions">
+                <button mat-flat-button type="button" class="project-report-button monthly-download-button" [disabled]="!puedeGenerarReporteProyectos"
+                    (click)="generarReporteProyectos()" aria-label="Descargar Reporte 2: Análisis de Tickets por Proyecto">
+                    {{ exportandoReporteProyectos ? 'Preparando…' : 'Reporte 2' }}
+                </button>
+                <button mat-flat-button type="button" class="selected-project-report-button monthly-download-button" [disabled]="!puedeGenerarReporteProyectoMensual"
+                    (click)="generarReporteProyectoMensual()" aria-label="Descargar Reporte 3: Tickets por Mes - Proyecto Seleccionado"
+                    [title]="proyectoSeleccionado ? 'Descargar el reporte del proyecto con las fechas efectivas aplicadas' : 'Selecciona un proyecto en el Explorador por Proyectos'">
+                    {{ exportandoReporteProyectoMensual ? 'Preparando…' : 'Reporte 3' }}
+                </button>
+                </div>
+            </div>
             <p>Distribución de incidentes por proyecto y nivel de prioridad.</p>
         </header>
+
+        <p class="project-report-status monthly-report-status" role="status" aria-live="polite" *ngIf="exportandoReporteProyectos">
+            {{ estadoReporteProyectos === 'cargando' ? 'Consultando datos de Reporte 2…' : estadoReporteProyectos === 'preparando' ? 'Preparando documento de Reporte 2…' : 'Generando PNG de Reporte 2…' }}
+        </p>
+        <p class="project-report-status monthly-report-status" role="status" *ngIf="estadoReporteProyectos === 'sin_datos'">Sin tickets para generar Reporte 2 con los filtros efectivos.</p>
+        <div class="project-report-error monthly-report-error" role="alert" *ngIf="errorReporteProyectos">
+            {{ errorReporteProyectos }}
+            <button type="button" [disabled]="!puedeGenerarReporteProyectos" (click)="reintentarReporteProyectos()">Reintentar</button>
+        </div>
+        <div #reporteProyectosImagen class="project-report-export-stage monthly-report-export-stage" aria-hidden="true" inert *ngIf="datosReporteProyectos as datos">
+            <app-incident-project-report [datos]="datos" (renderizado)="confirmarRenderProyectos($event)"
+                (errorRenderizado)="fallarRenderProyectos($event)"></app-incident-project-report>
+        </div>
+
+        <p class="selected-project-report-status monthly-report-status" role="status" aria-live="polite" *ngIf="exportandoReporteProyectoMensual">
+            {{ estadoReporteProyectoMensual === 'cargando' ? 'Consultando datos del proyecto para Reporte 3…' : estadoReporteProyectoMensual === 'preparando' ? 'Preparando Reporte 3…' : 'Generando PNG de Reporte 3…' }}
+        </p>
+        <p class="selected-project-report-status monthly-report-status" role="status" *ngIf="estadoReporteProyectoMensual === 'sin_datos'">Sin tickets del proyecto para generar Reporte 3 con los filtros efectivos.</p>
+        <div class="selected-project-report-error monthly-report-error" role="alert" *ngIf="errorReporteProyectoMensual">
+            {{ errorReporteProyectoMensual }}
+            <button type="button" [disabled]="!puedeGenerarReporteProyectoMensual" (click)="reintentarReporteProyectoMensual()">Reintentar</button>
+        </div>
+        <div #reporteProyectoMensualImagen class="selected-project-report-export-stage monthly-report-export-stage" aria-hidden="true" inert *ngIf="datosReporteProyectoMensual as datos">
+            <app-incident-project-monthly-report [datos]="datos" (renderizado)="confirmarRenderProyectoMensual($event)"
+                (errorRenderizado)="fallarRenderProyectoMensual($event)"></app-incident-project-monthly-report>
+        </div>
 
         <div class="charts-grid">
             <!-- EXPLORADOR POR PROYECTOS -->
@@ -537,14 +601,13 @@
     </section>
 
     <!-- DETALLE ALERTAS -->
-    <section id="detalle-alertas" class="dashboard-section">
+    <!--     <section id="detalle-alertas" class="dashboard-section">
 
         <header class="section-header">
             <h1>Detalle Alertas</h1>
             <p>Distribución por criticidad y ranking de descripciones y eventos técnicos.</p>
         </header>
 
-        <!-- TOP 10 Tickets por Descripción y Proyecto -->
         <div class="chart-full-width chart-expandable" id="fullscreen-descripciones-proyectos" #descripcionesProyectosFs
             *ngIf="topDescripcionesProyectos || cargandoTopDescripcionesProyectos">
 
@@ -569,7 +632,6 @@
         </div>
 
 
-        <!-- TOP 10 Tickets por Detalle -->
         <div class="chart-full-width chart-expandable" id="fullscreen-detalles" #detallesFs
             *ngIf="topDetalles || cargandoTopDetalles">
 
@@ -591,6 +653,8 @@
         </div>
 
     </section>
+ -->
+
 
     <!-- EXPLORADOR DE TICKETS -->
     <section id="explorador-tickets" class="dashboard-section" *ngIf="ticketsDetalle || cargandoTickets">

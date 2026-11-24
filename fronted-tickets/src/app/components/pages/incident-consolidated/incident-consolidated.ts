@@ -2,7 +2,15 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedVolumenItem, IncidentConsolidatedProyectoItem, IncidentConsolidatedTipoItem, IncidentConsolidatedPrioridadItem, IncidentConsolidatedTopProyectos, IncidentConsolidatedPrioridadMensualItem, IncidentConsolidatedRendimientoOut, IncidentConsolidatedExploradorDescripcionesOut, IncidentConsolidatedDetalleEventosOut, IncidentConsolidatedIncidentesPorcentajesOut, IncidentConsolidatedTopDescripcionProyectoOut, IncidentConsolidatedTopDetallesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedDetalleEventoItem, IncidentConsolidatedTicketsOut } from '../../../models/incident-consolidated';
 import { IncidentConsolidatedService } from '../../../services/incident-consolidated.service';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { forkJoin, Subscription, timeout } from 'rxjs';
+import { toPng } from 'html-to-image';
+import { IncidentMonthlyReportData } from '../../../models/incident-monthly-report';
+import { crearReporteMensual, fechaLima, filtrosReporteMensual } from '../../charts/Consolidated/incident-monthly-report/incident-monthly-report.utils';
+import { IncidentProjectReportData } from '../../../models/incident-project-report';
+import { IncidentProjectMonthlyRenderError, IncidentProjectMonthlyReportData } from '../../../models/incident-project-monthly-report';
+import { claveProyectoMensual, crearReporteProyectoMensual, filtrosReporteProyectoMensual, seleccionProyectoMensualValida } from '../../charts/Consolidated/incident-project-monthly-report/incident-project-monthly-report.utils';
+import { claveFiltrosProyectos, crearReporteProyectos, filtrosReporteProyectos, rangoProyectosValido } from '../../charts/Consolidated/incident-project-report/incident-project-report.utils';
 import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
 
 const FORMATOS_FECHA: MatDateFormats = {
@@ -96,7 +104,370 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
   private solicitudDashboard = 0;
   periodoSeleccionado: string | null = null;
 
+  @ViewChild('reporteMensualImagen') reporteMensualImagen?: ElementRef<HTMLElement>;
+  datosReporteMensual: IncidentMonthlyReportData | null = null;
+  estadoReporteMensual: 'inicial' | 'cargando' | 'sin_datos' | 'preparando' | 'listo' | 'error' = 'inicial';
+  errorReporteMensual: string | null = null;
+  errorExportacionMensual: string | null = null;
+  exportandoReporteMensual = false;
+  private versionReporteMensual = 0;
+  private reporteMensualDestruido = false;
 
+  get reporteMensualListo(): boolean {
+    return !this.reporteMensualDestruido && !this.cargandoFiltros && !this.cargandoVolumenMensual &&
+      this.estadoReporteMensual === 'listo' && this.datosReporteMensual !== null &&
+      this.datosReporteMensual.version === this.versionReporteMensual &&
+      this.datosReporteMensual.solicitud === this.solicitudDashboard;
+  }
+
+  private invalidarReporteMensual(): void {
+    ++this.versionReporteMensual;
+    this.datosReporteMensual = null;
+    this.estadoReporteMensual = 'cargando';
+    this.errorReporteMensual = null;
+    this.errorExportacionMensual = null;
+  }
+
+  confirmarRenderMensual(version: number): void {
+    if (!this.reporteMensualDestruido && version === this.versionReporteMensual &&
+      this.datosReporteMensual?.version === version) {
+      this.estadoReporteMensual = 'listo';
+      this.changeDetector.markForCheck();
+    }
+  }
+
+  fallarRenderMensual(version: number): void {
+    if (!this.reporteMensualDestruido && version === this.versionReporteMensual && this.datosReporteMensual?.version === version) {
+      this.estadoReporteMensual = 'error';
+      this.errorReporteMensual = 'No se pudo renderizar el reporte mensual. Reintenta la preparación.';
+      this.changeDetector.markForCheck();
+    }
+  }
+
+  reintentarReporteMensual(): void {
+    if (this.reporteMensualDestruido || this.exportandoReporteMensual || this.cargandoVolumenMensual) return;
+    if (this.datosReporteMensual && this.datosReporteMensual.solicitud === this.solicitudDashboard) {
+      this.datosReporteMensual = { ...this.datosReporteMensual, version: ++this.versionReporteMensual };
+      this.estadoReporteMensual = 'preparando';
+      this.errorReporteMensual = null;
+      this.changeDetector.markForCheck();
+    } else {
+      this.cargarVolumenMensual();
+    }
+  }
+
+  async descargarReporteMensual(): Promise<void> {
+    if (!this.reporteMensualListo || this.exportandoReporteMensual || !this.datosReporteMensual) return;
+    const datos = this.datosReporteMensual;
+    this.exportandoReporteMensual = true;
+    this.errorExportacionMensual = null;
+    this.changeDetector.markForCheck();
+    let enlace: HTMLAnchorElement | undefined;
+    try {
+      // El hijo ya confirmó fuentes y pintura para esta versión del documento.
+      if (!this.reporteMensualListo || this.datosReporteMensual !== datos) throw new Error('obsoleto');
+      const elemento = this.reporteMensualImagen?.nativeElement.querySelector<HTMLElement>('.report-document');
+      if (!elemento) throw new Error('documento');
+      const width = Math.ceil(elemento.scrollWidth), height = Math.ceil(elemento.scrollHeight);
+      if (width !== 1400 || height <= 0) throw new Error('dimensiones');
+      const pixelRatio = height > 4000 ? 1 : 2;
+      if (width * pixelRatio > 16384 || height * pixelRatio > 16384 || width * height * pixelRatio ** 2 > 32000000) {
+        throw new Error('limite');
+      }
+      const imagen = await toPng(elemento, {
+        backgroundColor: '#F7F9FB', width, height, pixelRatio, skipFonts: true, skipAutoScale: true,
+        style: { position: 'static', left: 'auto', top: 'auto', transform: 'none', margin: '0' },
+      });
+      if (this.reporteMensualDestruido) return;
+      if (!this.reporteMensualListo || this.datosReporteMensual !== datos) throw new Error('obsoleto');
+      if (!imagen.startsWith('data:image/png;base64,') || imagen.length < 100) throw new Error('imagen');
+      enlace = document.createElement('a');
+      enlace.href = imagen;
+      enlace.download = `CANVIA-Incidentes-Mensuales-${datos.filtros.desde ?? 'inicio'}_${datos.filtros.hasta ?? 'fin'}-${fechaLima(new Date())}.png`;
+      document.body.appendChild(enlace);
+      enlace.click();
+    } catch (error) {
+      if (!this.reporteMensualDestruido) {
+        const causa = error instanceof Error ? error.message : '';
+        this.errorExportacionMensual = causa === 'obsoleto'
+          ? 'Los filtros o los datos cambiaron durante la captura. Descarga el reporte actualizado.'
+          : causa === 'limite'
+            ? 'El reporte supera el tamaño de imagen permitido. Reduce el rango de fechas para descargarlo completo.'
+            : 'No fue posible generar el PNG completo. Reintenta la descarga.';
+      }
+    } finally {
+      enlace?.remove();
+      this.exportandoReporteMensual = false;
+      if (!this.reporteMensualDestruido) this.changeDetector.markForCheck();
+    }
+  }
+
+
+
+  // R02 - REPORTE GENERAL POR PROYECTO
+  @ViewChild('reporteProyectosImagen') reporteProyectosImagen?: ElementRef<HTMLElement>;
+  datosReporteProyectos: IncidentProjectReportData | null = null;
+  estadoReporteProyectos: 'inicial' | 'cargando' | 'preparando' | 'listo' | 'sin_datos' | 'error' = 'inicial';
+  errorReporteProyectos: string | null = null;
+  exportandoReporteProyectos = false;
+  private versionReporteProyectos = 0;
+  private claveReporteProyectos: string | null = null;
+  private consultaReporteProyectos?: Subscription;
+  private capturaProyectosActiva = false;
+  private reporteProyectosDestruido = false;
+
+  get puedeGenerarReporteProyectos(): boolean {
+    return !this.reporteProyectosDestruido && !this.cargandoFiltros && !this.exportandoReporteProyectos &&
+      rangoProyectosValido(filtrosReporteProyectos(this.filtrosActuales));
+  }
+
+  private invalidarReporteProyectos(): void {
+    ++this.versionReporteProyectos;
+    this.consultaReporteProyectos?.unsubscribe();
+    this.datosReporteProyectos = null;
+    this.claveReporteProyectos = null;
+    this.estadoReporteProyectos = 'inicial';
+    this.errorReporteProyectos = null;
+    this.exportandoReporteProyectos = this.capturaProyectosActiva;
+  }
+
+  private sincronizarReporteProyectos(): void {
+    if (this.claveReporteProyectos !== null && this.claveReporteProyectos !== claveFiltrosProyectos(this.filtrosActuales)) {
+      this.invalidarReporteProyectos();
+    }
+  }
+
+  private reporteProyectosVigente(version: number): boolean {
+    return !this.reporteProyectosDestruido && version === this.versionReporteProyectos &&
+      this.claveReporteProyectos === claveFiltrosProyectos(this.filtrosActuales);
+  }
+
+  generarReporteProyectos(): void {
+    if (!this.puedeGenerarReporteProyectos) return;
+    this.invalidarReporteProyectos();
+    const version = this.versionReporteProyectos;
+    const filtros = filtrosReporteProyectos(this.filtrosActuales);
+    const disponibilidad = { fecha_min: this.opcionesFiltros.fecha_min, fecha_max: this.opcionesFiltros.fecha_max };
+    this.claveReporteProyectos = claveFiltrosProyectos(filtros);
+    this.estadoReporteProyectos = 'cargando';
+    this.exportandoReporteProyectos = true;
+    this.consultaReporteProyectos = forkJoin({
+      kpis: this.incidentConsolidatedService.obtenerKpis(filtros).pipe(timeout(30000)),
+      proyectos: this.incidentConsolidatedService.obtenerProyectos(filtros).pipe(timeout(30000)),
+      top: this.incidentConsolidatedService.obtenerTopProyectos(filtros).pipe(timeout(30000)),
+      volumen: this.incidentConsolidatedService.obtenerVolumenMensual(filtros).pipe(timeout(30000)),
+    }).subscribe({
+      next: respuestas => {
+        if (!this.reporteProyectosVigente(version)) { this.sincronizarReporteProyectos(); return; }
+        try {
+          const reporte = crearReporteProyectos(respuestas, filtros, disponibilidad, version, new Date().toISOString());
+          this.datosReporteProyectos = reporte.total > 0 ? reporte : null;
+          this.estadoReporteProyectos = reporte.total > 0 ? 'preparando' : 'sin_datos';
+          if (reporte.total === 0) this.exportandoReporteProyectos = false;
+        } catch (error) { this.fallarPreparacionProyectos(error); }
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        if (!this.reporteProyectosVigente(version)) { this.sincronizarReporteProyectos(); return; }
+        this.fallarPreparacionProyectos(new Error('No se pudieron completar las cuatro consultas de Reporte 2. Reintenta la preparación.'));
+      },
+      complete: () => {
+        if (this.reporteProyectosVigente(version) && this.estadoReporteProyectos === 'cargando') {
+          this.fallarPreparacionProyectos(new Error('Las consultas de Reporte 2 terminaron sin todos los agregados requeridos.'));
+        }
+      },
+    });
+    this.changeDetector.markForCheck();
+  }
+
+  private fallarPreparacionProyectos(error: unknown): void {
+    this.estadoReporteProyectos = 'error';
+    this.exportandoReporteProyectos = false;
+    this.errorReporteProyectos = error instanceof Error && !(error instanceof TypeError)
+      ? error.message : 'No se pudieron validar los datos de Reporte 2. Reintenta la preparación.';
+    this.changeDetector.markForCheck();
+  }
+
+  confirmarRenderProyectos(version: number): void {
+    if (!this.reporteProyectosVigente(version) || this.datosReporteProyectos?.version !== version ||
+      this.estadoReporteProyectos !== 'preparando') return;
+    this.estadoReporteProyectos = 'listo';
+    void this.capturarReporteProyectos(this.datosReporteProyectos);
+  }
+
+  fallarRenderProyectos(version: number): void {
+    if (this.reporteProyectosVigente(version) && this.datosReporteProyectos?.version === version) {
+      this.fallarPreparacionProyectos(new Error('No se pudo renderizar Reporte 2. Reintenta la preparación.'));
+    }
+  }
+
+  reintentarReporteProyectos(): void {
+    if (!this.puedeGenerarReporteProyectos) return;
+    const datos = this.datosReporteProyectos;
+    if (!datos || !this.reporteProyectosVigente(datos.version)) { this.generarReporteProyectos(); return; }
+    this.datosReporteProyectos = { ...datos, version: ++this.versionReporteProyectos };
+    this.estadoReporteProyectos = 'preparando';
+    this.errorReporteProyectos = null;
+    this.exportandoReporteProyectos = true;
+    this.changeDetector.markForCheck();
+  }
+
+  private async capturarReporteProyectos(datos: IncidentProjectReportData): Promise<void> {
+    if (this.capturaProyectosActiva || !this.reporteProyectosVigente(datos.version)) return;
+    this.capturaProyectosActiva = true;
+    let enlace: HTMLAnchorElement | undefined;
+    try {
+      const elemento = this.reporteProyectosImagen?.nativeElement.querySelector<HTMLElement>('.report-document');
+      if (!elemento) throw new Error('documento');
+      const width = Math.ceil(elemento.scrollWidth), height = Math.ceil(elemento.scrollHeight);
+      if (width !== 1400 || !Number.isFinite(height) || height <= 0) throw new Error('dimensiones');
+      const pixelRatio = height > 4000 ? 1 : 2;
+      if (width * pixelRatio > 16384 || height * pixelRatio > 16384 || width * height * pixelRatio ** 2 > 32000000) throw new Error('limite');
+      const imagen = await toPng(elemento, {
+        backgroundColor: '#F7F9FB', width, height, pixelRatio, skipFonts: true, skipAutoScale: true,
+        style: { position: 'static', left: 'auto', top: 'auto', transform: 'none', margin: '0' },
+      });
+      if (this.reporteProyectosDestruido) return;
+      if (!this.reporteProyectosVigente(datos.version) || this.datosReporteProyectos !== datos) throw new Error('obsoleto');
+      if (!imagen.startsWith('data:image/png;base64,') || imagen.length < 100) throw new Error('imagen');
+      enlace = document.createElement('a'); enlace.href = imagen;
+      enlace.download = `CANVIA-Tickets-Proyecto-${datos.filtros.desde}_${datos.filtros.hasta}-${fechaLima(new Date())}.png`;
+      document.body.appendChild(enlace); enlace.click();
+    } catch (error) {
+      if (!this.reporteProyectosDestruido) {
+        const causa = error instanceof Error ? error.message : '';
+        this.estadoReporteProyectos = 'error';
+        this.errorReporteProyectos = causa === 'obsoleto' ? 'Los filtros cambiaron durante la captura. Genera Reporte 2 nuevamente.'
+          : causa === 'limite' ? 'Reporte 2 supera el tamaño de imagen permitido. Reduce el rango de fechas para descargarlo completo.'
+            : 'No fue posible generar el PNG completo de Reporte 2. Puedes reintentar la descarga.';
+      }
+    } finally {
+      enlace?.remove(); this.capturaProyectosActiva = false; this.exportandoReporteProyectos = false;
+      if (!this.reporteProyectosDestruido) this.changeDetector.markForCheck();
+    }
+  }
+
+  // R03 - PROYECTO SELECCIONADO: consultas y versiones independientes de R01/R02.
+  @ViewChild('reporteProyectoMensualImagen') reporteProyectoMensualImagen?: ElementRef<HTMLElement>;
+  datosReporteProyectoMensual: IncidentProjectMonthlyReportData | null = null;
+  estadoReporteProyectoMensual: 'inicial' | 'cargando' | 'preparando' | 'listo' | 'sin_datos' | 'error' = 'inicial';
+  errorReporteProyectoMensual: string | null = null;
+  exportandoReporteProyectoMensual = false;
+  private versionProyectoMensual = 0;
+  private claveReporteProyectoMensual: string | null = null;
+  private consultaProyectoMensual?: Subscription;
+  private capturaProyectoMensualActiva = false;
+  private proyectoMensualDestruido = false;
+
+  get puedeGenerarReporteProyectoMensual(): boolean {
+    return !this.proyectoMensualDestruido && !this.cargandoFiltros && !this.exportandoReporteProyectoMensual &&
+      seleccionProyectoMensualValida(filtrosReporteProyectoMensual(this.filtrosActuales, this.proyectoSeleccionado));
+  }
+  private invalidarReporteProyectoMensual(): void {
+    ++this.versionProyectoMensual;
+    this.consultaProyectoMensual?.unsubscribe();
+    this.datosReporteProyectoMensual = null; this.claveReporteProyectoMensual = null;
+    this.estadoReporteProyectoMensual = 'inicial'; this.errorReporteProyectoMensual = null;
+    this.exportandoReporteProyectoMensual = this.capturaProyectoMensualActiva;
+  }
+  private sincronizarReporteProyectoMensual(): void {
+    if (this.claveReporteProyectoMensual !== null && this.claveReporteProyectoMensual !== claveProyectoMensual(this.filtrosActuales, this.proyectoSeleccionado)) this.invalidarReporteProyectoMensual();
+  }
+  private proyectoMensualVigente(version: number): boolean {
+    return !this.proyectoMensualDestruido && version === this.versionProyectoMensual &&
+      this.claveReporteProyectoMensual === claveProyectoMensual(this.filtrosActuales, this.proyectoSeleccionado);
+  }
+  generarReporteProyectoMensual(): void {
+    if (!this.puedeGenerarReporteProyectoMensual) return;
+    this.invalidarReporteProyectoMensual();
+    const version = this.versionProyectoMensual;
+    const filtros = filtrosReporteProyectoMensual(this.filtrosActuales, this.proyectoSeleccionado);
+    const disponibilidad = { fecha_min: this.opcionesFiltros.fecha_min, fecha_max: this.opcionesFiltros.fecha_max };
+    this.claveReporteProyectoMensual = claveProyectoMensual(filtros, filtros.proyecto);
+    this.estadoReporteProyectoMensual = 'cargando'; this.exportandoReporteProyectoMensual = true;
+    this.consultaProyectoMensual = forkJoin({
+      kpis: this.incidentConsolidatedService.obtenerKpis(filtros).pipe(timeout(30000)),
+      top: this.incidentConsolidatedService.obtenerTopProyectos(filtros).pipe(timeout(30000)),
+    }).subscribe({
+      next: respuestas => {
+        if (!this.proyectoMensualVigente(version)) { this.sincronizarReporteProyectoMensual(); return; }
+        try {
+          const datos = crearReporteProyectoMensual(respuestas, filtros, disponibilidad, version, new Date().toISOString());
+          this.datosReporteProyectoMensual = datos.mensual.total > 0 ? datos : null;
+          this.estadoReporteProyectoMensual = datos.mensual.total > 0 ? 'preparando' : 'sin_datos';
+          if (!datos.mensual.total) this.exportandoReporteProyectoMensual = false;
+        } catch (error) { this.fallarPreparacionProyectoMensual(error); }
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        if (!this.proyectoMensualVigente(version)) { this.sincronizarReporteProyectoMensual(); return; }
+        this.fallarPreparacionProyectoMensual(new Error('No se pudieron completar las consultas de Reporte 3. Reintenta la preparación.'));
+      },
+      complete: () => {
+        if (this.proyectoMensualVigente(version) && this.estadoReporteProyectoMensual === 'cargando') this.fallarPreparacionProyectoMensual(new Error('Las consultas de Reporte 3 terminaron sin los agregados requeridos.'));
+      },
+    });
+    this.changeDetector.markForCheck();
+  }
+  private fallarPreparacionProyectoMensual(error: unknown): void {
+    this.estadoReporteProyectoMensual = 'error'; this.exportandoReporteProyectoMensual = false;
+    this.errorReporteProyectoMensual = error instanceof Error && !(error instanceof TypeError) ? error.message : 'No se pudieron validar los datos del proyecto para Reporte 3.';
+    this.changeDetector.markForCheck();
+  }
+  confirmarRenderProyectoMensual(version: number): void {
+    if (!this.proyectoMensualVigente(version) || this.datosReporteProyectoMensual?.version !== version || this.estadoReporteProyectoMensual !== 'preparando') return;
+    this.estadoReporteProyectoMensual = 'listo';
+    void this.capturarReporteProyectoMensual(this.datosReporteProyectoMensual);
+  }
+  fallarRenderProyectoMensual(error: IncidentProjectMonthlyRenderError): void {
+    if (this.proyectoMensualVigente(error.version) && this.datosReporteProyectoMensual?.version === error.version) this.fallarPreparacionProyectoMensual(new Error(error.motivo === 'legibilidad'
+      ? 'Reporte 3 no cabe en una composición horizontal legible. Reduce el rango de fechas para conservar todos los meses y valores sin recortes.'
+      : 'No se pudo renderizar Reporte 3. Puedes reintentar la preparación.'));
+  }
+  reintentarReporteProyectoMensual(): void {
+    if (!this.puedeGenerarReporteProyectoMensual) return;
+    const datos = this.datosReporteProyectoMensual;
+    if (!datos || !this.proyectoMensualVigente(datos.version)) { this.generarReporteProyectoMensual(); return; }
+    this.datosReporteProyectoMensual = { ...datos, version: ++this.versionProyectoMensual };
+    this.estadoReporteProyectoMensual = 'preparando'; this.errorReporteProyectoMensual = null; this.exportandoReporteProyectoMensual = true;
+    this.changeDetector.markForCheck();
+  }
+  private async capturarReporteProyectoMensual(datos: IncidentProjectMonthlyReportData): Promise<void> {
+    if (this.capturaProyectoMensualActiva || !this.proyectoMensualVigente(datos.version)) return;
+    this.capturaProyectoMensualActiva = true;
+    let enlace: HTMLAnchorElement | undefined, temporizador: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const elemento = this.reporteProyectoMensualImagen?.nativeElement.querySelector<HTMLElement>('.report-document');
+      if (!elemento) throw new Error('documento');
+      const width = Math.ceil(elemento.scrollWidth), height = Math.ceil(elemento.scrollHeight);
+      if (width !== 1400 || !Number.isFinite(height) || height <= 0) throw new Error('dimensiones');
+      const pixelRatio = height > 4000 ? 1 : 2;
+      if (width * pixelRatio > 16384 || height * pixelRatio > 16384 || width * height * pixelRatio ** 2 > 32000000) throw new Error('limite');
+      const imagen = await Promise.race([
+        toPng(elemento, { backgroundColor: '#F7F9FB', width, height, pixelRatio, skipFonts: true, skipAutoScale: true,
+          style: { position: 'static', left: 'auto', top: 'auto', transform: 'none', margin: '0' } }),
+        new Promise<never>((_, reject) => { temporizador = setTimeout(() => reject(new Error('timeout')), 30000); }),
+      ]);
+      if (this.proyectoMensualDestruido) return;
+      if (!this.proyectoMensualVigente(datos.version) || this.datosReporteProyectoMensual !== datos) throw new Error('obsoleto');
+      if (!imagen.startsWith('data:image/png;base64,') || imagen.length < 100) throw new Error('imagen');
+      enlace = document.createElement('a'); enlace.href = imagen;
+      enlace.download = `CANVIA-Tickets-Mes-Proyecto-Seleccionado-${datos.filtros.desde}_${datos.filtros.hasta}-${fechaLima(new Date())}.png`;
+      document.body.appendChild(enlace); enlace.click();
+    } catch (error) {
+      if (!this.proyectoMensualDestruido) {
+        const causa = error instanceof Error ? error.message : '';
+        this.estadoReporteProyectoMensual = 'error';
+        this.errorReporteProyectoMensual = causa === 'obsoleto' ? 'El proyecto o los filtros cambiaron durante la captura. Genera Reporte 3 nuevamente.'
+          : causa === 'limite' ? 'Reporte 3 supera el tamaño de imagen permitido. Reduce el rango para descargarlo completo.'
+            : causa === 'timeout' ? 'La captura de Reporte 3 superó el tiempo permitido. Puedes reintentar la descarga.'
+              : 'No fue posible generar el PNG completo de Reporte 3. Puedes reintentar la descarga.';
+      }
+    } finally {
+      clearTimeout(temporizador); enlace?.remove(); this.capturaProyectoMensualActiva = false; this.exportandoReporteProyectoMensual = false;
+      if (!this.proyectoMensualDestruido) this.changeDetector.markForCheck();
+    }
+  }
 
   // TABLA PAGINADA - EXPLORADOR DE TICKETS
   ticketsDetalle: IncidentConsolidatedTicketsOut | null = null;
@@ -228,6 +599,12 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
+    this.proyectoMensualDestruido = true;
+    this.invalidarReporteProyectoMensual();
+    this.reporteProyectosDestruido = true;
+    this.invalidarReporteProyectos();
+    this.reporteMensualDestruido = true;
+    this.invalidarReporteMensual();
     this.reiniciarBusquedaDescripciones();
     this.reiniciarBusquedaDetalles();
 
@@ -254,6 +631,8 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   cargarDashboard(): void {
+    this.sincronizarReporteProyectoMensual();
+    this.sincronizarReporteProyectos();
 
     if (this.temporizadorExclusiones !== null) {
       clearTimeout(this.temporizadorExclusiones);
@@ -457,32 +836,44 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
   // CARGAR NUMERO DE INCIDENTES POR MES
   cargarVolumenMensual(solicitudActual: number = this.solicitudDashboard): void {
 
+    this.invalidarReporteMensual();
+    const versionReporte = this.versionReporteMensual;
     this.cargandoVolumenMensual = true;
 
-    const filtrosBase: IncidentConsolidatedDashboardFilters = {
-      ...this.filtrosActuales,
-      periodo: undefined
+    const filtrosBase = filtrosReporteMensual(this.filtrosActuales);
+    const disponibilidad = {
+      fecha_min: this.opcionesFiltros.fecha_min,
+      fecha_max: this.opcionesFiltros.fecha_max,
     };
 
     this.incidentConsolidatedService
       .obtenerVolumenMensual(filtrosBase)
+      .pipe(timeout(30000))
       .subscribe({
 
         next: (data) => {
 
           // DESCARTAR RESPUESTAS OBSOLETAS
-          if (solicitudActual !== this.solicitudDashboard) {
+          if (solicitudActual !== this.solicitudDashboard || versionReporte !== this.versionReporteMensual || this.reporteMensualDestruido) {
             return;
           }
 
           this.volumenMensual = data;
           this.cargandoVolumenMensual = false;
+          try {
+            const reporte = crearReporteMensual(data, filtrosBase, disponibilidad, versionReporte, solicitudActual, new Date().toISOString());
+            this.datosReporteMensual = reporte.total > 0 ? reporte : null;
+            this.estadoReporteMensual = reporte.total > 0 ? 'preparando' : 'sin_datos';
+          } catch (error) {
+            this.estadoReporteMensual = 'error';
+            this.errorReporteMensual = error instanceof Error ? error.message : 'No se pudieron validar los datos del reporte mensual.';
+          }
           this.changeDetector.markForCheck();
         },
 
         error: (error) => {
 
-          if (solicitudActual !== this.solicitudDashboard) {
+          if (solicitudActual !== this.solicitudDashboard || versionReporte !== this.versionReporteMensual || this.reporteMensualDestruido) {
             return;
           }
 
@@ -492,6 +883,8 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
           );
 
           this.cargandoVolumenMensual = false;
+          this.estadoReporteMensual = 'error';
+          this.errorReporteMensual = 'No se pudo cargar el volumen mensual. Reintenta la consulta.';
           this.changeDetector.markForCheck();
         }
       });
@@ -1592,6 +1985,9 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
     // INVALIDAR RESPUESTAS ANTERIORES
     this.solicitudDashboard++;
+    this.invalidarReporteMensual();
+    this.sincronizarReporteProyectos();
+    this.sincronizarReporteProyectoMensual();
 
     // AGRUPAR CAMBIOS RAPIDOS DE LOS CHECKBOXES
     if (this.temporizadorExclusiones !== null) {

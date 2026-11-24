@@ -133,6 +133,85 @@ Los tres specs nuevos del padre, reporte y utilidades cubren respuestas en disti
 
 **Pendiente:** aceptación con datos reales; contraste con consultas SQL Server; filtros con proyectos/grupos reales; comparación visual en otros navegadores; rendimiento y legibilidad cerca del límite de imagen; cambios concurrentes de datos entre páginas. La lectura multipetición no equivale a un snapshot transaccional backend. Reglas y límites: [ARCHITECTURE.md](ARCHITECTURE.md#reporte-png-de-tiempos-de-informes-mensuales).
 
+### Reporte PNG R01 de Incidentes Consolidados
+
+Desde `fronted-tickets/`:
+
+```powershell
+npm test -- --watch=false --include="**/incident-consolidated.spec.ts" --include="**/incident-monthly-report*.spec.ts"
+npm test -- --watch=false
+npm run build
+```
+
+Los tres specs de R01 cubren cronología y cruce de años, ceros y vacío, empates, meses parciales y disponibilidad general, fecha de Lima, año bisiesto, base cero, precisión, datos inválidos, filtros copiados sin `periodo`, selección dinámica de mes, independencia del formulario pendiente, respuestas/renders obsoletos, debounce, HTTP/timeout, reintentos de consulta/render/captura, fuentes y pinturas, dimensiones, doble clic, abandono de página, nombre de archivo y limpieza del enlace.
+
+Ejecución del 24/11/2026:
+
+- **38 pruebas de R01 aprobadas** dentro de la suite completa: **104 aprobadas y 3 fallidas**. Los fallos corresponden a los casos ya documentados de App (`app-landing` desconocido), Login (sin proveedor de `ActivatedRoute`) y categorización (orden esperado por incorrectas frente al orden actual por total). Esos archivos no se modificaron para R01.
+- Compilación de producción terminada con código 0. El primer intento falló por DNS al descargar Google Fonts del estilo global existente; el reintento con acceso autorizado a red compiló. Persisten advertencias de tamaño del bundle inicial y de estilos, incluido el padre de Incidentes Consolidados; no se modificaron presupuestos ni dependencias.
+- Edge sin interfaz sirvió la compilación con respuestas ficticias locales, sin iniciar FastAPI ni consultar bases. Simuló un error HTTP inicial y comprobó que el reintento consultara solo el volumen; la descarga posterior no generó HTTP adicional.
+- Descargó y verificó un PNG real de **2800 × 4276 px**, correspondiente a un documento de **1400 × 2138 px CSS**, con 14 meses en dos gráficos, 3 KPI, 480 incidentes y dos meses parciales. La inspección visual confirmó contenido completo; no se detectaron controles interactivos, desbordamientos de paneles/textos SVG ni excepciones JavaScript.
+- El arnés y las evidencias se guardaron en `.angular/png-incident-monthly-smoke/`, ignorado por Git. Solo utilizan datos ficticios. El registro `result.json` contiene dimensiones y resultado de las verificaciones.
+
+Ajuste visual del 24/11/2026:
+
+- Se ejecutaron nuevamente los tres specs de R01: **38 aprobadas**. Se conservaron los casos de cálculo, filtros y exportación; el spec presentacional comprueba el período dentro de la cabecera, tres iconos KPI, gráficos separados de los SVG de iconos, colores por mes y conservación literal de hallazgos, conclusión y recomendación.
+- `npm run build` terminó con código 0 y las advertencias de tamaño de bundle/estilos existentes. No se alteraron modelos, funciones de cálculo, coordinador de descarga, backend ni dependencias.
+- Edge descargó el PNG completo del diseño horizontal: **2800 × 3304 px**, documento de **1400 × 1652 px CSS**. El arnés verificó gráfico a la izquierda y hallazgos a la derecha en una fila, tres KPI alineados, 14 colores para 14 barras, tres iconos KPI y cuatro iconos de hallazgos, período en cabecera, ausencia de controles/desbordamientos y descarga sin HTTP adicional. Se revisó visualmente la captura final, incluidos fuentes y líneas del SVG expresadas como atributos para conservar su apariencia en PNG.
+- La imagen de referencia no estaba adjunta al mensaje de ajuste; se implementaron las indicaciones visuales detalladas por el usuario. Las evidencias finales están en el mismo arnés local ignorado por Git.
+
+Rediseño de infografía ejecutiva del 24/11/2026:
+
+- Specs relacionados con R01: **39 aprobados**, incluidos cálculos y estados de exportación existentes. El caso presentacional de rango largo verifica que no desaparecen meses ni se crean hallazgos de relleno. Se conserva la comparación literal de hallazgos, conclusión y recomendación frente a la instantánea, aunque los números se presenten en negrita.
+- `npm run build` finalizó con código 0. Persisten advertencias de tamaño del bundle y estilos del proyecto. Se verificó mediante hashes que no cambiaron las utilidades de cálculo, el modelo de instantánea ni el coordinador de solicitudes/descarga.
+- Edge descargó un PNG real de **2800 × 2008 px** para el documento de **1400 × 1004 px CSS** con 14 meses y cuatro hallazgos: composición horizontal, aproximadamente 39 % menos altura que el diseño anterior de 1652 px. La revisión visual confirmó icono de infraestructura, curvas, degradados, paneles azules con detalle diagonal, números resaltados y franja ejecutiva completos.
+- Casos adicionales: 1 mes y 1 hallazgo, **1400 × 997 px CSS**; 18 meses densos, **1400 × 997 px CSS**; disponibilidad desconocida con 14 meses, **1400 × 997 px CSS**; 40 meses en tres bloques, **1400 × 1624 px CSS**. Se exportaron todos a escala 2 sin recortar contenido. En rangos extensos se permite crecimiento vertical para conservar legibilidad.
+- Los cinco casos comprobaron cero controles interactivos, desbordamientos y solapamientos entre textos SVG, además de gradientes por barra, KPI en fila y paneles en columnas. La descarga no generó HTTP adicional y el reintento inicial consultó únicamente el volumen. El arnés local ignorado por Git conserva `result-compacto.json`, `result-un-mes.json`, `result-denso.json`, `result-sin-cobertura.json` y `result-muchos.json` con las rutas de cada PNG.
+- No se recibió una imagen de referencia accesible en el mensaje del rediseño: se siguió la descripción visual detallada. La comparación exacta con esa imagen queda pendiente.
+
+Pendientes: aceptación con datos reales y contraste de disponibilidad/filtros en el entorno operativo, otros navegadores y evaluación visual cerca del límite de imagen. Los límites generales de registros no prueban la exhaustividad de las importaciones; consultar [arquitectura de R01](ARCHITECTURE.md#reporte-png-r01-de-incidentes-consolidados).
+
+### Reporte PNG R02 de Incidentes Consolidados
+
+Validación ejecutada el 24/11/2026, exclusivamente con datos ficticios y sin conexión a bases de datos:
+
+- Desde `fronted-tickets/`: `npm test -- --watch=false --include="**/incident-consolidated*.spec.ts" --include="**/incident-monthly-report*.spec.ts" --include="**/incident-project-report*.spec.ts"`: **71 aprobadas en seis archivos** (39 de R01 y 32 de R02). Cubren filtros idénticos en las cuatro solicitudes, inmutabilidad del dashboard, denominadores, Top 5 + Otros, empates, ceros, meses parciales/base cero, nombres largos, bloques mensuales, errores HTTP/render/captura, timeout, reintento, invalidación y doble descarga.
+- `npm run build`: código 0. Persisten advertencias de tamaño de bundle y estilos del proyecto. No se añadieron dependencias ni se modificaron backend o endpoints.
+- Edge sin interfaz sirvió el build de producción con respuestas ficticias locales y descargó el PNG completo. Caso principal de 12 proyectos/3 meses: **1400 × 1302 px CSS**, **2800 × 2604 px PNG**, 30 barras verticales agrupadas, seis segmentos/entradas de distribución, tres hallazgos y tres recomendaciones. Denominador general: 1386; subtotal Top 10: 1305; «Otros»: 546. Se revisó visualmente el PNG, incluidos nombres largos identificados por clave y nombre íntegro, leyenda mensual y dona.
+- Caso de un proyecto/un mes: **1400 × 1180 px CSS**, **2800 × 2360 px PNG**, «Otros» con cero sin arco ficticio. Caso de 14 meses: **1400 × 3098 px CSS**, **2800 × 6196 px PNG**, 140 barras en seis bloques y todos los meses en la tendencia. Una discrepancia deliberada entre denominadores bloqueó la descarga.
+- El arnés verificó ancho de 1400 px, composición 65/35 y tres columnas inferiores, valores y leyendas completos, ausencia de controles interactivos, errores JavaScript, textos cortados, desbordamientos y solapamientos SVG. También simuló un error HTTP con reintento y comprobó que captura/reintento de render no agregan consultas.
+- Regresión adicional R01 en Edge: descarga de **2800 × 2008 px** desde **1400 × 1004 px CSS**, 14 meses y cero desbordamientos/solapamientos. Los hashes de sus seis archivos de componente/utilidades/pruebas y su modelo permanecen iguales a los del inicio de R02.
+- Evidencias locales ignoradas por Git: `.angular/png-incident-project-smoke/verify.mjs`, `result-normal.json`, `result-uno.json`, `result-inconsistente.json`, `result-largo.json` y subcarpetas de descarga; la regresión R01 está en `.angular/png-incident-monthly-smoke/`.
+
+Corrección de composición del 24/11/2026 (evidencia visual vigente; las dimensiones anteriores corresponden al diseño inicial):
+
+- Se sustituyó la subdivisión en múltiples gráficos por un único SVG agrupado y una única línea de tendencia. La leyenda de la dona queda a su derecha. Se compactaron cabecera, KPI, paddings y tipografía, preservando íntegros filtros, cálculos, textos y coordinador de exportación.
+- Pruebas relacionadas: **72 aprobadas en seis archivos** (39 R01 y 33 R02), con un caso adicional de 40 meses que verifica todos los puntos/barras, extremos del eje y ausencia de subdivisiones. Compilación Angular con código 0; persisten advertencias de tamaño del proyecto.
+- Edge descargó el caso principal de 12 proyectos/3 meses en **2800 × 2068 px PNG**, desde **1400 × 1034 px CSS**: aproximadamente 21 % menos altura que el diseño inicial. Revisión visual de cabecera, tres KPI, barras agrupadas, leyenda de meses, nombres completos, dona/leyenda lateral y tres bloques inferiores, con línea de tendencia.
+- Un proyecto/un mes: **1400 × 972 px CSS**, **2800 × 1944 px PNG**. Catorce meses: **1400 × 1077 px CSS**, **2800 × 2154 px PNG**, 140 barras y 14 puntos en un gráfico de cada tipo. Cuarenta meses: **1400 × 1115 px CSS**, **2800 × 2230 px PNG**, 400 barras y 40 puntos, sin apilar gráficos.
+- Los cuatro PNG comprobaron cero scrolls, bloques vacíos, controles interactivos, desbordamientos, textos cortados y solapamientos SVG. El caso denso destaca solo el máximo mensual por proyecto con nota explícita, y adapta etiquetas de la línea; no elimina registros. Se confirmó también que una discrepancia de denominadores bloquea la descarga y que los reintentos conservan los filtros autorizados.
+- El arnés conserva los mismos JSON de resultados actualizados y añade `result-muy-largo.json`. Las imágenes previas siguen en sus subcarpetas; cada JSON identifica el PNG vigente. La imagen de referencia sigue sin estar disponible para comparación directa: se aplicaron la estructura indicada y el estilo de R01.
+
+Pendientes: aceptación con datos reales, otros navegadores, rangos próximos al límite de imagen y cotejo visual con la imagen de referencia no disponible en esta sesión. Las consultas independientes y la disponibilidad global no acreditan consistencia transaccional ni exhaustividad de cargas. Consultar la [arquitectura de R02](ARCHITECTURE.md#reporte-png-r02-de-incidentes-consolidados).
+
+### Reporte PNG R03 de Incidentes Consolidados
+
+Validación del 24/11/2026, con datos ficticios locales y sin conexiones a bases de datos:
+
+- Antes de implementar R03 se ejecutaron los seis specs R01/R02: **71 aprobadas y 1 fallida de 72**. El fallo previo está en `incident-project-report.spec.ts:70`: espera «máximo mensual», mientras el HTML actual describe etiquetas de cada proyecto/mes. Se conservó sin modificar R02; no se atribuye a R03.
+- Comando conjunto desde `fronted-tickets/`: `npm test -- --watch=false --include="**/incident-consolidated*.spec.ts" --include="**/incident-monthly-report*.spec.ts" --include="**/incident-project-report*.spec.ts" --include="**/incident-project-monthly-report*.spec.ts"`. Resultado: **113 aprobadas y 1 fallida de 114, en nueve archivos**; R01 39/39, R02 32/33 y R03 **42/42**. Persiste únicamente el fallo previo descrito.
+- Los tres nuevos specs cubren identidad explícita, lista positiva de filtros, copia/inmutabilidad, filtros pendientes/dinámicos ignorados, proyecto fuera del ranking general, reconciliación, cantidades seguras, ceros, empates, base cero, meses actuales/futuros/parciales y referencias del tramo comparable. Verifican repunte parcial frente a recuperación del nivel previo sin atribuir continuidad.
+- Los estados cubren carga conjunta, cancelación A→B→A, exclusiones antes del debounce, proyecto eliminado, HTTP/respuestas vacías, timeouts de consulta/fuentes/captura, reintentos sin HTTP adicional tras render/captura, doble clic, renders obsoletos, destrucción, dimensiones, imagen inválida y limpieza del enlace.
+- `npm run build` terminó con código 0. Persisten advertencias de tamaño de bundle y estilos del proyecto. Los hashes de 21 archivos protegidos de R01/R02, sus modelos, servicio, backend revisado y manifiestos permanecen iguales a los del inicio de R03.
+- Edge sirvió el build de producción con un proyecto sintético ausente del Top 10 general. Se seleccionó desde el combo del explorador, se aplicó una exclusión y se comprobó botón R03 gris/deshabilitado antes de seleccionar y naranja/habilitado después. Las consultas del reporte fueron exclusivamente KPI y ranking con los mismos filtros; un HTTP ficticio controlado produjo cuatro solicitudes al reintentar, y las demás descargas solo dos, sin HTTP adicional por captura.
+- Caso principal, seis meses: **1400 × 888 px CSS**, **2800 × 1776 px PNG**, un gráfico con seis barras/valores/meses, tres KPI, tres hallazgos y tres recomendaciones. La revisión visual confirmó cabecera, nombre íntegro, referencias enero–junio de 2025, composición 62/38, resumen de variaciones y pie completos.
+- Un mes: **1400 × 841 px CSS**, **2800 × 1682 px PNG**; variación no comparable. Catorce meses: **1400 × 885 px CSS**, **2800 × 1770 px PNG**. Cuarenta meses: **1400 × 926 px CSS**, **2800 × 1852 px PNG**, todas las barras/cantidades/etiquetas en un único SVG, con rotación de etiquetas y meses parciales señalados.
+- Nombre de proyecto de más de 300 caracteres: **1400 × 935 px CSS**, **2800 × 1870 px PNG**, sin truncamiento. Fechas 15/01–12/06/2025: **1400 × 888 px CSS**, con seis meses visibles y KPI de variación referido únicamente a febrero–mayo completos.
+- Los PNG comprobaron cero scrolls, controles, desbordamientos y solapamientos SVG. Las comprobaciones adicionales de nombre extenso/parciales validaron también las cajas de texto dentro de sus tarjetas. Sesenta meses bloquearon el PNG con mensaje de legibilidad; una discrepancia de denominadores también bloqueó la descarga. No se recortaron ni fragmentaron gráficos.
+- Evidencia local ignorada por Git: `.angular/png-incident-project-monthly-smoke/verify.mjs`, los JSON `result-normal`, `result-uno`, `result-largo`, `result-denso`, `result-nombre-largo`, `result-parcial`, `result-ilegible` y `result-inconsistente`, y las subcarpetas de descarga identificadas en esos JSON.
+
+Pendientes: resolver el spec previo de R02 en su propio alcance, aceptación con datos reales y otros navegadores. La referencia visual R03 no está adjunta; se siguieron la distribución aprobada y el estilo R01/R02. La disponibilidad general no acredita importaciones exhaustivas ni cobertura específica del proyecto; las dos consultas no son transaccionales. Ver [arquitectura R03](ARCHITECTURE.md#reporte-png-r03-de-incidentes-consolidados).
+
 ### Validaciones de Incidentes Consolidados
 
 Desde `fronted-tickets/`, ejecutar `npm test -- --watch=false` y `npm run build`.
