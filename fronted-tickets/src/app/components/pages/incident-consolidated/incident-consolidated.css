@@ -1192,3 +1192,12 @@
 .table-expandable:fullscreen mat-paginator {
   flex: 0 0 auto;
 }
+.monthly-report-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.empresa-report-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.monthly-download-button { flex-shrink: 0; background: #FF620F !important; color: #FFF !important; }
+.monthly-download-button:disabled { background: #E5E9EE !important; color: #667085 !important; }
+.monthly-report-export-stage { position: fixed; left: -20000px; top: 0; width: 1400px; pointer-events: none; }
+.monthly-report-status { color: #667085; font-size: 13px; }
+.monthly-report-error { margin: 12px 0; padding: 12px; color: #B42318; background: #FFF; border: 1px solid #E5E9EE; border-radius: 8px; }
+.monthly-report-error button { margin-left: 12px; }
+@media (max-width: 520px) { .monthly-report-heading { flex-wrap: wrap; } }

@@ -2,7 +2,7 @@
 
 **Proyecto:** CANVIA — Plataforma de Análisis y Gestión de Tickets de TI  
 **Módulo:** Incidentes Consolidados  
-**Estado:** Planificación  
+**Estado:** R01, R02 y R03 implementados; R04 pendiente
 **Fecha:** 23/11/2026
 
 ## 1. Contexto
@@ -15,7 +15,7 @@ Las imágenes proporcionadas constituyen referencias de diseño, no fuentes de d
 
 ## 2. Objetivo
 
-Implementar 10 reportes descargables. La primera fase comprende cuatro reportes elaborados a partir de los datos y filtros existentes en Incidentes Consolidados.
+El módulo tendrá exactamente cuatro reportes descargables (R01–R04), elaborados a partir de los datos y filtros existentes en Incidentes Consolidados. No se incluyen reportes adicionales.
 
 Los reportes deberán generar imágenes PNG de alta resolución con información dinámica y consistente.
 
@@ -46,13 +46,17 @@ Los reportes deberán generar imágenes PNG de alta resolución con información
 - Mes con mayor registro.
 
 **Gráficos:**
-- Top 10 de tickets por proyecto y mes.
+- Top 10 de tickets por proyecto y mes, con barras verticales agrupadas y colores por mes.
 - Dona de participación de los cinco proyectos principales y categoría Otros.
 - Tendencia mensual general.
 
 **Hallazgos:** tres observaciones relevantes sobre concentración, distribución y evolución de la demanda.
 
-**Resultado ejecutivo:** una conclusión y hasta tres recomendaciones.
+**Resultado ejecutivo:** una conclusión y exactamente tres recomendaciones mediante reglas TypeScript verificables.
+
+**Filtros efectivos:** exclusivamente `desde`, `hasta`, `prioridad`, `motivo_estado`, `motivo_resolucion`, `grupo_resolutor` y `proyectos_excluidos`, aplicados por igual a los cuatro endpoints. No hereda filtros dinámicos ni modifica el estado del dashboard o R01.
+
+**Composición:** infografía horizontal compacta de 1400 px CSS; cabecera y tres KPI horizontales; fila central con un único gráfico Top 10 agrupado (65 %) y dona Top 5 + Otros (35 %), con leyenda a su derecha; fila inferior con una única línea de tendencia, tres hallazgos y conclusión/recomendaciones en tres columnas. No subdividir el rango en gráficos apilados. Adaptar etiquetas en rangos densos conservando todos los registros. La dona usa la distribución completa como denominador, nunca el subtotal del ranking. Las comparaciones temporales respetan las reglas de meses completos de R01.
 
 ### R03 — Tickets por Mes — Proyecto Seleccionado
 
@@ -63,16 +67,19 @@ Los reportes deberán generar imágenes PNG de alta resolución con información
 **KPIs:**
 - Total de tickets del proyecto.
 - Mes de mayor registro.
-- Variación entre el primer y último mes.
-- Variaciones mensuales.
+- Variación porcentual y absoluta entre el primer y último mes completo comparable, identificados expresamente.
 
-**Gráfico:** evolución mensual de tickets del proyecto seleccionado.
+**Gráfico:** un único SVG de barras verticales multicolor, con todos los meses del rango, ceros, parciales y cantidades. Las variaciones mensuales se calculan entre meses completos consecutivos y se muestran en un resumen compacto de las últimas tres comparaciones disponibles.
 
-**Hallazgos:** tres observaciones sobre crecimiento, reducciones y cambios relevantes.
+**Hallazgos:** exactamente tres hechos sobre variación general, incrementos y reducciones; completar los inexistentes con máximo, meses cero y cobertura, sin repetir comparaciones ni inventar estabilidad. Una recuperación solo se describe si los conteos de meses completos consecutivos la demuestran.
 
-**Resultado ejecutivo:** una conclusión y hasta tres recomendaciones.
+**Resultado ejecutivo:** una conclusión y exactamente tres recomendaciones mediante reglas TypeScript.
 
-El título y subtítulo mostrarán el grupo resolutor y el proyecto seleccionado.
+**Identidad y filtros:** usar íntegro `proyectoSeleccionado`, sin inventar un catálogo de código/nombre. Conservar solo fechas, prioridad, motivos de estado/resolución, grupo resolutor, exclusiones compatibles y proyecto explícito. Omitir los otros filtros dinámicos y cambios del formulario pendientes de aplicar.
+
+**Datos:** dos consultas independientes con filtros idénticos: `/kpis` y `/top-proyectos`. El proyecto se filtra antes de aplicar el ranking; no depende del Top 10 general. Reconciliar identidad y suma de la serie con el KPI antes de exportar.
+
+**Composición:** 1400 px CSS; cabecera con grupo/proyecto íntegro y período; tres KPI; gráfico a la izquierda (62 %) y hallazgos/conclusión/recomendaciones a la derecha (38 %). No truncar nombres ni fragmentar el gráfico. Si no cabe legible, bloquear la exportación y solicitar reducir el rango. Botón «Reporte 3» junto a «Reporte 2», gris sin selección y naranja al habilitarse; invalidar inmediatamente al cambiar selección o filtros efectivos.
 
 ### R04 — Análisis de Alertas Recurrentes
 
@@ -90,10 +97,6 @@ El título y subtítulo mostrarán el grupo resolutor y el proyecto seleccionado
 **Resultado ejecutivo:** una conclusión y hasta tres recomendaciones basadas en los datos disponibles.
 
 Cuando exista un proyecto seleccionado, deberá aparecer en el encabezado.
-
-### R05–R10
-
-Pendientes de definición funcional.
 
 ## 4. Datos y contratos
 
@@ -155,8 +158,6 @@ No se crearán nuevos endpoints salvo que el diagnóstico o las pruebas demuestr
 
 **Etapa 4:** implementación de R02, R03 y R04 después de aprobar el reporte piloto.
 
-**Etapa 5:** definición e implementación posterior de R05–R10.
-
 ## 9. Decisiones pendientes
 
 - Confirmar dimensiones finales y formatos de exportación.
@@ -164,4 +165,4 @@ No se crearán nuevos endpoints salvo que el diagnóstico o las pruebas demuestr
 - Validar las reglas de selección y prioridad de hallazgos.
 - Definir si se permitirá editar las recomendaciones antes de descargar.
 - Confirmar la arquitectura de exportación mediante el análisis del repositorio.
-- Especificar los seis reportes restantes.
+- Completar R03 y R04 dentro del alcance cerrado de cuatro reportes.

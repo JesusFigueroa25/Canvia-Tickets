@@ -1,8 +1,17 @@
 import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
+import { ChartData, ChartOptions } from 'chart.js';
 import { DailyReportDashboardFilters, DailyReportDiaItem, DailyReportFilters, DailyReportKPI, DailyReportProyectoItem, DailyReportTopProyectos } from '../../../models/daily-report';
 import { DailyReportService } from '../../../services/daily-report.service';
+
+interface DailyReportMesResumen {
+  periodo: string;
+  total_tickets: number;
+  incidentes: number;
+  requerimientos: number;
+  tareas: number;
+}
 
 @Component({
   selector: 'app-daily-report',
@@ -30,6 +39,42 @@ export class DailyReport implements OnInit, OnDestroy {
 
   kpis: DailyReportKPI | null = null;
   datosDiarios: DailyReportDiaItem[] = [];
+  resumenMensual: DailyReportMesResumen[] = [];
+  mesResumenSeleccionado: string | null = null;
+  datosGraficoMensual: ChartData<'bar', number[], string> = { labels: [], datasets: [] };
+  readonly opcionesGraficoMensual: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    layout: { padding: { top: 16, bottom: 4 } },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { usePointStyle: true, boxWidth: 9, padding: 18, color: '#667085' }
+      },
+      tooltip: {
+        callbacks: {
+          label: context => `${context.dataset.label}: ${Number(context.parsed.y ?? 0).toLocaleString('es-PE')}`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#667085' } },
+      y: {
+        beginAtZero: true,
+        ticks: { color: '#667085', precision: 0 },
+        grid: { color: '#E5E9EE' },
+        title: { display: true, text: 'Tickets', color: '#667085' }
+      }
+    },
+    onClick: (_event, elementos) => {
+      const indice = elementos[0]?.index;
+      if (indice === undefined) return;
+      const periodo = this.resumenMensual[indice]?.periodo;
+      if (periodo) this.seleccionarMesResumen(this.mesResumenSeleccionado === periodo ? null : periodo);
+    }
+  };
+
 
   proyectos: DailyReportProyectoItem[] = [];
   topProyectos: DailyReportTopProyectos = { periodos: [], proyectos: [] };
@@ -292,6 +337,9 @@ export class DailyReport implements OnInit, OnDestroy {
     this.errorDashboard = null;
     this.kpis = null;
     this.datosDiarios = [];
+    this.resumenMensual = [];
+    this.mesResumenSeleccionado = null;
+    this.actualizarGraficoMensual();
 
     this.dailyReportService.obtenerResumen({ ...this.filtrosActuales })
       .pipe(
@@ -306,6 +354,7 @@ export class DailyReport implements OnInit, OnDestroy {
 
           this.kpis = respuesta.kpis;
           this.datosDiarios = respuesta.diario;
+          this.actualizarResumenMensual();
           this.cargandoDashboard = false;
           this.changeDetector.markForCheck();
         },
@@ -316,6 +365,8 @@ export class DailyReport implements OnInit, OnDestroy {
 
           console.error('Error obteniendo resumen del Reporte Diario:', error);
           this.errorDashboard = 'No se pudo actualizar el Reporte Diario. Intenta aplicar los filtros nuevamente.';
+          this.resumenMensual = [];
+          this.actualizarGraficoMensual();
           this.cargandoDashboard = false;
           this.kpis = null;
           this.datosDiarios = [];
@@ -419,6 +470,79 @@ export class DailyReport implements OnInit, OnDestroy {
   }
 
 
+  // Agrupación exclusivamente visual: los KPIs y los demás gráficos conservan
+  // los filtros globales. No se suman duplicados entre fuentes fuera del
+  // contrato ya entregado por obtenerResumen().
+  private actualizarResumenMensual(): void {
+    const acumulado = new Map<string, DailyReportMesResumen>();
+
+    for (const fila of this.datosDiarios) {
+      const periodo = fila.fecha_accion?.slice(0, 7);
+      if (!periodo || !/^\d{4}-(0[1-9]|1[0-2])$/.test(periodo)) continue;
+
+      let mes = acumulado.get(periodo);
+      if (!mes) {
+        mes = { periodo, total_tickets: 0, incidentes: 0, requerimientos: 0, tareas: 0 };
+        acumulado.set(periodo, mes);
+      }
+      mes.total_tickets += Number(fila.total_tickets) || 0;
+      mes.incidentes += Number(fila.incidentes) || 0;
+      mes.requerimientos += Number(fila.requerimientos) || 0;
+      mes.tareas += Number(fila.tareas) || 0;
+    }
+
+    this.resumenMensual = Array.from(acumulado.values())
+      .sort((a, b) => a.periodo.localeCompare(b.periodo));
+    if (this.mesResumenSeleccionado &&
+        !this.resumenMensual.some(m => m.periodo === this.mesResumenSeleccionado)) {
+      this.mesResumenSeleccionado = null;
+    }
+    this.actualizarGraficoMensual();
+  }
+
+  seleccionarMesResumen(periodo: string | null): void {
+    if (periodo && !this.resumenMensual.some(m => m.periodo === periodo)) return;
+    this.mesResumenSeleccionado = periodo;
+    this.actualizarGraficoMensual();
+  }
+
+  nombreMesResumen(periodo: string): string {
+    const [anio, mes] = periodo.split('-').map(Number);
+    const nombre = new Intl.DateTimeFormat('es-PE', { month: 'long', year: 'numeric' })
+      .format(new Date(anio, mes - 1, 1));
+    return nombre.charAt(0).toUpperCase() + nombre.slice(1);
+  }
+
+  private actualizarGraficoMensual(): void {
+    const seleccionado = this.mesResumenSeleccionado;
+    const periodos = this.resumenMensual;
+    const serie = (clave: keyof Pick<DailyReportMesResumen,
+        'total_tickets' | 'incidentes' | 'requerimientos' | 'tareas'>,
+        titulo: string, color: string, tenue: string) => ({
+      label: titulo,
+      data: periodos.map(item => item[clave]),
+      backgroundColor: periodos.map(item => !seleccionado || item.periodo === seleccionado ? color : tenue),
+      borderRadius: 5,
+      maxBarThickness: 36,
+      categoryPercentage: 0.8,
+      barPercentage: 0.82
+    });
+
+    this.datosGraficoMensual = {
+      labels: periodos.map(item => {
+        const [anio, mes] = item.periodo.split('-').map(Number);
+        return new Intl.DateTimeFormat('es-PE', { month: 'short', year: 'numeric' })
+          .format(new Date(anio, mes - 1, 1));
+      }),
+      datasets: [
+        //serie('total_tickets', 'Tickets', '#FF620F', '#FFD3BC'),
+        serie('incidentes', 'Incidentes', '#FF620F', '#FF620F'),
+        serie('requerimientos', 'Requerimientos', '#16835B', '#B8DDCE'),
+        serie('tareas', 'Tareas', '#F4C95D', '#F4C95D')
+      ]
+    };
+  }
+
   private convertirFecha(valor: string | null): Date | null {
     if (!valor || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
       return null;
@@ -445,3 +569,4 @@ export class DailyReport implements OnInit, OnDestroy {
     return `${anio}-${mes}-${dia}`;
   }
 }
+

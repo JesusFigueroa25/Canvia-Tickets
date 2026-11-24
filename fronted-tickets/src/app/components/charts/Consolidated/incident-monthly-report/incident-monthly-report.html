@@ -1,0 +1,146 @@
+<section #documento class="report-document" *ngIf="datos as d">
+  <header class="report-header">
+    <div class="infrastructure-icon" aria-hidden="true">
+      <svg viewBox="0 0 120 112" fill="none">
+        <path d="M28 48H23a15 15 0 0 1-1-30A25 25 0 0 1 69 15a18 18 0 0 1 17 33H80" stroke="#EAF2FB" stroke-width="4" stroke-linecap="round" />
+        <path d="M34 47h45M34 67h45M34 87h45" stroke="#2B5680" stroke-width="13" stroke-linecap="round" />
+        <rect x="25" y="38" width="63" height="19" rx="5" fill="#113A60" stroke="#DCEAF7" stroke-width="2.5" />
+        <rect x="25" y="61" width="63" height="19" rx="5" fill="#113A60" stroke="#DCEAF7" stroke-width="2.5" />
+        <rect x="25" y="84" width="63" height="19" rx="5" fill="#113A60" stroke="#DCEAF7" stroke-width="2.5" />
+        <path d="M48 47h28M48 70h28M48 93h28" stroke="#9CC0DD" stroke-width="3" stroke-linecap="round" />
+        <circle cx="36" cy="47" r="3" fill="#FF620F" /><circle cx="36" cy="70" r="3" fill="#FF620F" /><circle cx="36" cy="93" r="3" fill="#FF620F" />
+      </svg>
+    </div>
+    <div class="hero-separator" aria-hidden="true"></div>
+    <div class="header-copy">
+      <h1>Análisis de Tickets Mensuales</h1>
+      <p class="report-period">Período: {{ periodoEncabezado }}</p>
+    </div>
+    <svg class="header-decoration" viewBox="0 0 300 180" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M150-20C15 40 208 95 75 200H300V-20Z" fill="#163D63" />
+      <path d="M205-20C65 45 254 102 125 200H300V-20Z" fill="#22557E" />
+      <path d="M252-20C126 56 302 115 192 200H300V-20Z" fill="#FF620F" />
+      <path d="M280-20C181 55 334 120 242 200H300V-20Z" fill="#EF8B33" />
+    </svg>
+    <span class="brand">CANVIA</span>
+  </header>
+
+  <div class="report-meta">
+    <span><b>Grupo resolutor:</b> {{ d.filtros.grupo_resolutor || 'Todos' }}</span>
+    <span *ngFor="let filtro of filtros">{{ filtro }}</span>
+    <span>Fechas aplicadas: {{ fecha(d.filtros.desde) }} — {{ fecha(d.filtros.hasta) }}</span>
+  </div>
+
+  <section class="kpis" aria-label="Indicadores del período">
+    <div class="kpi">
+      <div class="kpi-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16v5a3 3 0 0 0 0 6v5H4v-5a3 3 0 0 0 0-6V4Zm8 3v2m0 3v2m0 3v1" />
+        </svg>
+      </div>
+      <div class="kpi-separator" aria-hidden="true"></div>
+      <div class="kpi-content"><span class="kpi-label">Total de tickets</span><strong>{{ numero(d.total) }}</strong><small>Todos los meses visibles</small></div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 18h18M5 14l5-5 4 4 6-9M14 4h6v6" />
+        </svg>
+      </div>
+      <div class="kpi-separator" aria-hidden="true"></div>
+      <div class="kpi-content"><span class="kpi-label">Mes con mayor registro</span><strong>{{ d.maximos[0]?.etiqueta }}</strong>
+        <small>{{ numero(d.maximos[0]?.tickets || 0) }} incidentes<span *ngIf="d.maximos.length > 1"> · +{{ d.maximos.length - 1 }} meses empatados</span></small>
+      </div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 18h18M5 6l5 5 4-4 6 9M14 16h6v-6" />
+        </svg>
+      </div>
+      <div class="kpi-separator" aria-hidden="true"></div>
+      <div class="kpi-content"><span class="kpi-label">Mes con menor registro</span><strong>{{ d.minimos[0]?.etiqueta }}</strong>
+        <small>{{ numero(d.minimos[0]?.tickets || 0) }} incidentes<span *ngIf="d.minimos.length > 1"> · +{{ d.minimos.length - 1 }} meses empatados</span></small>
+      </div>
+    </div>
+  </section>
+
+  <div class="analysis-grid">
+    <article class="report-panel chart-panel">
+      <header class="panel-heading">
+        <svg viewBox="0 0 28 28" fill="none" stroke="#FF7A25" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 3v21h21M9 18v-6m6 6V7m6 11v-9" />
+        </svg>
+        <h2>Evolución mensual de tickets</h2>
+      </header>
+      <div class="chart-body">
+        <div class="chart-block" *ngFor="let bloque of bloques">
+          <p class="chart-range">{{ bloque.meses[0].etiqueta }} — {{ bloque.meses[bloque.meses.length - 1].etiqueta }}</p>
+          <svg class="monthly-chart" viewBox="0 0 1000 365" font-family="Arial, Helvetica, sans-serif" role="img" aria-label="Incidentes por mes, con cantidades y estado de cobertura">
+            <defs>
+              <linearGradient *ngFor="let mes of bloque.meses; let i = index" [attr.id]="gradienteId(bloque.inicio - 1 + i)" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" [attr.stop-color]="colorClaro(bloque.inicio - 1 + i)" />
+                <stop offset="100%" [attr.stop-color]="colorBarra(bloque.inicio - 1 + i)" />
+              </linearGradient>
+            </defs>
+            <g *ngFor="let fraccion of [0, 0.25, 0.5, 0.75, 1]">
+              <line x1="88" x2="976" [attr.y1]="278 - fraccion * 230" [attr.y2]="278 - fraccion * 230" stroke="#E5EBF0" stroke-width="1.2" class="grid-line" />
+              <text x="74" [attr.y]="283 - fraccion * 230" text-anchor="end" fill="#586579" font-size="15" class="axis-label">{{ numero(maximo * fraccion) }}</text>
+            </g>
+            <g *ngFor="let mes of bloque.meses; let i = index">
+              <rect class="month-bar" [attr.x]="centro(i, bloque.meses.length) - ancho(bloque.meses.length) / 2"
+                [attr.y]="278 - altura(mes.tickets)" [attr.width]="ancho(bloque.meses.length)" [attr.height]="altura(mes.tickets)"
+                rx="8" [attr.fill]="'url(#' + gradienteId(bloque.inicio - 1 + i) + ')'" />
+              <text [attr.x]="centro(i, bloque.meses.length)" [attr.y]="266 - altura(mes.tickets)" text-anchor="middle" fill="#263447" [attr.font-size]="tamanoValor(bloque.meses.length, mes.tickets)" font-weight="700" class="bar-value">{{ numero(mes.tickets) }}</text>
+              <text [attr.x]="centro(i, bloque.meses.length)" y="308" text-anchor="middle" fill="#344054" font-size="17" font-weight="700" class="month-label">
+                <tspan [attr.x]="centro(i, bloque.meses.length)">{{ mes.etiqueta.split(' ')[0] }}</tspan>
+                <tspan [attr.x]="centro(i, bloque.meses.length)" dy="22" font-size="15" font-weight="500">{{ mes.periodo.slice(0, 4) }}</tspan>
+              </text>
+              <text [attr.x]="centro(i, bloque.meses.length)" y="348" text-anchor="middle" fill="#667085" font-size="11" class="coverage-label"><tspan>{{ mes.estado === 'parcial' ? 'Parcial' : mes.estado === 'no_confirmado' ? 'Sin' : '' }}</tspan><tspan *ngIf="mes.estado === 'no_confirmado'" [attr.x]="centro(i, bloque.meses.length)" dy="13">cobertura</tspan></text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </article>
+
+    <article class="report-panel findings-panel" [class.compact-findings]="hallazgosVisuales.length < 4">
+      <header class="panel-heading">
+        <svg viewBox="0 0 28 28" fill="none" stroke="#FF7A25" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M10 21h8m-7 4h6M9 17c-7-7-2-14 5-14s12 7 5 14l-1 3h-8l-1-3ZM14 7v7m-3-4 3 4 3-4" />
+        </svg>
+        <h2>Hallazgos clave</h2>
+      </header>
+      <div class="findings" role="list">
+        <div class="finding-row" role="listitem" *ngFor="let hallazgo of hallazgosVisuales" [attr.data-tipo]="tipoHallazgo(hallazgo.texto)">
+          <div class="finding-icon" [class.green]="tipoHallazgo(hallazgo.texto) === 'crecimiento' || tipoHallazgo(hallazgo.texto) === 'general'" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path [attr.d]="iconoHallazgo(hallazgo.texto)" />
+            </svg>
+          </div>
+          <p><ng-container *ngFor="let parte of hallazgo.partes"><strong *ngIf="parte.destacado">{{ parte.texto }}</strong><span *ngIf="!parte.destacado">{{ parte.texto }}</span></ng-container></p>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="executive-grid report-panel executive">
+    <header class="panel-heading executive-heading">
+      <svg viewBox="0 0 28 28" fill="none" stroke="#FF7A25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 3h12v21H4V6h3m0-3v3h9V3M8 12l3 3 6-6M8 20h8" />
+      </svg>
+      <span class="executive-separator" aria-hidden="true"></span>
+      <h2>Conclusión ejecutiva</h2>
+    </header>
+    <div class="executive-body">
+      <p class="conclusion-copy">{{ d.conclusion }}</p>
+      <section class="recommendation"><h3>Recomendación</h3><p>{{ d.recomendacion }}</p></section>
+    </div>
+  </div>
+  <p class="methodology">
+    Conteos por fecha de apertura. Se conserva el rango y los filtros aplicados; el filtro dinámico de mes no se aplica.
+    Los meses sin registros recibidos se representan con cero. Los KPIs incluyen todos los meses; las variaciones solo comparan meses completos consecutivos. Los empates se presentan en orden cronológico.
+    Disponibilidad general de registros: {{ fecha(d.disponibilidad.fecha_min) }} — {{ fecha(d.disponibilidad.fecha_max) }}.
+    La cobertura de calendario no acredita exhaustividad de las importaciones ni continuidad de las cargas.
+  </p>
+  <footer>CANVIA · Incidentes Consolidados · Preparado: {{ d.preparadoEn }} · Análisis descriptivo mediante reglas verificables.</footer>
+</section>

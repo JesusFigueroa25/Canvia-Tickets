@@ -380,9 +380,9 @@
 .daily-report-visuals {
   display: grid;
 
-  grid-template-columns:
-    minmax(370px, 0.95fr)
-    minmax(0, 1.65fr);
+  /* 44% tabla / 56% gráfico aproximadamente. */
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+  grid-auto-rows: 540px;
 
   align-items: stretch;
   gap: 16px;
@@ -396,10 +396,52 @@
   min-width: 0;
 }
 
+/* Ambas tarjetas ocupan exactamente el alto de su celda del grid. */
+.daily-report-visuals > .daily-report-fullscreen {
+  height: 100%;
+  min-height: 0;
+}
+
+.daily-report-visuals app-daily-report-table,
+.daily-report-visuals app-daily-report-chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* El scroll queda dentro de las tarjetas, no en la fila completa. */
+:host ::ng-deep .daily-report-visuals .table-card,
+:host ::ng-deep .daily-report-visuals .chart-card {
+  height: 100%;
+  min-height: 0;
+}
+
+:host ::ng-deep .daily-report-visuals .table-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+:host ::ng-deep .daily-report-visuals .chart-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+:host ::ng-deep .daily-report-visuals .chart-container {
+  height: 100%;
+  min-height: 0;
+}
+
 /* Laptop y tablet */
 @media (max-width: 1150px) {
   .daily-report-visuals {
     grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 500px;
   }
 }
 
@@ -736,3 +778,49 @@
     margin-top: 20px;
   }
 }
+
+/* RESUMEN EJECUTIVO MENSUAL */
+.monthly-report-section { margin-top: 24px; width: 100%; min-width: 0; }
+.monthly-report-fullscreen { min-width: 0; }
+.monthly-report-card {
+  display: flex; flex-direction: column; width: 100%; min-width: 0;
+  min-height: 450px; box-sizing: border-box; padding: 22px 24px;
+  background: #FFFFFF; border: 1px solid #E5E9EE; border-radius: 16px;
+  box-shadow: 0 3px 14px rgba(16, 24, 40, 0.04);
+}
+.monthly-report-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; }
+.monthly-report-heading { flex: 1 1 280px; min-width: 0; }
+.monthly-report-heading h2 { margin: 0; color: #101828; font-size: 18px; font-weight: 700; }
+.monthly-report-heading p { margin: 6px 0 0; color: #667085; font-size: 12px; line-height: 1.6; }
+.monthly-report-actions { display: flex; align-items: flex-end; gap: 12px; }
+.monthly-report-select { display: flex; flex-direction: column; gap: 6px; width: 220px; max-width: 100%; }
+.monthly-report-select span { font-size: 11px; font-weight: 700; color: #475467; }
+.monthly-report-select select {
+  height: 40px; width: 100%; box-sizing: border-box; padding: 0 12px;
+  color: #101828; background: #FFFFFF; border: 1px solid #E5E9EE;
+  border-radius: 9px; font: inherit; font-size: 12px; cursor: pointer;
+}
+.monthly-report-select select:focus-visible { outline: 2px solid #FF620F; outline-offset: 1px; }
+.monthly-report-select select:disabled { opacity: 0.55; cursor: not-allowed; }
+.monthly-report-expand-btn {
+  display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+  padding: 0; color: #667085; background: #FFFFFF; border: 1px solid #E5E9EE;
+  border-radius: 8px; cursor: pointer;
+}
+.monthly-report-expand-btn:hover { color: #FF620F; background: #FFF4ED; border-color: #FF620F; }
+.monthly-report-expand-btn:focus-visible { outline: 2px solid #FF620F; outline-offset: 2px; }
+.monthly-report-expand-btn mat-icon { width: 20px; height: 20px; font-size: 20px; }
+.monthly-report-chart { position: relative; flex: 1 1 auto; width: 100%; min-width: 0; height: 340px; min-height: 340px; margin-top: 18px; }
+.monthly-report-chart canvas { display: block; width: 100% !important; height: 100% !important; }
+.monthly-report-empty { flex: 1 1 auto; display: grid; place-items: center; min-height: 300px; font-size: 12px; color: #667085; }
+.monthly-report-fullscreen:fullscreen { height: 100% !important; padding: 20px; overflow: hidden; background: #F7F9FB; }
+.monthly-report-fullscreen:fullscreen .monthly-report-card { height: 100%; min-height: 0; }
+.monthly-report-fullscreen:fullscreen .monthly-report-chart { flex: 1 1 auto; height: auto; min-height: 0; }
+@media (max-width: 768px) {
+  .monthly-report-card { padding: 16px; }
+  .monthly-report-actions { width: 100%; }
+  .monthly-report-select { flex: 1 1 auto; }
+  .monthly-report-chart { height: 300px; min-height: 300px; }
+  .monthly-report-fullscreen:fullscreen { padding: 10px; }
+}
+
