@@ -2,7 +2,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ChartData, ChartOptions, Plugin } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { IncidentConsolidatedTicketsPorResolutorOut } from '../../../../models/incident-consolidated';
+import { ResolutorTicketsPorResolutorOut } from '../../../../models/resolutor-dashboard';
 
 interface GrupoResolutor {
   nombre: string;
@@ -25,7 +25,12 @@ interface DetalleBarra {
 })
 export class ResolverMonthlyTickets implements OnChanges {
 
-  @Input() datos: IncidentConsolidatedTicketsPorResolutorOut | null = null;
+  /** Modelo común de los seis dashboards. Conserva compatibilidad estructural con el original. */
+  @Input() datos: ResolutorTicketsPorResolutorOut | null = null;
+  /** Título y subtítulo configurables por página, con valores originales por defecto. */
+  @Input() titulo = 'Número de Tickets por Resolutor';
+  @Input() descripcion =
+    'Comparación mensual de los resolutores con mayor volumen de incidentes, según su fecha de apertura.';
   @Input() cargando = false;
   @Input() limite = 5;
 

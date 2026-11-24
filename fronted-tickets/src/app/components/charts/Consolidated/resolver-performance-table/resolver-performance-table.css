@@ -1,9 +1,3 @@
-/* =====================================================================
-   CANVIA | RENDIMIENTO POR RESOLUTOR
-   Diseño armonizado con "Detalle de Tiempos por Resolutor".
-   Solo CSS: conserva el HTML, TypeScript, filtros y paginación existentes.
-   ===================================================================== */
-
 :host {
   display: block;
   width: 100%;

@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class TaskConsolidatedDashboardFilters(BaseModel):
+    nombre_resolutor: str | None = Field(default=None, max_length=150)
     # Filtros globales (Fecha_Apertura)
     desde: date | None = None
     hasta: date | None = None
@@ -25,6 +26,7 @@ class TaskConsolidatedDashboardFilters(BaseModel):
 
 
 class TaskConsolidatedFiltersOut(BaseModel):
+    nombres_resolutores: list[str] = Field(default_factory=list)
     fecha_min: date | None = None
     fecha_max: date | None = None
     prioridades: list[str] = Field(default_factory=list)

@@ -343,7 +343,7 @@
                 <button mat-flat-button type="button" class="monthly-download-button"
                     [disabled]="!reporteMensualListo || exportandoReporteMensual" (click)="descargarReporteMensual()"
                     aria-label="Descargar reporte de Análisis de Tickets Mensuales en PNG">
-                    {{ exportandoReporteMensual ? 'Descargando…' : 'Descargar' }}
+                    {{ exportandoReporteMensual ? 'Descargando…' : 'Reporte 1' }}
                 </button>
             </div>
             <p>
@@ -547,9 +547,28 @@
     <!-- ALERTAS -->
     <section id="alertas" class="dashboard-section">
         <header class="section-header">
-            <h1>Alertas</h1>
+            <div class="monthly-report-heading">
+                <h1>Alertas</h1>
+                <button mat-flat-button type="button" class="recurring-alerts-report-button monthly-download-button" [disabled]="!puedeGenerarReporteAlertas"
+                    (click)="generarReporteAlertas()" aria-label="Descargar Reporte 4: Análisis de las Alertas Recurrentes">
+                    {{ exportandoReporteAlertas ? 'Preparando…' : 'Reporte 4' }}
+                </button>
+            </div>
             <p>Análisis de eventos técnicos y distribución de alertas registradas.</p>
         </header>
+
+        <p class="recurring-alerts-report-status monthly-report-status" role="status" aria-live="polite" *ngIf="exportandoReporteAlertas">
+            {{ estadoReporteAlertas === 'cargando' ? 'Consultando alertas de Reporte 4…' : estadoReporteAlertas === 'preparando' ? 'Preparando Reporte 4…' : 'Generando PNG de Reporte 4…' }}
+        </p>
+        <p class="recurring-alerts-report-status monthly-report-status" role="status" *ngIf="estadoReporteAlertas === 'sin_datos'">Sin incidentes para generar Reporte 4 con los filtros efectivos.</p>
+        <div class="recurring-alerts-report-error monthly-report-error" role="alert" *ngIf="errorReporteAlertas">
+            {{ errorReporteAlertas }}
+            <button type="button" [disabled]="!puedeGenerarReporteAlertas" (click)="reintentarReporteAlertas()">Reintentar</button>
+        </div>
+        <div #reporteAlertasImagen class="recurring-alerts-export-stage monthly-report-export-stage" aria-hidden="true" inert *ngIf="datosReporteAlertas as datos">
+            <app-incident-recurring-alerts-report [datos]="datos" (renderizado)="confirmarRenderAlertas($event)"
+                (errorRenderizado)="fallarRenderAlertas($event)"></app-incident-recurring-alerts-report>
+        </div>
 
         <!-- EXPLORADOR POR DESCRIPCIONES X MES -->
         <div class="chart-full-width table-expandable" id="fullscreen-tabla-descripciones" #tablaDescripcionesFs

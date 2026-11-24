@@ -6,6 +6,9 @@ from sqlalchemy.orm import Session
 from app.database.sqlserver import get_sqlserver_db
 from app.schemas.consolidated_import_schema import (ConsolidatedImportOut, RequirementConsolidatedFiltersOut, RequirementConsolidatedKPIOut, RequirementConsolidatedPrioridadItem, RequirementConsolidatedPrioridadMensualItem, RequirementConsolidatedProyectoItem, RequirementConsolidatedTipoItem, RequirementConsolidatedTopProyectosOut, RequirementConsolidatedVolumenItem,)
 from app.schemas.consolidated_import_schema import (RequirementConsolidatedDashboardFilters,RequirementConsolidatedTicketsOut)
+from app.schemas.resolutor_dashboard_schema import (
+    ResolverRendimientoOut, ResolverTicketsPorResolutorOut,
+)
 from app.services import (requirement_consolidated_service,)
 from typing import Literal
 from app.schemas.consolidated_import_schema import (
@@ -51,6 +54,7 @@ def _obtener_filtros_dashboard(
     ),
     tipo_requerimiento: list[str] | None = Query(default=None),
     proyectos_excluidos: list[str] | None = Query(default=None),
+    nombre_resolutor: str | None = Query(default=None, max_length=150),
     ticket_id: str | None = Query(default=None, max_length=20)
 ) -> RequirementConsolidatedDashboardFilters:
     return RequirementConsolidatedDashboardFilters(
@@ -64,6 +68,7 @@ def _obtener_filtros_dashboard(
         periodo=periodo,
         tipo_requerimiento=tipo_requerimiento or [],
         proyectos_excluidos=proyectos_excluidos or [],
+        nombre_resolutor=nombre_resolutor,
         ticket_id=ticket_id
     )
 
@@ -265,4 +270,29 @@ def obtener_actualizaciones_manuales(
             limite_grafico=limite_grafico,
             resolutor=resolutor
         )
+    )
+
+
+
+# PRD 06 - RESOLUTORES: tabla mensual paginada y ranking.
+@router.get("/rendimiento-resolutores", response_model=ResolverRendimientoOut)
+def obtener_rendimiento_resolutores(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(20, ge=1, le=100),
+    filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return requirement_consolidated_service.obtener_rendimiento_resolutores(
+        db, filtros, pagina=pagina, tamano=tamano
+    )
+
+
+@router.get("/tickets-por-resolutor", response_model=ResolverTicketsPorResolutorOut)
+def obtener_tickets_por_resolutor(
+    tamano: int = Query(5, ge=1, le=20),
+    filtros: RequirementConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return requirement_consolidated_service.obtener_tickets_por_resolutor(
+        db, filtros, limite=tamano
     )

@@ -12,6 +12,8 @@ export interface ChangeConsolidatedDashboardFilters {
   periodo?: string;
   tipo_cambio?: string[];
   ticket_id?: string;
+  /** Nombre seleccionado en el filtro de resolutor. */
+  nombre_resolutor?: string;
 }
 
 export interface ChangeConsolidatedFilters {
@@ -23,6 +25,7 @@ export interface ChangeConsolidatedFilters {
   estados: string[];
   proyectos: string[];
   tipos_cambio: string[];
+  nombres_resolutores: string[];
 }
 
 export interface ChangeConsolidatedKPI {

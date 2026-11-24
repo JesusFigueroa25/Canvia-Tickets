@@ -1,5 +1,10 @@
 """Persistencia y consultas SQL Server de Tareas Consolidadas."""
 
+from app.repositories.resolutor_dashboard_repository import (
+    normalizar_resolutor,
+    obtener_nombres_resolutores as _nombres_resolutores,
+    consultar_rendimiento_resolutores,
+)
 from datetime import date, timedelta
 
 import pandas as pd
@@ -172,6 +177,12 @@ def aplicar_filtros_dashboard(consulta, filtros: TaskConsolidatedDashboardFilter
             TaskConsolidated.Ticket_ID == filtros.ticket_id.strip()
         )
 
+    # PRD 06 - filtro dinámico por resolutor, consistente con Incidentes Consolidados.
+    if filtros.nombre_resolutor and filtros.nombre_resolutor.strip():
+        consulta = consulta.where(
+            normalizar_resolutor(TaskConsolidated.Nombre_Resolutor) == filtros.nombre_resolutor.strip()
+        )
+
     return consulta
 
 
@@ -202,6 +213,7 @@ def obtener_opciones_filtros(db: Session) -> dict:
         "grupos_resolutores": obtener_opciones(TaskConsolidated.Grupo_Resolutor),
         "proyectos": obtener_opciones(TaskConsolidated.Proyecto),
         "tipos_tarea": obtener_opciones(TaskConsolidated.Categorizacion_Nivel_3),
+        "nombres_resolutores": obtener_nombres_resolutores(db),
     }
 
 
@@ -349,3 +361,20 @@ def obtener_tickets(
     )
     registros = db.execute(consulta).mappings().all()
     return {"tickets": [dict(row) for row in registros], "total": total}
+
+
+
+# PRD 06 - resolutores (misma semántica y filtros que los KPIs del módulo).
+def obtener_nombres_resolutores(db: Session) -> list[str]:
+    return _nombres_resolutores(db, TaskConsolidated.Nombre_Resolutor)
+
+
+def obtener_rendimiento_resolutores(db: Session, filtros: TaskConsolidatedDashboardFilters):
+    return consultar_rendimiento_resolutores(
+        db,
+        filtros,
+        modelo=TaskConsolidated,
+        fecha=TaskConsolidated.Fecha_Apertura,
+        resolutor=TaskConsolidated.Nombre_Resolutor,
+        aplicar_filtros=aplicar_filtros_dashboard,
+    )

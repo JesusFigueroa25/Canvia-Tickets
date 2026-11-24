@@ -34,7 +34,7 @@ La validación del 18/11/2026 incluye pruebas Angular, compilación y descarga r
 
 ## Reporte PNG R02 de Incidentes Consolidados
 
-Implementado «Reporte 2» en Empresa: análisis general por proyecto con filtros globales efectivos y exclusiones, sin selección individual ni otros filtros dinámicos. Incluye tres KPI, Top 10 con barras verticales agrupadas, dona Top 5 + Otros sobre la distribución completa, tendencia y textos ejecutivos generados mediante reglas. Reutiliza la arquitectura y presentación de R01 sin modificar sus archivos; no cambia backend ni dependencias. El módulo contempla exactamente cuatro reportes; el estado de R03 se detalla a continuación y R04 permanece pendiente.
+Implementado «Reporte 2» en Empresa: análisis general por proyecto con filtros globales efectivos y exclusiones, sin selección individual ni otros filtros dinámicos. Incluye tres KPI, Top 10 con barras verticales agrupadas, dona Top 5 + Otros sobre la distribución completa, tendencia y textos ejecutivos generados mediante reglas. Reutiliza la arquitectura y presentación de R01 sin modificar sus archivos; no cambia backend ni dependencias. El módulo contempla exactamente cuatro reportes; los estados de R03 y R04 se detallan a continuación.
 
 El 24/11/2026 se aprobaron 71 pruebas relacionadas R01/R02 y la compilación Angular. Se descargaron PNG reales en Edge con datos ficticios, incluyendo nombres largos, un proyecto y rangos extensos; se verificó también la regresión de R01. No se consultó SQL Server ni se validaron datos productivos. Detalles y límites en la [arquitectura](ARCHITECTURE.md#reporte-png-r02-de-incidentes-consolidados) y la [evidencia de pruebas](TEST_PLAN.md#reporte-png-r02-de-incidentes-consolidados).
 
@@ -43,6 +43,12 @@ El 24/11/2026 se aprobaron 71 pruebas relacionadas R01/R02 y la compilación Ang
 Implementado «Reporte 3» junto a R02 en Empresa, habilitado por `proyectoSeleccionado` y fechas efectivas válidas. Consulta KPI y ranking filtrados por el proyecto, valida los totales y prepara su propia instantánea. Muestra tres KPI, un único gráfico mensual completo y tres hallazgos/conclusión/tres recomendaciones en composición horizontal 62/38. Conserva nombres íntegros y bloquea rangos ilegibles sin recortar. No modifica R01/R02, backend ni dependencias.
 
 El 24/11/2026 se aprobaron las **42 pruebas nuevas R03** y la compilación Angular. El conjunto relacionado registró **113 aprobadas y un fallo previo de R02**, comprobado también antes de R03. Edge descargó PNG ficticios de uno a cuarenta meses, nombres extensos y extremos parciales, y bloqueó sesenta meses y denominadores incoherentes. No se consultaron bases de datos ni se validó información productiva. Consultar [arquitectura](ARCHITECTURE.md#reporte-png-r03-de-incidentes-consolidados) y [pruebas](TEST_PLAN.md#reporte-png-r03-de-incidentes-consolidados).
+
+## Reporte PNG R04 de Incidentes Consolidados
+
+Implementado «Reporte 4» en Alertas, general o del proyecto seleccionado, con filtros globales efectivos y exclusiones compatibles. Reutiliza exclusivamente `obtenerIncidentesPorcentajes(filtros, 5)`, preserva el ranking original y valida subtotal, denominador y porcentajes. Incluye tres KPI, barras horizontales, dona agregada Top 5/Otros, tres hallazgos, una conclusión y tres recomendaciones mediante funciones puras, sin GPT ni causas inferidas. Conserva nombres completos y estados de exportación propios, sin alterar R01–R03, backend o dependencias.
+
+El 24/11/2026 se aprobaron **42 pruebas nuevas de R04**; el conjunto R01–R04 registró **158 aprobadas y el único fallo previo de R02**. La compilación Angular y las descargas PNG locales de ambos modos se validaron con datos ficticios, sin consultar bases de datos. El módulo completa sus cuatro reportes. Detalles, evidencias y límites en la [arquitectura](ARCHITECTURE.md#reporte-png-r04-de-incidentes-consolidados) y el [plan de pruebas](TEST_PLAN.md#reporte-png-r04-de-incidentes-consolidados).
 
 ## Tecnologías declaradas
 

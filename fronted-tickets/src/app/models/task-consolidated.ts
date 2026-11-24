@@ -9,6 +9,8 @@ export interface TaskConsolidatedDashboardFilters {
   periodo?: string;
   tipo_tarea?: string[];
   ticket_id?: string;
+  /** Nombre seleccionado en el filtro de resolutor. */
+  nombre_resolutor?: string;
 }
 
 export interface TaskConsolidatedFilters {
@@ -19,6 +21,7 @@ export interface TaskConsolidatedFilters {
   grupos_resolutores: string[];
   proyectos: string[];
   tipos_tarea: string[];
+  nombres_resolutores: string[];
 }
 
 export interface TaskConsolidatedKPI {

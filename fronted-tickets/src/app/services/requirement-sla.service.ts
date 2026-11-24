@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ResolutorRendimientoOut, ResolutorTicketsPorResolutorOut } from '../models/resolutor-dashboard';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RequirementSLADashboardFilters, RequirementSLAKPI, RequirementSLAFilters, RequirementSLASolucionTendenciaItem, RequirementSLAVolumenItem, RequirementSLAProyectoItem, RequirementSLAParticipacionProyectoItem, RequirementSLAParetoItem, RequirementSLATendenciaItem, RequirementSLAResolutorItem, RequirementSLAExploradorTiposOut, RequirementSLACondicionDiaOut, RequirementSLACumplimientoOut, RequirementSLACumplimientoHorarioOut, RequirementSLACumplimientoPrioridadOut, RequirementSLATop10CategoriaOut, RequirementSLACumplimientoTipoOut, RequirementSLAParetoCategoriaOut, RequirementSLAParetoGraficoOut, RequirementSLATicketsOut } from '../models/requirement-sla';
@@ -108,6 +109,11 @@ export class RequirementSlaService {
             );
         }
 
+
+        // PRD 06: filtro común para los cinco dashboards.
+        if (filtros.nombre_resolutor?.trim()) {
+            params = params.set('nombre_resolutor', filtros.nombre_resolutor.trim());
+        }
 
         return params;
     }
@@ -372,6 +378,33 @@ export class RequirementSlaService {
             { params }
         );
     }
+    // PRD 06 - Rendimiento mensual paginado por resolutor.
+    obtenerRendimientoResolutores(
+        filtros: RequirementSLADashboardFilters = {},
+        pagina: number = 1,
+        tamano: number = 20
+    ): Observable<ResolutorRendimientoOut> {
+        const params = this.construirParametros(filtros)
+            .set('pagina', String(pagina))
+            .set('tamano', String(tamano));
 
+        return this.http.get<ResolutorRendimientoOut>(
+            `${this.servidor}/${this.recurso}/rendimiento-resolutores`,
+            { params }
+        );
+    }
 
+    // PRD 06 - Ranking de tickets por resolutor (Top 5/10/15/20).
+    obtenerTicketsPorResolutor(
+        filtros: RequirementSLADashboardFilters = {},
+        limite: number = 5
+    ): Observable<ResolutorTicketsPorResolutorOut> {
+        const params = this.construirParametros(filtros)
+            .set('tamano', String(limite));
+
+        return this.http.get<ResolutorTicketsPorResolutorOut>(
+            `${this.servidor}/${this.recurso}/tickets-por-resolutor`,
+            { params }
+        );
+    }
 }

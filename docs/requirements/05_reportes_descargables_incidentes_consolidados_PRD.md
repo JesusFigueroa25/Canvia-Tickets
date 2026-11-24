@@ -2,8 +2,8 @@
 
 **Proyecto:** CANVIA — Plataforma de Análisis y Gestión de Tickets de TI  
 **Módulo:** Incidentes Consolidados  
-**Estado:** R01, R02 y R03 implementados; R04 pendiente
-**Fecha:** 23/11/2026
+**Estado:** cuatro reportes implementados (R01–R04); validación local con datos ficticios
+**Fecha:** 24/11/2026
 
 ## 1. Contexto
 
@@ -81,22 +81,28 @@ Los reportes deberán generar imágenes PNG de alta resolución con información
 
 **Composición:** 1400 px CSS; cabecera con grupo/proyecto íntegro y período; tres KPI; gráfico a la izquierda (62 %) y hallazgos/conclusión/recomendaciones a la derecha (38 %). No truncar nombres ni fragmentar el gráfico. Si no cabe legible, bloquear la exportación y solicitar reducir el rango. Botón «Reporte 3» junto a «Reporte 2», gris sin selección y naranja al habilitarse; invalidar inmediatamente al cambiar selección o filtros efectivos.
 
-### R04 — Análisis de Alertas Recurrentes
+### R04 — Análisis de las Alertas Recurrentes
 
-**Sección:** Alertas.
+**Sección:** Alertas, botón naranja «Reporte 4» a la derecha del encabezado.
 
 **KPIs:**
 - Incidentes acumulados del Top 5.
-- Total general de incidentes filtrados.
+- Alerta con mayor registro: cantidad, porcentaje y descripción íntegra; empates visibles señalados.
 - Participación acumulada del Top 5.
 
-**Gráfico:** cinco alertas más recurrentes, mostrando cantidades y porcentajes.
+El total general filtrado se muestra como contexto del denominador. Con una sola descripción no se repite su porcentaje en el KPI del líder.
 
-**Hallazgos:** tres observaciones sobre frecuencia, concentración y patrones identificables.
+**Gráficos:** barras horizontales del ranking original (hasta cinco descripciones), con cantidades y porcentajes; dona de dos segmentos: Top 5 acumulado y Otros. Si Otros es cero, conserva su leyenda sin dibujar un arco ficticio.
 
-**Resultado ejecutivo:** una conclusión y hasta tres recomendaciones basadas en los datos disponibles.
+**Fuente y contrato:** exclusivamente `obtenerIncidentesPorcentajes(filtros, 5)`. El repositorio cuenta todo el universo filtrado y agrupa las mismas filas por descripción antes del límite, incluyendo NULL/vacíos como «Sin especificar» y registros únicos, sin mínimo de recurrencia. Se valida orden, cantidades enteras seguras, porcentajes individuales redondeados y subtotal ≤ total. Menos de cinco filas deben sumar el total únicamente por este contrato verificado; si no ocurre se bloquea la descarga. Las consultas internas no garantizan una instantánea transaccional.
 
-Cuando exista un proyecto seleccionado, deberá aparecer en el encabezado.
+**Filtros y modos:** lista positiva de `desde`, `hasta`, `prioridad`, `motivo_estado`, `motivo_resolucion`, `grupo_resolutor` y `proyectos_excluidos`. Agrega exclusivamente `proyectoSeleccionado` cuando existe; en modo general omite proyecto. Excluye `periodo`, `nombre_resolutor`, `descripcion`, `tipo_incidente`, `detalle_id` y `ticket_id`; no utiliza ediciones pendientes ni modifica filtros del dashboard. Fechas y demás filtros efectivos quedan visibles.
+
+**Reglas ejecutivas:** exactamente tres hallazgos determinísticos: diferencia con la segunda descripción o empate visible, cobertura de Otros, y «Sin especificar» o concentración de las dos primeras/cobertura descriptiva. Una conclusión y tres recomendaciones sobre revisión de registros, desglose/seguimiento y calidad descriptiva o contraste de períodos. No infiere causas, empates fuera del corte ni recurrencia temporal.
+
+**Composición:** 1400 px CSS y diseño ejecutivo CANVIA. Tres KPI horizontales. General: barras a la izquierda (62 %), dona y hallazgos a la derecha (38 %). Proyecto: barras/dona/hallazgos en tres columnas (47/23/30), con nombre completo en cabecera. Ambos modos integran conclusión y tres recomendaciones debajo. Descripciones en varias líneas sin truncamiento; si dejan de caber en una composición horizontal legible se bloquea el PNG con mensaje explicativo.
+
+**Exportación:** instantánea tipada propia y coordinación independiente de R01–R03: versión, cancelación HTTP, espera de fuentes/dos pinturas, control de dimensiones y timeouts de 30 segundos. Cambios de proyecto/filtros invalidan; se impiden doble descarga y respuestas/capturas obsoletas. Cero incidentes no genera PNG; HTTP y captura permiten reintentar.
 
 ## 4. Datos y contratos
 
@@ -108,7 +114,7 @@ Se priorizará la reutilización de:
 - `GET /incident-consolidated/top-proyectos`
 - `GET /incident-consolidated/incidentes-porcentajes`
 
-No se crearán nuevos endpoints salvo que el diagnóstico o las pruebas demuestren que los datos existentes son insuficientes.
+Los cuatro reportes reutilizan los endpoints existentes, sin cambios de backend ni dependencias.
 
 ## 5. Reglas de negocio
 
@@ -152,17 +158,14 @@ No se crearán nuevos endpoints salvo que el diagnóstico o las pruebas demuestr
 
 **Etapa 1:** evaluación del diagnóstico, referencias visuales y arquitectura final.
 
-**Etapa 2:** modificaciones de backend, únicamente cuando sean necesarias.
+**Etapa 2:** verificación de contratos existentes, sin modificar backend.
 
 **Etapa 3:** implementación y validación del reporte R01 mediante Codex Planning y ejecución.
 
 **Etapa 4:** implementación de R02, R03 y R04 después de aprobar el reporte piloto.
 
-## 9. Decisiones pendientes
+## 9. Estado de validación y pendientes
 
-- Confirmar dimensiones finales y formatos de exportación.
-- Determinar qué filtros dinámicos se aplicarán a cada reporte, especialmente el filtro de mes.
-- Validar las reglas de selección y prioridad de hallazgos.
-- Definir si se permitirá editar las recomendaciones antes de descargar.
-- Confirmar la arquitectura de exportación mediante el análisis del repositorio.
-- Completar R03 y R04 dentro del alcance cerrado de cuatro reportes.
+El alcance queda cerrado a los cuatro reportes R01–R04. La arquitectura, los filtros y las reglas están documentados en [ARCHITECTURE.md](../ARCHITECTURE.md); las recomendaciones se generan automáticamente, sin edición ni GPT. El formato es PNG independiente de 1400 px CSS con captura de alta resolución y bloqueo de contenido ilegible.
+
+Pendientes: aceptación visual con las referencias originales y datos reales, otros navegadores y resolución de la prueba preexistente de R02 en su propio alcance. Resultados reproducibles y límites en [TEST_PLAN.md](../TEST_PLAN.md#reporte-png-r04-de-incidentes-consolidados).

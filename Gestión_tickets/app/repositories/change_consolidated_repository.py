@@ -1,5 +1,10 @@
 """Persistencia e indicadores SQL Server de Cambios Consolidados."""
 
+from app.repositories.resolutor_dashboard_repository import (
+    normalizar_resolutor,
+    obtener_nombres_resolutores as _nombres_resolutores,
+    consultar_rendimiento_resolutores,
+)
 from datetime import date, timedelta
 
 import pandas as pd
@@ -165,6 +170,12 @@ def aplicar_filtros_dashboard(consulta, filtros: ChangeConsolidatedDashboardFilt
         consulta = consulta.where(
             ChangeConsolidated.Ticket_ID == filtros.ticket_id.strip()
         )
+    # PRD 06 - filtro dinámico por resolutor, consistente con Incidentes Consolidados.
+    if filtros.nombre_resolutor and filtros.nombre_resolutor.strip():
+        consulta = consulta.where(
+            normalizar_resolutor(ChangeConsolidated.Nombre_Resolutor) == filtros.nombre_resolutor.strip()
+        )
+
     return consulta
 
 
@@ -195,6 +206,7 @@ def obtener_opciones_filtros(db: Session) -> dict:
         "estados": opciones(ChangeConsolidated.Estado),
         "proyectos": opciones(ChangeConsolidated.Proyecto),
         "tipos_cambio": opciones(ChangeConsolidated.Tipo_Cambio),
+        "nombres_resolutores": obtener_nombres_resolutores(db),
     }
 
 
@@ -1051,3 +1063,20 @@ GROUP BY
     CONVERT(CHAR(7), Fecha_Creacion, 120)
 ORDER BY Anio, Mes"""
     return [dict(row) for row in db.execute(text(consulta), params).mappings().all()]
+
+
+
+# PRD 06 - resolutores (misma semántica y filtros que los KPIs del módulo).
+def obtener_nombres_resolutores(db: Session) -> list[str]:
+    return _nombres_resolutores(db, ChangeConsolidated.Nombre_Resolutor)
+
+
+def obtener_rendimiento_resolutores(db: Session, filtros: ChangeConsolidatedDashboardFilters):
+    return consultar_rendimiento_resolutores(
+        db,
+        filtros,
+        modelo=ChangeConsolidated,
+        fecha=ChangeConsolidated.Fecha_Creacion,
+        resolutor=ChangeConsolidated.Nombre_Resolutor,
+        aplicar_filtros=aplicar_filtros_dashboard,
+    )

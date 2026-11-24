@@ -1,4 +1,5 @@
 
+import { ResolutorRendimientoOut, ResolutorTicketsPorResolutorOut } from '../../../models/resolutor-dashboard';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -15,6 +16,21 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
   // feat/mejoras-analisis-incidentes-gpt
   private readonly grupoResolutorPorDefecto = 'BASE DE DATOS Y EBS';
+
+  // PRD 06: rendimiento y tickets mensuales por resolutor.
+  rendimientoResolutores: ResolutorRendimientoOut | null = null;
+  ticketsPorResolutor: ResolutorTicketsPorResolutorOut | null = null;
+  cargandoRendimientoResolutores = false;
+  cargandoTicketsPorResolutor = false;
+  errorRendimientoResolutores: string | null = null;
+  errorTicketsPorResolutor: string | null = null;
+  paginaResolutores = 1;
+  tamanoResolutores = 5;
+  limiteTicketsPorResolutor = 5;
+  resolutorSeleccionado: string | null = null;
+  private readonly cancelarRendimientoResolutores$ = new Subject<void>();
+  private readonly cancelarTicketsPorResolutor$ = new Subject<void>();
+
   filtrosForm!: FormGroup;
   filtrosActuales: RequirementConsolidatedDashboardFilters = {
     grupo_resolutor: this.grupoResolutorPorDefecto
@@ -31,6 +47,7 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
     motivos_estado: [],
     motivos_resolucion: [],
     grupos_resolutores: [],
+    nombres_resolutores: [],
   };
 
 
@@ -129,7 +146,9 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
       this.cargandoProductividad ||
       this.cargandoDotacion ||
       this.cargandoAtencionParalela ||
-      this.cargandoActualizacionesManuales
+      this.cargandoActualizacionesManuales ||
+      this.cargandoRendimientoResolutores ||
+      this.cargandoTicketsPorResolutor
     );
   }
 
@@ -193,6 +212,11 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
     this.cancelarAtencionParalela$.complete();
     this.cancelarActualizacionesManuales$.next();
     this.cancelarActualizacionesManuales$.complete();
+
+    this.cancelarRendimientoResolutores$.next();
+    this.cancelarRendimientoResolutores$.complete();
+    this.cancelarTicketsPorResolutor$.next();
+    this.cancelarTicketsPorResolutor$.complete();
   }
 
 
@@ -277,6 +301,7 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
     // Actualizar proyectos y dashboard
     this.cargarOpcionesProyectos();
+    this.resolutorSeleccionado = null;
     this.cargarDashboard();
 
     this.changeDetector.markForCheck();
@@ -309,6 +334,7 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
     this.resolutorAtencionParalela = null;
     this.resolutorActualizacionesManuales = null;
     this.cargarOpcionesProyectos();
+    this.resolutorSeleccionado = null;
     this.cargarDashboard();
     this.changeDetector.markForCheck();
 
@@ -347,6 +373,7 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
     // REINICIAR PAGINACIÓN DEL DASHBOARD
     this.paginaTickets = 1;
+    this.paginaResolutores = 1;
     this.paginaProductividad = 1;
     this.paginaDotacion = 1;
     this.paginaAtencionParalela = 1;
@@ -363,6 +390,8 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
 
     // NUEVA TABLA PAGINADA
     this.cargarTickets(solicitudActual);
+    this.cargarRendimientoResolutores();
+    this.cargarTicketsPorResolutor();
 
     // TRES INDICADORES DE PRODUCTIVIDAD (gráfico + tabla)
     this.cargarProductividad(solicitudActual);
@@ -1248,4 +1277,116 @@ export class RequirementConsolidated implements OnInit, OnDestroy {
     this.paginaActualizacionesManuales = 1;
     this.cargarActualizacionesManuales();
   }
+
+  // PRD 06: tabla paginada. La cancelación es independiente del gráfico.
+  cargarRendimientoResolutores(): void {
+    this.cancelarRendimientoResolutores$.next();
+    this.cargandoRendimientoResolutores = true;
+    this.errorRendimientoResolutores = null;
+
+    this.requirementConsolidatedService.obtenerRendimientoResolutores(
+      { ...this.filtrosActuales },
+      this.paginaResolutores,
+      this.tamanoResolutores
+    ).pipe(takeUntil(this.cancelarRendimientoResolutores$))
+      .subscribe({
+        next: datos => {
+          this.rendimientoResolutores = datos;
+          this.cargandoRendimientoResolutores = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando rendimiento por resolutor:', error);
+          this.rendimientoResolutores = null;
+          this.cargandoRendimientoResolutores = false;
+          this.errorRendimientoResolutores =
+            'No se pudo cargar el rendimiento por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  // PRD 06: gráfico Top independiente de la paginación de la tabla.
+  cargarTicketsPorResolutor(): void {
+    this.cancelarTicketsPorResolutor$.next();
+    this.cargandoTicketsPorResolutor = true;
+    this.errorTicketsPorResolutor = null;
+
+    this.requirementConsolidatedService.obtenerTicketsPorResolutor(
+      { ...this.filtrosActuales },
+      this.limiteTicketsPorResolutor
+    ).pipe(takeUntil(this.cancelarTicketsPorResolutor$))
+      .subscribe({
+        next: datos => {
+          this.ticketsPorResolutor = datos;
+          this.cargandoTicketsPorResolutor = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando tickets por resolutor:', error);
+          this.ticketsPorResolutor = null;
+          this.cargandoTicketsPorResolutor = false;
+          this.errorTicketsPorResolutor =
+            'No se pudo cargar el gráfico de tickets por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  cambiarPaginaResolutores(evento: { pagina: number; tamano: number }): void {
+    if (!Number.isInteger(evento.pagina) || evento.pagina < 1 ||
+        ![5, 10, 20, 50, 100].includes(evento.tamano) ||
+        (this.paginaResolutores === evento.pagina && this.tamanoResolutores === evento.tamano)) {
+      return;
+    }
+    this.paginaResolutores = evento.pagina;
+    this.tamanoResolutores = evento.tamano;
+    this.cargarRendimientoResolutores();
+  }
+
+  cambiarLimiteTicketsPorResolutor(limite: number): void {
+    if (![5, 10, 15, 20].includes(limite) ||
+        this.limiteTicketsPorResolutor === limite) {
+      return;
+    }
+    this.limiteTicketsPorResolutor = limite;
+    this.cargarTicketsPorResolutor();
+  }
+
+  cambiarResolutor(resolutor: string | null): void {
+    const seleccion = resolutor?.trim() || null;
+    if (this.resolutorSeleccionado === seleccion) {
+      return;
+    }
+    this.resolutorSeleccionado = seleccion;
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+      nombre_resolutor: seleccion ?? undefined
+    };
+    this.cargarOpcionesProyectos();
+    this.cargarDashboard();
+  }
+
+  get mostrarMesesEnEjeXResolutores(): boolean {
+    const f = this.filtrosActuales;
+    const fechasPersonalizadas =
+      (!!f.desde && f.desde !== this.opcionesFiltros.fecha_min) ||
+      (!!f.hasta && f.hasta !== this.opcionesFiltros.fecha_max);
+    return Boolean(
+      fechasPersonalizadas ||
+      f.grupo_resolutor ||
+      f.prioridad ||
+      f.proyecto ||
+      f.periodo ||
+      f.proyectos_excluidos?.length ||
+      f.ticket_id ||
+      f.nombre_resolutor ||
+      f.motivo_estado ||
+      f.motivo_resolucion ||
+      f.tipo_requerimiento?.length
+    );
+  }
+
+
 }
+

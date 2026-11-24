@@ -1,5 +1,9 @@
 """Orquestación de importación y dashboard inicial de Cambios Consolidados."""
 
+from app.services.resolutor_dashboard_service import (
+    construir_rendimiento_resolutores,
+    construir_tickets_por_resolutor,
+)
 import logging
 from datetime import datetime
 
@@ -190,6 +194,7 @@ def obtener_opciones_filtros(db: Session) -> dict:
         "estados": datos["estados"],
         "proyectos": datos["proyectos"],
         "tipos_cambio": datos["tipos_cambio"],
+        "nombres_resolutores": datos["nombres_resolutores"],
     }
 
 
@@ -457,3 +462,24 @@ def obtener_horas_mensuales(
     return change_consolidated_repository.obtener_horas_mensuales(
         db, filtros, incluir_solo_validacion
     )
+
+
+
+# PRD 06 - SERVICIO COMPARTIDO DE RESOLUTORES.
+def obtener_rendimiento_resolutores(
+    db: Session,
+    filtros: ChangeConsolidatedDashboardFilters,
+    pagina: int = 1,
+    tamano: int = 20,
+) -> dict:
+    filas = change_consolidated_repository.obtener_rendimiento_resolutores(db, filtros)
+    return construir_rendimiento_resolutores(filas, pagina=pagina, tamano=tamano)
+
+
+def obtener_tickets_por_resolutor(
+    db: Session,
+    filtros: ChangeConsolidatedDashboardFilters,
+    limite: int = 5,
+) -> dict:
+    rendimiento = obtener_rendimiento_resolutores(db, filtros, pagina=1, tamano=limite)
+    return construir_tickets_por_resolutor(rendimiento, limite=limite)

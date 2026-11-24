@@ -340,14 +340,61 @@
     </section>
 
 
+    <!-- EXPLORADOR DE TICKETS -->
+    <!-- PRD 06: Análisis de resolutores -->
+    <section id="resolutor-requirement-consolidated" class="chart-full-width ticket-explorer-section">
+        <header class="ticket-explorer-header">
+            <h2>Resolutor</h2>
+            <p>Rendimiento mensual y distribución de tickets por resolutor en requerimientos.</p>
+        </header>
+
+        <div class="chart-full-width table-expandable" id="fullscreen-tabla-resolutores-requirement-consolidated"
+            #tablaResolutoresFs>
+            <app-resolutor-performance-table [datos]="rendimientoResolutores"
+                [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
+                [resolutorSeleccionado]="resolutorSeleccionado" [cargando]="cargandoRendimientoResolutores"
+                titulo="Rendimiento por Resolutor"
+                descripcion="Distribución mensual de requerimientos por resolutor. Selecciona uno para filtrar el dashboard."
+                [habilitarPantallaCompleta]="true"
+                [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-resolutores-requirement-consolidated'"
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaResolutoresFs)"
+                (resolutorChange)="cambiarResolutor($event)" (paginaChange)="cambiarPaginaResolutores($event)">
+            </app-resolutor-performance-table>
+            <p *ngIf="errorRendimientoResolutores" role="alert">
+                {{ errorRendimientoResolutores }}
+                <button type="button" (click)="cargarRendimientoResolutores()">Reintentar</button>
+            </p>
+        </div>
+
+        <div class="chart-full-width chart-expandable" id="fullscreen-grafico-resolutores-requirement-consolidated"
+            #graficoResolutoresFs>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(graficoResolutoresFs)"
+                [title]="graficoExpandido === 'fullscreen-grafico-resolutores-requirement-consolidated'
+          ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+                aria-label="Ampliar gráfico de tickets por resolutor">
+                <mat-icon>
+                    {{ graficoExpandido === 'fullscreen-grafico-resolutores-requirement-consolidated'
+                    ? 'fullscreen_exit' : 'fullscreen' }}
+                </mat-icon>
+            </button>
+            <app-resolver-monthly-tickets [datos]="ticketsPorResolutor" [cargando]="cargandoTicketsPorResolutor"
+                [limite]="limiteTicketsPorResolutor" [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
+                titulo="Número de Tickets por Resolutor"
+                descripcion="Comparación mensual de requerimientos por resolutor, según su fecha de apertura."
+                (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+            </app-resolver-monthly-tickets>
+            <p *ngIf="errorTicketsPorResolutor" role="alert">
+                {{ errorTicketsPorResolutor }}
+                <button type="button" (click)="cargarTicketsPorResolutor()">Reintentar</button>
+            </p>
+        </div>
+    </section>
 
 
 
-    <!-- ALCANCE 1: PRODUCTIVIDAD PROMEDIO POR PROYECTO -->
 
-
-    <!--  -->
-    <section class="productivity-section" *ngIf="filtrosListos">
+    <!--  
+     <section class="productivity-section" *ngIf="filtrosListos">
         <header class="productivity-section-header">
             <div>
                 <span class="productivity-section-label">Alcance 1</span>
@@ -385,7 +432,6 @@
         </div>
     </section>
 
-    <!-- ALCANCE 2: DOTACIÓN MENSUAL DE RESOLUTORES -->
     <section class="productivity-section" *ngIf="filtrosListos">
         <header class="productivity-section-header">
             <div>
@@ -423,12 +469,9 @@
         </div>
     </section>
 
-    <!-- ALCANCE 3: ATENCIÓN PARALELA DE REQUERIMIENTOS -->
     <section class="productivity-section" *ngIf="filtrosListos">
 
 
-        <!--     
--->
 
         <header class="productivity-section-header">
             <div>
@@ -451,10 +494,6 @@
             </app-requirement-parallel-attention-chart>
         </div>
 
-
-        <!--    
-
--->
         <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req" #tablaParalelaReqFs>
             <button type="button" class="productivity-table-expand-btn"
                 (click)="alternarPantallaCompleta(tablaParalelaReqFs)"
@@ -468,16 +507,8 @@
                 (resolutorChange)="cambiarResolutorAtencionParalela($event)">
             </app-requirement-parallel-details-table>
         </div>
-
-        <!--     
-
- -->
-
-
-
     </section>
 
-    <!-- ALCANCE 4: TICKETS CON REGISTROS DE ACTUALIZACIÓN MANUAL -->
     <section class="productivity-section" *ngIf="filtrosListos">
         <header class="productivity-section-header">
             <div>
@@ -487,7 +518,6 @@
             </div>
         </header>
 
-        <!-- TOP 10, KPI Y GRÁFICO -->
         <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-actualizaciones-manuales-req"
             #actualizacionesManualesReqFs>
             <button type="button" class="chart-expand-btn"
@@ -501,7 +531,6 @@
             </app-requirement-manual-updates-chart>
         </div>
 
-        <!-- TABLA PAGINADA Y BÚSQUEDA POR RESOLUTOR -->
         <div class="productivity-table table-expandable" id="fullscreen-tabla-actualizaciones-manuales-req"
             #tablaActualizacionesManualesReqFs>
             <button type="button" class="productivity-table-expand-btn"
@@ -517,8 +546,11 @@
             </app-requirement-manual-updates-table>
         </div>
     </section>
+    
+    -->
+   
 
-    <!-- EXPLORADOR DE TICKETS -->
+
     <section class="chart-full-width ticket-explorer-section" *ngIf="ticketsDetalle || cargandoTickets">
 
         <header class="ticket-explorer-header">
