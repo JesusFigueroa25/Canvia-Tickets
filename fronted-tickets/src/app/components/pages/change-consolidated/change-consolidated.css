@@ -796,3 +796,229 @@
     margin-bottom: 16px;
   }
 }
+
+
+/* ==========================================================
+   PRD 05 - ANALISIS DE ACTIVIDADES Y HORAS DE CAMBIOS
+   ========================================================== */
+.change-analysis-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 28px;
+}
+
+.change-analysis-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  min-width: 0;
+}
+
+.change-analysis-heading-text {
+  flex: 1 1 340px;
+  min-width: 0;
+}
+
+.change-analysis-eyebrow {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: var(--change-green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.change-analysis-heading h2 {
+  margin: 0;
+  color: var(--change-text);
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.change-analysis-heading p {
+  margin: 6px 0 0;
+  color: var(--change-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.change-analysis-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.change-analysis-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 39px;
+  box-sizing: border-box;
+  padding: 9px 13px;
+  border: 1px solid #D5EADF;
+  border-radius: 9px;
+  background: #F6FCF8;
+  color: #12633F;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.change-analysis-toggle input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: var(--change-green);
+  cursor: pointer;
+}
+
+.change-analysis-toggle:focus-within {
+  outline: 2px solid #90CFB2;
+  outline-offset: 2px;
+}
+
+.change-analysis-toggle:has(input:disabled) {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.change-analysis-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--change-muted);
+  font-size: 11px;
+}
+
+.change-analysis-loading .loading-indicator {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+}
+
+.change-analysis-panel {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.change-analysis-panel > app-change-activities-table,
+.change-analysis-panel > app-change-hours-detail-table,
+.change-analysis-panel > app-change-resolver-hours-chart,
+.change-analysis-panel > app-change-monthly-hours-chart {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+.change-analysis-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 2px;
+}
+
+.change-analysis-panel > .chart-expand-btn {
+  z-index: 25;
+}
+
+.change-analysis-footnote {
+  margin: 0;
+  padding: 0 2px;
+  color: #98A2B3;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* Aumentar el area util de tablas y graficos al expandir. */
+.change-analysis-panel:fullscreen {
+  display: flex !important;
+  flex-direction: column;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0;
+  min-height: 0;
+  background: var(--change-bg);
+}
+
+.change-analysis-panel:fullscreen > app-change-activities-table,
+.change-analysis-panel:fullscreen > app-change-hours-detail-table,
+.change-analysis-panel:fullscreen > app-change-resolver-hours-chart,
+.change-analysis-panel:fullscreen > app-change-monthly-hours-chart {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+}
+
+:host ::ng-deep .change-analysis-panel:fullscreen .chart-area {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+:host ::ng-deep .change-analysis-panel:fullscreen .chart-scroll,
+:host ::ng-deep .change-analysis-panel:fullscreen .chart-viewport,
+:host ::ng-deep .change-analysis-panel:fullscreen .chart-container {
+  min-width: 0;
+  min-height: 0;
+}
+
+:host ::ng-deep .change-analysis-panel:fullscreen .table-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+
+@media (max-width: 1300px) {
+  .change-analysis-charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .change-analysis-section {
+    margin-top: 20px;
+    gap: 14px;
+  }
+
+  .change-analysis-heading h2 {
+    font-size: 18px;
+  }
+
+  .change-analysis-controls {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .change-analysis-toggle {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .change-analysis-heading h2 {
+    font-size: 17px;
+  }
+}

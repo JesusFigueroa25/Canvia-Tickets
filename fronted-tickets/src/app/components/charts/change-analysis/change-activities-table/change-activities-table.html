@@ -1,0 +1,91 @@
+<article class="table-card">
+  <header class="table-header">
+    <div class="table-title">
+      <h3>Cambios identificados con actividades de BD</h3>
+      <p>Clasificación de actividades, evidencia técnica y participación de Base de Datos.</p>
+    </div>
+    <div class="table-actions">
+      <label class="search-control">
+        <span aria-hidden="true">⌕</span>
+        <input type="search" [value]="busqueda" (input)="buscar($event)"
+          placeholder="Buscar en esta página..." aria-label="Buscar cambios en esta página">
+      </label>
+      <button type="button" class="clear-search" *ngIf="busqueda" (click)="limpiarBusqueda()">Limpiar</button>
+    </div>
+  </header>
+
+  <div class="table-summary">
+    <span><span class="summary-indicator"></span> <strong>{{ formatearNumero(totalRegistros) }}</strong> cambios filtrados</span>
+    <small>La búsqueda y el ordenamiento se aplican solo a la página recibida.</small>
+  </div>
+
+  <div class="table-wrapper" tabindex="0" aria-label="Tabla de cambios con actividades BD">
+    <table class="data-table">
+      <thead><tr>
+        <th class="sticky-id"><button type="button" (click)="ordenar('Ticket_ID')">Cambio <span>{{ indicadorOrden('Ticket_ID') }}</span></button></th>
+        <th><button type="button" (click)="ordenar('Fecha_Creacion')">Creación <span>{{ indicadorOrden('Fecha_Creacion') }}</span></button></th>
+        <th><button type="button" (click)="ordenar('Proyecto')">Proyecto <span>{{ indicadorOrden('Proyecto') }}</span></button></th>
+        <th><button type="button" (click)="ordenar('Descripcion')">Descripción <span>{{ indicadorOrden('Descripcion') }}</span></button></th>
+        <th><button type="button" (click)="ordenar('Tipo_Actividad')">Actividad <span>{{ indicadorOrden('Tipo_Actividad') }}</span></button></th>
+        <th><button type="button" (click)="ordenar('Clasificacion_Evidencia')">Evidencia SQL <span>{{ indicadorOrden('Clasificacion_Evidencia') }}</span></button></th>
+        <th><button type="button" (click)="ordenar('Tipo_Participacion')">Participación <span>{{ indicadorOrden('Tipo_Participacion') }}</span></button></th>
+        <th><button type="button" (click)="ordenar('Total_Tareas_BD')">Tareas BD <span>{{ indicadorOrden('Total_Tareas_BD') }}</span></button></th>
+        <th>Tareas Wintel</th>
+        <th><button type="button" (click)="ordenar('Estado')">Estado <span>{{ indicadorOrden('Estado') }}</span></button></th>
+        <th>Detalle</th>
+      </tr></thead>
+      <tbody>
+        <ng-container *ngFor="let fila of filasVisibles; trackBy: identificarFila">
+          <tr>
+            <td class="sticky-id ticket-id">{{ fila.Ticket_ID }}</td>
+            <td class="nowrap">{{ fecha(fila.Fecha_Creacion) }}</td>
+            <td><span class="truncate" [title]="fila.Proyecto || ''">{{ fila.Proyecto || 'Sin proyecto' }}</span></td>
+            <td><span class="truncate description" [title]="fila.Descripcion || ''">{{ fila.Descripcion || '—' }}</span></td>
+            <td><span class="activity-badge">{{ fila.Tipo_Actividad }}</span></td>
+            <td><span class="evidence" [class.review]="fila.Clasificacion_Evidencia.includes('REVISAR')">{{ fila.Clasificacion_Evidencia }}</span></td>
+            <td>{{ fila.Tipo_Participacion }}</td>
+            <td class="number">{{ fila.Total_Tareas_BD }}</td>
+            <td class="number">{{ fila.Total_Tareas_Wintel }}</td>
+            <td>{{ fila.Estado || '—' }}</td>
+            <td><button type="button" class="detail-button" (click)="alternarDetalle(fila.Ticket_ID)"
+                [attr.aria-expanded]="ticketExpandido === fila.Ticket_ID">
+              {{ ticketExpandido === fila.Ticket_ID ? 'Ocultar' : 'Ver más' }}
+            </button></td>
+          </tr>
+          <tr *ngIf="ticketExpandido === fila.Ticket_ID" class="expanded-row">
+            <td colspan="11"><div class="expanded-content">
+              <div><strong>Ticket de evidencia</strong><span>{{ fila.Ticket_Evidencia || 'Sin evidencia registrada' }}</span></div>
+              <div><strong>Grupo resolutor</strong><span>{{ fila.Grupo_Resolutor || '—' }}</span></div>
+              <div><strong>Resolutor principal</strong><span>{{ fila.Nombre_Resolutor || '—' }}</span></div>
+              <div><strong>ALP</strong><span>{{ fila.ALP || '—' }}</span></div>
+              <div><strong>Categoría nivel 3</strong><span>{{ fila.Categorizacion_Nivel_3 || '—' }}</span></div>
+              <div><strong>Actividad detectada</strong><span>Subida/bajada: {{ fila.Es_Subida_Bajada ? 'Sí' : 'No' }} · Baja de instancia: {{ fila.Es_Baja_Instancia ? 'Sí' : 'No' }} · Validación: {{ fila.Es_Validacion ? 'Sí' : 'No' }}</span></div>
+              <div class="detail-wide"><strong>Detalle original</strong><span>{{ fila.Detalle || 'Sin descripción adicional' }}</span></div>
+            </div></td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="!cargando && !error && filasVisibles.length === 0">
+          <td colspan="11" class="empty-cell"><strong>Sin resultados</strong>
+            <span>{{ busqueda ? 'No hay coincidencias en esta página.' : 'No se encontraron cambios para los filtros seleccionados.' }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="cargando" class="table-status" role="status"><span class="loading-spinner"></span> Cargando actividades de BD...</div>
+  <div *ngIf="!cargando && error" class="table-status error" role="alert">{{ error }}</div>
+
+  <footer class="table-footer">
+    <span>Registros <strong>{{ primerRegistro }}–{{ ultimoRegistro }}</strong> de <strong>{{ formatearNumero(totalRegistros) }}</strong></span>
+    <div class="pagination-controls">
+      <label>Filas <select [value]="tamanoActual" [disabled]="cargando" (change)="cambiarTamanoPagina($event)">
+        <option *ngFor="let tamano of tamanosPagina" [value]="tamano">{{ tamano }}</option>
+      </select></label>
+      <button type="button" [disabled]="cargando || paginaActual <= 1" (click)="cambiarPagina(paginaActual - 1)" aria-label="Página anterior">‹</button>
+      <span>Página {{ totalPaginas ? paginaActual : 0 }} de {{ totalPaginas }}</span>
+      <button type="button" [disabled]="cargando || paginaActual >= totalPaginas" (click)="cambiarPagina(paginaActual + 1)" aria-label="Página siguiente">›</button>
+    </div>
+  </footer>
+  <div class="methodology-note">Clasificación basada en el texto del cambio y tareas realizadas por BD. La evidencia puede requerir revisión manual.</div>
+</article>

@@ -14,7 +14,11 @@ import {
   ChangeConsolidatedPrioridadItem,
   ChangeConsolidatedTopProyectos,
   ChangeConsolidatedPrioridadMensualItem,
-  ChangeConsolidatedTicketsOut
+  ChangeConsolidatedTicketsOut,
+  ChangeConsolidatedActividadesBDOut,
+  ChangeConsolidatedHorasCambioOut,
+  ChangeConsolidatedHorasResolutorItem,
+  ChangeConsolidatedHorasMensualesItem
 } from '../models/change-consolidated';
 
 @Injectable({ providedIn: 'root' })
@@ -34,9 +38,9 @@ export class ChangeConsolidatedService {
       'desde' | 'hasta' | 'prioridad' | 'motivo' | 'grupo_resolutor' |
       'estado' | 'proyecto' | 'periodo' | 'ticket_id'
     >)[] = [
-      'desde', 'hasta', 'prioridad', 'motivo', 'grupo_resolutor',
-      'estado', 'proyecto', 'periodo', 'ticket_id'
-    ];
+        'desde', 'hasta', 'prioridad', 'motivo', 'grupo_resolutor',
+        'estado', 'proyecto', 'periodo', 'ticket_id'
+      ];
 
     for (const campo of campos) {
       const valor = filtros[campo]?.trim();
@@ -158,4 +162,106 @@ export class ChangeConsolidatedService {
       `${this.apiUrl}/tickets`, { params }
     );
   }
+
+
+  // =====================================================
+  // PRD 05 - ACTIVIDADES Y HORAS DE CAMBIOS
+  // =====================================================
+
+  private construirParametrosAnalisis(
+    filtros: ChangeConsolidatedDashboardFilters = {},
+    incluirSoloValidacion = true
+  ): HttpParams {
+    return this.construirParametros(filtros)
+      .set(
+        'incluir_solo_validacion',
+        String(incluirSoloValidacion)
+      );
+  }
+
+
+  // BLOQUE 1: Tabla de actividades BD
+  obtenerActividadesBD(
+    filtros: ChangeConsolidatedDashboardFilters = {},
+    pagina = 1,
+    tamano = 10,
+    incluirSoloValidacion = true
+  ): Observable<ChangeConsolidatedActividadesBDOut> {
+
+    const params = this.construirParametrosAnalisis(
+      filtros,
+      incluirSoloValidacion
+    )
+      .set('pagina', String(pagina))
+      .set('tamano', String(tamano));
+
+    return this.http.get<ChangeConsolidatedActividadesBDOut>(
+      `${this.apiUrl}/actividades-bd`,
+      { params }
+    );
+  }
+
+
+  // BLOQUE 2: Tabla de horas por cambio
+  obtenerHorasPorCambio(
+    filtros: ChangeConsolidatedDashboardFilters = {},
+    pagina = 1,
+    tamano = 10,
+    incluirSoloValidacion = true
+  ): Observable<ChangeConsolidatedHorasCambioOut> {
+
+    const params = this.construirParametrosAnalisis(
+      filtros,
+      incluirSoloValidacion
+    )
+      .set('pagina', String(pagina))
+      .set('tamano', String(tamano));
+
+    return this.http.get<ChangeConsolidatedHorasCambioOut>(
+      `${this.apiUrl}/horas-por-cambio`,
+      { params }
+    );
+  }
+
+
+  // BLOQUE 3: Gráfico de horas por resolutor
+  obtenerHorasPorResolutor(
+    filtros: ChangeConsolidatedDashboardFilters = {},
+    incluirSoloValidacion = true
+  ): Observable<ChangeConsolidatedHorasResolutorItem[]> {
+
+    const params = this.construirParametrosAnalisis(
+      filtros,
+      incluirSoloValidacion
+    );
+
+    return this.http.get<ChangeConsolidatedHorasResolutorItem[]>(
+      `${this.apiUrl}/horas-por-resolutor`,
+      { params }
+    );
+  }
+
+
+  // BLOQUE 4: Gráfico de horas mensuales
+  obtenerHorasMensuales(
+    filtros: ChangeConsolidatedDashboardFilters = {},
+    incluirSoloValidacion = true
+  ): Observable<ChangeConsolidatedHorasMensualesItem[]> {
+
+    const params = this.construirParametrosAnalisis(
+      filtros,
+      incluirSoloValidacion
+    );
+
+    return this.http.get<ChangeConsolidatedHorasMensualesItem[]>(
+      `${this.apiUrl}/horas-mensuales`,
+      { params }
+    );
+  }
+
+
+
+
+
+
 }

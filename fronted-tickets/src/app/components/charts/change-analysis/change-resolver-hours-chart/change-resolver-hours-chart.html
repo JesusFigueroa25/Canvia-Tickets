@@ -1,0 +1,56 @@
+<article class="chart-card">
+    <header class="chart-header">
+        <div class="title-row">
+            <span class="title-accent"></span>
+            <div>
+                <h3>Horas trabajadas por resolutor</h3>
+                <p>Distribución de horas de tareas de BD asociadas a los cambios identificados.</p>
+            </div>
+        </div>
+        <div class="chart-actions">
+            <label class="control-field">Resolutores visibles
+                <select [value]="limite" [disabled]="cargando" (change)="cambiarLimite($event)"
+                    aria-label="Límite de resolutores">
+                    <option value="todos">Todos</option>
+                    <option value="5">Top 5</option>
+                    <option value="10">Top 10</option>
+                </select>
+            </label>
+            <label class="control-field search-field">Buscar resolutor
+                <span class="search-box"><span aria-hidden="true">⌕</span>
+                    <input type="search" [value]="busqueda" (input)="buscar($event)" placeholder="Buscar resolutor...">
+                    <button type="button" *ngIf="busqueda" (click)="limpiarBusqueda()"
+                        aria-label="Limpiar búsqueda">×</button>
+                </span>
+            </label>
+        </div>
+    </header>
+    <div class="summary-grid">
+        <div class="summary-item"><span>Total de resolutores</span><strong>{{ numero(totalResolutores) }}</strong></div>
+        <div class="summary-item"><span>Total general de horas</span><strong class="highlight">{{ horas(totalGeneral) }}
+                h</strong></div>
+        <div class="summary-item"><span>Horas de las barras visibles</span><strong>{{ horas(horasRanking) }} h</strong>
+        </div>
+    </div>
+
+    <div class="chart-area">
+        <div *ngIf="cargando" class="chart-status" role="status"><span class="loading-spinner"></span> Actualizando
+            horas por resolutor...</div>
+        <div *ngIf="!cargando && error" class="chart-status error" role="alert">{{ error }}</div>
+        <div *ngIf="!cargando && !error && sinDatos" class="chart-status">
+            {{ busqueda ? 'No se encontraron resolutores con esa búsqueda.' : 'No existen registros para los filtros
+            seleccionados.' }}
+        </div>
+        <div class="chart-scroll" *ngIf="!cargando && !error && !sinDatos">
+            <div class="chart-container" [style.height.px]="alturaGrafico">
+                <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'"
+                    role="img" aria-label="Gráfico horizontal de horas por resolutor"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer class="chart-footer">
+        <span>Ordenado por horas descendentes · El ranking y el buscador son locales.</span>
+        <span>La fila «TOTAL GENERAL» se utiliza solo para el resumen, no como barra.</span>
+    </footer>
+</article>

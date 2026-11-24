@@ -146,3 +146,72 @@ class ChangeConsolidatedTicketsOut(BaseModel):
     pagina: int
     tamano: int
     total_paginas: int
+
+# ================================================================
+# PRD 05 - CONTRATOS DE ACTIVIDADES Y HORAS DE CAMBIOS
+# ================================================================
+
+class ChangeConsolidatedActividadBDItem(ChangeConsolidatedTicketItem):
+    Total_Tareas_BD: int
+    Total_Tareas_Wintel: int
+    Tipo_Participacion: str
+    Clasificacion_Evidencia: str
+    Tipo_Actividad: str
+    Es_Subida_Bajada: int
+    Es_Baja_Instancia: int
+    Es_Validacion: int
+    Ticket_Evidencia: str | None = None
+
+
+class ChangeConsolidatedActividadesBDOut(BaseModel):
+    cambios: list[ChangeConsolidatedActividadBDItem] = Field(default_factory=list)
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+
+class ChangeConsolidatedHorasCambioItem(BaseModel):
+    Ticket_ID: str
+    Fecha_Creacion: datetime
+    ALP: str | None = None
+    Proyecto: str | None = None
+    Descripcion: str | None = None
+    Grupo_Resolutor: str | None = None
+    Nombre_Resolutor: str | None = None
+    Estado: str | None = None
+    Tipo_Participacion: str
+    Tipo_Actividad: str
+    Clasificacion_Evidencia: str
+    Total_Tareas_BD: int
+    Total_Tareas_Wintel: int
+    Registros_Tiempo_BD: int
+    Total_Resolutores_BD: int
+    Horas_Totales: float
+
+
+class ChangeConsolidatedHorasCambioOut(BaseModel):
+    cambios: list[ChangeConsolidatedHorasCambioItem] = Field(default_factory=list)
+    total: int
+    pagina: int
+    tamano: int
+    total_paginas: int
+
+
+class ChangeConsolidatedHorasResolutorItem(BaseModel):
+    Resolutor: str
+    Total_Registros: int
+    Total_Tareas: int
+    # GROUPING SETS devuelve NULL en el total general cuando no hay filas.
+    Horas_Totales: float | None = None
+
+
+class ChangeConsolidatedHorasMensualesItem(BaseModel):
+    Anio: int
+    Mes: int
+    Periodo: str
+    Total_Cambios: int
+    Total_Tareas: int
+    Total_Resolutores: int
+    Horas_Totales: float
+    Promedio_Horas_Por_Cambio: float

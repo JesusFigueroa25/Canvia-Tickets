@@ -1,0 +1,48 @@
+<article class="chart-card">
+    <header class="chart-header">
+        <div class="title-row">
+            <span class="title-accent"></span>
+            <div>
+                <h3>Horas totales por mes</h3>
+                <p>Evolución mensual del esfuerzo de BD asociado a los cambios consolidados.</p>
+            </div>
+        </div>
+        <div class="chart-actions">
+            <label class="control-field">Indicador del gráfico
+                <select [value]="metrica" (change)="cambiarMetrica($event)" [disabled]="cargando"
+                    aria-label="Indicador mensual">
+                    <option value="horas">Horas totales</option>
+                    <option value="promedio">Promedio de horas por cambio</option>
+                </select>
+            </label>
+        </div>
+    </header>
+
+    <div class="summary-grid">
+        <div class="summary-item"><span>Meses con registros de tiempo</span><strong>{{ numero(totalMeses) }}</strong>
+        </div>
+        <div class="summary-item"><span>Suma de horas mensuales</span><strong class="highlight">{{
+                horas(totalHorasMeses) }} h</strong></div>
+        <div class="summary-item"><span>Cambios contabilizados por mes</span><strong>{{ numero(totalCambiosPorMes)
+                }}</strong></div>
+    </div>
+
+    <div class="chart-area">
+        <div *ngIf="cargando" class="chart-status" role="status"><span class="loading-spinner"></span> Actualizando
+            evolución mensual...</div>
+        <div *ngIf="!cargando && error" class="chart-status error" role="alert">{{ error }}</div>
+        <div *ngIf="!cargando && !error && sinDatos" class="chart-status">No hay horas mensuales para los filtros
+            seleccionados.</div>
+        <div class="chart-scroll" *ngIf="!cargando && !error && !sinDatos">
+            <div class="chart-viewport" [style.min-width.px]="anchoMinimoGrafico">
+                <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'"
+                    role="img" aria-label="Gráfico mensual de horas en cambios"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer class="chart-footer">
+        <span>Período: {{ textoPeriodo }} · Mes de creación del cambio.</span>
+        <span>Las horas mensuales pueden diferir en centésimas del total general por redondeo.</span>
+    </footer>
+</article>

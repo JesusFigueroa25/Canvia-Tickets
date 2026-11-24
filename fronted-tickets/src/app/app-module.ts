@@ -92,6 +92,10 @@ import { ReportTimesProjectTable } from './components/charts/Report-Times/report
 import { RequirementCategorizationReport } from './components/charts/Consolidated/requirement-categorization-report/requirement-categorization-report';
 import { TicketsReportTimesReport } from './components/charts/Consolidated/tickets-report-times-report/tickets-report-times-report';
 import { ChangeConsolidated } from './components/pages/change-consolidated/change-consolidated';
+import { ChangeActivitiesTable } from './components/charts/change-analysis/change-activities-table/change-activities-table';
+import { ChangeHoursDetailTable } from './components/charts/change-analysis/change-hours-detail-table/change-hours-detail-table';
+import { ChangeResolverHoursChart } from './components/charts/change-analysis/change-resolver-hours-chart/change-resolver-hours-chart';
+import { ChangeMonthlyHoursChart } from './components/charts/change-analysis/change-monthly-hours-chart/change-monthly-hours-chart';
 
 @NgModule({
   declarations: [
@@ -177,6 +181,10 @@ import { ChangeConsolidated } from './components/pages/change-consolidated/chang
     RequirementCategorizationReport,
     TicketsReportTimesReport,
     ChangeConsolidated,
+    ChangeActivitiesTable,
+    ChangeHoursDetailTable,
+    ChangeResolverHoursChart,
+    ChangeMonthlyHoursChart,
   ],
   imports: [
     BrowserAnimationsModule,

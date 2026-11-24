@@ -19,7 +19,11 @@ import {
   ChangeConsolidatedPrioridadItem,
   ChangeConsolidatedTopProyectos,
   ChangeConsolidatedPrioridadMensualItem,
-  ChangeConsolidatedTicketsOut
+  ChangeConsolidatedTicketsOut,
+  ChangeConsolidatedActividadesBDOut,
+  ChangeConsolidatedHorasCambioOut,
+  ChangeConsolidatedHorasResolutorItem,
+  ChangeConsolidatedHorasMensualesItem
 } from '../../../models/change-consolidated';
 
 import { ChangeConsolidatedService } from '../../../services/change-consolidated.service';
@@ -32,7 +36,9 @@ type RecursoDashboard =
   | 'categorias'
   | 'prioridades'
   | 'topProyectos'
-  | 'prioridadMensual';
+  | 'prioridadMensual'
+  | 'horasResolutor'
+  | 'horasMensuales';
 
 @Component({
   selector: 'app-change-consolidated',
@@ -47,6 +53,11 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
   private readonly cancelarFiltros$ = new Subject<void>();
   private readonly cancelarDashboard$ = new Subject<void>();
   private readonly cancelarTickets$ = new Subject<void>();
+  private readonly cancelarActividadesBD$ = new Subject<void>();
+  private readonly cancelarHorasCambio$ = new Subject<void>();
+
+  private solicitudActividadesBD = 0;
+  private solicitudHorasCambio = 0;
 
   private solicitudDashboard = 0;
   private solicitudTickets = 0;
@@ -104,8 +115,22 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
   tamanoTickets = 10;
   cargandoTickets = false;
   errorTickets: string | null = null;
-
   graficoExpandido: string | null = null;
+
+  // PRD 05 - ACTIVIDADES Y HORAS DE CAMBIOS
+  incluirSoloValidacion = true;
+  actividadesBD: ChangeConsolidatedActividadesBDOut | null = null;
+  paginaActividadesBD = 1;
+  tamanoActividadesBD = 10;
+  cargandoActividadesBD = false;
+  errorActividadesBD: string | null = null;
+  horasPorCambio: ChangeConsolidatedHorasCambioOut | null = null;
+  paginaHorasCambio = 1;
+  tamanoHorasCambio = 10;
+  cargandoHorasCambio = false;
+  errorHorasCambio: string | null = null;
+  horasPorResolutor: ChangeConsolidatedHorasResolutorItem[] = [];
+  horasMensuales: ChangeConsolidatedHorasMensualesItem[] = [];
 
   readonly cargas: Record<RecursoDashboard, boolean> = {
     kpis: false,
@@ -115,7 +140,9 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     categorias: false,
     prioridades: false,
     topProyectos: false,
-    prioridadMensual: false
+    prioridadMensual: false,
+    horasResolutor: false,
+    horasMensuales: false
   };
 
   readonly errores: Record<RecursoDashboard, string | null> = {
@@ -126,7 +153,9 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     categorias: null,
     prioridades: null,
     topProyectos: null,
-    prioridadMensual: null
+    prioridadMensual: null,
+    horasResolutor: null,
+    horasMensuales: null
   };
 
   private readonly validarRangoFechas: ValidatorFn = (
@@ -152,14 +181,14 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     private readonly formBuilder: FormBuilder,
     private readonly changeConsolidatedService: ChangeConsolidatedService,
     private readonly changeDetector: ChangeDetectorRef
-  ) {}
+  ) { }
 
   get proyectosFiltrados(): string[] {
     const busqueda = this.busquedaProyecto.trim().toLocaleLowerCase();
     return busqueda
       ? this.opcionesFiltros.proyectos.filter(
-          proyecto => proyecto.toLocaleLowerCase().includes(busqueda)
-        )
+        proyecto => proyecto.toLocaleLowerCase().includes(busqueda)
+      )
       : this.opcionesFiltros.proyectos;
   }
 
@@ -188,16 +217,47 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
   }
 
   get cargandoDashboard(): boolean {
-    return Object.values(this.cargas).some(Boolean) || this.cargandoTickets;
+    return Object.values(this.cargas).some(Boolean)
+      || this.cargandoTickets
+      || this.cargandoActividadesBD
+      || this.cargandoHorasCambio;
   }
 
   get mensajesErrores(): string[] {
     return [
       ...Object.entries(this.errores)
-        .filter(([recurso, mensaje]) => recurso !== 'kpis' && !!mensaje)
+        .filter(([recurso, mensaje]) =>
+          recurso !== 'kpis' && !!mensaje
+        )
         .map(([, mensaje]) => mensaje as string),
-      ...(this.errorTickets ? [this.errorTickets] : [])
+
+      ...(this.errorTickets
+        ? [this.errorTickets]
+        : []),
+
+      ...(this.errorActividadesBD
+        ? [this.errorActividadesBD]
+        : []),
+
+      ...(this.errorHorasCambio
+        ? [this.errorHorasCambio]
+        : [])
     ];
+  }
+
+  get cargandoHorasResolutor(): boolean {
+    return this.cargas.horasResolutor;
+  }
+
+  get cargandoHorasMensuales(): boolean {
+    return this.cargas.horasMensuales;
+  }
+
+  get cargandoAnalisis(): boolean {
+    return this.cargandoActividadesBD
+      || this.cargandoHorasCambio
+      || this.cargandoHorasResolutor
+      || this.cargandoHorasMensuales;
   }
 
   ngOnInit(): void {
@@ -225,6 +285,10 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     this.cancelarDashboard$.complete();
     this.cancelarTickets$.next();
     this.cancelarTickets$.complete();
+    this.cancelarActividadesBD$.next();
+    this.cancelarActividadesBD$.complete();
+    this.cancelarHorasCambio$.next();
+    this.cancelarHorasCambio$.complete();
     this.destruir$.next();
     this.destruir$.complete();
   }
@@ -233,6 +297,19 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     this.cancelarFiltros$.next();
     this.cancelarDashboard$.next();
     this.cancelarTickets$.next();
+    this.cancelarActividadesBD$.next();
+    this.cancelarHorasCambio$.next();
+    ++this.solicitudActividadesBD;
+    ++this.solicitudHorasCambio;
+    this.cargandoActividadesBD = false;
+    this.cargandoHorasCambio = false;
+    this.errorActividadesBD = null;
+    this.errorHorasCambio = null;
+    this.actividadesBD = null;
+    this.horasPorCambio = null;
+    this.horasPorResolutor = [];
+    this.horasMensuales = [];
+    this.incluirSoloValidacion = true;
 
     ++this.solicitudDashboard;
     ++this.solicitudTickets;
@@ -343,6 +420,8 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     this.ticketIdSeleccionado = null;
     this.busquedaProyecto = '';
 
+    this.incluirSoloValidacion = true;
+
     this.restablecerFormulario();
     this.aplicarFiltros();
   }
@@ -376,10 +455,15 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
 
   cargarDashboard(): void {
     this.cancelarDashboard$.next();
+
     const solicitud = ++this.solicitudDashboard;
 
+    // Reiniciar paginaciones al modificar filtros
     this.paginaTickets = 1;
+    this.paginaActividadesBD = 1;
+    this.paginaHorasCambio = 1;
 
+    // Dashboard existente
     this.cargarKpis(solicitud);
     this.cargarProyectos(solicitud);
     this.cargarVolumenMensual(solicitud);
@@ -389,6 +473,14 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     this.cargarTopProyectos(solicitud);
     this.cargarPrioridadMensual(solicitud);
     this.cargarTickets(solicitud);
+
+    // PRD 05 - Nuevas tablas
+    this.cargarActividadesBD(solicitud);
+    this.cargarHorasPorCambio(solicitud);
+
+    // PRD 05 - Nuevos gráficos
+    this.cargarHorasPorResolutor(solicitud);
+    this.cargarHorasMensuales(solicitud);
 
     this.changeDetector.markForCheck();
   }
@@ -842,4 +934,251 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
 
     return `${anio}-${mes}-${dia}`;
   }
+
+
+  // PRD 05 - NUEVAS CONSULTAS DEL DASHBOARD
+
+  // BLOQUE 1: ACTIVIDADES DE BASES DE DATOS
+  cargarActividadesBD(
+    solicitud: number = this.solicitudDashboard
+  ): void {
+
+    this.cancelarActividadesBD$.next();
+
+    const solicitudActual = ++this.solicitudActividadesBD;
+
+    this.cargandoActividadesBD = true;
+    this.errorActividadesBD = null;
+    this.actividadesBD = null;
+
+    this.changeConsolidatedService.obtenerActividadesBD(
+      { ...this.filtrosActuales },
+      this.paginaActividadesBD,
+      this.tamanoActividadesBD,
+      this.incluirSoloValidacion
+    )
+      .pipe(
+        takeUntil(this.cancelarDashboard$),
+        takeUntil(this.cancelarActividadesBD$),
+        takeUntil(this.destruir$)
+      )
+      .subscribe({
+        next: datos => {
+
+          if (
+            solicitud !== this.solicitudDashboard ||
+            solicitudActual !== this.solicitudActividadesBD
+          ) {
+            return;
+          }
+          this.actividadesBD = datos;
+          this.cargandoActividadesBD = false;
+          this.changeDetector.markForCheck();
+        },
+
+        error: error => {
+
+          if (
+            solicitud !== this.solicitudDashboard ||
+            solicitudActual !== this.solicitudActividadesBD
+          ) {
+            return;
+          }
+
+          console.error(
+            'Error al consultar actividades BD:',
+            error
+          );
+
+          this.errorActividadesBD = 'No se pudo actualizar la tabla de actividades BD.';
+
+          this.cargandoActividadesBD = false;
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+
+  // BLOQUE 2: HORAS TOTALES POR CAMBIO
+  cargarHorasPorCambio(
+    solicitud: number = this.solicitudDashboard
+  ): void {
+
+    this.cancelarHorasCambio$.next();
+
+    const solicitudActual = ++this.solicitudHorasCambio;
+
+    this.cargandoHorasCambio = true;
+    this.errorHorasCambio = null;
+    this.horasPorCambio = null;
+
+    this.changeConsolidatedService.obtenerHorasPorCambio(
+      { ...this.filtrosActuales },
+      this.paginaHorasCambio,
+      this.tamanoHorasCambio,
+      this.incluirSoloValidacion
+    )
+      .pipe(
+        takeUntil(this.cancelarDashboard$),
+        takeUntil(this.cancelarHorasCambio$),
+        takeUntil(this.destruir$)
+      )
+      .subscribe({
+        next: datos => {
+
+          if (
+            solicitud !== this.solicitudDashboard ||
+            solicitudActual !== this.solicitudHorasCambio
+          ) {
+            return;
+          }
+
+          this.horasPorCambio = datos;
+          this.cargandoHorasCambio = false;
+
+          this.changeDetector.markForCheck();
+        },
+
+        error: error => {
+
+          if (
+            solicitud !== this.solicitudDashboard ||
+            solicitudActual !== this.solicitudHorasCambio
+          ) {
+            return;
+          }
+
+          console.error(
+            'Error al consultar horas por cambio:',
+            error
+          );
+
+          this.errorHorasCambio =
+            'No se pudo actualizar la tabla de horas por cambio.';
+
+          this.cargandoHorasCambio = false;
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+
+  // BLOQUE 3: HORAS TOTALES POR RESOLUTOR
+  cargarHorasPorResolutor(
+    solicitud: number = this.solicitudDashboard
+  ): void {
+
+    this.consultar(
+      'horasResolutor',
+      solicitud,
+
+      this.changeConsolidatedService.obtenerHorasPorResolutor(
+        { ...this.filtrosActuales },
+        this.incluirSoloValidacion
+      ),
+
+      datos => {
+        this.horasPorResolutor = datos;
+      },
+      'No se pudo actualizar el gráfico de horas por resolutor.'
+    );
+  }
+
+
+  // BLOQUE 4: HORAS TOTALES POR MES
+  cargarHorasMensuales(
+    solicitud: number = this.solicitudDashboard
+  ): void {
+
+    this.consultar(
+      'horasMensuales',
+      solicitud,
+
+      this.changeConsolidatedService.obtenerHorasMensuales(
+        { ...this.filtrosActuales },
+        this.incluirSoloValidacion
+      ),
+
+      datos => {
+        this.horasMensuales = datos;
+      },
+
+      'No se pudo actualizar el gráfico de horas mensuales.'
+    );
+  }
+
+  // =====================================================
+  // PAGINACIÓN DE LAS NUEVAS TABLAS
+  // =====================================================
+
+  private paginacionAnalisisValida(evento: {
+    pagina: number;
+    tamano: number;
+  }): boolean {
+
+    return Number.isInteger(evento.pagina)
+      && evento.pagina >= 1
+      && Number.isInteger(evento.tamano)
+      && evento.tamano >= 1
+      && evento.tamano <= 100;
+  }
+
+
+  cambiarPaginaActividadesBD(evento: {
+    pagina: number;
+    tamano: number;
+  }): void {
+
+    if (!this.paginacionAnalisisValida(evento)) {
+      return;
+    }
+
+    if (
+      this.paginaActividadesBD === evento.pagina &&
+      this.tamanoActividadesBD === evento.tamano
+    ) {
+      return;
+    }
+
+    this.paginaActividadesBD = evento.pagina;
+    this.tamanoActividadesBD = evento.tamano;
+
+    this.cargarActividadesBD();
+  }
+
+
+  cambiarPaginaHorasCambio(evento: {
+    pagina: number;
+    tamano: number;
+  }): void {
+
+    if (!this.paginacionAnalisisValida(evento)) {
+      return;
+    }
+
+    if (
+      this.paginaHorasCambio === evento.pagina &&
+      this.tamanoHorasCambio === evento.tamano
+    ) {
+      return;
+    }
+
+    this.paginaHorasCambio = evento.pagina;
+    this.tamanoHorasCambio = evento.tamano;
+
+    this.cargarHorasPorCambio();
+  }
+  cambiarIncluirSoloValidacion(incluir: boolean): void {
+
+    if (this.incluirSoloValidacion === incluir) {
+      return;
+    }
+
+    this.incluirSoloValidacion = incluir;
+
+    if (this.filtrosListos && !this.cargandoFiltros) {
+      this.cargarDashboard();
+    }
+  }
+
 }
