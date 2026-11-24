@@ -53,7 +53,7 @@
     </div>
 
     <p *ngIf="modo === 'consolidado' && entidadConsolidado === 'incidentes' && !datosConsolidados.length && !cargando"
-        role="status">No hay datos para los filtros aplicados.</p>
+        role="status"></p>
     <div class="chart-container">
         <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'">
         </canvas>
