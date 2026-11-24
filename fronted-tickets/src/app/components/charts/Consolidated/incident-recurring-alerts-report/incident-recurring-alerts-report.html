@@ -1,0 +1,48 @@
+<ng-template #encabezado let-titulo="titulo" let-icono="icono">
+  <header class="panel-heading"><svg viewBox="0 0 28 28" fill="none" stroke="#FF7A25" stroke-width="2" aria-hidden="true"><path [attr.d]="icono" /></svg><h2>{{ titulo }}</h2></header>
+</ng-template>
+<section #documento class="report-document alerts-document" [class.project-mode]="datos?.modo === 'proyecto'" *ngIf="datos as d">
+  <header class="report-header">
+    <div class="infrastructure-icon" aria-hidden="true"><svg viewBox="0 0 120 112" fill="none">
+      <path d="M28 48H23a15 15 0 0 1-1-30A25 25 0 0 1 69 15a18 18 0 0 1 17 33H80" stroke="#EAF2FB" stroke-width="4" />
+      <g stroke="#DCEAF7" stroke-width="2.5" fill="#113A60"><rect x="25" y="38" width="63" height="19" rx="5" /><rect x="25" y="61" width="63" height="19" rx="5" /><rect x="25" y="84" width="63" height="19" rx="5" /></g>
+      <path d="M48 47h28M48 70h28M48 93h28" stroke="#9CC0DD" stroke-width="3" /><g fill="#FF620F"><circle cx="36" cy="47" r="3" /><circle cx="36" cy="70" r="3" /><circle cx="36" cy="93" r="3" /></g>
+    </svg></div>
+    <div class="hero-separator" aria-hidden="true"></div>
+    <div class="header-copy"><h1>Análisis de las Alertas Recurrentes</h1><p class="report-period">Período: {{ periodo }} · {{ d.filtros.grupo_resolutor || 'Todos los grupos' }}</p><p class="project-name" *ngIf="d.modo === 'proyecto'">{{ d.filtros.proyecto }}</p><p class="scope-label" *ngIf="d.modo === 'general'">Análisis general de alertas</p></div>
+    <svg class="header-decoration" viewBox="0 0 300 180" preserveAspectRatio="none" aria-hidden="true"><path d="M150-20C15 40 208 95 75 200H300V-20Z" fill="#163D63" /><path d="M205-20C65 45 254 102 125 200H300V-20Z" fill="#22557E" /><path d="M252-20C126 56 302 115 192 200H300V-20Z" fill="#FF620F" /><path d="M280-20C181 55 334 120 242 200H300V-20Z" fill="#EF8B33" /></svg>
+    <span class="brand">CANVIA · R04</span>
+  </header>
+  <section class="kpis" aria-label="Indicadores del Top 5 de alertas">
+    <div class="kpi"><div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7"><path [attr.d]="iconos.barras" /></svg></div><div class="kpi-separator"></div><div class="kpi-content"><span class="kpi-label">Incidentes del Top 5</span><strong>{{ numero(d.topTotal) }}</strong><small>{{ d.alertas.length }} descripciones disponibles en el ranking</small></div></div>
+    <div class="kpi orange"><div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 4h12v7a6 6 0 0 1-12 0V4Zm0 2H4v3a4 4 0 0 0 4 4m12-7h4v3a4 4 0 0 1-4 4m-6 4v6m-5 0h10" /></svg></div><div class="kpi-separator"></div><div class="kpi-content"><span class="kpi-label">Alerta con mayor registro</span><strong>{{ numero(d.alertas[0]?.cantidad || 0) }}</strong><small *ngIf="d.alertas.length > 1">{{ porcentaje(d.alertas[0]?.porcentaje || 0) }} % del total general</small><small *ngIf="d.alertas.length === 1">Única descripción · participación en el KPI acumulado</small><span class="kpi-alert-description">{{ d.alertas[0]?.descripcion }}</span><small *ngIf="d.lideresVisibles.length > 1">Empate entre {{ d.lideresVisibles.length }} descripciones mostradas</small></div></div>
+    <div class="kpi green"><div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7"><path [attr.d]="iconos.dona" /></svg></div><div class="kpi-separator"></div><div class="kpi-content"><span class="kpi-label">Participación acumulada</span><strong>{{ porcentaje(d.participacionTop) }} %</strong><small>Top 5 respecto al total general filtrado</small></div></div>
+  </section>
+  <p class="denominator-context">Total general filtrado: <b>{{ numero(d.total) }} incidentes</b> · Denominador común de todos los porcentajes.</p>
+  <div class="alerts-main-grid">
+    <article class="report-panel alerts-bars-panel"><ng-container *ngTemplateOutlet="encabezado; context: {titulo: 'Top 5 alertas por volumen', icono: iconos.barras}"></ng-container>
+      <div class="alert-bars-body"><div class="alert-bars" role="list">
+        <div class="alert-row" *ngFor="let a of d.alertas; let i = index" role="listitem">
+          <div class="alert-caption"><span class="alert-rank">{{ i + 1 }}</span><span class="alert-description">{{ a.descripcion }}</span><span class="alert-amounts"><b>{{ numero(a.cantidad) }}</b><span>{{ porcentaje(a.porcentaje) }} %</span></span></div>
+          <div class="alert-track" role="img" [attr.aria-label]="a.descripcion + ': ' + numero(a.cantidad) + ' incidentes, ' + porcentaje(a.porcentaje) + ' % del total general'"><div class="alert-bar" [style.width.%]="a.cantidad * 100 / maximo" [style.background]="colores[i]"></div></div>
+        </div>
+      </div><div class="bar-axis" aria-hidden="true"><span>0</span><span>Número de incidentes</span><span>{{ numero(maximo) }}</span></div></div>
+    </article>
+    <div class="alerts-side">
+      <article class="report-panel alerts-donut-panel"><ng-container *ngTemplateOutlet="encabezado; context: {titulo: 'Top 5 y Otros', icono: iconos.dona}"></ng-container>
+        <div class="alerts-donut-body"><svg class="alerts-donut" viewBox="0 0 200 200" role="img" aria-label="Participación acumulada del Top 5 frente a Otros incidentes" font-family="Arial, Helvetica, sans-serif">
+          <circle cx="100" cy="100" r="65" fill="none" stroke="#EDF1F5" stroke-width="24" />
+          <ng-container *ngFor="let s of segmentos"><circle *ngIf="s.cantidad > 0" class="alerts-donut-segment" cx="100" cy="100" r="65" fill="none" [attr.stroke]="s.color" stroke-width="24" [attr.stroke-dasharray]="s.trazo" [attr.stroke-dashoffset]="s.offset" transform="rotate(-90 100 100)" /></ng-container>
+          <text x="100" y="99" text-anchor="middle" [attr.font-size]="fuenteTotal" font-weight="700" fill="#263447">{{ numero(d.total) }}</text><text x="100" y="120" text-anchor="middle" font-size="12" fill="#667085">total general</text>
+        </svg><div class="alerts-donut-legend" role="list"><div class="donut-legend-row" *ngFor="let s of segmentos" role="listitem"><i [style.background]="s.color"></i><div><span>{{ s.nombre }}</span><strong>{{ numero(s.cantidad) }} <small>{{ porcentaje(s.porcentaje) }} %</small></strong></div></div></div></div>
+      </article>
+      <article class="report-panel alerts-findings-panel"><ng-container *ngTemplateOutlet="encabezado; context: {titulo: 'Principales hallazgos', icono: iconos.hallazgos}"></ng-container>
+        <div class="alerts-findings"><div class="alerts-finding" *ngFor="let h of hallazgos; let i = index"><span class="finding-icon" [class.green]="i !== 1" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2"><path [attr.d]="i === 0 ? iconos.barras : i === 1 ? iconos.dona : iconos.hallazgos" /></svg></span><p><ng-container *ngFor="let parte of h.partes"><strong *ngIf="parte.destacado">{{ parte.texto }}</strong><span *ngIf="!parte.destacado">{{ parte.texto }}</span></ng-container></p></div></div>
+      </article>
+    </div>
+  </div>
+  <section class="report-panel alerts-executive"><ng-container *ngTemplateOutlet="encabezado; context: {titulo: 'Conclusión y recomendaciones', icono: iconos.ejecutivo}"></ng-container><div class="alerts-executive-body"><p class="alerts-conclusion">{{ d.conclusion }}</p><ol class="alerts-recommendations"><li *ngFor="let r of d.recomendaciones">{{ r }}</li></ol></div></section>
+  <div class="report-meta"><span *ngFor="let f of filtros">{{ f }}</span></div>
+  <p class="methodology">Agrupación por descripción según el endpoint, incluidos registros únicos y «Sin especificar». Este ranking no impone un mínimo de recurrencia ni demuestra persistencia entre meses. Otros = total general filtrado menos el Top 5. Las tasas se calculan desde cantidades originales; el redondeo a dos decimales puede impedir que las etiquetas sumen exactamente 100 %. Se omiten las selecciones dinámicas de mes, resolutor, descripción, tipos, detalle y ticket. Las consultas internas del agregado no garantizan una instantánea transaccional.</p>
+  <footer>CANVIA · Incidentes Consolidados · R04 · Preparado: {{ d.preparadoEn }}</footer>
+</section>

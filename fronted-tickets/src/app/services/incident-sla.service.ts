@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ResolutorRendimientoOut, ResolutorTicketsPorResolutorOut } from '../models/resolutor-dashboard';
 import { IncidentSLADashboardFilters, IncidentSLAFilters, IncidentSLAInsights, IncidentSLAKPI, IncidentSLAParetoItem, IncidentSLAProyectoItem, IncidentSLAResolutorItem, IncidentSLATendencia, IncidentSLATicketsOut, IncidentSLATrendItem, IncidentSLAVolumenItem } from '../models/incident-sla';
 import { ImportResultado } from '../models/import-result';
 import { Observable } from 'rxjs';
@@ -91,6 +92,11 @@ export class IncidentSlaService {
             );
         }
 
+
+        // PRD 06: filtro común para los cinco dashboards.
+        if (filtros.nombre_resolutor?.trim()) {
+            params = params.set('nombre_resolutor', filtros.nombre_resolutor.trim());
+        }
 
         return params;
     }
@@ -216,6 +222,33 @@ export class IncidentSlaService {
             { params }
         );
     }
+    // PRD 06 - Rendimiento mensual paginado por resolutor.
+    obtenerRendimientoResolutores(
+        filtros: IncidentSLADashboardFilters = {},
+        pagina: number = 1,
+        tamano: number = 20
+    ): Observable<ResolutorRendimientoOut> {
+        const params = this.construirParametros(filtros)
+            .set('pagina', String(pagina))
+            .set('tamano', String(tamano));
 
+        return this.clienteHTTP.get<ResolutorRendimientoOut>(
+            `${this.servidor}/${this.recurso}/rendimiento-resolutores`,
+            { params }
+        );
+    }
 
+    // PRD 06 - Ranking de tickets por resolutor (Top 5/10/15/20).
+    obtenerTicketsPorResolutor(
+        filtros: IncidentSLADashboardFilters = {},
+        limite: number = 5
+    ): Observable<ResolutorTicketsPorResolutorOut> {
+        const params = this.construirParametros(filtros)
+            .set('tamano', String(limite));
+
+        return this.clienteHTTP.get<ResolutorTicketsPorResolutorOut>(
+            `${this.servidor}/${this.recurso}/tickets-por-resolutor`,
+            { params }
+        );
+    }
 }

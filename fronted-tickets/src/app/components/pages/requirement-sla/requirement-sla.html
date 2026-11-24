@@ -618,6 +618,62 @@
 
     </section>
 
+  <!-- PRD 06: Análisis de resolutores -->
+  <section id="resolutor-requirement-sla" class="dashboard-section">
+    <header class="section-header">
+      <h1>Resolutor</h1>
+      <p>Rendimiento mensual y distribución de tickets por resolutor en requerimientos SLA.</p>
+    </header>
+
+    <div class="chart-full-width table-expandable" id="fullscreen-tabla-resolutores-requirement-sla"
+      #tablaResolutoresFs>
+      <app-resolutor-performance-table
+        [datos]="rendimientoResolutores"
+        [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
+        [resolutorSeleccionado]="resolutorSeleccionado"
+        [cargando]="cargandoRendimientoResolutores"
+        titulo="Rendimiento por Resolutor"
+        descripcion="Distribución mensual de requerimientos SLA por resolutor. Selecciona uno para filtrar el dashboard."
+        [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-resolutores-requirement-sla'"
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaResolutoresFs)"
+        (resolutorChange)="cambiarResolutor($event)"
+        (paginaChange)="cambiarPaginaResolutores($event)">
+      </app-resolutor-performance-table>
+      <p *ngIf="errorRendimientoResolutores" role="alert">
+        {{ errorRendimientoResolutores }}
+        <button type="button" (click)="cargarRendimientoResolutores()">Reintentar</button>
+      </p>
+    </div>
+
+    <div class="chart-full-width chart-expandable" id="fullscreen-grafico-resolutores-requirement-sla"
+      #graficoResolutoresFs>
+      <button type="button" class="chart-expand-btn"
+        (click)="alternarPantallaCompleta(graficoResolutoresFs)"
+        [title]="graficoExpandido === 'fullscreen-grafico-resolutores-requirement-sla'
+          ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+        aria-label="Ampliar gráfico de tickets por resolutor">
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-grafico-resolutores-requirement-sla'
+            ? 'fullscreen_exit' : 'fullscreen' }}
+        </mat-icon>
+      </button>
+      <app-resolver-monthly-tickets
+        [datos]="ticketsPorResolutor"
+        [cargando]="cargandoTicketsPorResolutor"
+        [limite]="limiteTicketsPorResolutor"
+        [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
+        titulo="Número de Tickets por Resolutor"
+        descripcion="Comparación mensual de requerimientos SLA por resolutor, según su fecha de creación."
+        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+      </app-resolver-monthly-tickets>
+      <p *ngIf="errorTicketsPorResolutor" role="alert">
+        {{ errorTicketsPorResolutor }}
+        <button type="button" (click)="cargarTicketsPorResolutor()">Reintentar</button>
+      </p>
+    </div>
+  </section>
+
     <section id="explorador-tickets" class="dashboard-section">
 
         <header class="section-header">

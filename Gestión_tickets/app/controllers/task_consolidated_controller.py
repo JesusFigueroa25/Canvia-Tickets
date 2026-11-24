@@ -18,6 +18,9 @@ from app.schemas.task_consolidated_schema import (
     TaskConsolidatedTopProyectosOut,
     TaskConsolidatedVolumenItem,
 )
+from app.schemas.resolutor_dashboard_schema import (
+    ResolverRendimientoOut, ResolverTicketsPorResolutorOut,
+)
 from app.services import task_consolidated_service
 
 logger = logging.getLogger(__name__)
@@ -68,6 +71,7 @@ def _obtener_filtros_dashboard(
     ),
     tipo_tarea: list[str] | None = Query(default=None),
     proyectos_excluidos: list[str] | None = Query(default=None),
+    nombre_resolutor: str | None = Query(default=None, max_length=150),
     ticket_id: str | None = Query(default=None, max_length=20),
 ) -> TaskConsolidatedDashboardFilters:
     if desde and hasta and desde > hasta:
@@ -83,6 +87,7 @@ def _obtener_filtros_dashboard(
         periodo=periodo,
         tipo_tarea=tipo_tarea or [],
         proyectos_excluidos=proyectos_excluidos or [],
+        nombre_resolutor=nombre_resolutor,
         ticket_id=ticket_id,
     )
 
@@ -153,4 +158,29 @@ def obtener_tickets(
 ):
     return task_consolidated_service.obtener_tickets(
         db, filtros, pagina=pagina, tamano=tamano
+    )
+
+
+
+# PRD 06 - RESOLUTORES: tabla mensual paginada y ranking.
+@router.get("/rendimiento-resolutores", response_model=ResolverRendimientoOut)
+def obtener_rendimiento_resolutores(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(20, ge=1, le=100),
+    filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return task_consolidated_service.obtener_rendimiento_resolutores(
+        db, filtros, pagina=pagina, tamano=tamano
+    )
+
+
+@router.get("/tickets-por-resolutor", response_model=ResolverTicketsPorResolutorOut)
+def obtener_tickets_por_resolutor(
+    tamano: int = Query(5, ge=1, le=20),
+    filtros: TaskConsolidatedDashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return task_consolidated_service.obtener_tickets_por_resolutor(
+        db, filtros, limite=tamano
     )

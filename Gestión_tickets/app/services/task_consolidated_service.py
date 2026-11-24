@@ -1,3 +1,7 @@
+from app.services.resolutor_dashboard_service import (
+    construir_rendimiento_resolutores,
+    construir_tickets_por_resolutor,
+)
 import logging
 from datetime import datetime
 
@@ -222,6 +226,7 @@ def obtener_opciones_filtros(db: Session) -> dict:
         "grupos_resolutores": datos["grupos_resolutores"],
         "proyectos": datos["proyectos"],
         "tipos_tarea": datos["tipos_tarea"],
+        "nombres_resolutores": datos["nombres_resolutores"],
     }
 
 
@@ -398,3 +403,24 @@ def obtener_tickets(
         "tamano": tamano,
         "total_paginas": (total + tamano - 1) // tamano,
     }
+
+
+
+# PRD 06 - SERVICIO COMPARTIDO DE RESOLUTORES.
+def obtener_rendimiento_resolutores(
+    db: Session,
+    filtros: TaskConsolidatedDashboardFilters,
+    pagina: int = 1,
+    tamano: int = 20,
+) -> dict:
+    filas = task_consolidated_repository.obtener_rendimiento_resolutores(db, filtros)
+    return construir_rendimiento_resolutores(filas, pagina=pagina, tamano=tamano)
+
+
+def obtener_tickets_por_resolutor(
+    db: Session,
+    filtros: TaskConsolidatedDashboardFilters,
+    limite: int = 5,
+) -> dict:
+    rendimiento = obtener_rendimiento_resolutores(db, filtros, pagina=1, tamano=limite)
+    return construir_tickets_por_resolutor(rendimiento, limite=limite)

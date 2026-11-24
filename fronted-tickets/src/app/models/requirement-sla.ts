@@ -12,6 +12,8 @@ export interface RequirementSLADashboardFilters {
     sla_solucion_condicion?: RequirementSLASolucionCondicion;
     periodo?: string;
     ticket_id?: string;
+  /** Nombre seleccionado en el filtro de resolutor. */
+  nombre_resolutor?: string;
 }
 
 
@@ -56,6 +58,7 @@ export interface RequirementSLAFilters {
     proyectos?: string[];
     tipos_requerimiento?: string[];
     condiciones_dia?: RequirementSLACondicionDia[];
+  nombres_resolutores: string[];
 }
 
 

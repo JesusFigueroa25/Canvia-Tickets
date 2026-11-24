@@ -393,6 +393,7 @@ class IncidentConsolidatedAnalisisEjecutivoIAOut(BaseModel):
 #--------------------------------------------------------------------
 
 class RequirementConsolidatedFiltersOut(BaseModel):
+    nombres_resolutores: list[str] = Field(default_factory=list)
     fecha_min: date | None = None
     fecha_max: date | None = None
     prioridades: list[str]
@@ -459,6 +460,7 @@ class RequirementConsolidatedPrioridadMensualItem(BaseModel):
     
 
 class RequirementConsolidatedDashboardFilters(BaseModel):
+    nombre_resolutor: str | None = Field(default=None, max_length=150)
     desde: date | None = None
     hasta: date | None = None
     prioridad: str | None = None
@@ -684,3 +686,4 @@ class RequirementActualizacionesManualesOut(BaseModel):
     resumen: RequirementActualizacionManualResumen
     grafico: list[RequirementActualizacionManualItem]
     tabla: RequirementActualizacionManualTabla
+

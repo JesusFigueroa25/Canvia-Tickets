@@ -1,3 +1,8 @@
+from app.repositories.resolutor_dashboard_repository import (
+    normalizar_resolutor,
+    obtener_nombres_resolutores as _nombres_resolutores,
+    consultar_rendimiento_resolutores,
+)
 import pandas as pd
 from datetime import date, timedelta
 from sqlalchemy import (delete, insert, literal_column, select, func,case,)
@@ -136,7 +141,8 @@ def obtener_opciones_filtros(db: Session):
         "grupos_resolutores": grupos,
         "prioridades": prioridades,
         "proyectos": proyectos,
-        "tipos_incidente": tipos_incidente
+        "tipos_incidente": tipos_incidente,
+        "nombres_resolutores": obtener_nombres_resolutores(db),
     }
 
 
@@ -273,6 +279,12 @@ def aplicar_filtros_dashboard(
             filtros.ticket_id.strip()
         )
 
+
+    # PRD 06 - filtro dinámico por resolutor, consistente con Incidentes Consolidados.
+    if filtros.nombre_resolutor and filtros.nombre_resolutor.strip():
+        consulta = consulta.where(
+            normalizar_resolutor(IncidentSLA.Usuario_Resolutor) == filtros.nombre_resolutor.strip()
+        )
 
     return consulta
 
@@ -635,3 +647,20 @@ def obtener_tickets(
         "tickets": tickets,
         "total": total
     }
+
+
+
+# PRD 06 - resolutores (misma semántica y filtros que los KPIs del módulo).
+def obtener_nombres_resolutores(db: Session) -> list[str]:
+    return _nombres_resolutores(db, IncidentSLA.Usuario_Resolutor)
+
+
+def obtener_rendimiento_resolutores(db: Session, filtros: IncidentSLADashboardFilters):
+    return consultar_rendimiento_resolutores(
+        db,
+        filtros,
+        modelo=IncidentSLA,
+        fecha=IncidentSLA.Fecha_Creacion,
+        resolutor=IncidentSLA.Usuario_Resolutor,
+        aplicar_filtros=aplicar_filtros_dashboard,
+    )

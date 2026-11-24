@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ResolutorRendimientoOut, ResolutorTicketsPorResolutorOut } from '../models/resolutor-dashboard';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -69,6 +70,11 @@ export class TaskConsolidatedService {
         params = params.append(campo, valor);
       }
     }
+
+        // PRD 06: filtro común para los cinco dashboards.
+        if (filtros.nombre_resolutor?.trim()) {
+            params = params.set('nombre_resolutor', filtros.nombre_resolutor.trim());
+        }
 
     return params;
   }
@@ -170,4 +176,33 @@ export class TaskConsolidatedService {
       { params }
     );
   }
+    // PRD 06 - Rendimiento mensual paginado por resolutor.
+    obtenerRendimientoResolutores(
+        filtros: TaskConsolidatedDashboardFilters = {},
+        pagina: number = 1,
+        tamano: number = 20
+    ): Observable<ResolutorRendimientoOut> {
+        const params = this.construirParametros(filtros)
+            .set('pagina', String(pagina))
+            .set('tamano', String(tamano));
+
+        return this.http.get<ResolutorRendimientoOut>(
+            `${this.apiUrl}/rendimiento-resolutores`,
+            { params }
+        );
+    }
+
+    // PRD 06 - Ranking de tickets por resolutor (Top 5/10/15/20).
+    obtenerTicketsPorResolutor(
+        filtros: TaskConsolidatedDashboardFilters = {},
+        limite: number = 5
+    ): Observable<ResolutorTicketsPorResolutorOut> {
+        const params = this.construirParametros(filtros)
+            .set('tamano', String(limite));
+
+        return this.http.get<ResolutorTicketsPorResolutorOut>(
+            `${this.apiUrl}/tickets-por-resolutor`,
+            { params }
+        );
+    }
 }

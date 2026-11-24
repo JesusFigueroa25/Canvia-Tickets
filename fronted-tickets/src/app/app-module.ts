@@ -99,6 +99,7 @@ import { ChangeMonthlyHoursChart } from './components/charts/change-analysis/cha
 import { IncidentMonthlyReport } from './components/charts/Consolidated/incident-monthly-report/incident-monthly-report';
 import { IncidentProjectReport } from './components/charts/Consolidated/incident-project-report/incident-project-report';
 import { IncidentProjectMonthlyReport } from './components/charts/Consolidated/incident-project-monthly-report/incident-project-monthly-report';
+import { IncidentRecurringAlertsReport } from './components/charts/Consolidated/incident-recurring-alerts-report/incident-recurring-alerts-report';
 
 @NgModule({
   declarations: [
@@ -191,6 +192,7 @@ import { IncidentProjectMonthlyReport } from './components/charts/Consolidated/i
     IncidentMonthlyReport,
     IncidentProjectReport,
     IncidentProjectMonthlyReport,
+    IncidentRecurringAlertsReport,
   ],
   imports: [
     BrowserAnimationsModule,

@@ -94,6 +94,8 @@ Las consultas reciben los query parameters de `IncidentConsolidatedDashboardFilt
 | `GET /incident-consolidated/conclusiones` | filtros; `incluir_servidores` (default `false`) | `IncidentConsolidatedConclusionesOut` | Ídem |
 | `POST /incident-consolidated/analisis-ejecutivo-ia` | JSON `IncidentConsolidatedDashboardFilters`; query `incluir_servidores` (default `false`) | `IncidentConsolidatedAnalisisEjecutivoIAOut` | `incident-consolidated.service.ts`; `incident-consolidated.ts` |
 
+`incidentes-porcentajes` devuelve `{ total_general, limite, descripciones: [{ descripcion, cantidad, porcentaje }] }`. La revisión estática del 24/11/2026 confirma que `total_general` cuenta todas las filas filtradas y que el ranking agrupa exactamente ese universo por descripción antes de `LIMIT`, sin mínimo de recurrencia ni descarte de categorías; NULL/vacíos se agrupan como «Sin especificar». Ordena por cantidad descendente y descripción ascendente; cada porcentaje usa el total general y dos decimales. Por ello, menos filas que el límite solicitado deben sumar el total bajo este contrato, aunque las dos consultas internas independientes no garantizan una instantánea transaccional. R04 usa `limite=5` y valida esas invariantes sin cambiar la API; filtros y consumidores en la [arquitectura R04](ARCHITECTURE.md#reporte-png-r04-de-incidentes-consolidados).
+
 ### Requerimientos consolidados
 
 Las consultas reciben `RequirementConsolidatedDashboardFilters`, salvo cuando se indica otra cosa.

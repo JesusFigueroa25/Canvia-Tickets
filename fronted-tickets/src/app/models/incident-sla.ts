@@ -12,6 +12,8 @@ export interface IncidentSLADashboardFilters {
 
   // FILTRO DINÁMICO POR TICKET ID
   ticket_id?: string;
+  /** Nombre seleccionado en el filtro de resolutor. */
+  nombre_resolutor?: string;
 }
 
 
@@ -54,6 +56,7 @@ export interface IncidentSLAFilters {
   prioridades: string[];
   proyectos?: string[];
   tipos_incidente?: string[];
+  nombres_resolutores: string[];
 }
 
 export interface IncidentSLAKPI {
@@ -123,5 +126,3 @@ export interface IncidentSLAResolutorItem {
   tickets: number;
   sla: number;
 }
-
-

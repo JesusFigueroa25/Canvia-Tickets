@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class ChangeConsolidatedDashboardFilters(BaseModel):
+    nombre_resolutor: str | None = Field(default=None, max_length=150)
     # Todos los filtros temporales operan sobre Fecha_Creacion.
     desde: date | None = None
     hasta: date | None = None
@@ -26,6 +27,7 @@ class ChangeConsolidatedDashboardFilters(BaseModel):
 
 
 class ChangeConsolidatedFiltersOut(BaseModel):
+    nombres_resolutores: list[str] = Field(default_factory=list)
     fecha_min: date | None = None
     fecha_max: date | None = None
     prioridades: list[str] = Field(default_factory=list)
@@ -215,3 +217,4 @@ class ChangeConsolidatedHorasMensualesItem(BaseModel):
     Total_Resolutores: int
     Horas_Totales: float
     Promedio_Horas_Por_Cambio: float
+

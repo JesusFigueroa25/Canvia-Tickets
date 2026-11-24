@@ -25,6 +25,7 @@ class IncidentSLAKPIOut(BaseModel):
     ola_solucion: float
 
 class IncidentSLAFiltersOut(BaseModel):
+    nombres_resolutores: list[str] = Field(default_factory=list)
     fecha_min: date | None = None
     fecha_max: date | None = None
     grupos_resolutores: list[str]
@@ -88,6 +89,7 @@ class IncidentSLAResolutorItem(BaseModel):
     
 
 class IncidentSLADashboardFilters(BaseModel):
+    nombre_resolutor: str | None = Field(default=None, max_length=150)
     desde: date | None = None
     hasta: date | None = None
     grupo_resolutor: str | None = None
@@ -153,6 +155,7 @@ class RequirementSLAKPIOut(BaseModel):
 
 
 class RequirementSLAFiltersOut(BaseModel):
+    nombres_resolutores: list[str] = Field(default_factory=list)
 
     fecha_min: date | None = None
     fecha_max: date | None = None
@@ -391,6 +394,7 @@ class RequirementSLAParetoGraficoOut(BaseModel):
     
 
 class RequirementSLADashboardFilters(BaseModel):
+    nombre_resolutor: str | None = Field(default=None, max_length=150)
     desde: date | None = None
     hasta: date | None = None
     grupo_resolutor: str | None = None
@@ -449,3 +453,4 @@ class RequirementSLATicketsOut(BaseModel):
     pagina: int
     tamano: int
     total_paginas: int
+

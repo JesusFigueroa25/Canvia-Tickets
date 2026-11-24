@@ -3,6 +3,9 @@ from fastapi import (APIRouter,Depends,File,HTTPException,UploadFile,)
 from sqlalchemy.orm import Session
 from app.database.sqlserver import get_sqlserver_db
 from app.schemas.sla_import_schema import (IncidentSLAFiltersOut, IncidentSLAInsightsOut, IncidentSLAParetoItem, IncidentSLAProyectoItem, IncidentSLAResolutorItem, IncidentSLATendenciaOut, IncidentSLATrendItem, IncidentSLAVolumenItem, SLAImportOut, IncidentSLAKPIOut)
+from app.schemas.resolutor_dashboard_schema import (
+    ResolverRendimientoOut, ResolverTicketsPorResolutorOut,
+)
 from app.services import (incident_sla_service,)
 from app.schemas.sla_import_schema  import (IncidentSLADashboardFilters,IncidentSLATicketsOut)
 from datetime import date
@@ -40,6 +43,7 @@ def _obtener_filtros_dashboard(
         pattern=r"^(19|20)\d{2}-(0[1-9]|1[0-2])$"
     ),
     proyectos_excluidos: Optional[list[str]] = Query(default=None),
+    nombre_resolutor: str | None = Query(default=None, max_length=150),
     ticket_id: Optional[str] = Query(default=None, max_length=20)
 ) -> IncidentSLADashboardFilters:
 
@@ -52,6 +56,7 @@ def _obtener_filtros_dashboard(
         tipo_incidente=tipo_incidente or [],
         periodo=periodo,
         proyectos_excluidos=proyectos_excluidos or [],
+        nombre_resolutor=nombre_resolutor,
         ticket_id=ticket_id
     )
 
@@ -185,4 +190,29 @@ def obtener_tickets(
         filtros,
         pagina=pagina,
         tamano=tamano
+    )
+
+
+
+# PRD 06 - RESOLUTORES: tabla mensual paginada y ranking.
+@router.get("/rendimiento-resolutores", response_model=ResolverRendimientoOut)
+def obtener_rendimiento_resolutores(
+    pagina: int = Query(1, ge=1),
+    tamano: int = Query(20, ge=1, le=100),
+    filtros: IncidentSLADashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return incident_sla_service.obtener_rendimiento_resolutores(
+        db, filtros, pagina=pagina, tamano=tamano
+    )
+
+
+@router.get("/tickets-por-resolutor", response_model=ResolverTicketsPorResolutorOut)
+def obtener_tickets_por_resolutor(
+    tamano: int = Query(5, ge=1, le=20),
+    filtros: IncidentSLADashboardFilters = Depends(_obtener_filtros_dashboard),
+    db: Session = Depends(get_sqlserver_db),
+):
+    return incident_sla_service.obtener_tickets_por_resolutor(
+        db, filtros, limite=tamano
     )

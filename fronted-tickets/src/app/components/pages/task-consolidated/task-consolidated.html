@@ -307,6 +307,62 @@
 
   </section>
 
+  <!-- PRD 06: Análisis de resolutores -->
+  <section id="resolutor-task-consolidated" class="chart-full-width ticket-explorer-section">
+    <header class="ticket-explorer-header">
+      <h2>Resolutor</h2>
+      <p>Rendimiento mensual y distribución de tickets por resolutor en tareas.</p>
+    </header>
+
+    <div class="chart-full-width table-expandable" id="fullscreen-tabla-resolutores-task-consolidated"
+      #tablaResolutoresFs>
+      <app-resolutor-performance-table
+        [datos]="rendimientoResolutores"
+        [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
+        [resolutorSeleccionado]="resolutorSeleccionado"
+        [cargando]="cargandoRendimientoResolutores"
+        titulo="Rendimiento por Resolutor"
+        descripcion="Distribución mensual de tareas por resolutor. Selecciona uno para filtrar el dashboard."
+        [habilitarPantallaCompleta]="true"
+        [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-resolutores-task-consolidated'"
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaResolutoresFs)"
+        (resolutorChange)="cambiarResolutor($event)"
+        (paginaChange)="cambiarPaginaResolutores($event)">
+      </app-resolutor-performance-table>
+      <p *ngIf="errorRendimientoResolutores" role="alert">
+        {{ errorRendimientoResolutores }}
+        <button type="button" (click)="cargarRendimientoResolutores()">Reintentar</button>
+      </p>
+    </div>
+
+    <div class="chart-full-width chart-expandable" id="fullscreen-grafico-resolutores-task-consolidated"
+      #graficoResolutoresFs>
+      <button type="button" class="chart-expand-btn"
+        (click)="alternarPantallaCompleta(graficoResolutoresFs)"
+        [title]="graficoExpandido === 'fullscreen-grafico-resolutores-task-consolidated'
+          ? 'Salir de pantalla completa' : 'Ver en pantalla completa'"
+        aria-label="Ampliar gráfico de tickets por resolutor">
+        <mat-icon>
+          {{ graficoExpandido === 'fullscreen-grafico-resolutores-task-consolidated'
+            ? 'fullscreen_exit' : 'fullscreen' }}
+        </mat-icon>
+      </button>
+      <app-resolver-monthly-tickets
+        [datos]="ticketsPorResolutor"
+        [cargando]="cargandoTicketsPorResolutor"
+        [limite]="limiteTicketsPorResolutor"
+        [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
+        titulo="Número de Tickets por Resolutor"
+        descripcion="Comparación mensual de tareas por resolutor, según su fecha de apertura."
+        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+      </app-resolver-monthly-tickets>
+      <p *ngIf="errorTicketsPorResolutor" role="alert">
+        {{ errorTicketsPorResolutor }}
+        <button type="button" (click)="cargarTicketsPorResolutor()">Reintentar</button>
+      </p>
+    </div>
+  </section>
+
   <section class="chart-full-width ticket-explorer-section" *ngIf="filtrosListos">
 
     <header class="ticket-explorer-header">

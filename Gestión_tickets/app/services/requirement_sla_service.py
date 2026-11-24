@@ -1,3 +1,7 @@
+from app.services.resolutor_dashboard_service import (
+    construir_rendimiento_resolutores,
+    construir_tickets_por_resolutor,
+)
 from datetime import datetime, date
 from sqlalchemy.orm import Session
 from app.database.sqlserver import SQLServerSessionLocal, verificar_conexion_sqlserver
@@ -161,6 +165,7 @@ def obtener_opciones_filtros(db: Session):
         "proyectos": resultado["proyectos"],
         "tipos_requerimiento": resultado["tipos_requerimiento"],
         "condiciones_dia": resultado["condiciones_dia"],
+        "nombres_resolutores": resultado["nombres_resolutores"],
     }
 
 
@@ -1269,3 +1274,24 @@ def obtener_tickets(
         "tamano": tamano,
         "total_paginas": total_paginas
     }
+
+
+
+# PRD 06 - SERVICIO COMPARTIDO DE RESOLUTORES.
+def obtener_rendimiento_resolutores(
+    db: Session,
+    filtros: RequirementSLADashboardFilters,
+    pagina: int = 1,
+    tamano: int = 20,
+) -> dict:
+    filas = requirement_sla_repository.obtener_rendimiento_resolutores(db, filtros)
+    return construir_rendimiento_resolutores(filas, pagina=pagina, tamano=tamano)
+
+
+def obtener_tickets_por_resolutor(
+    db: Session,
+    filtros: RequirementSLADashboardFilters,
+    limite: int = 5,
+) -> dict:
+    rendimiento = obtener_rendimiento_resolutores(db, filtros, pagina=1, tamano=limite)
+    return construir_tickets_por_resolutor(rendimiento, limite=limite)

@@ -9,6 +9,8 @@ import { IncidentMonthlyReportData } from '../../../models/incident-monthly-repo
 import { crearReporteMensual, fechaLima, filtrosReporteMensual } from '../../charts/Consolidated/incident-monthly-report/incident-monthly-report.utils';
 import { IncidentProjectReportData } from '../../../models/incident-project-report';
 import { IncidentProjectMonthlyRenderError, IncidentProjectMonthlyReportData } from '../../../models/incident-project-monthly-report';
+import { IncidentRecurringAlertsRenderError, IncidentRecurringAlertsReportData } from '../../../models/incident-recurring-alerts-report';
+import { claveReporteAlertas, crearReporteAlertas, filtrosReporteAlertas, filtrosReporteAlertasValidos } from '../../charts/Consolidated/incident-recurring-alerts-report/incident-recurring-alerts-report.utils';
 import { claveProyectoMensual, crearReporteProyectoMensual, filtrosReporteProyectoMensual, seleccionProyectoMensualValida } from '../../charts/Consolidated/incident-project-monthly-report/incident-project-monthly-report.utils';
 import { claveFiltrosProyectos, crearReporteProyectos, filtrosReporteProyectos, rangoProyectosValido } from '../../charts/Consolidated/incident-project-report/incident-project-report.utils';
 import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
@@ -469,6 +471,122 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
     }
   }
 
+  // R04 - ALERTAS: una consulta y estado de exportación propios en ambos modos.
+  @ViewChild('reporteAlertasImagen') reporteAlertasImagen?: ElementRef<HTMLElement>;
+  datosReporteAlertas: IncidentRecurringAlertsReportData | null = null;
+  estadoReporteAlertas: 'inicial' | 'cargando' | 'preparando' | 'listo' | 'sin_datos' | 'error' = 'inicial';
+  errorReporteAlertas: string | null = null;
+  exportandoReporteAlertas = false;
+  private versionReporteAlertas = 0;
+  private claveFiltrosReporteAlertas: string | null = null;
+  private consultaReporteAlertas?: Subscription;
+  private capturaAlertasActiva = false;
+  private reporteAlertasDestruido = false;
+
+  get puedeGenerarReporteAlertas(): boolean {
+    return !this.reporteAlertasDestruido && !this.cargandoFiltros && !this.exportandoReporteAlertas &&
+      filtrosReporteAlertasValidos(filtrosReporteAlertas(this.filtrosActuales, this.proyectoSeleccionado));
+  }
+  private invalidarReporteAlertas(): void {
+    ++this.versionReporteAlertas; this.consultaReporteAlertas?.unsubscribe();
+    this.datosReporteAlertas = null; this.claveFiltrosReporteAlertas = null;
+    this.estadoReporteAlertas = 'inicial'; this.errorReporteAlertas = null;
+    this.exportandoReporteAlertas = this.capturaAlertasActiva;
+  }
+  private sincronizarReporteAlertas(): void {
+    if (this.claveFiltrosReporteAlertas !== null && this.claveFiltrosReporteAlertas !== claveReporteAlertas(this.filtrosActuales, this.proyectoSeleccionado)) this.invalidarReporteAlertas();
+  }
+  private alertasVigentes(version: number): boolean {
+    return !this.reporteAlertasDestruido && version === this.versionReporteAlertas &&
+      this.claveFiltrosReporteAlertas === claveReporteAlertas(this.filtrosActuales, this.proyectoSeleccionado);
+  }
+  generarReporteAlertas(): void {
+    if (!this.puedeGenerarReporteAlertas) return;
+    this.invalidarReporteAlertas();
+    const version = this.versionReporteAlertas;
+    const filtros = filtrosReporteAlertas(this.filtrosActuales, this.proyectoSeleccionado);
+    this.claveFiltrosReporteAlertas = claveReporteAlertas(filtros, filtros.proyecto ?? null);
+    this.estadoReporteAlertas = 'cargando'; this.exportandoReporteAlertas = true;
+    this.consultaReporteAlertas = forkJoin({ alertas: this.incidentConsolidatedService.obtenerIncidentesPorcentajes(filtros, 5).pipe(timeout(30000)) }).subscribe({
+      next: respuestas => {
+        if (!this.alertasVigentes(version)) { this.sincronizarReporteAlertas(); return; }
+        try {
+          const datos = crearReporteAlertas(respuestas.alertas, filtros, version, new Date().toISOString());
+          this.datosReporteAlertas = datos.total > 0 ? datos : null;
+          this.estadoReporteAlertas = datos.total > 0 ? 'preparando' : 'sin_datos';
+          if (!datos.total) this.exportandoReporteAlertas = false;
+        } catch (error) { this.fallarPreparacionAlertas(error); }
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        if (!this.alertasVigentes(version)) { this.sincronizarReporteAlertas(); return; }
+        this.fallarPreparacionAlertas(new Error('No se pudieron consultar las alertas para Reporte 4. Reintenta la preparación.'));
+      },
+      complete: () => {
+        if (this.alertasVigentes(version) && this.estadoReporteAlertas === 'cargando') this.fallarPreparacionAlertas(new Error('La consulta de Reporte 4 terminó sin los agregados requeridos.'));
+      },
+    });
+    this.changeDetector.markForCheck();
+  }
+  private fallarPreparacionAlertas(error: unknown): void {
+    this.estadoReporteAlertas = 'error'; this.exportandoReporteAlertas = false;
+    this.errorReporteAlertas = error instanceof Error && !(error instanceof TypeError) ? error.message : 'No se pudieron validar los agregados de Reporte 4.';
+    this.changeDetector.markForCheck();
+  }
+  confirmarRenderAlertas(version: number): void {
+    if (!this.alertasVigentes(version) || this.datosReporteAlertas?.version !== version || this.estadoReporteAlertas !== 'preparando') return;
+    this.estadoReporteAlertas = 'listo'; void this.capturarReporteAlertas(this.datosReporteAlertas);
+  }
+  fallarRenderAlertas(error: IncidentRecurringAlertsRenderError): void {
+    if (this.alertasVigentes(error.version) && this.datosReporteAlertas?.version === error.version) this.fallarPreparacionAlertas(new Error(error.motivo === 'legibilidad'
+      ? 'Reporte 4 no cabe en una composición horizontal legible con las descripciones completas. Ajusta los filtros para descargarlo sin recortes.'
+      : 'No se pudo renderizar Reporte 4. Puedes reintentar la preparación.'));
+  }
+  reintentarReporteAlertas(): void {
+    if (!this.puedeGenerarReporteAlertas) return;
+    const datos = this.datosReporteAlertas;
+    if (!datos || !this.alertasVigentes(datos.version)) { this.generarReporteAlertas(); return; }
+    this.datosReporteAlertas = { ...datos, version: ++this.versionReporteAlertas };
+    this.estadoReporteAlertas = 'preparando'; this.errorReporteAlertas = null; this.exportandoReporteAlertas = true;
+    this.changeDetector.markForCheck();
+  }
+  private async capturarReporteAlertas(datos: IncidentRecurringAlertsReportData): Promise<void> {
+    if (this.capturaAlertasActiva || !this.alertasVigentes(datos.version)) return;
+    this.capturaAlertasActiva = true;
+    let enlace: HTMLAnchorElement | undefined, temporizador: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const elemento = this.reporteAlertasImagen?.nativeElement.querySelector<HTMLElement>('.report-document');
+      if (!elemento) throw new Error('documento');
+      const width = Math.ceil(elemento.scrollWidth), height = Math.ceil(elemento.scrollHeight);
+      if (width !== 1400 || !Number.isFinite(height) || height <= 0) throw new Error('dimensiones');
+      const pixelRatio = height > 4000 ? 1 : 2;
+      if (width * pixelRatio > 16384 || height * pixelRatio > 16384 || width * height * pixelRatio ** 2 > 32000000) throw new Error('limite');
+      const imagen = await Promise.race([
+        toPng(elemento, { backgroundColor: '#F7F9FB', width, height, pixelRatio, skipFonts: true, skipAutoScale: true,
+          style: { position: 'static', left: 'auto', top: 'auto', transform: 'none', margin: '0' } }),
+        new Promise<never>((_, reject) => { temporizador = setTimeout(() => reject(new Error('timeout')), 30000); }),
+      ]);
+      if (this.reporteAlertasDestruido) return;
+      if (!this.alertasVigentes(datos.version) || this.datosReporteAlertas !== datos) throw new Error('obsoleto');
+      if (!imagen.startsWith('data:image/png;base64,') || imagen.length < 100) throw new Error('imagen');
+      enlace = document.createElement('a'); enlace.href = imagen;
+      enlace.download = `CANVIA-Alertas-Recurrentes-${datos.modo}-${datos.filtros.desde}_${datos.filtros.hasta}-${fechaLima(new Date())}.png`;
+      document.body.appendChild(enlace); enlace.click();
+    } catch (error) {
+      if (!this.reporteAlertasDestruido) {
+        const causa = error instanceof Error ? error.message : '';
+        this.estadoReporteAlertas = 'error';
+        this.errorReporteAlertas = causa === 'obsoleto' ? 'El proyecto o los filtros cambiaron durante la captura. Genera Reporte 4 nuevamente.'
+          : causa === 'limite' ? 'Reporte 4 supera el tamaño de imagen permitido. Ajusta los filtros para descargarlo completo.'
+            : causa === 'timeout' ? 'La captura de Reporte 4 superó el tiempo permitido. Puedes reintentar la descarga.'
+              : 'No fue posible generar el PNG completo de Reporte 4. Puedes reintentar la descarga.';
+      }
+    } finally {
+      clearTimeout(temporizador); enlace?.remove(); this.capturaAlertasActiva = false; this.exportandoReporteAlertas = false;
+      if (!this.reporteAlertasDestruido) this.changeDetector.markForCheck();
+    }
+  }
+
   // TABLA PAGINADA - EXPLORADOR DE TICKETS
   ticketsDetalle: IncidentConsolidatedTicketsOut | null = null;
   cargandoTickets = false;
@@ -599,6 +717,8 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
+    this.reporteAlertasDestruido = true;
+    this.invalidarReporteAlertas();
     this.proyectoMensualDestruido = true;
     this.invalidarReporteProyectoMensual();
     this.reporteProyectosDestruido = true;
@@ -631,6 +751,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
 
 
   cargarDashboard(): void {
+    this.sincronizarReporteAlertas();
     this.sincronizarReporteProyectoMensual();
     this.sincronizarReporteProyectos();
 
@@ -1988,6 +2109,7 @@ export class IncidentConsolidated implements OnInit, OnDestroy {
     this.invalidarReporteMensual();
     this.sincronizarReporteProyectos();
     this.sincronizarReporteProyectoMensual();
+    this.sincronizarReporteAlertas();
 
     // AGRUPAR CAMBIOS RAPIDOS DE LOS CHECKBOXES
     if (this.temporizadorExclusiones !== null) {

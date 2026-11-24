@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, HostListener } from '@angular/core';
+import { ResolutorRendimientoOut, ResolutorTicketsPorResolutorOut } from '../../../models/resolutor-dashboard';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IncidentSLADashboardFilters, IncidentSLAFilters, IncidentSLAKPI, IncidentSLAInsights, IncidentSLATrendItem, IncidentSLAVolumenItem, IncidentSLAProyectoItem, IncidentSLAParetoItem, IncidentSLATendencia, IncidentSLAResolutorItem, IncidentSLATicketsOut } from '../../../models/incident-sla';
 import { IncidentSlaService } from '../../../services/incident-sla.service';
@@ -12,12 +13,28 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class IncidentSla {
 
+
+  // PRD 06: rendimiento y tickets mensuales por resolutor.
+  rendimientoResolutores: ResolutorRendimientoOut | null = null;
+  ticketsPorResolutor: ResolutorTicketsPorResolutorOut | null = null;
+  cargandoRendimientoResolutores = false;
+  cargandoTicketsPorResolutor = false;
+  errorRendimientoResolutores: string | null = null;
+  errorTicketsPorResolutor: string | null = null;
+  paginaResolutores = 1;
+  tamanoResolutores = 5;
+  limiteTicketsPorResolutor = 5;
+  resolutorSeleccionado: string | null = null;
+  private readonly cancelarRendimientoResolutores$ = new Subject<void>();
+  private readonly cancelarTicketsPorResolutor$ = new Subject<void>();
+
   filtrosForm!: FormGroup;
   opcionesFiltros: IncidentSLAFilters = {
     fecha_min: null,
     fecha_max: null,
     grupos_resolutores: [],
-    prioridades: []
+    prioridades: [],
+    nombres_resolutores: [],
   };
 
   // feat/mejoras-analisis-incidentes-gpt
@@ -128,6 +145,7 @@ export class IncidentSla {
 
     // REINICIAR PAGINACIÓN DE LA TABLA DE TICKETS
     this.paginaTickets = 1;
+    this.paginaResolutores = 1;
 
     // KPIs Y GRÁFICOS EXISTENTES
     this.cargarKpis();
@@ -141,6 +159,8 @@ export class IncidentSla {
 
     // NUEVA TABLA PAGINADA
     this.cargarTickets();
+    this.cargarRendimientoResolutores();
+    this.cargarTicketsPorResolutor();
 
     this.changeDetector.markForCheck();
   }
@@ -161,6 +181,11 @@ export class IncidentSla {
     // CANCELAR CONSULTAS DE LA TABLA DE TICKETS
     this.cancelarTickets$.next();
     this.cancelarTickets$.complete();
+
+    this.cancelarRendimientoResolutores$.next();
+    this.cancelarRendimientoResolutores$.complete();
+    this.cancelarTicketsPorResolutor$.next();
+    this.cancelarTicketsPorResolutor$.complete();
   }
 
 
@@ -237,6 +262,7 @@ export class IncidentSla {
     this.ticketIdSeleccionado = null;
 
     this.cargarOpcionesProyectos();
+    this.resolutorSeleccionado = null;
     this.cargarDashboard();
   }
 
@@ -261,6 +287,7 @@ export class IncidentSla {
     this.ticketIdSeleccionado = null;
 
     this.cargarOpcionesProyectos();
+    this.resolutorSeleccionado = null;
     this.cargarDashboard();
 
   }
@@ -866,6 +893,115 @@ export class IncidentSla {
 
 
 
+
+
+
+  // PRD 06: tabla paginada. La cancelación es independiente del gráfico.
+  cargarRendimientoResolutores(): void {
+    this.cancelarRendimientoResolutores$.next();
+    this.cargandoRendimientoResolutores = true;
+    this.errorRendimientoResolutores = null;
+
+    this.incidentSlaService.obtenerRendimientoResolutores(
+      { ...this.filtrosActuales },
+      this.paginaResolutores,
+      this.tamanoResolutores
+    ).pipe(takeUntil(this.cancelarRendimientoResolutores$))
+      .subscribe({
+        next: datos => {
+          this.rendimientoResolutores = datos;
+          this.cargandoRendimientoResolutores = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando rendimiento por resolutor:', error);
+          this.rendimientoResolutores = null;
+          this.cargandoRendimientoResolutores = false;
+          this.errorRendimientoResolutores =
+            'No se pudo cargar el rendimiento por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  // PRD 06: gráfico Top independiente de la paginación de la tabla.
+  cargarTicketsPorResolutor(): void {
+    this.cancelarTicketsPorResolutor$.next();
+    this.cargandoTicketsPorResolutor = true;
+    this.errorTicketsPorResolutor = null;
+
+    this.incidentSlaService.obtenerTicketsPorResolutor(
+      { ...this.filtrosActuales },
+      this.limiteTicketsPorResolutor
+    ).pipe(takeUntil(this.cancelarTicketsPorResolutor$))
+      .subscribe({
+        next: datos => {
+          this.ticketsPorResolutor = datos;
+          this.cargandoTicketsPorResolutor = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando tickets por resolutor:', error);
+          this.ticketsPorResolutor = null;
+          this.cargandoTicketsPorResolutor = false;
+          this.errorTicketsPorResolutor =
+            'No se pudo cargar el gráfico de tickets por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  cambiarPaginaResolutores(evento: { pagina: number; tamano: number }): void {
+    if (!Number.isInteger(evento.pagina) || evento.pagina < 1 ||
+        ![5, 10, 20, 50, 100].includes(evento.tamano) ||
+        (this.paginaResolutores === evento.pagina && this.tamanoResolutores === evento.tamano)) {
+      return;
+    }
+    this.paginaResolutores = evento.pagina;
+    this.tamanoResolutores = evento.tamano;
+    this.cargarRendimientoResolutores();
+  }
+
+  cambiarLimiteTicketsPorResolutor(limite: number): void {
+    if (![5, 10, 15, 20].includes(limite) ||
+        this.limiteTicketsPorResolutor === limite) {
+      return;
+    }
+    this.limiteTicketsPorResolutor = limite;
+    this.cargarTicketsPorResolutor();
+  }
+
+  cambiarResolutor(resolutor: string | null): void {
+    const seleccion = resolutor?.trim() || null;
+    if (this.resolutorSeleccionado === seleccion) {
+      return;
+    }
+    this.resolutorSeleccionado = seleccion;
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+      nombre_resolutor: seleccion ?? undefined
+    };
+    this.cargarOpcionesProyectos();
+    this.cargarDashboard();
+  }
+
+  get mostrarMesesEnEjeXResolutores(): boolean {
+    const f = this.filtrosActuales;
+    const fechasPersonalizadas =
+      (!!f.desde && f.desde !== this.opcionesFiltros.fecha_min) ||
+      (!!f.hasta && f.hasta !== this.opcionesFiltros.fecha_max);
+    return Boolean(
+      fechasPersonalizadas ||
+      f.grupo_resolutor ||
+      f.prioridad ||
+      f.proyecto ||
+      f.periodo ||
+      f.proyectos_excluidos?.length ||
+      f.ticket_id ||
+      f.nombre_resolutor ||
+      f.tipo_incidente?.length
+    );
+  }
 
 
 }

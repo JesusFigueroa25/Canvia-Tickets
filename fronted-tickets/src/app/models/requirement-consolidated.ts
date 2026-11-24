@@ -11,6 +11,8 @@ export interface RequirementConsolidatedDashboardFilters {
   periodo?: string;
   tipo_requerimiento?: string[];
   ticket_id?: string;
+  /** Nombre seleccionado en el filtro de resolutor. */
+  nombre_resolutor?: string;
 }
 
 
@@ -58,6 +60,7 @@ export interface RequirementConsolidatedFilters {
   motivos_resolucion: string[];
   grupos_resolutores?: string[];
   proyectos?: string[];
+  nombres_resolutores: string[];
 }
 
 export interface RequirementConsolidatedKPI {

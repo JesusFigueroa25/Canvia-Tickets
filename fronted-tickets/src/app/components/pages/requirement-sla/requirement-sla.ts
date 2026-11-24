@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy } from '@angular/core';
+import { ResolutorRendimientoOut, ResolutorTicketsPorResolutorOut } from '../../../models/resolutor-dashboard';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RequirementSLADashboardFilters, RequirementSLAFilters, RequirementSLAKPI, RequirementSLASolucionTendenciaItem, RequirementSLAVolumenItem, RequirementSLAProyectoItem, RequirementSLAParticipacionProyectoItem, RequirementSLAParetoItem, RequirementSLATendenciaItem, RequirementSLAResolutorItem, RequirementSLATicketsOut } from '../../../models/requirement-sla';
 import { RequirementSlaService } from '../../../services/requirement-sla.service';
 import { RequirementSLACondicionDia, RequirementSLASolucionCondicion, RequirementSLAExploradorTiposOut, RequirementSLACondicionDiaOut, RequirementSLACumplimientoOut, RequirementSLACumplimientoHorarioOut, RequirementSLACumplimientoPrioridadOut, RequirementSLATop10CategoriaOut, RequirementSLACumplimientoTipoOut, RequirementSLAParetoCategoriaOut, RequirementSLAParetoGraficoOut } from '../../../models/requirement-sla';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 type NuevoVisualSla =
   | 'exploradorTipos'
@@ -26,6 +27,21 @@ type NuevoVisualSla =
 export class RequirementSla implements OnDestroy {
 
 
+
+  // PRD 06: rendimiento y tickets mensuales por resolutor.
+  rendimientoResolutores: ResolutorRendimientoOut | null = null;
+  ticketsPorResolutor: ResolutorTicketsPorResolutorOut | null = null;
+  cargandoRendimientoResolutores = false;
+  cargandoTicketsPorResolutor = false;
+  errorRendimientoResolutores: string | null = null;
+  errorTicketsPorResolutor: string | null = null;
+  paginaResolutores = 1;
+  tamanoResolutores = 5;
+  limiteTicketsPorResolutor = 5;
+  resolutorSeleccionado: string | null = null;
+  private readonly cancelarRendimientoResolutores$ = new Subject<void>();
+  private readonly cancelarTicketsPorResolutor$ = new Subject<void>();
+
   filtrosForm!: FormGroup;
   opcionesFiltros: RequirementSLAFilters = {
     fecha_min: null,
@@ -35,7 +51,8 @@ export class RequirementSla implements OnDestroy {
     categorias: [],
     proyectos: [],
     tipos_requerimiento: [],
-    condiciones_dia: []
+    condiciones_dia: [],
+    nombres_resolutores: [],
   };
 
 
@@ -157,6 +174,11 @@ export class RequirementSla implements OnDestroy {
     this.versionDashboard++;
     this.solicitudOpcionesProyectos++;
     this.solicitudTickets++;
+
+    this.cancelarRendimientoResolutores$.next();
+    this.cancelarRendimientoResolutores$.complete();
+    this.cancelarTicketsPorResolutor$.next();
+    this.cancelarTicketsPorResolutor$.complete();
   }
 
 
@@ -170,6 +192,7 @@ export class RequirementSla implements OnDestroy {
 
     this.versionDashboard++;
     this.paginaTickets = 1;
+    this.paginaResolutores = 1;
 
     this.cargarKpis();
     this.cargarSlaSolucionTendencia();
@@ -190,6 +213,8 @@ export class RequirementSla implements OnDestroy {
     this.cargarParetoSlaCategorias();
     this.cargarParetoSlaCategoriasGrafico();
     this.cargarTickets();
+    this.cargarRendimientoResolutores();
+    this.cargarTicketsPorResolutor();
 
   }
 
@@ -265,6 +290,7 @@ export class RequirementSla implements OnDestroy {
 
       sla_solucion_condicion: this.slaSolucionSeleccionada ?? undefined,
       periodo: undefined,
+      nombre_resolutor: undefined,
       ticket_id: undefined
     };
 
@@ -273,6 +299,7 @@ export class RequirementSla implements OnDestroy {
     this.ticketIdSeleccionado = null;
 
     this.cargarOpcionesProyectos();
+    this.resolutorSeleccionado = null;
     this.cargarDashboard();
   }
 
@@ -302,6 +329,7 @@ export class RequirementSla implements OnDestroy {
     this.periodoSeleccionado = null;
     this.ticketIdSeleccionado = null;
     this.cargarOpcionesProyectos();
+    this.resolutorSeleccionado = null;
     this.cargarDashboard();
 
   }
@@ -1133,6 +1161,118 @@ export class RequirementSla implements OnDestroy {
     this.cargarDashboard();
   }
 
+
+
+
+  // PRD 06: tabla paginada. La cancelación es independiente del gráfico.
+  cargarRendimientoResolutores(): void {
+    this.cancelarRendimientoResolutores$.next();
+    this.cargandoRendimientoResolutores = true;
+    this.errorRendimientoResolutores = null;
+
+    this.requirementSlaService.obtenerRendimientoResolutores(
+      { ...this.filtrosActuales },
+      this.paginaResolutores,
+      this.tamanoResolutores
+    ).pipe(takeUntil(this.cancelarRendimientoResolutores$))
+      .subscribe({
+        next: datos => {
+          this.rendimientoResolutores = datos;
+          this.cargandoRendimientoResolutores = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando rendimiento por resolutor:', error);
+          this.rendimientoResolutores = null;
+          this.cargandoRendimientoResolutores = false;
+          this.errorRendimientoResolutores =
+            'No se pudo cargar el rendimiento por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  // PRD 06: gráfico Top independiente de la paginación de la tabla.
+  cargarTicketsPorResolutor(): void {
+    this.cancelarTicketsPorResolutor$.next();
+    this.cargandoTicketsPorResolutor = true;
+    this.errorTicketsPorResolutor = null;
+
+    this.requirementSlaService.obtenerTicketsPorResolutor(
+      { ...this.filtrosActuales },
+      this.limiteTicketsPorResolutor
+    ).pipe(takeUntil(this.cancelarTicketsPorResolutor$))
+      .subscribe({
+        next: datos => {
+          this.ticketsPorResolutor = datos;
+          this.cargandoTicketsPorResolutor = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando tickets por resolutor:', error);
+          this.ticketsPorResolutor = null;
+          this.cargandoTicketsPorResolutor = false;
+          this.errorTicketsPorResolutor =
+            'No se pudo cargar el gráfico de tickets por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  cambiarPaginaResolutores(evento: { pagina: number; tamano: number }): void {
+    if (!Number.isInteger(evento.pagina) || evento.pagina < 1 ||
+        ![5, 10, 20, 50, 100].includes(evento.tamano) ||
+        (this.paginaResolutores === evento.pagina && this.tamanoResolutores === evento.tamano)) {
+      return;
+    }
+    this.paginaResolutores = evento.pagina;
+    this.tamanoResolutores = evento.tamano;
+    this.cargarRendimientoResolutores();
+  }
+
+  cambiarLimiteTicketsPorResolutor(limite: number): void {
+    if (![5, 10, 15, 20].includes(limite) ||
+        this.limiteTicketsPorResolutor === limite) {
+      return;
+    }
+    this.limiteTicketsPorResolutor = limite;
+    this.cargarTicketsPorResolutor();
+  }
+
+  cambiarResolutor(resolutor: string | null): void {
+    const seleccion = resolutor?.trim() || null;
+    if (this.resolutorSeleccionado === seleccion) {
+      return;
+    }
+    this.resolutorSeleccionado = seleccion;
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+      nombre_resolutor: seleccion ?? undefined
+    };
+    this.cargarOpcionesProyectos();
+    this.cargarDashboard();
+  }
+
+  get mostrarMesesEnEjeXResolutores(): boolean {
+    const f = this.filtrosActuales;
+    const fechasPersonalizadas =
+      (!!f.desde && f.desde !== this.opcionesFiltros.fecha_min) ||
+      (!!f.hasta && f.hasta !== this.opcionesFiltros.fecha_max);
+    return Boolean(
+      fechasPersonalizadas ||
+      f.grupo_resolutor ||
+      f.prioridad ||
+      f.proyecto ||
+      f.periodo ||
+      f.proyectos_excluidos?.length ||
+      f.ticket_id ||
+      f.nombre_resolutor ||
+      f.categoria ||
+      f.tipo_requerimiento?.length ||
+      f.condicion_dia ||
+      f.sla_solucion_condicion
+    );
+  }
 
 
 }

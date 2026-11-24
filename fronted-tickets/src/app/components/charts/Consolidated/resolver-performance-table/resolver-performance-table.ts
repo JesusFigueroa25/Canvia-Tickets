@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-import { IncidentConsolidatedRendimientoOut, IncidentConsolidatedRendimientoResolutorItem } from '../../../../models/incident-consolidated';
+import { ResolutorRendimientoOut, ResolutorRendimientoItem } from '../../../../models/resolutor-dashboard';
 
 @Component({
   selector: 'app-resolutor-performance-table',
@@ -10,7 +10,12 @@ import { IncidentConsolidatedRendimientoOut, IncidentConsolidatedRendimientoReso
 })
 export class ResolverPerformanceTable implements OnChanges {
 
-  @Input() datos: IncidentConsolidatedRendimientoOut | null = null;
+  /** Contrato compartido por los seis dashboards. Compatible estructuralmente con Incidentes Consolidados. */
+  @Input() datos: ResolutorRendimientoOut | null = null;
+  /** Por defecto conserva los textos originales del dashboard de Incidentes Consolidados. */
+  @Input() titulo = 'Rendimiento por Resolutor';
+  @Input() descripcion =
+    'Distribución mensual de incidentes por resolutor. Selecciona uno para filtrar el dashboard.';
   @Input() opcionesResolutores: string[] = [];
   @Input() resolutorSeleccionado: string | null = null;
   @Input() cargando: boolean = false;
@@ -74,7 +79,7 @@ export class ResolverPerformanceTable implements OnChanges {
     this.resolutorChange.emit(resolutor);
   }
 
-  seleccionarFila(fila: IncidentConsolidatedRendimientoResolutorItem): void {
+  seleccionarFila(fila: ResolutorRendimientoItem): void {
     if (this.cargando) {
       return;
     }

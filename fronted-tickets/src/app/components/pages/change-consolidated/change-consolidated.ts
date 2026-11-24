@@ -1,4 +1,5 @@
 
+import { ResolutorRendimientoOut, ResolutorTicketsPorResolutorOut } from '../../../models/resolutor-dashboard';
 import {
   ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit
 } from '@angular/core';
@@ -62,6 +63,21 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
   private solicitudDashboard = 0;
   private solicitudTickets = 0;
 
+
+  // PRD 06: rendimiento y tickets mensuales por resolutor.
+  rendimientoResolutores: ResolutorRendimientoOut | null = null;
+  ticketsPorResolutor: ResolutorTicketsPorResolutorOut | null = null;
+  cargandoRendimientoResolutores = false;
+  cargandoTicketsPorResolutor = false;
+  errorRendimientoResolutores: string | null = null;
+  errorTicketsPorResolutor: string | null = null;
+  paginaResolutores = 1;
+  tamanoResolutores = 5;
+  limiteTicketsPorResolutor = 5;
+  resolutorSeleccionado: string | null = null;
+  private readonly cancelarRendimientoResolutores$ = new Subject<void>();
+  private readonly cancelarTicketsPorResolutor$ = new Subject<void>();
+
   filtrosForm!: FormGroup;
   filtrosActuales: ChangeConsolidatedDashboardFilters = {};
 
@@ -73,7 +89,8 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     grupos_resolutores: [],
     estados: [],
     proyectos: [],
-    tipos_cambio: []
+    tipos_cambio: [],
+    nombres_resolutores: [],
   };
 
   fechaMinima: Date | null = null;
@@ -220,7 +237,9 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     return Object.values(this.cargas).some(Boolean)
       || this.cargandoTickets
       || this.cargandoActividadesBD
-      || this.cargandoHorasCambio;
+      || this.cargandoHorasCambio
+      || this.cargandoRendimientoResolutores
+      || this.cargandoTicketsPorResolutor;
   }
 
   get mensajesErrores(): string[] {
@@ -291,6 +310,11 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     this.cancelarHorasCambio$.complete();
     this.destruir$.next();
     this.destruir$.complete();
+
+    this.cancelarRendimientoResolutores$.next();
+    this.cancelarRendimientoResolutores$.complete();
+    this.cancelarTicketsPorResolutor$.next();
+    this.cancelarTicketsPorResolutor$.complete();
   }
 
   cargarOpcionesFiltros(): void {
@@ -405,6 +429,7 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
         : undefined
     };
 
+    this.resolutorSeleccionado = null;
     this.cargarDashboard();
   }
 
@@ -423,6 +448,7 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     this.incluirSoloValidacion = true;
 
     this.restablecerFormulario();
+    this.resolutorSeleccionado = null;
     this.aplicarFiltros();
   }
 
@@ -460,6 +486,7 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
 
     // Reiniciar paginaciones al modificar filtros
     this.paginaTickets = 1;
+    this.paginaResolutores = 1;
     this.paginaActividadesBD = 1;
     this.paginaHorasCambio = 1;
 
@@ -473,6 +500,8 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     this.cargarTopProyectos(solicitud);
     this.cargarPrioridadMensual(solicitud);
     this.cargarTickets(solicitud);
+    this.cargarRendimientoResolutores();
+    this.cargarTicketsPorResolutor();
 
     // PRD 05 - Nuevas tablas
     this.cargarActividadesBD(solicitud);
@@ -1181,4 +1210,115 @@ export class ChangeConsolidated implements OnInit, OnDestroy {
     }
   }
 
+
+  // PRD 06: tabla paginada. La cancelación es independiente del gráfico.
+  cargarRendimientoResolutores(): void {
+    this.cancelarRendimientoResolutores$.next();
+    this.cargandoRendimientoResolutores = true;
+    this.errorRendimientoResolutores = null;
+
+    this.changeConsolidatedService.obtenerRendimientoResolutores(
+      { ...this.filtrosActuales },
+      this.paginaResolutores,
+      this.tamanoResolutores
+    ).pipe(takeUntil(this.cancelarRendimientoResolutores$))
+      .subscribe({
+        next: datos => {
+          this.rendimientoResolutores = datos;
+          this.cargandoRendimientoResolutores = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando rendimiento por resolutor:', error);
+          this.rendimientoResolutores = null;
+          this.cargandoRendimientoResolutores = false;
+          this.errorRendimientoResolutores =
+            'No se pudo cargar el rendimiento por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  // PRD 06: gráfico Top independiente de la paginación de la tabla.
+  cargarTicketsPorResolutor(): void {
+    this.cancelarTicketsPorResolutor$.next();
+    this.cargandoTicketsPorResolutor = true;
+    this.errorTicketsPorResolutor = null;
+
+    this.changeConsolidatedService.obtenerTicketsPorResolutor(
+      { ...this.filtrosActuales },
+      this.limiteTicketsPorResolutor
+    ).pipe(takeUntil(this.cancelarTicketsPorResolutor$))
+      .subscribe({
+        next: datos => {
+          this.ticketsPorResolutor = datos;
+          this.cargandoTicketsPorResolutor = false;
+          this.changeDetector.markForCheck();
+        },
+        error: error => {
+          console.error('Error cargando tickets por resolutor:', error);
+          this.ticketsPorResolutor = null;
+          this.cargandoTicketsPorResolutor = false;
+          this.errorTicketsPorResolutor =
+            'No se pudo cargar el gráfico de tickets por resolutor.';
+          this.changeDetector.markForCheck();
+        }
+      });
+  }
+
+  cambiarPaginaResolutores(evento: { pagina: number; tamano: number }): void {
+    if (!Number.isInteger(evento.pagina) || evento.pagina < 1 ||
+        ![5, 10, 20, 50, 100].includes(evento.tamano) ||
+        (this.paginaResolutores === evento.pagina && this.tamanoResolutores === evento.tamano)) {
+      return;
+    }
+    this.paginaResolutores = evento.pagina;
+    this.tamanoResolutores = evento.tamano;
+    this.cargarRendimientoResolutores();
+  }
+
+  cambiarLimiteTicketsPorResolutor(limite: number): void {
+    if (![5, 10, 15, 20].includes(limite) ||
+        this.limiteTicketsPorResolutor === limite) {
+      return;
+    }
+    this.limiteTicketsPorResolutor = limite;
+    this.cargarTicketsPorResolutor();
+  }
+
+  cambiarResolutor(resolutor: string | null): void {
+    const seleccion = resolutor?.trim() || null;
+    if (this.resolutorSeleccionado === seleccion) {
+      return;
+    }
+    this.resolutorSeleccionado = seleccion;
+    this.filtrosActuales = {
+      ...this.filtrosActuales,
+      nombre_resolutor: seleccion ?? undefined
+    };
+    this.cargarDashboard();
+  }
+
+  get mostrarMesesEnEjeXResolutores(): boolean {
+    const f = this.filtrosActuales;
+    const fechasPersonalizadas =
+      (!!f.desde && f.desde !== this.opcionesFiltros.fecha_min) ||
+      (!!f.hasta && f.hasta !== this.opcionesFiltros.fecha_max);
+    return Boolean(
+      fechasPersonalizadas ||
+      f.grupo_resolutor ||
+      f.prioridad ||
+      f.proyecto ||
+      f.periodo ||
+      f.proyectos_excluidos?.length ||
+      f.ticket_id ||
+      f.nombre_resolutor ||
+      f.motivo ||
+      f.estado ||
+      f.tipo_cambio?.length
+    );
+  }
+
+
 }
+
