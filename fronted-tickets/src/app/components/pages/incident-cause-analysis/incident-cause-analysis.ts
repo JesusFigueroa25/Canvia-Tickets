@@ -1,11 +1,14 @@
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, ComponentRef, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild, ViewContainerRef, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DATE_LOCALE, MatDateFormats, provideNativeDateAdapter } from '@angular/material/core';
 import { Subscription } from 'rxjs';
 import { IncidentConsolidatedFilters, IncidentConsolidatedDashboardFilters, IncidentConsolidatedKPI, IncidentConsolidatedAtribucionOut, IncidentConsolidatedTopServidoresOut, IncidentConsolidatedAnalisisCausasOut, IncidentConsolidatedDistribucionAjustadaOut, IncidentConsolidatedPrincipalesHallazgosOut, IncidentConsolidatedConclusionesOut, IncidentConsolidatedTicketsPorResolutorOut, IncidentConsolidatedRendimientoOut, IncidentConsolidatedTopProyectos, IncidentConsolidatedProyectoItem, IncidentConsolidatedAnalisisEjecutivoIAOut, IncidentConsolidatedTipoItem } from '../../../models/incident-consolidated';
 import { IncidentConsolidatedService } from '../../../services/incident-consolidated.service';
 import { toPng } from 'html-to-image';
+import type { ExecutiveSummarySource, ExecutiveSummaryToken, ExecutiveSummaryRenderError, IncidentExecutiveSummaryData, IncidentExecutiveSummarySources } from '../../../models/incident-executive-summary-report';
+import type { IncidentExecutiveSummaryReport } from '../../charts/Consolidated/incident-executive-summary-report/incident-executive-summary-report';
+import { claveResumen, copiarFiltrosResumen, crearResumenEjecutivo } from '../../charts/Consolidated/incident-executive-summary-report/incident-executive-summary-report.utils';
 
 
 // FORMATOS DE FECHA - PERU
@@ -235,6 +238,117 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   ) { }
 
 
+  // Resumen independiente. El reporte completo conserva su protocolo y estado.
+  @ViewChild('resumenHost', { read: ViewContainerRef }) resumenHost?: ViewContainerRef;
+  exportandoResumen = false;
+  estadoResumen: 'esperando' | 'preparando' | 'listo' | 'sin_datos' | 'error' = 'esperando';
+  errorResumen: string | null = null;
+  private fuentesResumen: Partial<IncidentExecutiveSummarySources> = {};
+  private revisionesResumen = { ajustada: 0, servidores: 0, analisis: 0 };
+  private generacionResumen = 0;
+  private versionResumen = 0;
+  private filtrosResumen: IncidentConsolidatedDashboardFilters = {};
+  private claveContextoResumen: string | null = null;
+  private preparadoResumen: IncidentExecutiveSummaryData | null = null;
+  private documentoResumen?: ComponentRef<IncidentExecutiveSummaryReport>;
+  private capturaResumenActiva = false;
+  private resumenDestruido = false;
+
+  get puedeDescargarResumen(): boolean {
+    return !this.resumenDestruido && !this.cargandoFiltros && !this.exportandoResumen && !!this.preparadoResumen?.total &&
+      this.claveContextoResumen === claveResumen(this.filtrosActuales);
+  }
+  private invalidarResumen(): void {
+    ++this.versionResumen; this.documentoResumen?.destroy(); this.documentoResumen = undefined;
+    this.preparadoResumen = null; this.errorResumen = null; this.estadoResumen = 'esperando'; this.exportandoResumen = this.capturaResumenActiva;
+  }
+  private iniciarContextoResumen(filtros: IncidentConsolidatedDashboardFilters): void {
+    this.invalidarResumen(); ++this.generacionResumen; this.fuentesResumen = {};
+    this.filtrosResumen = copiarFiltrosResumen(filtros); this.claveContextoResumen = claveResumen(filtros);
+  }
+  private solicitarFuenteResumen(tipo: ExecutiveSummarySource, filtros: IncidentConsolidatedDashboardFilters): ExecutiveSummaryToken {
+    this.invalidarResumen(); delete this.fuentesResumen[tipo];
+    return { generacion: this.generacionResumen, revision: ++this.revisionesResumen[tipo], clave: claveResumen(filtros) };
+  }
+  private tokenResumenVigente(tipo: ExecutiveSummarySource, token: ExecutiveSummaryToken): boolean {
+    return !this.resumenDestruido && token.generacion === this.generacionResumen && token.revision === this.revisionesResumen[tipo] &&
+      token.clave === this.claveContextoResumen && token.clave === claveResumen(this.filtrosActuales);
+  }
+  private recibirFuenteResumen<K extends ExecutiveSummarySource>(tipo: K, token: ExecutiveSummaryToken, valor: IncidentExecutiveSummarySources[K]): void {
+    if (!this.tokenResumenVigente(tipo, token)) return;
+    if (!valor || typeof valor !== 'object') { this.fallarFuenteResumen(tipo, token); return; }
+    this.fuentesResumen[tipo] = valor;
+    const { ajustada, servidores, analisis } = this.fuentesResumen;
+    if (!ajustada || !servidores || !analisis) return;
+    try {
+      this.preparadoResumen = crearResumenEjecutivo({ ajustada, servidores, analisis }, this.filtrosResumen, 0, '');
+      this.estadoResumen = this.preparadoResumen.total ? 'listo' : 'sin_datos'; this.errorResumen = null;
+    } catch (e) { this.errorResumen = e instanceof Error && !(e instanceof TypeError) ? e.message : 'No se pudieron validar los datos del resumen.'; this.estadoResumen = 'error'; }
+    this.changeDetector.markForCheck();
+  }
+  private fallarFuenteResumen(tipo: ExecutiveSummarySource, token: ExecutiveSummaryToken): void {
+    if (!this.tokenResumenVigente(tipo, token)) return;
+    this.errorResumen = 'Reporte 1 requiere atribución, servidores y análisis vigente correctos. Espera o vuelve a aplicar los filtros para actualizar los datos.';
+    this.estadoResumen = 'error'; this.changeDetector.markForCheck();
+  }
+  private cargarComponenteResumen(): Promise<typeof IncidentExecutiveSummaryReport> {
+    return import('../../charts/Consolidated/incident-executive-summary-report/incident-executive-summary-report').then(m => m.IncidentExecutiveSummaryReport);
+  }
+  async descargarResumen(): Promise<void> {
+    if (!this.puedeDescargarResumen || !this.preparadoResumen) return;
+    const datos = { ...this.preparadoResumen, version: ++this.versionResumen, preparadoEn: new Date().toISOString() };
+    this.exportandoResumen = true; this.errorResumen = null; this.estadoResumen = 'preparando';
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const componente = await Promise.race([this.cargarComponenteResumen(), new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('render')), 30000); })]);
+      if (!this.resumenVigente(datos.version)) return;
+      if (!this.resumenHost) throw new Error('contenedor');
+      this.documentoResumen?.destroy(); this.documentoResumen = this.resumenHost.createComponent(componente);
+      const render = this.documentoResumen.instance.renderizado.subscribe(version => this.confirmarResumen(version, datos));
+      const error = this.documentoResumen.instance.errorRenderizado.subscribe(e => this.fallarRenderResumen(e));
+      this.documentoResumen.onDestroy(() => { render.unsubscribe(); error.unsubscribe(); });
+      this.documentoResumen.setInput('datos', datos); this.documentoResumen.changeDetectorRef.detectChanges();
+    } catch { if (this.resumenVigente(datos.version)) this.fallarRenderResumen({ version: datos.version, motivo: 'render' }); }
+    finally { clearTimeout(timer); if (!this.resumenDestruido) this.changeDetector.markForCheck(); }
+  }
+  private resumenVigente(version: number): boolean {
+    return !this.resumenDestruido && version === this.versionResumen && this.claveContextoResumen === claveResumen(this.filtrosActuales);
+  }
+  private fallarRenderResumen(error: ExecutiveSummaryRenderError): void {
+    if (!this.resumenVigente(error.version)) return;
+    this.errorResumen = error.motivo === 'legibilidad'
+      ? 'El resumen no cabe en una composición horizontal legible con los textos completos. Ajusta los filtros o utiliza el reporte completo; no se recortó contenido.'
+      : 'No se pudo preparar el resumen. Puedes reintentar sin generar un nuevo análisis.';
+    this.estadoResumen = 'error'; this.exportandoResumen = false; this.changeDetector.markForCheck();
+  }
+  private confirmarResumen(version: number, datos: IncidentExecutiveSummaryData): void {
+    if (!this.resumenVigente(version) || datos.version !== version || this.estadoResumen !== 'preparando') return;
+    this.estadoResumen = 'listo'; void this.capturarResumen(datos);
+  }
+  private async capturarResumen(datos: IncidentExecutiveSummaryData): Promise<void> {
+    if (this.capturaResumenActiva || !this.resumenVigente(datos.version)) return;
+    this.capturaResumenActiva = true; let timer: ReturnType<typeof setTimeout> | undefined, enlace: HTMLAnchorElement | undefined;
+    try {
+      const el = this.documentoResumen?.location.nativeElement.querySelector('.report-document') as HTMLElement | null;
+      if (!el) throw new Error('documento');
+      const width = Math.ceil(el.scrollWidth), height = Math.ceil(el.scrollHeight), pixelRatio = 2;
+      if (width !== 1400 || !Number.isFinite(height) || height <= 0 || height >= 1400 || width * pixelRatio > 16384 || height * pixelRatio > 16384 || width * height * pixelRatio ** 2 > 32000000) throw new Error('dimensiones');
+      const imagen = await Promise.race([toPng(el, { width, height, pixelRatio, backgroundColor: '#F7F9FB', skipFonts: true, skipAutoScale: true,
+        style: { position: 'static', left: 'auto', top: 'auto', transform: 'none', margin: '0' } }),
+        new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('timeout')), 30000); })]);
+      if (!this.resumenVigente(datos.version)) throw new Error('obsoleto');
+      if (!imagen.startsWith('data:image/png;base64,') || imagen.length < 100) throw new Error('imagen');
+      const fecha = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      enlace = document.createElement('a'); enlace.href = imagen;
+      enlace.download = `CANVIA-Resumen-Ejecutivo-Incidentes-${datos.filtros.desde}_${datos.filtros.hasta}-${fecha}.png`;
+      document.body.appendChild(enlace); enlace.click();
+    } catch (e) {
+      if (!this.resumenDestruido) { this.estadoResumen = 'error'; this.errorResumen = e instanceof Error && e.message === 'obsoleto'
+        ? 'Los filtros o las fuentes cambiaron durante la captura. Genera el resumen nuevamente.'
+        : 'No se pudo capturar el resumen completo dentro del tiempo y tamaño permitidos. Puedes reintentar sin generar un nuevo análisis.'; }
+    } finally { clearTimeout(timer); enlace?.remove(); this.capturaResumenActiva = false; this.exportandoResumen = false; if (!this.resumenDestruido) this.changeDetector.markForCheck(); }
+  }
+
   // REPORTE EJECUTIVO - EXPORTACION PNG
   @ViewChild('reporteImagen')
   private reporteImagen?: ElementRef<HTMLElement>;
@@ -431,6 +545,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.resumenDestruido = true; this.invalidarResumen();
     this.suscripcionFiltros?.unsubscribe();
     this.suscripcionOpcionesProyectos?.unsubscribe();
     this.suscripcionRendimientoResolutores?.unsubscribe();
@@ -667,6 +782,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
         : undefined
     };
 
+    this.iniciarContextoResumen(filtros);
+
     // RESTABLECER PAGINACIÓN
     this.paginaResolutores = 1;
     this.kpis = null;
@@ -829,6 +946,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
 
+    const tokenResumen = this.solicitarFuenteResumen('ajustada', filtros);
+
     this.cargandoAtribucion = true;
     this.errorAtribucion = null;
     const solicitud = this.incidentConsolidatedService
@@ -837,6 +956,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
         next: (data) => {
           this.distribucionAjustada = data;
+          this.recibirFuenteResumen('ajustada', tokenResumen, data);
           this.atribucionIncidentes = {
             total_tickets: data.total_tickets,
             total_atribuidos: data.total_atribuidos_original,
@@ -861,6 +981,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
           this.distribucionAjustada = null;
           this.cargandoAtribucion = false;
           this.errorAtribucion = 'No se pudo cargar la distribución de atribución.';
+          this.fallarFuenteResumen('ajustada', tokenResumen);
           this.changeDetector.markForCheck();
         }
       });
@@ -1006,6 +1127,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
 
+    const tokenResumen = this.solicitarFuenteResumen('servidores', filtros);
+
     this.suscripcionTopServidores?.unsubscribe();
     this.cargandoTopServidores = true;
     this.errorTopServidores = null;
@@ -1020,6 +1143,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
         next: (data) => {
 
           this.topServidores = data;
+          this.recibirFuenteResumen('servidores', tokenResumen, data);
           this.cargandoTopServidores = false;
 
           this.changeDetector.markForCheck();
@@ -1036,6 +1160,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
           this.cargandoTopServidores = false;
           this.errorTopServidores =
             'No se pudo cargar el ranking de servidores.';
+          this.fallarFuenteResumen('servidores', tokenResumen);
 
           this.changeDetector.markForCheck();
         }
@@ -1627,6 +1752,8 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
     filtros: IncidentConsolidatedDashboardFilters
   ): void {
 
+    const tokenResumen = this.solicitarFuenteResumen('analisis', filtros);
+
     this.cargandoAnalisisIA = true;
     this.cargandoHallazgos = true;
     this.cargandoConclusiones = true;
@@ -1655,6 +1782,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
 
           // RESPUESTA ÚNICA DEL BACKEND
           this.resultadoAnalisisIA = resultado;
+          this.recibirFuenteResumen('analisis', tokenResumen, resultado);
 
           // ACTUALIZAR LOS DOS APARTADOS
           this.principalesHallazgos = resultado.hallazgos;
@@ -1694,6 +1822,7 @@ export class IncidentCauseAnalysis implements OnInit, OnDestroy {
           this.errorAnalisisIA = mensaje;
           this.errorHallazgos = mensaje;
           this.errorConclusiones = mensaje;
+          this.fallarFuenteResumen('analisis', tokenResumen);
 
           this.changeDetector.markForCheck();
         }

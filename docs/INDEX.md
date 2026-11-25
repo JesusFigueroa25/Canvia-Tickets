@@ -31,6 +31,7 @@ Para iniciar el proyecto, consulta el README general. Para rastrear un indicador
 | [PRD 03 · Promedios mensuales de horas y tickets](requirements/03_kpis_promedio_horas_tickets_PRD.md) | Definición de los dos KPI, filtros aplicables y contrato previsto para el dashboard. |
 | [PRD 04 · Visualización de tiempos en minutos y horas](requirements/04_visualizacion_tiempos_minutos_horas_PRD.md) | Reglas de unidad y precisión, contratos afectados y criterios de presentación. |
 | [PRD 05 · Reportes descargables de Incidentes Consolidados](requirements/05_reportes_descargables_incidentes_consolidados_PRD.md) | Alcance de los cuatro reportes R01–R04, filtros, reglas de cálculo y exportación PNG. |
+| [PRD 05.1 · Resumen Ejecutivo de Incidentes](requirements/05_reportes_descargables_incidentes_consolidados_PRD.md#prd-051--resumen-ejecutivo-de-incidentes) | Reporte compacto de Análisis de Incidentes, reutilización del análisis vigente y PNG independiente del reporte largo. |
 
 ## Notas de implementación
 

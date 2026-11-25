@@ -1,0 +1,168 @@
+<ng-template #encabezado let-titulo="titulo" let-icono="icono">
+  <header class="panel-heading"><svg viewBox="0 0 28 28" fill="none" stroke="#FF7A25" stroke-width="2"
+      aria-hidden="true">
+      <path [attr.d]="icono" />
+    </svg>
+    <h2>{{ titulo }}</h2>
+  </header>
+</ng-template>
+<section #documento class="report-document summary-document" *ngIf="datos as d">
+  <header class="report-header">
+    <div class="infrastructure-icon" aria-hidden="true"><svg viewBox="0 0 120 112" fill="none">
+        <path d="M28 48H23a15 15 0 0 1-1-30A25 25 0 0 1 69 15a18 18 0 0 1 17 33H80" stroke="#EAF2FB" stroke-width="4" />
+        <g stroke="#DCEAF7" stroke-width="2.5" fill="#113A60">
+          <rect x="25" y="38" width="63" height="19" rx="5" />
+          <rect x="25" y="61" width="63" height="19" rx="5" />
+          <rect x="25" y="84" width="63" height="19" rx="5" />
+        </g>
+        <path d="M48 47h28M48 70h28M48 93h28" stroke="#9CC0DD" stroke-width="3" />
+        <g fill="#FF620F">
+          <circle cx="36" cy="47" r="3" />
+          <circle cx="36" cy="70" r="3" />
+          <circle cx="36" cy="93" r="3" />
+        </g>
+      </svg></div>
+    <div class="hero-separator" aria-hidden="true"></div>
+    <div class="header-copy">
+      <h1>Resumen Ejecutivo de Incidentes</h1>
+      <p class="report-period">Período: {{ fecha(d.filtros.desde) }} - {{ fecha(d.filtros.hasta) }} · {{
+        d.filtros.grupo_resolutor || 'Todos los grupos' }}</p>
+      <p class="project-name" *ngIf="d.filtros.proyecto">Proyecto: {{ d.filtros.proyecto }}</p>
+      <p class="incident-types" *ngIf="d.filtros.tipo_incidente?.length">Tipo de incidente: {{
+        d.filtros.tipo_incidente?.join(' · ') }}</p>
+    </div>
+    <svg class="header-decoration" viewBox="0 0 300 180" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M150-20C15 40 208 95 75 200H300V-20Z" fill="#163D63" />
+      <path d="M205-20C65 45 254 102 125 200H300V-20Z" fill="#22557E" />
+      <path d="M252-20C126 56 302 115 192 200H300V-20Z" fill="#FF620F" />
+      <path d="M280-20C181 55 334 120 242 200H300V-20Z" fill="#EF8B33" />
+    </svg><span class="brand">CANVIA · REPORTE 1</span>
+  </header>
+  <section class="kpis" aria-label="Indicadores de atribución original">
+    <div class="kpi">
+      <div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor"
+          stroke-width="1.8">
+          <path [attr.d]="iconos.comparacion" />
+        </svg></div>
+      <div class="kpi-separator"></div>
+      <div class="kpi-content"><span class="kpi-label">Total de incidentes</span><strong>{{ numero(d.total)
+          }}</strong><small>Conjunto filtrado del período</small></div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor"
+          stroke-width="1.8">
+          <path d="m5 14 6 6L24 5M5 4H2v22h23v-8" />
+        </svg></div>
+      <div class="kpi-separator"></div>
+      <div class="kpi-content"><span class="kpi-label">Con atribución definida</span><strong>{{ numero(d.atribuidos)
+          }}</strong><small>Atribución original Cliente / Canvia</small></div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor"
+          stroke-width="1.8">
+          <path d="M14 3 2 25h24L14 3Zm0 7v8m0 3v1" />
+        </svg></div>
+      <div class="kpi-separator"></div>
+      <div class="kpi-content"><span class="kpi-label">Sin atribución</span><strong>{{ numero(d.sinAtribucion)
+          }}</strong><small>Según el registro original</small></div>
+    </div>
+  </section>
+  <section class="summary-charts" [class.without-servers]="!d.servidores.length"
+    aria-label="Gráficos ejecutivos en una fila">
+    <article class="report-panel chart-card servers-panel" *ngIf="d.servidores.length"><ng-container
+        *ngTemplateOutlet="encabezado; context: {titulo: 'Top 5 servidores con más incidentes', icono: iconos.servidores}"></ng-container>
+      <div class="chart-content server-bars">
+        <div class="server-row" *ngFor="let s of d.servidores; let i = index">
+          <div class="server-caption"><span>{{ s.servidor }}</span><strong>{{ numero(s.incidentes) }} <small>{{
+                porcentaje(s.porcentaje) }} %</small></strong></div>
+          <div class="summary-track">
+            <div [style.width.%]="s.incidentes * 100 / maxServidor" [class.orange-bar]="i === 0"></div>
+          </div>
+        </div>
+        <p class="chart-note">Porcentaje sobre {{ numero(d.total) }} incidentes. Un ticket puede mencionar varios
+          servidores.</p>
+      </div>
+    </article>
+    <article class="report-panel chart-card distribution-panel"><ng-container
+        *ngTemplateOutlet="encabezado; context: {titulo: 'Distribución por atribución', icono: iconos.dona}"></ng-container>
+      <div class="chart-content distribution-content"><svg class="summary-donut" viewBox="0 0 200 200" role="img"
+          aria-label="Distribución de incidentes con atribución definida" font-family="Arial, Helvetica, sans-serif">
+          <circle cx="100" cy="100" r="62" fill="none" stroke="#EDF1F5" stroke-width="25" />
+          <ng-container *ngFor="let s of segmentos">
+            <circle *ngIf="s.cantidad" class="donut-segment" cx="100" cy="100" r="62" fill="none"
+              [attr.stroke]="s.color" stroke-width="25" [attr.stroke-dasharray]="s.trazo"
+              [attr.stroke-dashoffset]="s.offset" transform="rotate(-90 100 100)" />
+          </ng-container><text x="100" y="99" text-anchor="middle" [attr.font-size]="fuenteTotal" font-weight="700"
+            fill="#263447">{{ numero(d.atribuidos) }}</text><text x="100" y="120" text-anchor="middle" font-size="12"
+            fill="#667085">atribuidos</text>
+        </svg>
+        <div class="donut-legend">
+          <div *ngFor="let s of segmentos"><i [style.background]="s.color"></i><span>{{ s.nombre }}</span><strong>{{
+              numero(s.cantidad) }} <small>{{ porcentaje(s.porcentaje) }} %</small></strong></div>
+        </div>
+        <p class="chart-note">Base: {{ numero(d.atribuidos) }} incidentes con atribución definida.<span
+            *ngIf="!d.atribuidos"> No hay atribución definida para distribuir.</span></p>
+      </div>
+    </article>
+    <article class="report-panel chart-card comparison-panel"><ng-container
+        *ngTemplateOutlet="encabezado; context: {titulo: 'Original vs análisis de causa', icono: iconos.comparacion}"></ng-container>
+      <div class="chart-content comparison-content">
+        <div class="comparison-legend"><span><i class="original-key"></i>Original</span><span><i
+              class="adjusted-key"></i>Ajustada</span></div>
+        <div class="comparison-row" *ngFor="let c of d.ajustada.comparacion">
+          <h3>{{ nombre(c.atribucion) }}</h3>
+          <div class="comparison-bar">
+            <div class="summary-track">
+              <div class="orange-bar" [style.width.%]="c.tickets_originales * 100 / maxComparacion"></div>
+            </div><strong>{{ numero(c.tickets_originales) }}</strong>
+          </div>
+          <div class="comparison-bar">
+            <div class="summary-track">
+              <div [style.width.%]="c.tickets_ajustados * 100 / maxComparacion"></div>
+            </div><strong>{{ numero(c.tickets_ajustados) }}</strong>
+          </div>
+        </div>
+       
+      </div>
+    </article>
+  </section>
+  <section class="summary-narrative">
+    <article class="report-panel findings-panel"><ng-container
+        *ngTemplateOutlet="encabezado; context: {titulo: 'Principales hallazgos', icono: iconos.hallazgos}"></ng-container>
+      <div class="summary-findings">
+        <div class="summary-finding" *ngFor="let h of d.hallazgos">
+          <div class="finding-icon" [class.green]="h.tipo !== 'atribucion'" aria-hidden="true"><svg viewBox="0 0 28 28"
+              fill="none" stroke="currentColor" stroke-width="1.8">
+              <path [attr.d]="iconos.hallazgos" />
+            </svg></div>
+          <div class="finding-copy">
+            <h3>{{ h.codigo }} · {{ h.titulo }}</h3>
+            <p><ng-container *ngFor="let parte of partes(h.descripcion)"><strong *ngIf="parte.destacado">{{ parte.texto
+                  }}</strong><span *ngIf="!parte.destacado">{{ parte.texto }}</span></ng-container></p><small>Valor: {{
+              numero(h.valor) }}<ng-container *ngIf="h.porcentaje !== null"> · {{ porcentaje(h.porcentaje) }}
+                %</ng-container><ng-container *ngIf="h.denominador !== null"> · Base: {{ numero(h.denominador)
+                }}</ng-container><span *ngIf="h.requiere_validacion"> · Requiere validación técnica</span></small>
+          </div>
+        </div>
+      </div>
+    </article>
+    <article class="report-panel conclusion-panel"><ng-container
+        *ngTemplateOutlet="encabezado; context: {titulo: 'Conclusión y recomendación', icono: iconos.ejecutivo}"></ng-container>
+      <div class="summary-conclusion" *ngIf="d.conclusion as c">
+        <h3>{{ c.codigo }} · {{ c.titulo }}</h3>
+        <p class="conclusion-text">{{ c.conclusion }}</p>
+        <div class="summary-recommendation">
+          <h3>Recomendación</h3>
+          <p>{{ c.recomendacion }}</p>
+        </div><small>Hallazgos relacionados: {{ c.hallazgos_referencia.join(', ') }}<span *ngIf="c.requiere_validacion">
+            · Requiere validación técnica</span></small>
+      </div>
+    </article>
+  </section>
+  
+  
+  
+  <div class="report-meta"><span *ngFor="let f of filtros">{{ f }}</span></div>
+  
+  <footer>CANVIA · Análisis de Incidentes · Reporte 1 · Preparado: {{ d.preparadoEn }}</footer>
+</section>
