@@ -50,6 +50,12 @@ Implementado «Reporte 4» en Alertas, general o del proyecto seleccionado, con 
 
 El 24/11/2026 se aprobaron **42 pruebas nuevas de R04**; el conjunto R01–R04 registró **158 aprobadas y el único fallo previo de R02**. La compilación Angular y las descargas PNG locales de ambos modos se validaron con datos ficticios, sin consultar bases de datos. El módulo completa sus cuatro reportes. Detalles, evidencias y límites en la [arquitectura](ARCHITECTURE.md#reporte-png-r04-de-incidentes-consolidados) y el [plan de pruebas](TEST_PLAN.md#reporte-png-r04-de-incidentes-consolidados).
 
+## Resumen Ejecutivo de Incidentes — Reporte 1
+
+Implementado en Análisis de Incidentes, a la derecha de Atribución. Reutiliza las fuentes y el análisis vigente, acepta respaldo por reglas identificado y no realiza nuevas consultas al descargar. Incluye tres KPI, franja única Servidores/Dona/Comparación (dos tarjetas sin servidores), hasta cuatro hallazgos y una pareja conclusión/recomendación priorizados mediante los tipos disponibles en el contrato, sin reescribir textos.
+
+El 25/11/2026 pasaron las **48 pruebas nuevas**; el conjunto relacionado registró **206 aprobadas y el único fallo previo de R02**. Se compilaron Angular y PNG ficticios generales, filtrados, sin servidores y con respaldo. El reporte largo, R01–R04, backend y dependencias se conservaron. Este reporte pertenece a otro módulo y no amplía el alcance cerrado de cuatro reportes en Incidentes Consolidados. Evidencia y límites en [arquitectura](ARCHITECTURE.md#resumen-ejecutivo-de-incidentes--reporte-1) y [pruebas](TEST_PLAN.md#resumen-ejecutivo-de-incidentes--reporte-1).
+
 ## Tecnologías declaradas
 
 - Frontend: Angular `^22.2.x`, TypeScript `~6.0.2`, RxJS `~7.8.0`, Angular Material, Chart.js y `ng2-charts`. `package-lock.json` registra resoluciones; `package.json` no declara una versión de Node.

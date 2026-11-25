@@ -169,3 +169,256 @@ Los cuatro reportes reutilizan los endpoints existentes, sin cambios de backend 
 El alcance queda cerrado a los cuatro reportes R01–R04. La arquitectura, los filtros y las reglas están documentados en [ARCHITECTURE.md](../ARCHITECTURE.md); las recomendaciones se generan automáticamente, sin edición ni GPT. El formato es PNG independiente de 1400 px CSS con captura de alta resolución y bloqueo de contenido ilegible.
 
 Pendientes: aceptación visual con las referencias originales y datos reales, otros navegadores y resolución de la prueba preexistente de R02 en su propio alcance. Resultados reproducibles y límites en [TEST_PLAN.md](../TEST_PLAN.md#reporte-png-r04-de-incidentes-consolidados).
+
+
+# PRD 05.1 — Resumen Ejecutivo de Incidentes
+
+**Estado:** implementado en frontend; validación local con datos ficticios el 25/11/2026. Es un reporte de Análisis de Incidentes y no amplía los cuatro reportes de Incidentes Consolidados.
+
+## 1. Contexto
+Actualmente el módulo **Análisis de Incidentes** (`app-incident-cause-analysis`) ya cuenta con un reporte descargable extenso que consolida múltiples gráficos, tablas, hallazgos y conclusiones. Aunque es funcional, su longitud dificulta una lectura ejecutiva rápida.
+
+Se requiere un nuevo reporte descargable, más compacto y visual, orientado a la **sección Atribución de Incidentes**, manteniendo el estándar gráfico ya aprobado en los reportes descargables de `incident-consolidated`.
+
+## 2. Objetivo
+Implementar un **Reporte 1 — Resumen Ejecutivo de Incidentes**, exportable en PNG, con formato horizontal y ejecutivo, que sintetice los indicadores y visualizaciones clave del análisis de incidentes.
+
+## 3. Alcance
+### Incluye
+- Nuevo botón **Reporte 1** en la sección **Atribución de Incidentes**.
+- Generación de un documento PNG de resumen ejecutivo.
+- Reutilización de componentes y datos ya disponibles en frontend.
+- Reutilización de los hallazgos y conclusiones ya generados mediante IA.
+
+### No incluye
+- Cambios de backend.
+- Nuevos endpoints.
+- Cambios en dependencias.
+- Reemplazo del reporte largo actual.
+
+## 4. Estructura del reporte
+### Cabecera
+- Título: **Resumen Ejecutivo de Incidentes**
+- Período: rango aplicado
+- Grupo resolutor
+- Proyecto: visible solo si existe filtro aplicado
+- Tipo de incidente: visible solo si existe filtro aplicado
+
+### KPIs
+1. **Total de incidentes**
+2. **Incidentes con atribución definida**
+3. **Incidentes sin atribución**
+
+### Visualizaciones
+Una única fila horizontal, con tarjetas de altura equilibrada y en este orden:
+1. **Top de servidores con más incidentes — Top 5**
+   - Fuente: `app-incident-top-servers-chart`; primeros cinco del ranking disponible, sin modificar el selector del dashboard.
+   - Se omite completamente cuando no hay servidores identificados y se redistribuye el ancho entre los otros dos gráficos.
+2. **Distribución por atribución**
+   - Fuente: `app-incident-attribution-donut`
+3. **Atribución original vs análisis de causa**
+   - Fuente: `app-incident-attribution-comparison`
+
+Los KPI y la dona usan la atribución original de la misma respuesta ajustada. Se exige atribuidos + sin atribución = total; los porcentajes de la dona usan el total atribuido. Los porcentajes de servidores usan el total filtrado y sus asociaciones pueden solaparse. Se conserva el estado/metodología de ajustes; ajustes pendientes no se presentan como reasignaciones aprobadas.
+
+### Secciones narrativas
+4. **Principales hallazgos**
+   - Hasta cuatro hallazgos de la salida vigente, con textos y métricas íntegros.
+5. **Conclusión y recomendación**
+   - Una pareja completa de la salida vigente, con sus referencias incluidas en los hallazgos seleccionados.
+
+El contrato público no ofrece prioridad numérica ni `evidencia_id`. La selección utiliza las prioridades verificadas del prompt backend que sí se expresan por `tipo`: cruces/patrones primero, restantes tipos operativos después y atribución complementaria al final. Los códigos desempatan de forma determinista; su posición en el array no se interpreta como importancia. No se reescriben textos ni se invoca IA al descargar.
+
+## 5. Reglas funcionales
+- El reporte debe generarse desde la sección **Atribución de Incidentes**.
+- Debe usar los filtros efectivos ya aplicados en el dashboard.
+- Proyecto y tipo de incidente solo se muestran si están filtrados.
+- Si no hay datos suficientes, la descarga debe bloquearse con estado informativo.
+- La exportación debe seguir el protocolo ya aprobado en reportes PNG previos.
+- Esperar al análisis vigente de los mismos filtros; aceptar origen IA o respaldo por reglas, mostrando procedencia, modelo cuando exista y advertencia. Bloquear respuestas incompletas, errores, `sin_datos` y versiones anteriores. La ausencia exclusiva de servidores es válida.
+- Reutilizar exclusivamente las tres fuentes cargadas: `distribucionAjustada`, `topServidores` y `resultadoAnalisisIA`. No condicionar el resumen a causas, tipos, proyectos o resolutores del reporte largo.
+- Conservar una instantánea propia y control de generación/revisión de fuentes, versión, renderizado y captura. Reintentar render/captura no vuelve a consultar datos ni IA.
+- Renderizar solo al solicitar la descarga; el componente presentacional se carga de forma diferida y no realiza HTTP.
+
+## 6. Diseño y estilo
+- Formato horizontal y compacto.
+- Cabecera azul marino.
+- Fondo claro.
+- Acentos naranja y verde.
+- Tipografía y composición consistentes con R01–R04 de `incident-consolidated`.
+- Enfoque ejecutivo: lectura rápida, poco texto, alto contraste y jerarquía visual clara.
+- Ancho de 1400 px CSS y captura a escala 2. Cabecera y tres KPI horizontales; fila de gráficos Servidores/Dona/Comparación 38/28/34; sin servidores, dos columnas. Cuarta fila: hallazgos 60 % y conclusión/recomendación 40 %.
+- Encabezados azul marino, iconos estáticos y gráficos SVG/HTML sin controles. Nombres y textos completos en varias líneas. Si el contenido alcanza 1400 px CSS de altura o deja de ser legible, se bloquea el PNG sin recortes y se indica el reporte completo como alternativa.
+
+## 7. Criterios de aceptación
+- Existe un botón **Reporte 1** en la sección **Atribución de Incidentes**.
+- El reporte se exporta en PNG sin controles del dashboard.
+- El diseño mantiene consistencia visual con los reportes ya aprobados.
+- El reporte muestra correctamente:
+  - total de incidentes
+  - incidentes con atribución definida
+  - incidentes sin atribución
+  - distribución por atribución
+  - comparación original vs ajustada
+  - top de servidores
+  - hallazgos
+  - conclusión y recomendación
+- Proyecto y tipo de incidente solo aparecen cuando corresponda.
+- El resultado final es más corto y más ejecutivo que el reporte actual.
+
+## 8. Riesgos
+- Dependencia de múltiples bloques de datos ya existentes en el módulo.
+- Posibles inconsistencias entre visualizaciones si el dashboard usa cargas independientes.
+- Necesidad de preservar la legibilidad del reporte en una sola composición horizontal.
+
+## 9. Decisiones pendientes
+- El componente es `incident-executive-summary-report`, independiente del reporte largo y de R01–R04.
+- La franja de gráficos es única y respeta el orden Servidores/Dona/Comparación. No existe una segunda fila para servidores.
+- Quedan pendientes la aceptación con datos reales y referencias originales y otros navegadores. Evidencias reproducibles y fallos preexistentes en [TEST_PLAN.md](../TEST_PLAN.md#resumen-ejecutivo-de-incidentes--reporte-1).
+
+
+# PRD — Resumen Ejecutivo de Auditoría de Categorización
+
+## 1. Contexto
+
+El módulo **Auditoría de Categorización** dispone de un reporte PNG que incluye indicadores, distribuciones, gráficos mensuales y tablas estadísticas.
+
+Aunque el reporte actual permite revisar los resultados, su extensión dificulta la lectura ejecutiva y su presentación visual no está alineada con el estándar reciente de reportes de CANVIA.
+
+Se requiere rediseñar el reporte existente para sintetizar los principales resultados, manteniendo la confiabilidad de los datos y la funcionalidad actual del dashboard.
+
+## 2. Objetivo
+
+Implementar un **Resumen Ejecutivo de Auditoría de Categorización**, descargable en PNG, que facilite la interpretación del desempeño de categorización y permita identificar oportunidades de revisión.
+
+## 3. Componentes afectados
+
+- Padre: `app-requirement-categorization-audit`.
+- Reporte existente: `app-requirement-categorization-report`.
+- Botón de descarga: `Descargar Reporte PNG`.
+
+La implementación reutilizará el botón y el flujo de descarga existentes.
+
+## 4. Alcance funcional
+
+### Cabecera
+
+- Título: Resumen Ejecutivo Auditoría de Categorización.
+- Período: mes inicial y final con año.
+- Grupo resolutor: según filtro aplicado.
+- Proyecto: mostrar únicamente cuando exista un proyecto filtrado.
+
+### Indicadores KPI
+
+1. Total de tickets evaluados.
+2. Categorizaciones correctas: cantidad y porcentaje.
+3. Categorizaciones incorrectas: cantidad y porcentaje.
+
+Los indicadores deben respetar los filtros efectivos del dashboard y el criterio existente de tickets únicos evaluados.
+
+### Visualizaciones
+
+**Gráfico 1 — Distribución de Categorizaciones**
+
+- Dona con categorizaciones correctas e incorrectas.
+- Mostrar cantidades y porcentajes.
+- Denominador: tickets evaluados.
+
+**Gráfico 2 — Distribución por Motivo Resolución**
+
+- Dona con categorías de motivo de resolución.
+- Mostrar cantidades y porcentajes.
+- Mantener categorías sin dato cuando correspondan.
+
+**Gráfico 3 — Top 10 de Tickets por Colaborador**
+
+- Barras horizontales.
+- Mostrar categorizaciones correctas e incorrectas por colaborador.
+- Destacar las incorrectas.
+- Verificar y documentar el criterio de ordenamiento del ranking.
+
+**Gráfico 4 — Categorizaciones Correctas e Incorrectas por Mes**
+
+- Barras mensuales apiladas.
+- Mostrar cantidades y diferenciación por color.
+- Respetar el período filtrado.
+
+### Análisis ejecutivo
+
+**Principales hallazgos:** generar tres hallazgos basados en las cifras del reporte.
+
+**Conclusión:** generar una conclusión que sintetice el desempeño de categorización.
+
+**Recomendaciones:** generar tres recomendaciones vinculadas con los hallazgos observados.
+
+Los textos se calcularán mediante reglas determinísticas, sin incorporar nuevos servicios de IA.
+
+## 5. Reglas de negocio
+
+- Los filtros del reporte deben ser los filtros globales efectivos.
+- Las ediciones pendientes de aplicar no deben afectar la exportación.
+- La población de tickets debe respetar las reglas existentes de evaluación vigente y deduplicación.
+- La suma de correctas e incorrectas debe conciliar con el total evaluado, conforme al contrato actual.
+- Los porcentajes deben calcularse sobre denominadores consistentes.
+- Los gráficos mensuales deben respetar las agrupaciones y reglas existentes.
+- Los textos automáticos no deben inventar causas técnicas ni atribuir responsabilidades individuales sin evidencia.
+- Ante ausencia de datos, mostrar un estado informativo sin generar indicadores ficticios.
+
+## 6. Diseño visual
+
+Mantener el estándar ejecutivo de CANVIA:
+
+- Cabecera: `#0B2342`.
+- Naranja principal: `#FF620F`.
+- Verde: `#16835B`.
+- Fondo: `#F7F9FB`.
+- Rojo para categorizaciones incorrectas.
+- Documento horizontal de 1400 px CSS.
+- Tres KPI en una fila.
+- Cuatro gráficos distribuidos en dos columnas y dos filas.
+- Bloque inferior con hallazgos, conclusión y recomendaciones.
+- Tipografía, iconografía, bordes y espacios consistentes con los reportes aprobados.
+
+La exportación debe producir una imagen legible, sin controles, cortes ni desbordamientos.
+
+## 7. Exclusiones
+
+No se incluirán en el nuevo PNG:
+
+- Cuadro Estadístico Mensual completo.
+- Top 10 Estadístico por Colaborador completo.
+
+Los datos relevantes continuarán representados mediante gráficos e indicadores.
+
+No se modificarán las tablas existentes del dashboard.
+
+## 8. Criterios de aceptación
+
+- El botón actual descarga el nuevo resumen ejecutivo.
+- No se crea un botón adicional.
+- Los filtros de período, grupo y proyecto funcionan correctamente.
+- Se muestran los tres KPI conciliados.
+- Se muestran los cuatro gráficos.
+- Se generan tres hallazgos, una conclusión y tres recomendaciones.
+- El reporte presenta el estándar visual de CANVIA.
+- El PNG es más compacto que el reporte anterior.
+- No se modifican endpoints ni dependencias.
+- No se afectan otros reportes.
+- Las pruebas de cálculo, filtrado y exportación resultan satisfactorias.
+
+## 9. Plan de implementación
+
+1. Revisar el reporte actual y los contratos de datos.
+2. Identificar cálculos y estructuras reutilizables.
+3. Rediseñar el HTML y CSS del reporte.
+4. Incorporar los textos ejecutivos determinísticos.
+5. Integrar la exportación con el botón actual.
+6. Ejecutar pruebas funcionales y de regresión.
+7. Validar los PNG con datos reales y escenarios de filtros.
+
+## 10. Decisiones pendientes
+
+- Confirmar el criterio de orden del Top 10 de colaboradores.
+- Verificar la disponibilidad de todos los datos con los endpoints existentes.
+- Definir el comportamiento del ranking con menos de diez colaboradores.
+- Validar la composición final con descripciones y nombres extensos.
