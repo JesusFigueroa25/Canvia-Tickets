@@ -89,27 +89,45 @@ No se especifican umbrales de cobertura porque no hay cobertura reportada ni obj
 
 ### Reporte PNG de Auditoría de Categorización
 
-Desde `fronted-tickets/`:
+**Rediseño ejecutivo validado el 25/11/2026.** Desde `fronted-tickets/`, con las dependencias ya instaladas:
 
 ```powershell
-npm test -- --watch=false --include="**/requirement-categorization-audit.spec.ts" --include="**/requirement-categorization-report.spec.ts"
-npm test -- --watch=false
+npm test -- --watch=false --include="**/requirement-categorization-audit.spec.ts" --include="**/requirement-categorization-report*.spec.ts"
 npm run build
 ```
 
-Los specs del padre y del reporte usan datos ficticios y sustituyen las respuestas HTTP o la captura según el caso. Cubren: cuatro respuestas en distinto orden y render pendiente; fuentes y dos ciclos de pintura; `404` en cada agregado; ausencia de resultados; cantidades inválidas y conteos incompletos; filtros efectivos y copias independientes; paginación de tickets; respuestas canceladas; versiones obsoletas; cuadro mensual completo y Top 10 por colaborador; etiquetas «Sin dato»/«Sin asignar»; nombres largos; errores de render/captura; doble clic y descargas sucesivas; limpieza del enlace; abandono de página; escalas y límites de imagen.
+Resultado: **52 pruebas aprobadas en tres archivos** (21 del padre, 10 de composición/renderizado y 21 de utilidades). Cubren cantidades, tasas y denominadores por contrato; contadores de filas/errores distintos de tickets; ranking por incorrectas/total/nombre y cero incorrectas; motivos completos y redondeo; meses dispersos y cruces de año; análisis 3/1/3 determinístico sin mutación; tres KPI/cuatro gráficos sin tablas; textos largos; carga/404/cancelación, filtros/copias/versiones obsoletas, render, doble clic, captura, timeouts de 30 segundos, entrega tardía, reintento y destrucción.
 
-Ajuste de la sección 07 del 18/11/2026: las pruebas específicas del padre y del reporte registran **25 aprobadas**. Verifican el mismo orden de filas en gráfico y tabla (incorrectas descendentes, total descendente y nombre), límite de diez, seis columnas, «Subtotal Top 10» y porcentajes ponderados, menos de diez colaboradores y conjunto vacío. También comprueban que los KPIs y el total mensual mantienen el conjunto completo y que no se mutan los datos originales. No se repitió la descarga en navegador para este ajuste; la evidencia visual siguiente corresponde a la versión inicial que mostraba todos los colaboradores.
+La compilación de producción termina con código 0: bundle inicial **2.84 MB**. Conserva advertencias de presupuestos de bundle/estilos; no se alteran esos presupuestos ni dependencias. Se autorizó acceso a Google Fonts para la fuente global que ya utiliza el proyecto.
 
-**Evidencia del 18/11/2026**, con Node 24.20.0 y las dependencias instaladas del proyecto:
+**Regresión de Reporte 1 de Incidentes y R01–R04:**
 
-- Los 23 casos nuevos pasan. La suite completa registra 30 aprobados y dos fallos preexistentes, ya descritos en este documento: `App` no reconoce `app-landing` y `Login` carece de proveedor de `ActivatedRoute`.
-- La compilación de producción termina con código 0. El entorno restringido no resuelve Google Fonts; la compilación se completó con acceso de red autorizado a la fuente global existente. Se mantienen advertencias de presupuesto del bundle inicial (aproximadamente 2.61 MB frente a 2.50 MB) y de estilos, incluido el padre de auditoría; no se modificaron los presupuestos.
-- Se sirvió la compilación en un servidor local con respuestas ficticias, sin arrancar FastAPI ni consultar SQL Server. Edge sin interfaz descargó un PNG real de **2800 × 5830 px**, revisado visualmente, con siete secciones, doce meses y doce colaboradores, sin explorador, recortes de tablas ni desbordamiento horizontal detectado. No se observaron excepciones JavaScript.
-- El botón se habilitó mientras la consulta de tickets seguía pendiente y permaneció disponible tras responder con un error de tickets. La descarga no añadió solicitudes HTTP a las siete consultas iniciales de la página.
-- El arnés temporal y las evidencias se guardaron en `.angular/png-report-smoke/`, excluido de Git. El comportamiento y sus límites se documentan en [ARCHITECTURE.md](ARCHITECTURE.md#reporte-png-de-auditoría-de-categorización).
+```powershell
+npm test -- --watch=false --include="**/requirement-categorization-audit.spec.ts" --include="**/requirement-categorization-report*.spec.ts" --include="**/incident-consolidated*.spec.ts" --include="**/incident-monthly-report*.spec.ts" --include="**/incident-project-report*.spec.ts" --include="**/incident-project-monthly-report*.spec.ts" --include="**/incident-recurring-alerts-report*.spec.ts" --include="**/incident-executive-summary-report*.spec.ts" --include="**/incident-cause-analysis-summary-report.spec.ts"
+```
 
-Pendiente: aceptación con datos reales y contraste de resultados en el entorno de negocio; validación visual en otros navegadores y con volúmenes cercanos al límite de imagen. La prueba local no acredita el funcionamiento de la ejecución de auditorías contra SQL Server.
+Resultado: **256 aprobadas y tres fallidas de 259**, 18 archivos. Los tres fallos fueron reproducidos antes de modificar código: dos en `incident-executive-summary-report.spec.ts` (selectores `.analysis-origin` y `.adjustment-state` ausentes en la presentación actual) y uno en `incident-project-report.spec.ts:70` (texto esperado «máximo mensual» frente a la nota actual por proyecto/mes). Esos componentes/specs no se modifican. La ejecución inicial registraba además un fallo de categorización por el orden anterior; ahora pasa con el nuevo criterio expresamente aprobado. No se afirma que toda la suite del repositorio esté aprobada.
+
+**PNG real con Edge sin interfaz y API ficticia en localhost**, sin iniciar FastAPI ni consultar SQL Server:
+
+| Caso | Documento CSS | PNG a escala 2 |
+|---|---|---|
+| General, doce meses y doce colaboradores | 1400 × 1279 | **2800 × 2558 px** |
+| Proyecto completo y filtro mensual aplicado desde el dashboard, un mes recibido | 1400 × 1306 | **2800 × 2612 px** |
+| Cinco motivos, incluidas categorías adicionales completas y `SIN_DATO` | 1400 × 1352 | 2800 × 2704 px |
+| Veinticuatro meses, todos recibidos, sin fragmentación | 1400 × 1351 | 2800 × 2702 px |
+| Nombre largo íntegro incluido en el Top 10 | 1400 × 1301 | 2800 × 2602 px |
+| Todas correctas / todas incorrectas | 1400 × 1359 | 2800 × 2718 px en cada caso |
+
+Los siete casos descargan PNG válidos, sin excepciones JS ni HTTP adicional al descargar. Se verifican orden y geometría 2×2, todos los meses/motivos recibidos, ranking y KPI, tres hallazgos/recomendaciones, un único botón, ausencia de controles/tablas dentro del documento, cero desbordamientos/scroll/textos fuera de sus cajas y permanencia de ambas tablas interactivas del dashboard. En el filtrado, las cuatro consultas comparten exactamente proyecto y mes; la descarga funciona incluso con tickets pendientes. Se revisaron visualmente los PNG general, filtrado, motivos adicionales y 24 meses.
+
+Dos casos adicionales verifican que no se descargue un PNG: 40 meses que no caben legiblemente y porcentaje de motivo incoherente. Se muestran los mensajes correspondientes, sin eliminar registros para forzar la captura.
+
+Arnés local y evidencias, excluidos de Git: `.angular/png-audit-executive-smoke/verify.mjs`, `result-<caso>.json`, `downloads-<caso>-*/`. Ejecución local posterior a compilar: `node .angular/png-audit-executive-smoke/verify.mjs general` o `filtros`; también admite `motivos`, `meses24`, `nombres`, `correctas`, `incorrectas`, `ilegible`, `inconsistente`. Los datos son ficticios; no contienen credenciales ni información productiva.
+
+**Evidencia histórica:** el 18/11/2026 se validó el reporte largo anterior (23 pruebas iniciales, 25 tras el primer ajuste del Top 10 y PNG 2800 × 5830). Esa evidencia no describe el nuevo diseño; tampoco los resultados históricos de otras secciones sustituyen la regresión fechada arriba. Reglas actuales: [PRD 02](requirements/02_reporte_png_auditoria_categorizacion_PRD.md) y [arquitectura](ARCHITECTURE.md#reporte-png-de-auditoría-de-categorización).
+
+Pendientes: aceptación con datos reales, otros navegadores y concurrencia real entre las cuatro consultas independientes. La prueba local no acredita ejecución de auditorías, calidad de su motor ni resultados contra SQL Server.
 
 ### Reporte PNG de Tiempos de Informes Mensuales
 

@@ -60,7 +60,7 @@ describe('Auditoría: disponibilidad y exportación PNG', () => {
     documento.className = 'report-document';
     Object.defineProperties(documento, {
       scrollWidth: { value: 1400 },
-      scrollHeight: { value: 2200, configurable: true },
+      scrollHeight: { value: 1200, configurable: true },
     });
     const stage = document.createElement('div');
     stage.appendChild(documento);
@@ -71,6 +71,7 @@ describe('Auditoría: disponibilidad y exportación PNG', () => {
     pagina.ngOnDestroy();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   function responder(): void {
@@ -206,8 +207,7 @@ describe('Auditoría: disponibilidad y exportación PNG', () => {
     let terminar!: (s: string) => void;
     vi.mocked(toPng).mockReturnValueOnce(new Promise((resolve) => (terminar = resolve)));
     const primera = pagina.descargarReporte();
-    await Promise.resolve();
-    await Promise.resolve();
+    for (let i = 0; i < 6; i++) await Promise.resolve();
     await pagina.descargarReporte();
     expect(toPng).toHaveBeenCalledOnce();
     terminar('data:image/png;base64,' + 'b'.repeat(150));
@@ -224,8 +224,7 @@ describe('Auditoría: disponibilidad y exportación PNG', () => {
     let terminar!: (s: string) => void;
     vi.mocked(toPng).mockReturnValueOnce(new Promise((resolve) => (terminar = resolve)));
     const descarga = pagina.descargarReporte();
-    await Promise.resolve();
-    await Promise.resolve();
+    for (let i = 0; i < 6; i++) await Promise.resolve();
     pagina.cargarDashboard();
     terminar('data:image/png;base64,' + 'c'.repeat(150));
     await descarga;
@@ -254,18 +253,15 @@ describe('Auditoría: disponibilidad y exportación PNG', () => {
     expect(click).not.toHaveBeenCalled();
   });
 
-  it('reduce escala para tablas extensas y rechaza dimensiones vacías', async () => {
+  it('rechaza composiciones altas y dimensiones vacías sin reducir la resolución', async () => {
     preparar();
     const el = pagina.reporteImagen!.nativeElement.firstElementChild!;
     Object.defineProperty(el, 'scrollHeight', { value: 5000, configurable: true });
     await pagina.descargarReporte();
-    expect(toPng).toHaveBeenLastCalledWith(
-      el,
-      expect.objectContaining({ pixelRatio: 1, height: 5000, skipAutoScale: true }),
-    );
+    expect(toPng).not.toHaveBeenCalled();
     Object.defineProperty(el, 'scrollHeight', { value: 0 });
     await pagina.descargarReporte();
-    expect(click).toHaveBeenCalledOnce();
+    expect(click).not.toHaveBeenCalled();
   });
 
   it('rechaza documentos que exceden el límite sin recortar filas', async () => {
@@ -285,5 +281,31 @@ describe('Auditoría: disponibilidad y exportación PNG', () => {
     datos.resumen.correct_percentage = 101;
     responder();
     expect(pagina.datosReporte).toBeNull();
+  });
+
+  it('reconcilia porcentajes y no utiliza error_count ni contadores de filas como tickets', () => {
+    datos.resumen.error_count = 500; preparar(); expect(pagina.reporteListo).toBe(true);
+    datos.resolutores[0].incorrect_percentage = 99; responder(); expect(pagina.datosReporte).toBeNull(); expect(pagina.errorPreparacionReporte).toContain('porcentajes');
+  });
+
+  it('explica errores de legibilidad usando la integración existente', () => {
+    preparar(); pagina.fallarRenderReporte({ version: pagina.datosReporte!.version, motivo: 'legibilidad' });
+    expect(pagina.reporteListo).toBe(false); expect(pagina.errorPreparacionReporte).toContain('no se recortó');
+  });
+
+  it('recupera la descarga tras timeout de captura sin entregar la imagen tardía ni repetir HTTP', async () => {
+    preparar(); vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] }); let terminar!: (s: string) => void;
+    vi.mocked(toPng).mockReturnValueOnce(new Promise(resolve => { terminar = resolve; }));
+    const descarga = pagina.descargarReporte(); for (let i = 0; i < 6; i++) await Promise.resolve(); await vi.advanceTimersByTimeAsync(30000); await descarga;
+    expect(pagina.exportandoReporte).toBe(false); expect(pagina.errorExportacion).toContain('tiempo');
+    terminar('data:image/png;base64,' + 'a'.repeat(150)); await Promise.resolve(); expect(click).not.toHaveBeenCalled();
+    await pagina.descargarReporte(); expect(click).toHaveBeenCalledOnce(); Object.values(servicio).forEach(fn => expect(fn).toHaveBeenCalledOnce());
+  });
+
+  it('limita también la espera de fuentes al descargar', async () => {
+    preparar(); vi.useFakeTimers(); const descriptor = Object.getOwnPropertyDescriptor(document, 'fonts');
+    Object.defineProperty(document, 'fonts', { configurable: true, value: { ready: new Promise(() => {}) } });
+    try { const descarga = pagina.descargarReporte(); await vi.advanceTimersByTimeAsync(30000); await descarga; expect(toPng).not.toHaveBeenCalled(); expect(pagina.exportandoReporte).toBe(false); expect(pagina.errorExportacion).toContain('tiempo'); }
+    finally { if (descriptor) Object.defineProperty(document, 'fonts', descriptor); else Reflect.deleteProperty(document, 'fonts'); }
   });
 });

@@ -469,46 +469,7 @@
         </div>
     </section>
 
-    <section class="productivity-section" *ngIf="filtrosListos">
-
-
-
-        <header class="productivity-section-header">
-            <div>
-                <span class="productivity-section-label">Alcance 3</span>
-                <h2>Atención Paralela de Requerimientos</h2>
-                <p>Tickets con intervalos de apertura y resolución superpuestos por resolutor.</p>
-            </div>
-        </header>
-
-        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-paralela-requerimientos"
-            #paralelaReqFs>
-            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(paralelaReqFs)"
-                [attr.aria-label]="graficoExpandido === 'fullscreen-paralela-requerimientos' ? 'Salir de pantalla completa' : 'Ampliar atención paralela'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-paralela-requerimientos' ? 'fullscreen_exit' :
-                    'fullscreen' }}</mat-icon>
-            </button>
-            <app-requirement-parallel-attention-chart [datos]="atencionParalela?.grafico ?? []"
-                [resumen]="atencionParalela?.resumen ?? null" [cargando]="cargandoAtencionParalela"
-                [error]="errorAtencionParalela">
-            </app-requirement-parallel-attention-chart>
-        </div>
-
-        <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req" #tablaParalelaReqFs>
-            <button type="button" class="productivity-table-expand-btn"
-                (click)="alternarPantallaCompleta(tablaParalelaReqFs)"
-                [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'Salir de pantalla completa' : 'Ampliar detalle de tickets simultáneos'">
-                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'fullscreen_exit' : 'fullscreen'
-                    }}</mat-icon>
-            </button>
-            <app-requirement-parallel-details-table [datos]="atencionParalela?.tabla ?? null"
-                [resolutorSeleccionado]="resolutorAtencionParalela" [cargando]="cargandoAtencionParalela"
-                [error]="errorAtencionParalela" (paginaChange)="cambiarPaginaAtencionParalela($event)"
-                (resolutorChange)="cambiarResolutorAtencionParalela($event)">
-            </app-requirement-parallel-details-table>
-        </div>
-    </section>
-
+    
     <section class="productivity-section" *ngIf="filtrosListos">
         <header class="productivity-section-header">
             <div>
@@ -549,6 +510,44 @@
     
     -->
    
+    <section class="productivity-section" *ngIf="filtrosListos">
+
+        <header class="productivity-section-header">
+            <div>
+                <span class="productivity-section-label">Alcance 3</span>
+                <h2>Atención Paralela de Requerimientos</h2>
+                <p>Tickets con intervalos de apertura y resolución superpuestos por resolutor.</p>
+            </div>
+        </header>
+
+        <div class="productivity-chart chart-full-width chart-expandable" id="fullscreen-paralela-requerimientos"
+            #paralelaReqFs>
+            <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(paralelaReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-paralela-requerimientos' ? 'Salir de pantalla completa' : 'Ampliar atención paralela'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-paralela-requerimientos' ? 'fullscreen_exit' :
+                    'fullscreen' }}</mat-icon>
+            </button>
+            <app-requirement-parallel-attention-chart [datos]="atencionParalela?.grafico ?? []"
+                [resumen]="atencionParalela?.resumen ?? null" [cargando]="cargandoAtencionParalela"
+                [error]="errorAtencionParalela">
+            </app-requirement-parallel-attention-chart>
+        </div>
+
+        <div class="productivity-table table-expandable" id="fullscreen-tabla-paralela-req" #tablaParalelaReqFs>
+            <button type="button" class="productivity-table-expand-btn"
+                (click)="alternarPantallaCompleta(tablaParalelaReqFs)"
+                [attr.aria-label]="graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'Salir de pantalla completa' : 'Ampliar detalle de tickets simultáneos'">
+                <mat-icon>{{ graficoExpandido === 'fullscreen-tabla-paralela-req' ? 'fullscreen_exit' : 'fullscreen'
+                    }}</mat-icon>
+            </button>
+            <app-requirement-parallel-details-table [datos]="atencionParalela?.tabla ?? null"
+                [resolutorSeleccionado]="resolutorAtencionParalela" [cargando]="cargandoAtencionParalela"
+                [error]="errorAtencionParalela" (paginaChange)="cambiarPaginaAtencionParalela($event)"
+                (resolutorChange)="cambiarResolutorAtencionParalela($event)">
+            </app-requirement-parallel-details-table>
+        </div>
+    </section>
+
 
 
     <section class="chart-full-width ticket-explorer-section" *ngIf="ticketsDetalle || cargandoTickets">

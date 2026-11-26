@@ -1,6 +1,7 @@
 
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { toPng } from 'html-to-image';
+import { AuditReportRenderError, validarReporteCategorizacion } from '../../charts/Consolidated/requirement-categorization-report/requirement-categorization-report.utils';
 import { RequirementCategorizationReportData } from '../../../models/requirement-categorization-audit';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, timer, switchMap, takeUntil } from 'rxjs';
@@ -116,10 +117,13 @@ export class RequirementCategorizationAudit implements OnInit, OnDestroy {
     }
   }
 
-  fallarRenderReporte(version: number): void {
+  fallarRenderReporte(error: number | AuditReportRenderError): void {
+    const version = typeof error === 'number' ? error : error.version;
     if (this.datosReporte?.version !== version || this.destruido) return;
     this.reporteRenderizado = false;
-    this.errorPreparacionReporte = 'No se pudo preparar el reporte. Actualiza los datos para reintentar.';
+    this.errorPreparacionReporte = typeof error !== 'number' && error.motivo === 'legibilidad'
+      ? 'El reporte no cabe en una composición horizontal legible con los textos completos. Reduce el rango o ajusta los filtros; no se recortó contenido.'
+      : 'No se pudo preparar el reporte. Actualiza los datos para reintentar.';
     this.changeDetector.markForCheck();
   }
 
@@ -134,42 +138,18 @@ export class RequirementCategorizationAudit implements OnInit, OnDestroy {
 
   private completarConsultaReporte(clave: string, version: number): void {
     if (version !== this.versionReporte || this.destruido) return;
-    this.datosReporte = null;
-    this.reporteRenderizado = false;
-    this.consultasReporte.add(clave);
+    this.datosReporte = null; this.reporteRenderizado = false; this.consultasReporte.add(clave);
     if (this.consultasReporte.size !== 4 || !this.resumen || !this.motivosResolucion) return;
     this.errorPreparacionReporte = null;
-
-    const resumen = this.resumen;
-    const total = resumen.processed_tickets;
-    if (total === 0) return;
-    const filas = [...this.resolutores, ...this.estadisticasMensuales];
-    const cantidades = [total, resumen.correct_count, resumen.incorrect_count,
-      ...filas.flatMap(f => [f.total_tickets, f.correct_count, f.incorrect_count]),
-      ...this.motivosResolucion.items.map(f => f.total_tickets)];
-    const porcentajes = [resumen.correct_percentage, resumen.incorrect_percentage,
-      ...filas.flatMap(f => [f.correct_percentage, f.incorrect_percentage]),
-      ...this.motivosResolucion.items.map(f => f.percentage)];
-    const sumasValidas = [this.resolutores, this.estadisticasMensuales].every(items =>
-      items.reduce((s, f) => s + f.total_tickets, 0) === total &&
-      items.reduce((s, f) => s + f.correct_count, 0) === resumen.correct_count &&
-      items.reduce((s, f) => s + f.incorrect_count, 0) === resumen.incorrect_count);
-    if (!cantidades.every(n => Number.isSafeInteger(n) && n >= 0) ||
-      !porcentajes.every(n => Number.isFinite(n) && n >= 0 && n <= 100) ||
-      resumen.correct_count + resumen.incorrect_count !== total ||
-      filas.some(f => f.correct_count + f.incorrect_count !== f.total_tickets) ||
-      !sumasValidas || this.motivosResolucion.total !== total ||
-      this.motivosResolucion.items.reduce((s, f) => s + f.total_tickets, 0) !== total) {
-      this.errorPreparacionReporte = 'Los agregados no son consistentes. Actualiza los datos antes de exportar.';
-      return;
-    }
-    this.datosReporte = {
+    if (this.resumen.processed_tickets === 0) return;
+    const datos: RequirementCategorizationReportData = {
       version, preparadoEn: new Date().toISOString(), filtros: { ...this.filtrosReporte },
-      resumen: { ...resumen },
+      resumen: { ...this.resumen },
       motivos: { ...this.motivosResolucion, items: this.motivosResolucion.items.map(f => ({ ...f })) },
-      resolutores: this.resolutores.map(f => ({ ...f })),
-      meses: this.estadisticasMensuales.map(f => ({ ...f }))
+      resolutores: this.resolutores.map(f => ({ ...f })), meses: this.estadisticasMensuales.map(f => ({ ...f }))
     };
+    try { validarReporteCategorizacion(datos); this.datosReporte = datos; }
+    catch (error) { this.errorPreparacionReporte = error instanceof Error && !(error instanceof TypeError) ? error.message : 'Los agregados no son consistentes. Actualiza los datos antes de exportar.'; }
   }
 
   private fallarConsultaReporte(version: number): void {
@@ -180,50 +160,42 @@ export class RequirementCategorizationAudit implements OnInit, OnDestroy {
   async descargarReporte(): Promise<void> {
     if (this.exportandoReporte || !this.reporteListo || !this.datosReporte) return;
     const datos = this.datosReporte;
-    this.exportandoReporte = true;
-    this.errorExportacion = null;
-    this.changeDetector.markForCheck();
-    let enlace: HTMLAnchorElement | undefined;
+    this.exportandoReporte = true; this.errorExportacion = null; this.changeDetector.markForCheck();
+    let enlace: HTMLAnchorElement | undefined, temporizador: ReturnType<typeof setTimeout> | undefined;
     try {
-      await document.fonts?.ready;
-      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      await Promise.race([
+        (async () => { await document.fonts?.ready; await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))); })(),
+        new Promise<never>((_, reject) => { temporizador = setTimeout(() => reject(new Error('timeout')), 30000); })
+      ]);
+      clearTimeout(temporizador);
       if (this.datosReporte !== datos || !this.reporteListo) throw new Error('obsoleto');
       const elemento = this.reporteImagen?.nativeElement.querySelector<HTMLElement>('.report-document');
       if (!elemento) throw new Error('documento');
-      const width = Math.ceil(elemento.scrollWidth);
-      const height = Math.ceil(elemento.scrollHeight);
-      if (width <= 0 || height <= 0) throw new Error('dimensiones');
-      const pixelRatio = height > 4000 ? 1 : 2;
-      if (width * pixelRatio > 16384 || height * pixelRatio > 16384 ||
-        width * height * pixelRatio ** 2 > 32000000) throw new Error('limite-imagen');
-      const imagen = await toPng(elemento, {
-        backgroundColor: '#F7F9FB', width, height, pixelRatio,
-        // El documento usa fuentes locales: no descargar fuentes globales ajenas al reporte.
-        skipFonts: true,
-        // html-to-image debe fallar antes que reducir silenciosamente un documento demasiado grande.
-        skipAutoScale: true,
+      const width = Math.ceil(elemento.scrollWidth), height = Math.ceil(elemento.scrollHeight), pixelRatio = 2;
+      if (width !== 1400 || !Number.isFinite(height) || height <= 0 || height >= 1400) throw new Error('dimensiones');
+      if (width * pixelRatio > 16384 || height * pixelRatio > 16384 || width * height * pixelRatio ** 2 > 32000000) throw new Error('limite-imagen');
+      const imagen = await Promise.race([toPng(elemento, {
+        backgroundColor: '#F7F9FB', width, height, pixelRatio, skipFonts: true, skipAutoScale: true,
         style: { position: 'static', left: 'auto', top: 'auto', transform: 'none', margin: '0' }
-      });
+      }), new Promise<never>((_, reject) => { temporizador = setTimeout(() => reject(new Error('timeout')), 30000); })]);
       if (this.destruido) return;
       if (this.datosReporte !== datos || !this.reporteListo) throw new Error('obsoleto');
-      if (!imagen.startsWith('data:image/png') || imagen.length < 100) throw new Error('imagen');
+      if (!imagen.startsWith('data:image/png;base64,') || imagen.length < 100) throw new Error('imagen');
       const proyecto = (datos.filtros.proyecto || 'general').normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-')
-        .replace(/^-+|-+$/g, '').slice(0, 60) || 'general';
-      enlace = document.createElement('a');
-      enlace.href = imagen;
-      enlace.download = `CANVIA-Auditoria-Categorizacion-${proyecto}-${this.formatearFechaEjecucion(new Date())}.png`;
-      document.body.appendChild(enlace);
-      enlace.click();
+        .replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'general';
+      enlace = document.createElement('a'); enlace.href = imagen;
+      enlace.download = 'CANVIA-Auditoria-Categorizacion-' + proyecto + '-' + this.formatearFechaEjecucion(new Date()) + '.png';
+      document.body.appendChild(enlace); enlace.click();
     } catch (error) {
       if (!this.destruido) {
         this.errorExportacion = error instanceof Error && error.message === 'obsoleto'
           ? 'Los datos cambiaron durante la captura. Vuelve a descargar el reporte actualizado.'
-          : 'No fue posible generar el PNG completo. Reintenta o reduce el alcance con los filtros.';
+          : error instanceof Error && error.message === 'timeout'
+            ? 'El PNG completo superó el tiempo permitido. Puedes reintentar la descarga.'
+            : 'No fue posible generar el PNG completo. Reintenta o reduce el alcance con los filtros.';
       }
     } finally {
-      enlace?.remove();
-      this.exportandoReporte = false;
+      clearTimeout(temporizador); enlace?.remove(); this.exportandoReporte = false;
       if (!this.destruido) this.changeDetector.markForCheck();
     }
   }
