@@ -137,3 +137,112 @@ Me diras si entiendes el alcance, me daras el texto del PRD tambien.
 ng g c components/charts/carpeta/nombre-del-componente --skip-tests --standalone=false
 
 4 Fronted, Si el primero reporte me genera bien la imagen, entonces continuaremos con los siguientes, el segundo, tercero y el cuarto, me darás el Prompt para el planning, y de ahí de ejecución
+
+
+-------------------------------
+
+
+Quiero ampliar el alcance, quiero implementar 2 reportes, con los mismos estilos de imagen, misma paleta de colores, etc. 
+El primer reporte es sobre "Resumen Ejecutivo de Incidentes", eso es del componente padre o modulo de Análisis de Incidentes [app-incident-cause-analysis].
+Yo ya implemente la generación de un reporte descargable, donde incluye todos los gráficos y tablas:
+
+Primera Imagen, de Reporte Actual:
+1 Top de Servidores con más Incidentes
+2 Distribución por original
+3 Distribución ajustada por análisis de causa
+4 Detalle de Causas y Evidencias (Análisis de las causas de los incidentes)
+5 Distribución por Tipo de Incidente
+6 Top 10: Tickets por Proyecto y Mes
+7 Rendimiento x Resolutor
+8 Número de Tickets por Resolutor
+9 Principales Hallazgos
+10 Conclusiones y Recomendaciones
+Lo cual esta bien pero es muy largo.
+
+
+Ahora quiero hacer otro reporte del modulo Análisis de Incidentes.
+En la segunda imagen te mostrare donde se colocara el botón para la generación del Reporte 1, sección "Atribución de Incidentes".
+En la tercera imagen que te pasare es del ejemplo que quiero que te guíes de como se vera este 
+Reporte 1, en cuanto a la estructura, tamaño, iconos, etc.
+
+Cierto, lo que hicimos anteriormente de los reportes de Incidentes consolidados, quiero usar el mismo tipo de estilo, topografía, color de la cabecera, quiero seguir un estándar.
+
+Primer reporte - Usaremos la sección de "Atribución de Incidentes":
+- Cabecera:
+Titulo: Resumen Ejecutivo de Incidentes
+Agregaremos aquí -> Periodo: Mayo - Octubre 2026 {Mes - Mes}
+Proyecto: {ejm 106255 SEDAPAL PROY CLOUD SERV HOSTING (O), si no esta filtrado x proyecto, entonces no se muestra esto, lo mismo que hice con reporte actual}
+Tipo Incidente: {ejm Alto Consumo de Disco, si no esta filtrado x ese tipo, entonces no se muestra esto, lo mismo que hice con reporte actual}
+
+- KPIS: Total de Incidentes {ejm 4430}; Incidentes con atribución definida {ejm 4383}; Incidentes sin atribución {ejm 47}
+
+- Gráficos:
+1 Distribución por atribución (Distribución por Atribución del Incidente) [app-incident-attribution-donut]
+2 Atribución original vs análisis de causa (Distribución ajustada por análisis de causa) [app-incident-attribution-comparison]
+3 Top de servidores (Top de Servidores con más Incidentes) [app-incident-top-servers-chart], esto no esta en el ejemplo pero yo quiero agregarlo al reporte.
+ 
+- Principales hallazgos (aquí ya esta implementado esto, aplique el uso de IA)
+- Conclusión y recomendación (aquí ya esta implementado esto, aplique el uso de IA)
+
+
+Lo haremos de esta manera esta implementación, con estos pasos:
+0 Revisaras esta información y todo el contexto que te daré, además me darás el Prompt en modo Planning. Que sea un Prompt conciso y no me genere un resultado enorme
+Me dirás si entiendes el alcance, me darás el texto del PRD también.
+
+Contexto Inicial:
+- Esta información
+- Imágenes
+
+1 Analizaras la información del Codex y dame el prompt para ejecución.
+
+
+------------------------------
+
+Ahora vamos con el segundo reporte sobre "Resumen Ejecutivo de Incidentes", eso es del componente padre o modulo de "Auditoría de Categorización" [app-requirement-categorization-audit]. Componente de reporte [app-requirement-categorization-report].
+Yo ya implemente la generación de un reporte descargable, donde incluye todos los gráficos y tablas:
+
+Primera Imagen, de Reporte Actual de Auditoría de Categorización:
+1 Indicadores de Categorización
+2 Distribución de Categorizaciones
+3 Distribución por Motivo Resolución
+4 Top 10: Tickets por Colaborador (Top 10: Categorizaciones Incorrectas por Colaborador)
+5 Categorizaciones Correctas e Incorrectas por Mes
+6 Cuadro Estadístico Mensual (Cuadro Estadístico Mensual)
+7 Top 10 Estadístico por Colaborador (Cuadro Estadístico por Colaborador)
+
+Lo cual esta bien pero es muy largo y no tiene el estilo entandar.
+
+
+Quiero rehacer este reporte del modulo "Auditoría de Categorización".
+En la segunda imagen del componente padre ahi esta el botón y usaremos ese para generar el reporte actualizado.
+No tengo una imagen de ejemplo pero igualmente usaremos el mismo tipo de estilo, topografía, color de la cabecera, de los reportes anteriores, quiero seguir un estándar.
+
+Segundo reporte - Usaremos el mismo botón de la generación de "Descargar Reporte PNG":
+- Cabecera:
+Titulo: Resumen Ejecutivo Auditoría de Categorización
+Agregaremos aquí -> Periodo: Mayo - Octubre 2026 {Mes - Mes}
+Proyecto: {ejm 106255 SEDAPAL PROY CLOUD SERV HOSTING (O), si no esta filtrado x proyecto, entonces no se muestra esto, lo mismo que hice con reporte actual}
+Grupo Resolutor {ejm: BASE DE DATOS Y EBS}
+
+- KPIS/Indicadores de Categorización: Total de tickets evaluados {ejm 13113}; Categorizaciones Correctas {ejm 2767 53.4%}; Categorizaciones Incorrectas {ejm 2412 46.6%}
+
+- Gráficos:
+1 Distribución de Categorizaciones
+2 Distribución por Motivo Resolución
+3 Top 10: Tickets por Colaborador (Top 10: Categorizaciones Incorrectas por Colaborador)
+4 Categorizaciones Correctas e Incorrectas por Mes
+ 
+- Principales hallazgos (Se generara 3)
+- Conclusión y recomendación (Una conclusión y 3 recomendaciones)
+
+
+Lo haremos de esta manera esta implementación, con estos pasos:
+0 Revisaras esta información y todo el contexto que te daré, además me darás el Prompt en modo Planning. Que sea un Prompt conciso y no me genere un resultado enorme
+Me dirás si entiendes el alcance, me darás el texto del PRD también.
+
+Contexto Inicial:
+- Esta información
+- Imágenes
+
+1 Analizaras la información del Codex y dame el prompt para ejecución.
+
