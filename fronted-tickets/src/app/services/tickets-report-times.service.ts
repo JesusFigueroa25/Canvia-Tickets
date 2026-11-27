@@ -2,17 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-import {
-  TicketsReportTimesDashboardFilters,
-  TicketsReportTimesFilters,
-  TicketsReportTimesKPI,
-  TicketsReportTimesVolumenItem,
-  TicketsReportTimesResolverTabla,
-  TicketsReportTimesProjectTabla,
-  TicketsReportTimesGrafico,
-  TicketsReportTimesImportResult
-} from '../models/tickets-report-times';
+import { TicketsReportTimesDashboardFilters, TicketsReportTimesFilters, TicketsReportTimesKPI, TicketsReportTimesVolumenItem, TicketsReportTimesResolverTabla, TicketsReportTimesProjectTabla, TicketsReportTimesGrafico, TicketsReportTimesImportResult } from '../models/tickets-report-times';
 
 @Injectable({
   providedIn: 'root'
@@ -20,12 +10,9 @@ import {
 export class TicketsReportTimesService {
 
   private readonly apiUrl = 'api/tickets-report-times';
+  constructor(private http: HttpClient) { }
 
-  constructor(private http: HttpClient) {}
-
-  private construirParametros(
-    filtros: TicketsReportTimesDashboardFilters = {}
-  ): HttpParams {
+  private construirParametros(filtros: TicketsReportTimesDashboardFilters = {}): HttpParams {
 
     let params = new HttpParams();
 
@@ -37,8 +24,6 @@ export class TicketsReportTimesService {
       params = params.set('hasta', filtros.hasta);
     }
 
-    // Enviar '' permite consultar todos los grupos.
-    // Si se omite el parámetro, FastAPI aplica su valor por defecto.
     if (filtros.grupo_resolutor !== undefined) {
       params = params.set(
         'grupo_resolutor',
@@ -70,10 +55,7 @@ export class TicketsReportTimesService {
     return params;
   }
 
-  importarExcel(
-    archivo: File
-  ): Observable<TicketsReportTimesImportResult> {
-
+  importarExcel(archivo: File): Observable<TicketsReportTimesImportResult> {
     const formData = new FormData();
     formData.append('archivo', archivo, archivo.name);
 
@@ -83,10 +65,7 @@ export class TicketsReportTimesService {
     );
   }
 
-  obtenerFiltros(
-    grupoResolutor: string | null = 'BASE DE DATOS Y EBS'
-  ): Observable<TicketsReportTimesFilters> {
-
+  obtenerFiltros(grupoResolutor: string | null = 'BASE DE DATOS Y EBS'): Observable<TicketsReportTimesFilters> {
     const params = new HttpParams().set(
       'grupo_resolutor',
       grupoResolutor ?? ''
@@ -98,32 +77,22 @@ export class TicketsReportTimesService {
     );
   }
 
-  obtenerKpis(
-    filtros: TicketsReportTimesDashboardFilters = {}
-  ): Observable<TicketsReportTimesKPI> {
-
+  obtenerKpis(filtros: TicketsReportTimesDashboardFilters = {}): Observable<TicketsReportTimesKPI> {
     return this.http.get<TicketsReportTimesKPI>(
       `${this.apiUrl}/kpis`,
       { params: this.construirParametros(filtros) }
     );
   }
 
-  obtenerVolumenMensual(
-    filtros: TicketsReportTimesDashboardFilters = {}
-  ): Observable<TicketsReportTimesVolumenItem[]> {
-
+  obtenerVolumenMensual(filtros: TicketsReportTimesDashboardFilters = {}): Observable<TicketsReportTimesVolumenItem[]> {
     return this.http.get<TicketsReportTimesVolumenItem[]>(
       `${this.apiUrl}/volumen-mensual`,
       { params: this.construirParametros(filtros) }
     );
   }
 
-  obtenerTiemposResolutores(
-    filtros: TicketsReportTimesDashboardFilters = {},
-    pagina: number = 1,
-    tamano: number = 25
-  ): Observable<TicketsReportTimesResolverTabla> {
-
+  obtenerTiemposResolutores(filtros: TicketsReportTimesDashboardFilters = {}, pagina: number = 1, tamano: number = 25):
+    Observable<TicketsReportTimesResolverTabla> {
     const params = this.construirParametros(filtros)
       .set('pagina', pagina.toString())
       .set('tamano', tamano.toString());
@@ -138,7 +107,6 @@ export class TicketsReportTimesService {
     filtros: TicketsReportTimesDashboardFilters = {},
     limite: number = 10
   ): Observable<TicketsReportTimesGrafico> {
-
     const params = this.construirParametros(filtros)
       .set('limite', limite.toString());
 

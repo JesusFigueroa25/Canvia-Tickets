@@ -1,4 +1,3 @@
-
 -- 01. incident_sla
 CREATE TABLE dbo.incident_sla (
     Ticket_ID VARCHAR(20) NOT NULL,

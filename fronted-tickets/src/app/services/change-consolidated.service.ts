@@ -24,9 +24,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ChangeConsolidatedService {
-  // Mismo patrón de proxy Angular que TaskConsolidatedService.
   private readonly apiUrl = 'api/change-consolidated';
-
   constructor(private readonly http: HttpClient) { }
 
   private construirParametros(

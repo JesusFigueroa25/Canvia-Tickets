@@ -37,81 +37,26 @@ class TaskConsolidated(Base):
 stg_task_consolidated_table = Table(
     "stg_task_consolidated",
     Base.metadata,
-
     Column("Ticket_ID", String(20), nullable=True),
     Column("Ticket_Padre", String(20), nullable=True),
-
-    Column(
-        "Fecha_Apertura",
-        DATETIME2(precision=0),
-        nullable=True
-    ),
-
-    Column(
-        "Fecha_Resolucion",
-        DATETIME2(precision=0),
-        nullable=True
-    ),
-
-    Column(
-        "Fecha_Cierre",
-        DATETIME2(precision=0),
-        nullable=True
-    ),
-
-    Column(
-        "Fecha_Ultima_Modificacion",
-        DATETIME2(precision=0),
-        nullable=True
-    ),
-
+    Column("Fecha_Apertura", DATETIME2(precision=0), nullable=True),
+    Column("Fecha_Resolucion", DATETIME2(precision=0), nullable=True),
+    Column("Fecha_Cierre", DATETIME2(precision=0), nullable=True),
+    Column("Fecha_Ultima_Modificacion", DATETIME2(precision=0), nullable=True),
     Column("Proyecto", Unicode(200), nullable=True),
     Column("ALP", String(30), nullable=True),
     Column("BU", Unicode(50), nullable=True),
-
-    Column(
-        "Grupo_Resolutor",
-        Unicode(150),
-        nullable=True
-    ),
-
-    Column(
-        "Nombre_Resolutor",
-        Unicode(150),
-        nullable=True
-    ),
-
-    Column(
-        "Categorizacion_Nivel_1",
-        Unicode(150),
-        nullable=True
-    ),
-
-    Column(
-        "Categorizacion_Nivel_2",
-        Unicode(150),
-        nullable=True
-    ),
-
-    Column(
-        "Categorizacion_Nivel_3",
-        Unicode(200),
-        nullable=True
-    ),
-
+    Column("Grupo_Resolutor", Unicode(150), nullable=True),
+    Column("Nombre_Resolutor", Unicode(150), nullable=True),
+    Column("Categorizacion_Nivel_1", Unicode(150), nullable=True),
+    Column("Categorizacion_Nivel_2", Unicode(150), nullable=True),
+    Column("Categorizacion_Nivel_3", Unicode(200), nullable=True),
     Column("Prioridad", Unicode(30), nullable=True),
     Column("Urgencia", Unicode(30), nullable=True),
     Column("Impacto", Unicode(30), nullable=True),
-
     Column("Estado", Unicode(50), nullable=True),
     Column("Motivo_Estado", Unicode(100), nullable=True),
-
     Column("Descripcion", Unicode(1000), nullable=True),
     Column("Detalle", NVARCHAR(None), nullable=True),
-
-    Column(
-        "Fuente_Reportada",
-        Unicode(100),
-        nullable=True
-    )
+    Column("Fuente_Reportada", Unicode(100), nullable=True),
 )

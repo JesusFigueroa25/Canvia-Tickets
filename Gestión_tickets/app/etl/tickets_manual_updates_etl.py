@@ -1,5 +1,8 @@
-
 import re
+import hashlib
+import json
+from collections import Counter
+from decimal import Decimal, InvalidOperation
 from datetime import date, datetime, timedelta
 
 import pandas as pd
@@ -21,6 +24,13 @@ COLUMNAS_EXCEL_SQL = {
     "Motivo": "Motivo_Resolucion",
     "Estado": "Estado",
     "Organización del solicitante": "Proyecto",
+    "Date_Work_Created": "Date_Work_Created",
+    "work_type": "work_type",
+    "work_description": "work_description",
+    "work_time_spent (mins)": "work_time_spent_mins",
+    "created_by_contact_id": "created_by_contact_id",
+    "work_by_first_name": "work_by_first_name",
+    "work_by_last_name": "work_by_last_name",
 }
 
 COLUMNAS_EXCEL = list(COLUMNAS_EXCEL_SQL.keys())
@@ -34,6 +44,9 @@ LONGITUDES = {
     "Motivo_Resolucion": 150,
     "Estado": 50,
     "Proyecto": 200,
+    "work_type": 150,
+    "work_by_first_name": 150,
+    "work_by_last_name": 150,
 }
 
 MESES = {
@@ -150,128 +163,105 @@ def _validar_longitudes(df: pd.DataFrame) -> None:
             )
 
 
-def procesar_tickets_manual_updates(archivo):
-    """
-    Regla definitiva:
-    - Importar todos los tipos de ticket.
-    - Conservar solamente ocho campos de negocio.
-    - Mantener la primera aparición de cada Ticket_ID.
-    - Eliminar las siguientes sin comparar sus valores.
-    - Retornar los tickets únicos y los duplicados eliminados.
-    """
+CAMPOS_EVENTO = (
+    "Ticket_ID", "Date_Work_Created", "created_by_contact_id",
+    "work_by_first_name", "work_by_last_name", "work_type",
+    "work_description", "work_time_spent_mins",
+)
+COLUMNAS_PERSISTENTES = [*COLUMNAS_SQL, "Evento_Clave", "Contenido_Hash"]
 
-    # 1. LEER EXCEL
+
+def _numero(valor, *, entero=False):
+    if valor is None or pd.isna(valor) or not str(valor).strip():
+        return None
+    texto = str(valor).strip()
+    # El export usa coma como separador de miles (p. ej. 1,755).
+    if ',' in texto:
+        if not re.fullmatch(r'[+-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?', texto):
+            raise ETLValidationError(f"Formato numérico no reconocido: {texto}")
+        texto = texto.replace(',', '')
+    try:
+        numero = Decimal(texto)
+        if not numero.is_finite():
+            raise ValueError
+        if entero:
+            if numero != numero.to_integral_value() or not 0 <= numero <= 9223372036854775807:
+                raise ValueError
+            return int(numero)
+        # Permitir ajustes negativos: el reporte puede contener correcciones.
+        if abs(numero) >= Decimal('10000000000000000') or numero != numero.quantize(Decimal('0.01')):
+            raise ValueError
+        return abs(numero).quantize(Decimal('0.01')) if numero == 0 else numero.quantize(Decimal('0.01'))
+    except (InvalidOperation, ValueError) as exc:
+        raise ETLValidationError(f"Valor numérico fuera de rango o precisión: {texto}") from exc
+
+
+def _canon(valor):
+    if valor is None or pd.isna(valor):
+        return None
+    if isinstance(valor, (datetime, date)):
+        return valor.isoformat()
+    if isinstance(valor, Decimal):
+        return format(valor, 'f')
+    if hasattr(valor, 'item'):
+        return valor.item()
+    return valor
+
+
+def _hash(valores):
+    return hashlib.sha256(json.dumps([_canon(v) for v in valores],
+        ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode('utf-8')).digest()
+
+
+def procesar_tickets_manual_updates(archivo):
+    """Una fila por registro de trabajo; nunca descartar por Ticket_ID."""
     df = cargar_excel(archivo, sheet_name=0)
     filas_excel = len(df)
-
     if df.empty:
-        raise ETLValidationError(
-            "El Excel de tickets manuales está vacío."
-        )
-
-    df.columns = [
-        str(columna).strip()
-        for columna in df.columns
-    ]
-
+        raise ETLValidationError("El Excel de tickets manuales está vacío.")
+    df.columns = [str(c).strip() for c in df.columns]
     if df.columns.duplicated().any():
-        raise ETLValidationError(
-            "El Excel contiene encabezados duplicados."
-        )
-
-    # 2. VALIDACIONES DEL ARCHIVO
-    validar_tipo_archivo(
-        df,
-        [
-            "ID del ticket",
-            "Fecha de creación",
-            "ticket_type",
-            "Asignar al individuo",
-        ],
-        "El archivo no corresponde al reporte "
-        "de tickets modificados manualmente."
-    )
-
+        raise ETLValidationError("El Excel contiene encabezados duplicados.")
+    validar_tipo_archivo(df, ["ID del ticket", "Fecha de creación", "ticket_type", "Asignar al individuo"],
+                        "El archivo no corresponde al reporte de tickets modificados manualmente.")
     validar_columnas(df, COLUMNAS_EXCEL)
-
-    # 3. CONSERVAR LOS OCHO CAMPOS
-    df = df[COLUMNAS_EXCEL].copy()
-    df = df.reset_index(drop=True)
-
-    df.insert(
-        0,
-        "Fila_Excel",
-        df.index + 2
-    )
-
-    df.rename(
-        columns=COLUMNAS_EXCEL_SQL,
-        inplace=True
-    )
-
-    # 4. NORMALIZAR TEXTOS
+    df = df[COLUMNAS_EXCEL].copy().reset_index(drop=True)
+    df.insert(0, "Fila_Excel", df.index + 2)
+    df.rename(columns=COLUMNAS_EXCEL_SQL, inplace=True)
+    especiales = {"Fecha_Creacion", "Date_Work_Created", "work_time_spent_mins", "created_by_contact_id"}
     for columna in COLUMNAS_SQL:
-
-        if columna != "Fecha_Creacion":
+        if columna not in especiales:
             df[columna] = _limpiar_texto(df[columna])
-
-    # 5. VALIDAR IDENTIFICADORES
-    invalidos = df["Ticket_ID"].isna()
-
-    if invalidos.any():
-        raise ETLValidationError(
-            f"Existen {int(invalidos.sum())} "
-            "filas sin Ticket_ID."
-        )
-
-    # 6. VALIDAR TIPO DE TICKET
-    sin_tipo = df["Ticket_type"].isna()
-
-    if sin_tipo.any():
-        raise ETLValidationError(
-            f"Existen {int(sin_tipo.sum())} "
-            "filas sin ticket_type."
-        )
-
-    # 7. ELIMINAR DUPLICADOS POR TICKET_ID
-    # keep='first' conserva la primera aparición original.
-    duplicados = int(
-        df["Ticket_ID"].duplicated(keep="first").sum()
-    )
-
-    df = df.drop_duplicates(
-        subset=["Ticket_ID"],
-        keep="first"
-    ).copy()
-
-    # 8. CONVERTIR FECHAS DE LAS FILAS CONSERVADAS
-    fechas = []
-
-    for fila_excel, valor in zip(
-        df["Fila_Excel"],
-        df["Fecha_Creacion"]
-    ):
-        try:
-            fechas.append(_convertir_fecha(valor))
-        except ETLValidationError as exc:
-            raise ETLValidationError(
-                f"Fila {fila_excel}: {exc}"
-            ) from exc
-
-    df["Fecha_Creacion"] = fechas
-
-    # 9. VALIDAR LONGITUDES SQL SERVER
+    df["Ticket_ID"] = df["Ticket_ID"].str.upper()
+    for columna in ("Ticket_ID", "Ticket_type"):
+        if df[columna].isna().any():
+            raise ETLValidationError(f"Existen filas sin {columna}.")
+    for columna in especiales:
+        valores = []
+        for fila, valor in zip(df["Fila_Excel"], df[columna]):
+            try:
+                if columna in {"Fecha_Creacion", "Date_Work_Created"}:
+                    convertido = _convertir_fecha(valor)
+                else:
+                    convertido = _numero(valor, entero=columna == "created_by_contact_id")
+                valores.append(convertido)
+            except ETLValidationError as exc:
+                raise ETLValidationError(f"Fila {fila}, {columna}: {exc}") from exc
+        df[columna] = pd.Series(valores, index=df.index, dtype=object)
     _validar_longitudes(df)
-
-    # 10. VERIFICAR UNICIDAD
-    if df["Ticket_ID"].duplicated().any():
-        raise ETLValidationError(
-            "Persisten Ticket_ID duplicados."
-        )
-
-    # 11. RETORNAR
-    df = df[
-        ["Fila_Excel", *COLUMNAS_SQL]
-    ].reset_index(drop=True)
-
-    return df, filas_excel, duplicados
+    # Identidad derivada. La ocurrencia distingue filas legítimas idénticas.
+    # Ordenar por hash de contenido estabiliza el conjunto frente a reordenamientos.
+    registros = df.to_dict(orient='records')
+    huellas = [_hash([r[c] for c in CAMPOS_EVENTO]) for r in registros]
+    contenidos = [_hash([r[c] for c in COLUMNAS_SQL]) for r in registros]
+    orden = sorted(range(len(registros)), key=lambda i: (huellas[i], contenidos[i], i))
+    ocurrencias = Counter()
+    claves = [None] * len(registros)
+    for i in orden:
+        huella = huellas[i]
+        ocurrencias[huella] += 1
+        claves[i] = hashlib.sha256(huella + ocurrencias[huella].to_bytes(8, 'big')).digest()
+    df['Evento_Clave'] = claves
+    df['Contenido_Hash'] = contenidos
+    repetidos_ticket = int(df['Ticket_ID'].duplicated().sum())
+    return df[["Fila_Excel", *COLUMNAS_PERSISTENTES]], filas_excel, repetidos_ticket

@@ -1,0 +1,63 @@
+<section class="chart-card" #panel>
+  <button type="button" class="parallel-expand-btn" (click)="alternarPantallaCompleta(panel)"
+    [attr.aria-label]="expandido ? 'Salir de pantalla completa' : 'Ampliar ranking de resolutores'">
+    <mat-icon>{{ expandido ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+  <header class="chart-header">
+    <div class="header-content">
+      <div class="title-row"><span class="title-accent"></span>
+        <div>
+          <h3>Top de Resolutores con más Tickets en Paralelo por Mes</h3>
+          <p>Ranking descendente por cantidad acumulada de tickets en paralelo.</p>
+        </div>
+      </div>
+    </div>
+    <div class="chart-actions">
+      <div class="chart-controls"><label class="control-label" for="parallel-rank-tipo">Tipo de ticket</label>
+        <select id="parallel-rank-tipo" [value]="tipo" (change)="cambiarTipo($event)" [disabled]="cargando">
+          <option value="">Todos los tipos</option>
+          <option value="Incident">Incidentes</option>
+          <option value="Service Request">Requerimientos</option>
+        </select>
+      </div>
+      <div class="chart-controls"><label class="control-label" for="parallel-rank-mes">Mes del gráfico</label>
+        <select id="parallel-rank-mes" [value]="mesActivo" (change)="seleccionarMes($event)"
+          [disabled]="cargando || !periodos.length">
+          <option value="">Todos los meses</option>
+          <option *ngFor="let periodo of periodos" [value]="periodo">{{ nombreMes(periodo) }}</option>
+        </select>
+      </div>
+      <div class="resolver-search"><label class="control-label" for="parallel-rank-search">Buscar resolutor</label>
+        <div class="resolver-search-box"><span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="parallel-rank-search" type="search" placeholder="Buscar resolutor..." [value]="busquedaResolutor"
+            (input)="buscarResolutor($event)" />
+          <button *ngIf="busquedaResolutor" type="button" class="clear-search" (click)="limpiarBusquedaResolutor()"
+            aria-label="Limpiar búsqueda">×</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div *ngIf="cargando" class="chart-status" role="status"><span class="loading-spinner"></span>Actualizando ranking de
+    resolutores...</div>
+  <div *ngIf="!cargando && error" class="chart-status error" role="alert">{{ error }}</div>
+  <div *ngIf="!cargando && !error && sinDatos" class="chart-status">No hay resolutores con tickets en paralelo para los
+    filtros seleccionados.</div>
+  <ng-container *ngIf="!cargando && !error && !sinDatos">
+
+    <!--  
+    <p class="methodology-note">
+      Mostrando {{ registrosVisibles.length }} de {{ totalCoincidentes }} resolutores coincidentes (máximo {{
+      limiteRanking }}). La búsqueda considera todos los registros.
+    </p>
+     -->
+
+    <div class="chart-container" [style.height.px]="alturaGrafico">
+      <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'" role="img"
+        aria-label="Ranking de tickets en paralelo por resolutor y mes"></canvas>
+    </div>
+  </ng-container>
+  <footer class="chart-footer"><span>Eje en cantidad de tickets · segmentos por mes.</span><span>El total suma los meses
+      visibles; un ticket puede repetirse entre meses. Ocultar meses en la leyenda no recalcula el ranking.</span>
+  </footer>
+  <p *ngIf="errorPantallaCompleta" class="chart-status error" role="alert">{{ errorPantallaCompleta }}</p>
+</section>

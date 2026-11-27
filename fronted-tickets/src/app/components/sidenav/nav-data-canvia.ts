@@ -20,6 +20,21 @@ export const navbarDataCanvia = [
     label: 'Análisis de Incidentes'
   },
   {
+    routeLink: 'tickets-parallel-analysis',
+    icon: 'account_tree',
+    label: 'Análisis de Tickets en Paralelo'
+  },
+  {
+    routeLink: 'incidentes-consolidados',
+    icon: 'warning',
+    label: 'Incidentes Consolidados'
+  },
+  {
+    routeLink: 'requerimientos-consolidados',
+    icon: 'description',
+    label: 'Requerimientos Consolidados'
+  },
+  {
     routeLink: 'cambios-consolidados',
     icon: 'published_with_changes',
     label: 'Cambios Consolidados'
@@ -29,21 +44,13 @@ export const navbarDataCanvia = [
     icon: 'assignment',
     label: 'Tareas Consolidados'
   },
-  {
-    routeLink: 'incidentes-consolidados',
-    icon: 'warning',
-    label: 'Incidentes Consolidados'
-  },
+
   {
     routeLink: 'incidentes-sla',
     icon: 'schedule',
     label: 'Incidentes SLA'
   },
-  {
-    routeLink: 'requerimientos-consolidados',
-    icon: 'description',
-    label: 'Requerimientos Consolidados'
-  },
+
   {
     routeLink: 'requerimientos-sla',
     icon: 'check_circle',

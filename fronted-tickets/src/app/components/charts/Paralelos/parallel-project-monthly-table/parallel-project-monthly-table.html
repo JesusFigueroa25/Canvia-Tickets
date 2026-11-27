@@ -1,0 +1,73 @@
+<article class="table-card" #panel>
+  <button type="button" class="parallel-expand-btn" (click)="alternarPantallaCompleta(panel)" [attr.aria-label]="expandido ? 'Salir de pantalla completa' : 'Ampliar tabla de proyectos'">
+    <mat-icon>{{ expandido ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+  <header class="table-header">
+    <div class="table-title">
+      <h3>Resumen Mensual de Tickets en Paralelo por Proyecto</h3>
+      <p>Tickets en paralelo por cliente y mes de coincidencia registrada.</p>
+    </div>
+    <div class="table-actions">
+      <label class="metric-control"><span>Tipo de ticket</span>
+        <select [value]="tipo" (change)="cambiarTipo($event)" [disabled]="cargando" aria-label="Tipo de ticket de la tabla">
+          <option value="">Todos los tipos</option><option value="Incident">Incidentes</option><option value="Service Request">Requerimientos</option>
+        </select>
+      </label>
+      <details class="project-picker" *ngIf="!cargando && !error && proyectosDisponibles.length">
+        <summary>{{ proyectosSeleccionados.length ? proyectosSeleccionados.length + ' proyectos seleccionados' : 'Todos los proyectos' }}</summary>
+        <div class="project-options">
+          <button type="button" class="clear-search" (click)="limpiarProyectos()">Todos los proyectos</button>
+          <p class="summary-note">Sin marcas se muestran todos. Marca los proyectos que deseas consultar.</p>
+          <label class="project-option" *ngFor="let proyecto of proyectosDisponibles">
+            <input type="checkbox" [checked]="proyectosSeleccionados.includes(proyecto.nombre)" (change)="seleccionarProyecto(proyecto.nombre, $event)" />
+            <span>{{ proyecto.nombre }}<small *ngIf="proyecto.alp"> · ALP {{ proyecto.alp }}</small></span>
+          </label>
+        </div>
+      </details>
+      <label class="search-control"><span class="search-icon" aria-hidden="true">⌕</span>
+        <input type="search" placeholder="Buscar proyecto o ALP..." aria-label="Buscar proyecto en la tabla" [value]="busqueda" (input)="buscar($event)" />
+      </label>
+      <button *ngIf="busqueda" type="button" class="clear-search" (click)="limpiarBusqueda()">Limpiar</button>
+    </div>
+  </header>
+  <div class="table-status loading-status" *ngIf="cargando" role="status"><span class="loading-spinner"></span>Actualizando tickets por proyecto...</div>
+  <div class="table-status error-status" *ngIf="!cargando && error" role="alert">{{ error }}</div>
+  <ng-container *ngIf="!cargando && !error">
+    <div class="table-summary"><span class="summary-left"><span class="summary-indicator"></span><strong>{{ totalRegistros }}</strong> proyectos encontrados</span><span class="summary-note">Los meses se muestran horizontalmente.</span></div>
+    <div class="table-wrapper" tabindex="0" aria-label="Matriz mensual de tickets en paralelo por proyecto">
+      <table class="pivot-table">
+        <thead><tr>
+          <th class="name-column" scope="col" [attr.aria-sort]="ariaOrden('nombre')"><button type="button" class="sort-button" (click)="ordenar('nombre')">Proyecto / Cliente <span>{{ indicadorOrden('nombre') }}</span></button></th>
+          <th class="alp-column" scope="col" [attr.aria-sort]="ariaOrden('alp')"><button type="button" class="sort-button" (click)="ordenar('alp')">ALP <span>{{ indicadorOrden('alp') }}</span></button></th>
+          <th *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column" scope="col" [attr.aria-sort]="ariaOrden(periodo)"><button type="button" class="sort-button numeric-sort" (click)="ordenar(periodo)">{{ formatearPeriodo(periodo) }} <span>{{ indicadorOrden(periodo) }}</span></button></th>
+          <th class="total-column" scope="col" [attr.aria-sort]="ariaOrden('total')"><button type="button" class="sort-button numeric-sort" (click)="ordenar('total')">TOTAL <span>{{ indicadorOrden('total') }}</span></button></th>
+        </tr></thead>
+        <tbody>
+          <tr *ngFor="let fila of filasVisibles; trackBy: identificarFila">
+            <td class="name-column"><span class="entity-name" [title]="fila.nombre">{{ fila.nombre }}</span></td>
+            <td class="alp-column">{{ fila.alp ?? "—" }}</td>
+            <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column" [class.zero-value]="!fila.mensual[periodo]">{{ formatearNumero(fila.mensual[periodo] ?? 0) }}</td>
+            <td class="total-column row-total">{{ formatearNumero(fila.total) }}</td>
+          </tr>
+          <tr *ngIf="!filasVisibles.length"><td class="empty-cell" [attr.colspan]="periodos.length + 3"><strong>Sin resultados</strong><span>No hay proyectos con tickets en paralelo para los filtros seleccionados.</span></td></tr>
+        </tbody>
+        <tfoot *ngIf="filasVisibles.length"><tr>
+          <td class="name-column">TOTAL VISIBLE</td><td class="alp-column"></td>
+          <td *ngFor="let periodo of periodos; trackBy: identificarPeriodo" class="number-column">{{ formatearNumero(totalesMes[periodo] ?? 0) }}</td>
+          <td class="total-column grand-total">{{ formatearNumero(totalVisible) }}</td>
+        </tr></tfoot>
+      </table>
+    </div>
+    <footer class="table-footer">
+      <span class="pagination-info">Proyectos <strong>{{ primerRegistro }}</strong> – <strong>{{ ultimoRegistro }}</strong> de <strong>{{ totalRegistros }}</strong></span>
+      <div class="pagination-controls">
+        <label class="page-size-control"><span>Filas por página</span><select [value]="tamanoActual" (change)="cambiarTamanoPagina($event)"><option *ngFor="let tamano of tamanosPagina" [value]="tamano">{{ tamano }}</option></select></label>
+        <button type="button" class="page-button" [disabled]="paginaActual <= 1" (click)="cambiarPagina(paginaActual - 1)" aria-label="Página anterior">‹</button>
+        <span class="page-indicator">Página {{ totalPaginas ? paginaActual : 0 }} de {{ totalPaginas }}</span>
+        <button type="button" class="page-button" [disabled]="paginaActual >= totalPaginas" (click)="cambiarPagina(paginaActual + 1)" aria-label="Página siguiente">›</button>
+      </div>
+    </footer>
+  </ng-container>
+  <div class="methodology-note">Total visible: suma de las celdas de esta página. Un ticket puede contabilizarse en varios meses; no es un conteo distinto global. El ALP no agrupa proyectos con nombres diferentes.</div>
+  <p *ngIf="errorPantallaCompleta" class="table-status error-status" role="alert">{{ errorPantallaCompleta }}</p>
+</article>

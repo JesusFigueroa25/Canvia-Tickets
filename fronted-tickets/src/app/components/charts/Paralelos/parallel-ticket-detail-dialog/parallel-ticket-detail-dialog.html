@@ -1,0 +1,176 @@
+<dialog #dialogo class="detail-dialog" aria-labelledby="parallel-detail-title" (cancel)="solicitarCierre($event)"
+  (close)="solicitarCierre()">
+  <header class="dialog-header">
+    <div>
+      <h2 id="parallel-detail-title">Detalle de Tickets en Paralelo</h2>
+      <p><span class="ticket-id">{{ ticket.ticket_id }}</span> · {{ nombreTipo(ticket.ticket_type) }} · {{
+        ticket.resolutor }}</p>
+    </div>
+    <button type="button" class="close-icon" aria-label="Cerrar detalle" (click)="solicitarCierre()"
+      autofocus><mat-icon>close</mat-icon></button>
+  </header>
+  <div class="dialog-body" [attr.aria-busy]="cargando">
+    <section class="detail-block" aria-label="Información del ticket seleccionado" *ngIf="ticketVisible as t">
+      <h3>Ticket seleccionado</h3>
+      <dl class="ticket-grid">
+        <div>
+          <dt>Tipo</dt>
+          <dd>{{ nombreTipo(t.ticket_type) }}</dd>
+        </div>
+        <div>
+          <dt>Resolutor</dt>
+          <dd>{{ t.resolutor }}</dd>
+        </div>
+        <div>
+          <dt>Proyecto</dt>
+          <dd>{{ t.proyecto || 'Sin especificar' }}</dd>
+        </div>
+        <div>
+          <dt>ALP</dt>
+          <dd>{{ t.alp || '—' }}</dd>
+        </div>
+        <div>
+          <dt>Prioridad</dt>
+          <dd>{{ t.prioridad || '—' }}</dd>
+        </div>
+        <div>
+          <dt>Motivo</dt>
+          <dd>{{ t.motivo || '—' }}</dd>
+        </div>
+        <div>
+          <dt>Primera coincidencia</dt>
+          <dd>{{ formatearFecha(t.primera_coincidencia) }}</dd>
+        </div>
+        <div>
+          <dt>Última coincidencia</dt>
+          <dd>{{ formatearFecha(t.ultima_coincidencia) }}</dd>
+        </div>
+        <div>
+          <dt>Otros tickets distintos</dt>
+          <dd>{{ t.otros_tickets_paralelos }}</dd>
+        </div>
+        <div>
+          <dt>Máximo simultáneo (incluye base)</dt>
+          <dd class="green">{{ t.maximo_tickets_simultaneos }}</dd>
+        </div>
+        <div>
+          <dt>Coincidencias</dt>
+          <dd>{{ t.coincidencias }}</dd>
+        </div>
+        <div>
+          <dt>Fuente de metadatos</dt>
+          <dd>{{ t.fuente_metadatos }}</dd>
+        </div>
+        <div class="wide">
+          <dt>Descripción</dt>
+          <dd class="description">{{ t.descripcion || 'Sin descripción' }}</dd>
+        </div>
+      </dl>
+    </section>
+    <div *ngIf="cargando" class="status" role="status"><span class="spinner"></span> Consultando coincidencias y
+      evidencias...</div>
+    <div *ngIf="!cargando && error" class="status error" role="alert">{{ error }}
+      <button type="button" class="outline-btn" (click)="solicitarReintento()">Reintentar</button>
+    </div>
+    <section class="detail-block" *ngIf="!cargando && !error && datos as respuesta">
+      <h3>Tickets relacionados en paralelo</h3>
+      <p class="note">Cada fila representa un intervalo de coincidencia. Un mismo ticket relacionado puede aparecer en
+        varias filas. Los compañeros pueden pertenecer a otros tipos, proyectos o prioridades aunque el ticket
+        seleccionado esté filtrado.</p>
+      <p class="status" *ngIf="respuesta.coincidencias.length === 0">No se encontraron coincidencias para el ticket y
+        resolutor.</p>
+      <div class="table-scroll" tabindex="0" aria-label="Intervalos de coincidencia"
+        *ngIf="respuesta.coincidencias.length > 0">
+        <table class="relations-table">
+          <thead>
+            <tr>
+              <th scope="col">Ticket relacionado</th>
+              <th scope="col">Tipo</th>
+              <th scope="col">Proyecto / ALP</th>
+              <th scope="col">Prioridad</th>
+              <th scope="col">Resolutor</th>
+              <th scope="col">Inicio paralelo</th>
+              <th scope="col">Fin paralelo</th>
+              <th scope="col">Duración</th>
+              <th scope="col">Descripción</th>
+              <th scope="col">Evidencias</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let c of respuesta.coincidencias; let i = index">
+              <tr>
+                <td><span class="ticket-id">{{ c.ticket_relacionado }}</span></td>
+                <td>{{ nombreTipo(c.tipo_relacionado) }}</td>
+                <td class="wrap-cell">{{ c.proyecto_relacionado || 'Sin especificar' }}<small
+                    *ngIf="c.alp_relacionado">ALP: {{ c.alp_relacionado }}</small></td>
+                <td>{{ c.prioridad_relacionada || '—' }}</td>
+                <td class="wrap-cell">{{ c.resolutor }}</td>
+                <td class="date-cell">{{ formatearFecha(c.inicio_paralelo) }}</td>
+                <td class="date-cell">{{ formatearFecha(c.fin_paralelo) }}</td>
+                <td class="green date-cell" [title]="c.segundos_paralelo + ' segundos'">{{
+                  formatearDuracion(c.segundos_paralelo) }}</td>
+                <td class="wrap-cell description">{{ c.descripcion_relacionada || '—' }}</td>
+                <td><button type="button" class="outline-btn" [attr.aria-expanded]="expandidos.has(i)"
+                    [attr.aria-controls]="'parallel-evidence-' + i" (click)="alternarEvidencia(i)">{{ expandidos.has(i)
+                    ? 'Ocultar' : 'Ver' }} ({{ c.evidencia.length }})</button></td>
+              </tr>
+              <tr class="evidence-row" *ngIf="expandidos.has(i)">
+                <td colspan="10" [id]="'parallel-evidence-' + i">
+                  <div class="evidence-panel">
+                    <h4>Evidencia original de Report Times · {{ c.ticket_relacionado }}</h4>
+                    <p class="note">Motivo relacionado: {{ c.motivo_relacionado || '—' }} · Fuente de metadatos: {{
+                      c.fuente_metadatos }}</p>
+                    <p class="note">Las acciones originales pueden comenzar antes o terminar después de la coincidencia.
+                      Una tarea puede estar atribuida a su ticket padre.</p>
+                    <p *ngIf="!c.evidencia.length" class="note">No se devolvieron registros originales para esta
+                      coincidencia.</p>
+                    <div class="evidence-scroll" tabindex="0" aria-label="Registros de evidencia original"
+                      *ngIf="c.evidencia.length">
+                      <table class="evidence-table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Rol</th>
+                            <th scope="col">Report Time ID</th>
+                            <th scope="col">Ticket padre</th>
+                            <th scope="col">Ticket origen</th>
+                            <th scope="col">Tipo origen</th>
+                            <th scope="col">Resolutor original / grupo</th>
+                            <th scope="col">Inicio original</th>
+                            <th scope="col">Fin original</th>
+                            <th scope="col">Estado / motivo</th>
+                            <th scope="col">Descripción original</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let e of c.evidencia; trackBy: identificarEvidencia">
+                            <td><span [class.role-base]="e.rol === 'Seleccionado'" class="role">{{ e.rol }}</span></td>
+                            <td>{{ e.report_time_id }}</td>
+                            <td>{{ e.ticket_padre }}</td>
+                            <td>{{ e.ticket_origen }}</td>
+                            <td>{{ e.tipo_origen }}</td>
+                            <td class="wrap-cell">{{ e.resolutor_original }}<small>{{ e.grupo_resolutor || '—'
+                                }}</small></td>
+                            <td class="date-cell">{{ formatearFecha(e.inicio_original) }}</td>
+                            <td class="date-cell">{{ formatearFecha(e.fin_original) }}</td>
+                            <td class="wrap-cell">{{ e.estado_origen || '—' }}<small>{{ e.motivo_origen || '—'
+                                }}</small></td>
+                            <td class="wrap-cell description">{{ e.descripcion_origen || '—' }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <p class="method-note">Las coincidencias representan intervalos registrados, no atención humana simultánea
+      comprobada. Las modificaciones manuales no forman parte de la evidencia temporal. No se suman duraciones de
+      coincidencias superpuestas.</p>
+  </div>
+  <footer class="dialog-footer"><button type="button" class="close-button" (click)="solicitarCierre()">Cerrar</button>
+  </footer>
+</dialog>

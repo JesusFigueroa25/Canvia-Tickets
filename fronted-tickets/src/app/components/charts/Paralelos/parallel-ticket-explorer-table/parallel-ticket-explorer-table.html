@@ -1,0 +1,141 @@
+<article class="table-card" #tablaFs>
+  <button type="button" class="fullscreen-button" (click)="alternarPantallaCompleta()"
+    [attr.aria-label]="expandida ? 'Salir de pantalla completa' : 'Ampliar explorador'">
+    <mat-icon>{{ expandida ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+  <header class="table-header">
+    <div class="header-content title-row">
+      <span class="title-accent" aria-hidden="true"></span>
+      <div>
+        <h3>Explorador de Tickets en Paralelo</h3>
+        <p>Tickets con coincidencias de atención registrada para un mismo especialista.</p>
+      </div>
+    </div>
+    <label class="type-control">Tipo de ticket
+      <select [value]="tipo ?? ''" [disabled]="controlesDeshabilitados" (change)="cambiarTipo($event)">
+        <option value="">Todos los tipos</option>
+        <option value="Incident">Incidentes</option>
+        <option value="Service Request">Requerimientos</option>
+      </select>
+    </label>
+  </header>
+
+  <div class="local-search-toolbar">
+
+    <div class="resolver-search">
+
+      <label for="buscar-resolutor-paralelo">
+        Buscar resolutor
+      </label>
+
+      <div class="resolver-search-input">
+
+        <mat-icon>search</mat-icon>
+
+        <input id="buscar-resolutor-paralelo" type="text" placeholder="Buscar por nombre del resolutor..."
+          autocomplete="off" maxlength="300" [value]="busquedaResolutor" [disabled]="controlesDeshabilitados"
+          (input)="buscarResolutor($event)" />
+
+        <button *ngIf="busquedaResolutor" type="button" title="Limpiar búsqueda" aria-label="Limpiar búsqueda"
+          [disabled]="controlesDeshabilitados" (click)="limpiarBusquedaResolutor()">
+
+          <mat-icon>close</mat-icon>
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <span class="local-search-count" *ngIf="busquedaResolutor && !cargando && !error && datos">
+
+      {{ totalRegistros | number:'1.0-0' }}
+      registros encontrados
+
+    </span>
+
+  </div>
+
+  <div class="table-summary" *ngIf="!cargando && !error && datos">
+    <div class="summary-left"><span class="summary-indicator"></span>
+      <span><strong>{{ totalRegistros | number:'1.0-0' }}</strong> registros ticket–resolutor</span>
+    </div>
+    <span class="summary-note">Orden: máximo simultáneo, otros tickets y coincidencias.</span>
+  </div>
+  <div class="table-wrapper" tabindex="0" aria-label="Tickets con coincidencias de atención"
+    [attr.aria-busy]="cargando">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Ticket ID</th>
+          <th scope="col">Tipo</th>
+          <th scope="col" class="resolver-column">Resolutor</th>
+          <th scope="col" class="project-column">Proyecto / ALP</th>
+          <th scope="col">Prioridad</th>
+          <th scope="col">Primera coincidencia</th>
+          <th scope="col">Última coincidencia</th>
+          <th scope="col" class="number-column">Otros tickets</th>
+          <th scope="col" class="number-column">Máx. simultáneos</th>
+          <th scope="col" class="number-column">Coincidencias</th>
+          <th scope="col" class="detail-column">Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let fila of filas; trackBy: identificarFila">
+          <td><span class="ticket-badge">{{ fila.ticket_id }}</span></td>
+          <td>{{ nombreTipo(fila.ticket_type) }}</td>
+          <td><span class="resolver-name" [title]="fila.resolutor">{{ fila.resolutor }}</span></td>
+          <td class="project-cell"><span class="project-name" [title]="fila.proyecto ?? 'Sin especificar'">{{
+              fila.proyecto || 'Sin especificar' }}</span>
+            <span class="alp-label" *ngIf="fila.alp">ALP: {{ fila.alp }}</span>
+          </td>
+          <td>{{ fila.prioridad || '—' }}</td>
+          <td class="date-cell">{{ formatearFecha(fila.primera_coincidencia) }}</td>
+          <td class="date-cell">{{ formatearFecha(fila.ultima_coincidencia) }}</td>
+          <td class="number-cell">{{ fila.otros_tickets_paralelos | number:'1.0-0' }}</td>
+          <td class="number-cell"><span class="simultaneous-badge">{{ fila.maximo_tickets_simultaneos }}</span></td>
+          <td class="number-cell">{{ fila.coincidencias | number:'1.0-0' }}</td>
+          <td class="detail-cell"><button type="button" class="expand-button" [disabled]="controlesDeshabilitados"
+              [attr.aria-label]="'Ver detalle de ' + fila.ticket_id + ', ' + fila.resolutor" (click)="verDetalle(fila)">
+              <mat-icon>visibility</mat-icon> Ver detalle</button></td>
+        </tr>
+        <tr *ngIf="!cargando && !error && filas.length === 0">
+          <td colspan="11" class="empty-cell">
+            <div class="empty-content"><strong>{{ datos ? 'Sin resultados' : 'Sin consulta aplicada' }}</strong>
+              <span>{{ datos ? 'No existen coincidencias para los filtros seleccionados.' : 'Aplica los filtros para
+                consultar el explorador.' }}</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="table-status loading-status" *ngIf="cargando" role="status"><span class="loading-spinner"></span>
+    Actualizando tickets en paralelo...</div>
+  <div class="table-status error-status" *ngIf="!cargando && error" role="alert">{{ error }}
+    <button type="button" class="clear-filter-button" (click)="reintentar()">Reintentar</button>
+  </div>
+  <p class="table-status error-status" *ngIf="errorPantallaCompleta" role="alert">{{ errorPantallaCompleta }}</p>
+  <footer class="table-footer">
+    <div class="pagination-info">Mostrando <strong>{{ primerRegistro }}</strong> – <strong>{{ ultimoRegistro }}</strong>
+      de <strong>{{ totalRegistros | number:'1.0-0' }}</strong></div>
+    <div class="pagination-controls">
+      <label class="page-size-control">Filas <select [value]="tamanoActual" [disabled]="controlesDeshabilitados"
+          (change)="cambiarTamanoPagina($event)">
+          <option *ngFor="let n of tamanosPagina" [value]="n">{{ n }}</option>
+        </select></label>
+      <button type="button" class="page-button" [disabled]="controlesDeshabilitados || paginaActual <= 1"
+        (click)="cambiarPagina(paginaActual - 1)" aria-label="Página anterior">‹</button>
+      <span class="page-indicator">Página {{ totalPaginas ? paginaActual : 0 }} de {{ totalPaginas }}</span>
+      <button type="button" class="page-button" [disabled]="controlesDeshabilitados || paginaActual >= totalPaginas"
+        (click)="cambiarPagina(paginaActual + 1)" aria-label="Página siguiente">›</button>
+    </div>
+  </footer>
+  <div class="methodology-note"><span>Otros tickets: compañeros distintos. Máximo simultáneo: incluye el ticket
+      seleccionado.</span>
+    <span>Primera y última coincidencia son extremos, no un intervalo continuo. El tipo y la paginación se consultan en
+      el servidor.</span>
+  </div>
+  <!-- El modal proyectado queda dentro del elemento de pantalla completa. -->
+  <ng-content></ng-content>
+</article>

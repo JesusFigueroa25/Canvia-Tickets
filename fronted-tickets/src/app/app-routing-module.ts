@@ -16,6 +16,7 @@ import { DailyReport } from './components/pages/daily-report/daily-report';
 import { TaskConsolidated } from './components/pages/task-consolidated/task-consolidated';
 import { TicketsReportTimes } from './components/pages/tickets-report-times/tickets-report-times';
 import { ChangeConsolidated } from './components/pages/change-consolidated/change-consolidated';
+import { TicketsParallelAnalysis } from './components/pages/tickets-parallel-analysis/tickets-parallel-analysis';
 
 const routes: Routes = [
   { path: "", component: Landing },
@@ -33,6 +34,7 @@ const routes: Routes = [
   { path: "tareas-consolidados", component: TaskConsolidated },
   { path: "tickets-report-times", component: TicketsReportTimes },
   { path: "cambios-consolidados", component: ChangeConsolidated },
+  { path: "tickets-parallel-analysis", component: TicketsParallelAnalysis },
 ];
 
 @NgModule({
