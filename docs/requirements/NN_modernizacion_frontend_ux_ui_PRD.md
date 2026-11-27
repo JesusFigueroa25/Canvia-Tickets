@@ -1,11 +1,15 @@
 # PRD — Modernización del frontend y experiencia UX/UI de CANVIA
 
-**Estado:** v1.0 — Alcance y diseño aprobados; implementación pendiente (Fase 1.6)  
+**Estado:** v1.0 — Fase 1 cerrada documentalmente; Fase 1.6 auditada: APROBADO CON OBSERVACIONES. Fase 2 no iniciada.\
 **Fecha:** 27/11/2026  
 **Rama propuesta:** `style/modernizacion-frontend-ux-ui`
 
+**Convención Git:** el usuario aprobó expresamente el prefijo `style/` para modificaciones visuales. H03 permanece como observación administrativa no bloqueante: la discrepancia con los prefijos de [AGENTS.md](../../AGENTS.md#flujo-de-desarrollo) se resolverá posteriormente. Se conserva la rama propuesta.
+
 ## 1. Contexto
 CANVIA es una plataforma empresarial de gestión y análisis de tickets. La estructura Angular existente contiene 16 páginas, navegación, layout y componentes especializados de KPI, gráficos, tablas, diálogos y reportes. La auditoría estática identificó colores repetidos, radios y alturas variables y tema Material Azure/Blue. El [Design System](../DESIGN_SYSTEM.md) consolida ahora el estándar objetivo Aurora Enterprise UI Light, todavía no implementado. La evidencia histórica se mantiene allí.
+
+El paquete documental está incorporado: Design System v2.0, este PRD v1.0 y canvia-design-system v1.1.0. La skill está reconocida en el catálogo de la sesión de auditoría y fue utilizada durante la Fase 1.6.
 
 ## 2. Objetivo
 Modernizar la interfaz con una estética profesional, tecnológica y consistente, mejorar la comprensión de datos y la percepción de carga, y establecer patrones visuales reutilizables. Mantener la identidad CANVIA y preservar el comportamiento funcional actual.
@@ -81,15 +85,19 @@ La [skill canvia-design-system](../../.agents/skills/canvia-design-system/SKILL.
 - Evaluar skills oficiales y comunitarias; comprobar rutas, instrucciones, permisos, compatibilidad y procedencia.
 - Obtener capturas base si se puede ejecutar el sistema de forma segura y sin datos confidenciales.
 
-### Fase 1 — Definición (decisiones aprobadas; cierre documental por incorporar y verificar)
+### Fase 1 — Definición (cerrada documentalmente con observaciones no bloqueantes)
 1.1 Identidad visual y Design Tokens.
 1.2 Patrones de componentes.
 1.3 Aplicación por módulo; Home como piloto.
 1.4 frontend-skill instalada y reconocida según evidencia de Codex.
-1.5 canvia-design-system creada y reconocida según evidencia de Codex.
-1.6 Consolidar Design System, PRD y skill, validar enlaces y coherencia; no modificar aplicación.
+1.5 canvia-design-system v1.1.0 incorporada, reconocida y utilizada en la sesión de auditoría.
+1.6 Auditoría documental completada con veredicto **APROBADO CON OBSERVACIONES**, aceptado por el usuario; validación estructural manual satisfactoria.
 
-### Fase 2 — Codex (pendiente)
+**Cierre de Fase 1:** cierre documental registrado tras las correcciones H01, H02 y H04. H03 permanece como observación administrativa justificada por la aprobación expresa de `style/`; no bloquea el avance autorizado. La Fase 2 todavía no se ha iniciado.
+
+**Validaciones técnicas pendientes:** el validador oficial de skills no pudo ejecutarse por indisponibilidad de Python utilizable. Siguen pendientes las comprobaciones de implementación y QA: compilación, pruebas Angular, capturas, comparación de exportaciones, accesibilidad, responsive y rendimiento. La revisión estructural manual no sustituye estas verificaciones ni acredita cumplimiento de la aplicación.
+
+### Fase 2 — Codex (no iniciada)
 - Verificar e instalar únicamente las skills aprobadas que falten; no mover las 24 skills anteriores como parte de esta tarea.
 - Plan Mode de solo lectura antes de editar, estado Git inicial, mapa de dependencias y capturas base controladas cuando sea posible. Aprobación explícita del plan y de los bloques a ejecutar.
 - Implementar progresivamente el orden siguiente. Validar aislamiento antes de cambios globales o Material; no propagar el piloto hasta revisar su resultado.
@@ -135,7 +143,7 @@ El bloque 12 coordina el cierre de QA de Fase 3. No iniciar todos los bloques po
 | Skill | Función | Estado de preparación |
 | --- | --- | --- |
 | frontend-skill | Diseño general, versión histórica oficial 30444aed500c00c85294d12074f6e3ee794f808a | Instalada y reconocida según Codex; no modificar |
-| canvia-design-system | Estándar CANVIA y flujo operativo | v1.0.0 reconocida; actualización documental propuesta v1.1.0 pendiente de incorporar y verificar |
+| canvia-design-system | Estándar CANVIA y flujo operativo | v1.1.0 incorporada, reconocida y utilizada en la sesión de auditoría |
 | angular-developer | Buenas prácticas Angular | Pendiente Fase 2; verificar nombre/ubicación y procedencia |
 | playwright | QA visual y funcional | Pendiente Fase 2–3; verificar nombre/ubicación y procedencia |
 
@@ -143,7 +151,7 @@ ui-ux-pro-max descartada. No instalar otras skills automáticamente. Las 24 skil
 
 ## 11. Decisiones pendientes y condiciones de avance
 - Asignar número correlativo `NN` según inventario de docs/requirements/; mantener nombre actual hasta tener evidencia y autorización para renombrar.
-- Incorporar el paquete documental y verificar la nueva versión de la skill desde el repositorio.
+- Ejecutar el validador oficial cuando exista Python utilizable y su ejecución esté autorizada; la validación estructural manual ya fue satisfactoria.
 - Verificar versiones efectivas de Angular/Material/Chart.js, compatibilidad de tema y herramientas y estructura de carga actual.
 - Confirmar inventario completo de exportaciones, dependencias, cascada y baseline visual; el aislamiento es condición previa para cada cambio.
 - Validar variantes derivadas Emerald y Sunset, contraste de controles y superficies, geometría de componentes y comportamiento responsive en Home. Referencias de tamaño: 480, 768, 1024, 1280, 1440 y 1920px, más un ancho estrecho representativo.

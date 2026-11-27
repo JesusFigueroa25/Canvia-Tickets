@@ -1,6 +1,6 @@
 # Sistema de diseño CANVIA — Aurora Enterprise UI
 
-**Versión documental:** 2.0 · **Fecha:** 27/11/2026  
+**Versión documental:** 2.0 · **Fecha:** 27/11/2026\
 **Estado:** estándar objetivo aprobado, consolidado en Fase 1.6; implementación y QA pendientes.
 
 ## Alcance y fuentes de verdad
@@ -240,7 +240,7 @@ El tema Material se trabaja en SCSS únicamente si está autorizado y su ámbito
 
 Contenedor claro al 94% o sólido, radio 16px, padding 20–24px, título 18px/600. Altura habitual 250–300px; complejos 330px o más según contenido y geometría existente.
 
-Modifica solo la presentación exterior permitida. Conserva opciones, colores semánticos, datos, interacciones y animaciones internas. Lee [06 Gráficos](#gráficos).
+Modifica solo la presentación exterior permitida. Conserva opciones, colores semánticos, datos, interacciones y animaciones internas. Lee [Chart Design System](#chart-design-system).
 
 ### Tablas y diálogos
 
@@ -389,7 +389,7 @@ Puntos de partida desde la raíz del repositorio:
 
 No arregles como parte de este sistema el doble disparador del login, las consultas de paneles comentados o errores funcionales preexistentes. Regístralos fuera de alcance.
 
-## Gráficos
+## Chart Design System
 
 ### Ámbito permitido
 
