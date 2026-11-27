@@ -2,16 +2,20 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, ViewChild } from '@angular/core';
 import type { ExecutiveSummaryRenderError, IncidentExecutiveSummaryData } from '../../../../models/incident-executive-summary-report';
 
-@Component({ selector: 'app-incident-executive-summary-report', standalone: true, imports: [CommonModule],
-  templateUrl: './incident-executive-summary-report.html', styleUrl: './incident-executive-summary-report.css' })
+@Component({
+  selector: 'app-incident-executive-summary-report', standalone: true, imports: [CommonModule],
+  templateUrl: './incident-executive-summary-report.html', styleUrl: './incident-executive-summary-report.css'
+})
 export class IncidentExecutiveSummaryReport implements OnChanges, OnDestroy {
   @Input() datos!: IncidentExecutiveSummaryData;
   @Output() renderizado = new EventEmitter<number>();
   @Output() errorRenderizado = new EventEmitter<ExecutiveSummaryRenderError>();
   @ViewChild('documento') documento?: ElementRef<HTMLElement>;
-  readonly iconos = { servidores: 'M5 3h18v6H5zm0 10h18v6H5zm4-7h1m-1 10h1M14 6h6m-6 10h6M14 19v6m-6 0h12',
+  readonly iconos = {
+    servidores: 'M5 3h18v6H5zm0 10h18v6H5zm4-7h1m-1 10h1M14 6h6m-6 10h6M14 19v6m-6 0h12',
     dona: 'M13 3a11 11 0 1 0 11 12H13V3Zm4 0v8h8a10 10 0 0 0-8-8Z', comparacion: 'M4 3v22h21M8 7h14M8 11h10M8 17h14M8 21h10',
-    hallazgos: 'M10 21h8m-7 4h6M9 17c-7-7-2-14 5-14s12 7 5 14l-1 3h-8l-1-3Z', ejecutivo: 'M7 3h12v21H4V6h3m0-3v3h9V3M8 12l3 3 6-6M8 20h8' };
+    hallazgos: 'M10 21h8m-7 4h6M9 17c-7-7-2-14 5-14s12 7 5 14l-1 3h-8l-1-3Z', ejecutivo: 'M7 3h12v21H4V6h3m0-3v3h9V3M8 12l3 3 6-6M8 20h8'
+  };
   maxServidor = 1;
   maxComparacion = 1;
   fuenteTotal = 26;
@@ -27,8 +31,8 @@ export class IncidentExecutiveSummaryReport implements OnChanges, OnDestroy {
     this.maxComparacion = Math.max(1, ...d.ajustada.comparacion.flatMap(i => [i.tickets_originales, i.tickets_ajustados]));
     this.fuenteTotal = Math.min(26, 160 / this.numero(d.atribuidos).length);
     this.filtros = ([['Prioridad', f.prioridad], ['Motivo de estado', f.motivo_estado], ['Motivo de resolución', f.motivo_resolucion],
-      ['Resolutor', f.nombre_resolutor], ['Descripción', f.descripcion], ['Mes', f.periodo], ['Detalle', f.detalle_id], ['Ticket', f.ticket_id],
-      ['Proyectos excluidos', f.proyectos_excluidos?.join(', ')]] as const).filter(([, v]) => !!v).map(([k, v]) => `${k}: ${v}`);
+    ['Resolutor', f.nombre_resolutor], ['Descripción', f.descripcion], ['Mes', f.periodo], ['Detalle', f.detalle_id], ['Ticket', f.ticket_id],
+    ['Proyectos excluidos', f.proyectos_excluidos?.join(', ')]] as const).filter(([, v]) => !!v).map(([k, v]) => `${k}: ${v}`);
     let acumulado = 0; const circunferencia = Math.PI * 2 * 62;
     this.segmentos = d.ajustada.distribucion_original.map(i => {
       const longitud = d.atribuidos ? i.tickets / d.atribuidos * circunferencia : 0;

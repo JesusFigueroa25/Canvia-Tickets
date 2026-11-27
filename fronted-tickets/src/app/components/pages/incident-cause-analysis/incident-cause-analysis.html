@@ -87,7 +87,7 @@
           {{
           exportandoReporte
           ? 'Generando imagen...'
-          : 'Descargar reporte  '
+          : 'Descargar reporte '
           }}
 
         </button>
@@ -464,7 +464,12 @@
 
     <header class="section-header">
 
-      <div class="summary-section-heading"><h1>Atribución de Incidentes</h1><button mat-flat-button type="button" class="executive-summary-button" [disabled]="!puedeDescargarResumen" (click)="descargarResumen()" aria-label="Descargar Reporte 1: Resumen Ejecutivo de Incidentes">{{ exportandoResumen ? 'Preparando…' : 'Reporte 1' }}</button></div>
+      <div class="summary-section-heading">
+        <h1>Atribución de Incidentes</h1><button mat-flat-button type="button" class="executive-summary-button"
+          [disabled]="!puedeDescargarResumen" (click)="descargarResumen()"
+          aria-label="Descargar Reporte 1: Resumen Ejecutivo de Incidentes">{{ exportandoResumen ? 'Preparando…' :
+          'Reporte 1' }}</button>
+      </div>
 
       <p>
         Comparación de la atribución original registrada
@@ -475,9 +480,12 @@
 
 
     <p class="summary-status" role="status" *ngIf="exportandoResumen">Preparando el Resumen Ejecutivo de Incidentes…</p>
-    <p class="summary-status" role="status" *ngIf="!exportandoResumen && estadoResumen === 'esperando'">Reporte 1 espera los datos y el análisis vigente de los filtros aplicados.</p>
-    <p class="summary-status" role="status" *ngIf="estadoResumen === 'sin_datos'">Sin incidentes para generar Reporte 1.</p>
-    <div class="summary-export-error" role="alert" *ngIf="errorResumen">{{ errorResumen }} <button type="button" [disabled]="!puedeDescargarResumen" (click)="descargarResumen()">Reintentar</button></div>
+    <p class="summary-status" role="status" *ngIf="!exportandoResumen && estadoResumen === 'esperando'">Reporte 1 espera
+      los datos y el análisis vigente de los filtros aplicados.</p>
+    <p class="summary-status" role="status" *ngIf="estadoResumen === 'sin_datos'">Sin incidentes para generar Reporte 1.
+    </p>
+    <div class="summary-export-error" role="alert" *ngIf="errorResumen">{{ errorResumen }} <button type="button"
+        [disabled]="!puedeDescargarResumen" (click)="descargarResumen()">Reintentar</button></div>
     <div class="summary-export-stage" aria-hidden="true" inert><ng-container #resumenHost></ng-container></div>
 
     <div class="charts-grid">
