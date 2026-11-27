@@ -63,25 +63,26 @@ export class ParallelTicketExplorerTable implements OnDestroy {
   }
 
   limpiarBusquedaResolutor(): void {
+
     this.busquedaResolutor = '';
+
     this.busquedaSubject.next('');
   }
-  
   get totalRegistros(): number { return this.datos?.total ?? 0; }
   get paginaActual(): number { return this.datos?.pagina ?? this.pagina; }
   get tamanoActual(): number { return this.datos?.tamano ?? this.tamano; }
   get totalPaginas(): number { return Math.ceil(this.totalRegistros / this.tamanoActual); }
   get primerRegistro(): number {
-    return this.datos?.items.length
+    return this.filas.length
       ? (this.paginaActual - 1) * this.tamanoActual + 1
       : 0;
   }
 
   get ultimoRegistro(): number {
-    return this.datos?.items.length
+    return this.filas.length
       ? Math.min(
         this.totalRegistros,
-        this.primerRegistro + this.datos.items.length - 1
+        this.primerRegistro + this.filas.length - 1
       )
       : 0;
   }
@@ -128,7 +129,17 @@ export class ParallelTicketExplorerTable implements OnDestroy {
     this.cdr.markForCheck();
   }
   ngOnDestroy(): void {
+
+    this.busquedaSub.unsubscribe();
+    this.busquedaSubject.complete();
+
     this.destruido = true;
-    if (this.tablaFs && document.fullscreenElement === this.tablaFs.nativeElement) void document.exitFullscreen().catch(() => { });
+
+    if (
+      this.tablaFs &&
+      document.fullscreenElement === this.tablaFs.nativeElement
+    ) {
+      void document.exitFullscreen().catch(() => { });
+    }
   }
 }

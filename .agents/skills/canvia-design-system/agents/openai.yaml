@@ -1,0 +1,4 @@
+interface:
+  display_name: "CANVIA Design System"
+  short_description: "Identidad Aurora y reglas visuales del frontend CANVIA"
+  default_prompt: "Usa $canvia-design-system para diseñar, implementar o revisar visualmente CANVIA dentro del alcance autorizado y respetando los reportes protegidos."
