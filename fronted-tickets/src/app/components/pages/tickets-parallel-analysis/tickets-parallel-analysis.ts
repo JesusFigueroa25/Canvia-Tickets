@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import Chart from 'chart.js/auto';
+import type { Plugin } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { catchError, defer, EMPTY, from, map, mergeMap, Observable, Subscription, tap, timeout } from 'rxjs';
 import {
@@ -62,7 +63,7 @@ export class TicketsParallelAnalysis implements OnInit, AfterViewInit, OnDestroy
   graficoExpandido = false;
   errorPantallaCompleta: string | null = null;
 
-  private chart: Chart<'bar'> | null = null;
+  private chart: Chart<'bar', number[], string> | null = null;
   private filtrosSub?: Subscription;
   private dashboardSub?: Subscription;
   private ticketsSub?: Subscription;
@@ -375,43 +376,132 @@ export class TicketsParallelAnalysis implements OnInit, AfterViewInit, OnDestroy
     const texto = new Intl.DateTimeFormat('es-PE', { month: corto ? 'short' : 'long', year: 'numeric' }).format(new Date(y, m - 1, 1));
     return texto.charAt(0).toUpperCase() + texto.slice(1);
   }
+
+
   private inicializarGrafico(): void {
     if (!this.resumenCanvas) return;
-    this.chart = new Chart<'bar'>(this.resumenCanvas.nativeElement, {
-      type: 'bar', data: {
-        labels: [], datasets: this.etiquetas.map((label, i) => ({
-          label, data: [],
-          backgroundColor: this.colores[i], borderRadius: 4, maxBarThickness: 42, categoryPercentage: 0.82,
-          barPercentage: 0.88, borderColor: this.colores[i], borderWidth: 0
-        }))
-      },
-      plugins: [ChartDataLabels], options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false }, layout: { padding: { top: 24, right: 8, left: 8 } },
-        plugins: {
-          legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, color: '#667085' } },
-          datalabels: {
-            display: c => Number(c.dataset.data[c.dataIndex] ?? 0) > 0 ? 'auto' : false,
-            anchor: 'end', align: 'end', offset: 2, clamp: true, clip: false, color: '#344054',
-            font: { size: 10, weight: 'bold' }, formatter: (v: number) => v.toLocaleString('es-PE')
-          },
-          tooltip: { callbacks: { label: c => `${c.dataset.label}: ${Number(c.parsed.y ?? 0).toLocaleString('es-PE')}` } }
-        }, scales: {
-          x: { grid: { display: false }, ticks: { color: '#667085', maxRotation: 0, autoSkip: true } },
-          y: {
-            beginAtZero: true, grace: '15%', ticks: { precision: 0, color: '#667085' },
-            title: { display: true, text: 'Tickets' }, grid: { color: '#E5E9EE' }
-          }
+
+    this.chart = new Chart<'bar', number[], string>(
+      this.resumenCanvas.nativeElement,
+      {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: this.etiquetas.map((label, i) => ({
+            label,
+            data: [],
+            backgroundColor: this.colores[i],
+            borderRadius: 4,
+            maxBarThickness: 42,
+            categoryPercentage: 0.82,
+            barPercentage: 0.88,
+            borderColor: this.colores[i],
+            borderWidth: 0
+          }))
         },
-        onClick: (_event, elementos) => {
-          const indice = elementos[0]?.index;
-          const item = indice === undefined ? undefined : this.resumenMensual[indice];
-          if (item) this.cambiarPeriodo(this.periodoSeleccionado === item.periodo ? null : item.periodo);
+        plugins: [
+          ChartDataLabels as unknown as Plugin<'bar'>
+        ],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          layout: {
+            padding: {
+              top: 24,
+              right: 8,
+              left: 8
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                usePointStyle: true,
+                padding: 16,
+                color: '#667085'
+              }
+            },
+            datalabels: {
+              display: c =>
+                Number(c.dataset.data[c.dataIndex] ?? 0) > 0
+                  ? 'auto'
+                  : false,
+              anchor: 'end',
+              align: 'end',
+              offset: 2,
+              clamp: true,
+              clip: false,
+              color: '#344054',
+              font: {
+                size: 10,
+                weight: 'bold'
+              },
+              formatter: (v: number) =>
+                v.toLocaleString('es-PE')
+            },
+            tooltip: {
+              callbacks: {
+                label: c =>
+                  `${c.dataset.label}: ${Number(
+                    c.parsed.y ?? 0
+                  ).toLocaleString('es-PE')}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#667085',
+                maxRotation: 0,
+                autoSkip: true
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grace: '15%',
+              ticks: {
+                precision: 0,
+                color: '#667085'
+              },
+              title: {
+                display: true,
+                text: 'Tickets'
+              },
+              grid: {
+                color: '#E5E9EE'
+              }
+            }
+          },
+          onClick: (_event, elementos) => {
+            const indice = elementos[0]?.index;
+
+            const item = indice === undefined
+              ? undefined
+              : this.resumenMensual[indice];
+
+            if (item) {
+              this.cambiarPeriodo(
+                this.periodoSeleccionado === item.periodo
+                  ? null
+                  : item.periodo
+              );
+            }
+          }
         }
       }
-    });
+    );
+
     this.actualizarGrafico();
   }
+
+
   private actualizarGrafico(): void {
     if (!this.chart) return;
     const claves = ['incidentes_evaluados', 'incidentes_paralelos', 'requerimientos_evaluados', 'requerimientos_paralelos'] as const;
