@@ -15,6 +15,7 @@ import {
     ImportResultado
 } from '../../../models/import-result';
 import { TicketsReportTimesService } from '../../../services/tickets-report-times.service';
+import { ChangeConsolidatedService } from '../../../services/change-consolidated.service';
 
 type TipoImportacion =
     | 'incident-sla'
@@ -22,6 +23,7 @@ type TipoImportacion =
     | 'requirement-consolidated'
     | 'requirement-sla'
     | 'task-consolidated'
+    | 'change-consolidated'
     | 'tickets-manual-updates'
     | 'tickets-report-times';
 
@@ -50,6 +52,11 @@ export class ImportacionesComponent {
             titulo: 'Incidente SLA',
             descripcion: 'Importación de incidentes y mediciones de cumplimiento SLA.'
         },
+         {
+            id: 'requirement-sla',
+            titulo: 'Requerimiento SLA',
+            descripcion: 'Importación de requerimientos y mediciones de cumplimiento SLA.'
+        },
         {
             id: 'incident-consolidated',
             titulo: 'Incidente Consolidado',
@@ -60,28 +67,32 @@ export class ImportacionesComponent {
             titulo: 'Requerimiento Consolidado',
             descripcion: 'Actualización del consolidado general de requerimientos.'
         },
-        {
-            id: 'requirement-sla',
-            titulo: 'Requerimiento SLA',
-            descripcion: 'Importación de requerimientos y mediciones de cumplimiento SLA.'
-        },
+       
         {
             id: 'task-consolidated',
             titulo: 'Tareas Consolidadas',
             descripcion: 'Importación y actualización del consolidado de tareas, con validación de duplicados por ALP y proyecto.'
         },
         {
+            id: 'change-consolidated',
+            titulo: 'Cambios Consolidados',
+            descripcion:
+                'Importación y actualización de tickets de cambios mediante archivos Excel. ' +
+                'Incluye conciliación de filas procesadas y registros duplicados.'
+        },
+        {
             id: 'tickets-manual-updates',
-            titulo: 'Tickets Modificados Manualmente',
+            titulo: 'Tickets Ocupabilidad - Tiempo Manual',
             descripcion: 'Importación de tickets con registros de actualización manual. Conserva el primer registro de cada Ticket ID y omite tickets previamente importados.'
         },
         {
             id: 'tickets-report-times',
-            titulo: 'Tiempos de Informes Mensuales',
+            titulo: 'Tickets Ocupabilidad - En Proceso',
             descripcion:
                 'Importación de acciones registradas durante la elaboración de informes mensuales. ' +
                 'Identifica acciones nuevas, modificadas y sin cambios, conservando el detalle por ticket.'
-        }
+        },
+
     ];
 
     estados: Record<TipoImportacion, EstadoImportacion> = {
@@ -90,6 +101,7 @@ export class ImportacionesComponent {
         'requirement-consolidated': this.crearEstado(),
         'requirement-sla': this.crearEstado(),
         'task-consolidated': this.crearEstado(),
+        'change-consolidated': this.crearEstado(),
         'tickets-manual-updates': this.crearEstado(),
         'tickets-report-times': this.crearEstado()
     };
@@ -102,6 +114,7 @@ export class ImportacionesComponent {
         private requirementConsolidatedService: RequirementConsolidatedService,
         private requirementSlaService: RequirementSlaService,
         private taskConsolidatedService: TaskConsolidatedService,
+        private changeConsolidatedService: ChangeConsolidatedService,
         private ticketsManualUpdatesService: TicketsManualUpdatesService,
         private ticketsReportTimesService: TicketsReportTimesService,
         private cdr: ChangeDetectorRef
@@ -296,6 +309,11 @@ export class ImportacionesComponent {
 
             case 'task-consolidated':
                 return this.taskConsolidatedService.importarExcel(
+                    archivo
+                );
+
+            case 'change-consolidated':
+                return this.changeConsolidatedService.importarExcel(
                     archivo
                 );
 

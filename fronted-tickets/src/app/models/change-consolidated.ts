@@ -1,5 +1,3 @@
-/** Contratos HTTP del módulo Cambios Consolidados. */
-
 export interface ChangeConsolidatedDashboardFilters {
   desde?: string;
   hasta?: string;

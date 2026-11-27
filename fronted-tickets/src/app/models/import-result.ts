@@ -2,6 +2,8 @@ export interface ImportResultado {
     tipo: string;
     tabla_staging: string;
     tabla_destino: string;
+    filas_excel?: number;
+    duplicados?: number;
     filas_procesadas: number;
     filas_staging: number;
     nuevos: number;

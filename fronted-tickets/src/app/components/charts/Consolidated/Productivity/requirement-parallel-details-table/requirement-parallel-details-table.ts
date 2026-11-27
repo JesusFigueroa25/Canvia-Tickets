@@ -30,10 +30,7 @@ type ColumnaOrden =
 export class RequirementParallelDetailsTable
   implements OnChanges {
 
-  // ======================================================
   // INPUTS
-  // ======================================================
-
   @Input()
   datos: RequirementAtencionParalelaTabla | null = null;
 

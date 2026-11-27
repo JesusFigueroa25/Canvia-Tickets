@@ -1,0 +1,40 @@
+<article class="chart-card" #panel>
+  <button type="button" class="parallel-expand-btn" (click)="alternarPantallaCompleta(panel)" [attr.aria-label]="expandido ? 'Salir de pantalla completa' : 'Ampliar gráfico de proyectos'">
+    <mat-icon>{{ expandido ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+  <header class="chart-header">
+    <div class="header-content"><div class="title-row"><span class="title-accent"></span><div>
+      <h3>Tickets en Paralelo por Proyecto y Mes</h3>
+      <p>Comparación mensual de tickets en paralelo por proyecto o cliente.</p>
+    </div></div></div>
+    <div class="chart-actions">
+      <div class="chart-controls">
+        <label class="control-label" for="parallel-project-chart-type">Tipo de ticket</label>
+        <select id="parallel-project-chart-type" [value]="tipo" [disabled]="cargando" (change)="cambiarTipo($event)">
+          <option value="">Todos los tipos</option><option value="Incident">Incidentes</option><option value="Service Request">Requerimientos</option>
+        </select>
+      </div>
+      <div class="chart-controls">
+        <label class="control-label" for="parallel-project-chart-search">Buscar proyecto</label>
+        <input id="parallel-project-chart-search" type="search" placeholder="Buscar proyecto o ALP..." [value]="busqueda" (input)="buscar($event)" />
+        <button type="button" class="clear-search" *ngIf="busqueda" (click)="limpiarBusqueda()">Limpiar búsqueda</button>
+      </div>
+    </div>
+  </header>
+  <div class="chart-area">
+    <div class="chart-scroll" *ngIf="!cargando && !error && !sinDatos">
+      <div class="chart-viewport" [style.min-width.px]="anchoMinimoGrafico">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'" role="img" aria-label="Tickets en paralelo por proyecto y mes"></canvas>
+      </div>
+    </div>
+    <div class="chart-state" *ngIf="cargando" role="status"><span class="loading-spinner"></span><span>Actualizando tickets por proyecto...</span></div>
+    <div class="chart-state error-state" *ngIf="!cargando && error" role="alert"><strong>No se pudo cargar el gráfico</strong><span>{{ error }}</span></div>
+    <div class="chart-state" *ngIf="!cargando && !error && sinDatos"><strong>Sin datos disponibles</strong><span>No hay proyectos con tickets en paralelo para la búsqueda o filtros seleccionados.</span></div>
+  </div>
+  <footer class="chart-footer">
+    <span>Período: {{ textoPeriodo }}</span>
+    <span *ngIf="!cargando && !error">{{ seriesVisibles.length }} de {{ totalCoincidentes }} proyectos · Top {{ limiteRanking }} por acumulado mensual</span>
+  </footer>
+  <div class="methodology-note">Cada barra representa tickets distintos del proyecto en el mes. Los acumulados mensuales pueden incluir un ticket en varios meses. La búsqueda y el tipo de ticket solo modifican este gráfico. Pulsa la leyenda para ocultar o mostrar proyectos.</div>
+  <p *ngIf="errorPantallaCompleta" class="error-message" role="alert">{{ errorPantallaCompleta }}</p>
+</article>

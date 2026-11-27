@@ -1,0 +1,243 @@
+<div class="tickets-parallel-analysis-page">
+  <header class="page-header">
+    <div class="page-header-content">
+      <h1>Análisis de Atención Paralela de Tickets</h1>
+      <p>Seguimiento de incidentes y requerimientos con intervalos de atención coincidentes por especialista, proyecto y
+        mes.</p>
+    </div>
+  </header>
+
+  <section class="filters-card" aria-label="Filtros globales">
+    <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()" class="filters-form">
+      <div class="date-range-fields">
+        <div class="filter-field">
+          <label for="parallel-desde">Desde</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input id="parallel-desde" matInput [matDatepicker]="pickerDesde" [min]="fechaMin" [max]="fechaMax"
+              formControlName="desde" placeholder="Seleccionar fecha" />
+            <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDesde></mat-datepicker>
+            <mat-error>Selecciona una fecha válida.</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="filter-field">
+          <label for="parallel-hasta">Hasta</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input id="parallel-hasta" matInput [matDatepicker]="pickerHasta" [min]="fechaMin" [max]="fechaMax"
+              formControlName="hasta" placeholder="Seleccionar fecha" />
+            <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+            <mat-datepicker #pickerHasta></mat-datepicker>
+            <mat-error>Selecciona una fecha válida.</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="filter-field">
+        <label>Grupo Resolutor</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select aria-label="Grupo Resolutor" formControlName="grupo_resolutor" placeholder="Todos los grupos"
+            (selectionChange)="cambiarGrupoResolutor()">
+            <mat-option [value]="null">Todos los grupos</mat-option>
+            <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">{{ grupo
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="filter-field">
+        <label>Prioridad</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select aria-label="Prioridad" formControlName="prioridad" placeholder="Todas">
+            <mat-option [value]="null">Todas</mat-option>
+            <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">{{ prioridad
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="filter-field">
+        <label>Motivo</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select aria-label="Motivo" formControlName="motivo" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let motivo of opcionesFiltros.motivos" [value]="motivo">{{ motivo }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="filter-field project-filter">
+        <label>Proyectos</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select aria-label="Proyectos" formControlName="proyectos" multiple placeholder="Todos los proyectos"
+            panelClass="parallel-project-panel" (openedChange)="busquedaProyecto = ''">
+            <mat-select-trigger>{{ filtrosForm.controls.proyectos.value.length }} proyectos
+              seleccionados</mat-select-trigger>
+            <div class="combo-search" (click)="$event.stopPropagation()"
+              (keydown)="$event.key !== 'Escape' && $event.stopPropagation()">
+              <mat-icon aria-hidden="true">search</mat-icon>
+              <input type="text" placeholder="Buscar proyecto o ALP..." aria-label="Buscar proyecto o ALP"
+                [value]="busquedaProyecto" (input)="buscarProyecto($event)" />
+              <button type="button" *ngIf="busquedaProyecto" class="combo-clear" aria-label="Limpiar búsqueda"
+                (click)="busquedaProyecto = ''"><mat-icon>close</mat-icon></button>
+            </div>
+            <div class="combo-selection-actions" (click)="$event.stopPropagation()">
+              <button type="button" class="combo-clear-selection"
+                (click)="limpiarSeleccionProyectos($event)"><mat-icon>restart_alt</mat-icon>Todos los proyectos</button>
+              <span class="combo-selection-count">{{ filtrosForm.controls.proyectos.value.length || 'Todos' }}</span>
+            </div>
+            <!-- Mantener las opciones montadas para conservar selecciones ocultas por búsqueda. -->
+            <mat-option *ngFor="let proyecto of opcionesFiltros.proyectos" [value]="proyecto" [title]="proyecto"
+              [style.display]="coincideBusquedaProyecto(proyecto) ? null : 'none'">{{ proyecto }}</mat-option>
+            <mat-option disabled *ngIf="!hayProyectosCoincidentes">No se encontraron proyectos</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="filter-field">
+        <label>Tipo de ticket</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select aria-label="Tipo de ticket" formControlName="ticket_type" placeholder="Todos">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let tipo of opcionesFiltros.tipos_ticket" [value]="tipo">{{ tipo === 'Incident' ?
+              'Incidentes' : 'Requerimientos' }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="filter-actions">
+        <button mat-button type="button" class="clear-button"
+          (click)="limpiarFiltros()"><mat-icon>restart_alt</mat-icon>Limpiar</button>
+        <button mat-flat-button type="submit" class="apply-button"
+          [disabled]="!filtrosListos || cargandoFiltros || filtrosForm.invalid || rangoInvalido"><mat-icon>filter_alt</mat-icon>Aplicar</button>
+      </div>
+    </form>
+    <div class="filter-footer">
+      <div class="available-range" *ngIf="opcionesFiltros.fecha_min && opcionesFiltros.fecha_max">
+        <mat-icon>info</mat-icon><span>Datos disponibles: {{ opcionesFiltros.fecha_min }} al {{
+          opcionesFiltros.fecha_max }}</span>
+      </div>
+      <p class="filter-note">Fechas de atención registrada, no de creación. Sin proyectos seleccionados se consultan
+        todos.</p>
+    </div>
+    <p class="error-text filter-note" *ngIf="rangoInvalido" role="alert">El rango debe estar dentro de las fechas
+      disponibles y Desde no puede superar Hasta.</p>
+  </section>
+
+  <section class="status-card" *ngIf="cargandoFiltros" role="status"><mat-icon>hourglass_top</mat-icon>Cargando opciones
+    de filtros...</section>
+  <section class="status-card error-card" *ngIf="errorFiltros" role="alert"><mat-icon>error_outline</mat-icon><span>{{
+      errorFiltros }}</span><button mat-button type="button"
+      (click)="cargarOpcionesFiltros(!filtrosActuales.desde)">Reintentar</button></section>
+  <div class="applied-range" *ngIf="filtrosActuales.desde">
+    <mat-icon>event_available</mat-icon>
+    <span>Consulta aplicada: <strong>{{ etiquetaRangoAplicado }}</strong> · {{ filtrosEfectivos.grupo_resolutor ||
+      'Todos los grupos' }} · {{ filtrosEfectivos.proyectos?.length || 'Todos' }} proyectos · {{
+      filtrosEfectivos.ticket_type === 'Incident' ? 'Incidentes' : filtrosEfectivos.ticket_type === 'Service Request' ?
+      'Requerimientos' : 'Todos los tipos' }} · {{ filtrosEfectivos.prioridad || 'Todas las prioridades' }} · {{
+      filtrosEfectivos.motivo || 'Todos los motivos' }}</span>
+  </div>
+  <section class="status-card" *ngIf="estados.kpis.cargando" role="status">
+    <mat-icon>hourglass_top</mat-icon>Actualizando indicadores...
+  </section>
+  <section class="status-card error-card" *ngIf="estados.kpis.error" role="alert"><mat-icon>error_outline</mat-icon>{{
+    estados.kpis.error }}<button mat-button type="button" (click)="reintentarDashboard()">Reintentar</button></section>
+  <section class="kpis-section" *ngIf="kpis as datos">
+    <app-kpi-card titulo="Total de Tickets en Paralelo" [valor]="datos.total_tickets_paralelos"
+      icono="confirmation_number" color="orange"></app-kpi-card>
+    <app-kpi-card titulo="Total de Resolutores" [valor]="datos.total_resolutores" icono="groups"
+      color="green"></app-kpi-card>
+    <app-kpi-card titulo="Total de Proyectos" [valor]="datos.total_proyectos" icono="business"
+      color="orange"></app-kpi-card>
+  </section>
+
+  <section class="chart-full-width chart-expandable" id="fullscreen-parallel-summary" #resumenFs>
+    <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(resumenFs)"
+      [attr.aria-label]="graficoExpandido ? 'Salir de pantalla completa' : 'Ampliar resumen mensual'">
+      <mat-icon>{{ graficoExpandido ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button>
+    <div class="chart-card">
+      <header class="chart-header">
+        <div class="chart-header-content">
+          <h2>Resumen Ejecutivo Mensual</h2>
+          <p>Incidentes y requerimientos evaluados y en paralelo por mes. Selecciona un mes para actualizar los
+            indicadores y los análisis detallados.</p>
+        </div>
+        <div class="volumen-month-control">
+          <label class="volumen-month-label" for="parallel-mes">Mes de análisis</label>
+          <select id="parallel-mes" [value]="periodoSeleccionado ?? ''"
+            [disabled]="estados.resumen.cargando || !resumenMensual.length"
+            (change)="cambiarPeriodo($any($event.target).value || null)">
+            <option value="">Todos los meses</option>
+            <option *ngFor="let item of resumenMensual" [value]="item.periodo">{{ nombreMes(item.periodo) }}</option>
+          </select>
+        </div>
+      </header>
+      <div class="chart-body">
+        <div class="chart-loading" *ngIf="estados.resumen.cargando" role="status">Actualizando resumen mensual...</div>
+        <div class="chart-message error-text" *ngIf="estados.resumen.error" role="alert">{{ estados.resumen.error }}
+          <button mat-button type="button" (click)="reintentarDashboard()">Reintentar</button>
+        </div>
+        <div class="chart-viewport"><canvas #resumenCanvas role="img"
+            aria-label="Incidentes y requerimientos evaluados y en paralelo por mes"></canvas></div>
+        <div class="chart-message"
+          *ngIf="filtrosActuales.desde && !estados.resumen.cargando && !estados.resumen.error && !hayResumen">No se
+          encontraron intervalos de atención para los filtros aplicados.</div>
+        <p class="chart-message error-text" *ngIf="errorPantallaCompleta" role="alert">{{ errorPantallaCompleta }}</p>
+        <p class="filter-note">Los tickets que abarcan más de un mes pueden aparecer en varios períodos. El KPI es un
+          conteo distinto del rango aplicado.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="analysis-section" aria-label="Análisis por resolutor">
+    <header class="analysis-section-header">
+      <h2>Análisis de Tickets en Paralelo por Resolutor</h2>
+      <p>Distribución mensual y ranking de especialistas.</p>
+    </header>
+    <app-parallel-resolver-monthly-table [datos]="datosResolutores" [desde]="filtrosEfectivos.desde ?? null"
+      [hasta]="filtrosEfectivos.hasta ?? null" [cargando]="estados.resolutores.cargando"
+      [error]="estados.resolutores.error">
+    </app-parallel-resolver-monthly-table>
+
+    <app-parallel-resolver-ranking-chart [datos]="datosResolutores" [desde]="filtrosEfectivos.desde ?? null"
+      [hasta]="filtrosEfectivos.hasta ?? null" [cargando]="estados.resolutores.cargando"
+      [error]="estados.resolutores.error">
+    </app-parallel-resolver-ranking-chart>
+  </section>
+  <section class="analysis-section" aria-label="Explorador de tickets">
+    <header class="analysis-section-header">
+      <h2>Explorador de Tickets en Paralelo</h2>
+      <p>Consulta por ticket y especialista con evidencia de coincidencias registradas.</p>
+    </header>
+    
+    <app-parallel-ticket-explorer-table [datos]="datosTickets" [cargando]="estados.tickets.cargando"
+      [error]="estados.tickets.error" [tipo]="tipoTicketLocal" [pagina]="paginaTickets" [tamano]="tamanoTickets"
+      [busquedaResolutor]="resolutorBusqueda" (busquedaResolutorChange)="cambiarResolutorBusqueda($event)"
+      (paginaChange)="cambiarPaginaTickets($event)" (tipoChange)="cambiarTipoTicketLocal($event)"
+      (detalle)="abrirDetalle($event)">
+      <app-parallel-ticket-detail-dialog *ngIf="ticketSeleccionado as ticket" [ticket]="ticket" [datos]="detalleTicket"
+        [cargando]="estados.detalle.cargando" [error]="estados.detalle.error" (reintentar)="abrirDetalle($event)"
+        (cerrar)="cerrarDetalle()">
+      </app-parallel-ticket-detail-dialog>
+    </app-parallel-ticket-explorer-table>
+
+
+
+  </section>
+  <section class="analysis-section" aria-label="Análisis por proyecto">
+    <header class="analysis-section-header">
+      <h2>Análisis de Tickets en Paralelo por Proyecto</h2>
+      <p>Distribución mensual por denominación completa del cliente.</p>
+    </header>
+    <app-parallel-project-monthly-table [datos]="datosProyectos" [desde]="filtrosEfectivos.desde ?? null"
+      [hasta]="filtrosEfectivos.hasta ?? null" [cargando]="estados.proyectos.cargando"
+      [error]="estados.proyectos.error">
+    </app-parallel-project-monthly-table>
+    <app-parallel-project-monthly-chart [datos]="datosProyectos" [desde]="filtrosEfectivos.desde ?? null"
+      [hasta]="filtrosEfectivos.hasta ?? null" [cargando]="estados.proyectos.cargando"
+      [error]="estados.proyectos.error">
+    </app-parallel-project-monthly-chart>
+  </section>
+  <section class="status-card error-card"
+    *ngIf="estados.resolutores.error || estados.proyectos.error || estados.tickets.error" role="alert">
+    <mat-icon>error_outline</mat-icon>No se completaron todas las consultas del análisis.<button mat-button
+      type="button" (click)="reintentarDashboard()">Reintentar</button>
+  </section>
+  <p class="method-note"><mat-icon>info</mat-icon>El paralelismo representa coincidencias de intervalos registrados para
+    un mismo resolutor. No demuestra atención humana simultánea; los ajustes manuales no generan intervalos de
+    concurrencia.</p>
+</div>

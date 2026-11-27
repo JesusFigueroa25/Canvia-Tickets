@@ -100,6 +100,13 @@ import { IncidentMonthlyReport } from './components/charts/Consolidated/incident
 import { IncidentProjectReport } from './components/charts/Consolidated/incident-project-report/incident-project-report';
 import { IncidentProjectMonthlyReport } from './components/charts/Consolidated/incident-project-monthly-report/incident-project-monthly-report';
 import { IncidentRecurringAlertsReport } from './components/charts/Consolidated/incident-recurring-alerts-report/incident-recurring-alerts-report';
+import { TicketsParallelAnalysis } from './components/pages/tickets-parallel-analysis/tickets-parallel-analysis';
+import { ParallelResolverMonthlyTable } from './components/charts/Paralelos/parallel-resolver-monthly-table/parallel-resolver-monthly-table';
+import { ParallelTicketDetailDialog } from './components/charts/Paralelos/parallel-ticket-detail-dialog/parallel-ticket-detail-dialog';
+import { ParallelResolverRankingChart } from './components/charts/Paralelos/parallel-resolver-ranking-chart/parallel-resolver-ranking-chart';
+import { ParallelTicketExplorerTable } from './components/charts/Paralelos/parallel-ticket-explorer-table/parallel-ticket-explorer-table';
+import { ParallelProjectMonthlyTable } from './components/charts/Paralelos/parallel-project-monthly-table/parallel-project-monthly-table';
+import { ParallelProjectMonthlyChart } from './components/charts/Paralelos/parallel-project-monthly-chart/parallel-project-monthly-chart';
 
 @NgModule({
   declarations: [
@@ -193,6 +200,13 @@ import { IncidentRecurringAlertsReport } from './components/charts/Consolidated/
     IncidentProjectReport,
     IncidentProjectMonthlyReport,
     IncidentRecurringAlertsReport,
+    TicketsParallelAnalysis,
+    ParallelResolverMonthlyTable,
+    ParallelTicketDetailDialog,
+    ParallelResolverRankingChart,
+    ParallelTicketExplorerTable,
+    ParallelProjectMonthlyTable,
+    ParallelProjectMonthlyChart,
   ],
   imports: [
     BrowserAnimationsModule,

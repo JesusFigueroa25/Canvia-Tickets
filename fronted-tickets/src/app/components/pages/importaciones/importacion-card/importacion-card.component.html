@@ -153,6 +153,36 @@
 
                     </div>
 
+                    <!-- CONCILIACIÓN DE CAMBIOS CONSOLIDADOS -->
+
+                    <div class="manual-import-details"
+                        *ngIf="idModulo === 'change-consolidated' && resultado.filas_excel != null && resultado.duplicados != null">
+
+                        <div class="manual-import-details-title">
+                            Conciliación de Cambios Consolidados
+                        </div>
+
+                        <div class="file-result-grid">
+
+                            <div>
+                                <span>Filas originales del Excel</span>
+                                <strong>
+                                    {{ resultado.filas_excel | number }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Duplicados detectados</span>
+                                <strong>
+                                    {{ resultado.duplicados | number }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
                     <!-- Datos adicionales exclusivos del importador manual. -->
                     <div class="manual-import-details" *ngIf="obtenerDetalleManual(resultado) as detalleManual">
                         <div class="manual-import-details-title">Conciliación de tickets</div>

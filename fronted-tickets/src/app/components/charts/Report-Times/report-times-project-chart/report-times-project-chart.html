@@ -1,4 +1,3 @@
-
 <article class="chart-card">
 
   <!-- ENCABEZADO -->
@@ -21,27 +20,17 @@
 
     <!-- FILTRO VISUAL POR PROYECTO -->
     <div class="chart-controls">
-      <label
-        for="report-times-project-select"
-        class="control-label"
-      >
+      <label for="report-times-project-select" class="control-label">
         Proyecto
       </label>
 
-      <select
-        id="report-times-project-select"
-        [value]="proyectoActivo"
-        [disabled]="cargando || !datos?.series?.length"
-        (change)="seleccionarProyecto($event)"
-      >
+      <select id="report-times-project-select" [value]="proyectoActivo" [disabled]="cargando || !datos?.series?.length"
+        (change)="seleccionarProyecto($event)">
         <option value="">
           Todos los proyectos (Top {{ datos?.limite ?? 10 }})
         </option>
 
-        <option
-          *ngFor="let serie of datos?.series ?? []"
-          [value]="serie.nombre"
-        >
+        <option *ngFor="let serie of datos?.series ?? []" [value]="serie.nombre">
           {{ nombreVisibleProyecto(serie.nombre) }}
         </option>
       </select>
@@ -78,51 +67,27 @@
   <!-- GRÁFICO -->
   <div class="chart-area">
 
-    <div
-      class="chart-scroll"
-      *ngIf="!cargando && !error && !sinDatos"
-    >
-      <div
-        class="chart-viewport"
-        [style.min-width.px]="anchoMinimoGrafico"
-      >
-        <canvas
-          baseChart
-          [data]="chartData"
-          [options]="chartOptions"
-          [plugins]="chartPlugins"
-          [type]="'bar'"
-          role="img"
-          aria-label="Horas registradas por proyecto y mes"
-        ></canvas>
+    <div class="chart-scroll" *ngIf="!cargando && !error && !sinDatos">
+      <div class="chart-viewport" [style.min-width.px]="anchoMinimoGrafico">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" [type]="'bar'" role="img"
+          aria-label="Horas registradas por proyecto y mes"></canvas>
       </div>
     </div>
 
     <!-- CARGANDO -->
-    <div
-      class="chart-state"
-      *ngIf="cargando"
-      role="status"
-    >
+    <div class="chart-state" *ngIf="cargando" role="status">
       <span class="loading-spinner"></span>
       <span>Actualizando horas por proyecto...</span>
     </div>
 
     <!-- ERROR -->
-    <div
-      class="chart-state error-state"
-      *ngIf="!cargando && error"
-      role="alert"
-    >
+    <div class="chart-state error-state" *ngIf="!cargando && error" role="alert">
       <strong>No se pudo cargar el gráfico</strong>
       <span>{{ error }}</span>
     </div>
 
     <!-- SIN DATOS -->
-    <div
-      class="chart-state"
-      *ngIf="!cargando && !error && sinDatos"
-    >
+    <div class="chart-state" *ngIf="!cargando && !error && sinDatos">
       <strong>Sin datos disponibles</strong>
 
       <span>
