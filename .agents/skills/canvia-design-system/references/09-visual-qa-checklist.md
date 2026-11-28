@@ -8,7 +8,7 @@ En tareas exclusivamente documentales, valida formato, enlaces, coherencia y alc
 
 ## Identidad y componentes
 
-- [ ] Aurora Light reconocible en fondos y encabezados; Sidenav Aurora Deep.
+- [ ] Aurora Soft visible y uniforme entre componentes, usando la composición Aurora Light sin lámina blanca de página; Sidenav Aurora Deep conservado.
 - [ ] Tokens de color, tipografía, radios, espaciado y elevación consistentes con [Design Tokens](../../../../docs/DESIGN_SYSTEM.md#design-tokens).
 - [ ] Tarjetas, filtros, botones, tablas y diálogos siguen los patrones aplicables sin contenido inventado.
 - [ ] Gráficos y tablas conservan superficies claras, cifras y etiquetas legibles.

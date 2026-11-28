@@ -263,3 +263,6 @@
     animation: none;
   }
 }
+
+
+  .canvia-extension-chat { display:grid; gap:12px; margin:0 0 16px; }

@@ -234,3 +234,6 @@
     max-width: 200px;
   }
 }
+
+
+  .canvia-extension-chat { display:grid; gap:8px; margin:0 0 10px; min-width:0; }

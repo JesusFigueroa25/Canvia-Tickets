@@ -11,6 +11,65 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     box-sizing: border-box;
 }
 
+/* Skeletons opt-in: solo en markup decorativo autorizado, nunca en reportes. */
+.canvia-skeleton {
+    min-width: 0;
+    padding: var(--canvia-padding-card);
+    border: 1px solid var(--canvia-border-default);
+    border-radius: var(--canvia-skeleton-radius-container);
+    background: var(--canvia-surface-card-translucent);
+}
+
+.canvia-skeleton .canvia-skeleton__block {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    height: 12px;
+    border-radius: var(--canvia-skeleton-radius-block);
+    background: var(--canvia-skeleton-base);
+}
+
+.canvia-skeleton .canvia-skeleton__block::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--canvia-skeleton-highlight), transparent);
+    transform: translateX(-100%);
+    animation: canvia-skeleton-shimmer var(--canvia-motion-shimmer) linear infinite;
+}
+
+.canvia-skeleton .canvia-skeleton__label { width: 72%; }
+.canvia-skeleton .canvia-skeleton__value { width: 48%; height: 28px; }
+.canvia-skeleton .canvia-skeleton__short { width: 55%; }
+.canvia-skeleton .canvia-skeleton__icon { width: 40px; height: 40px; flex-shrink: 0; }
+.canvia-skeleton .canvia-skeleton__copy { display: grid; gap: var(--canvia-space-8); min-width: 0; flex: 1; }
+.canvia-skeleton .canvia-skeleton__heading { display: flex; align-items: center; gap: var(--canvia-space-12); }
+.canvia-skeleton--kpi { display: flex; align-items: center; gap: var(--canvia-space-16); min-height: 115px; }
+.canvia-skeleton--text { display: grid; align-content: start; gap: var(--canvia-space-16); }
+.canvia-skeleton--chart { display: grid; gap: var(--canvia-space-16); }
+.canvia-skeleton .canvia-skeleton__plot { height: 290px; min-width: 0; }
+.canvia-skeleton .canvia-skeleton__bars { display: flex; align-items: flex-end; justify-content: space-around; gap: var(--canvia-space-12); padding: var(--canvia-space-20) var(--canvia-space-12); border-bottom: 1px solid var(--canvia-skeleton-base); }
+.canvia-skeleton .canvia-skeleton__bars > .canvia-skeleton__block { width: 13%; height: 55%; }
+.canvia-skeleton .canvia-skeleton__bars > :nth-child(2n) { height: 80%; }
+.canvia-skeleton .canvia-skeleton__bars > :nth-child(3n) { height: 65%; }
+.canvia-skeleton .canvia-skeleton__line { display: flex; align-items: center; }
+.canvia-skeleton .canvia-skeleton__line svg { width: 100%; height: 100%; overflow: hidden; }
+.canvia-skeleton .canvia-skeleton__line path { fill: none; stroke: var(--canvia-skeleton-base); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.canvia-skeleton .canvia-skeleton__donut { width: min(100%, 220px); aspect-ratio: 1; margin: auto; border: 32px solid var(--canvia-skeleton-base); border-radius: var(--canvia-radius-full); }
+.canvia-skeleton .canvia-skeleton__legend { display: flex; justify-content: center; gap: var(--canvia-space-16); }
+.canvia-skeleton .canvia-skeleton__legend > .canvia-skeleton__block { width: 25%; }
+.canvia-skeleton--table { display: grid; gap: var(--canvia-space-4); }
+.canvia-skeleton .canvia-skeleton__row { display: grid; grid-template-columns: 2fr 1fr 1fr; align-items: center; gap: var(--canvia-space-16); min-height: 44px; border-bottom: 1px solid var(--canvia-skeleton-base); }
+
+@keyframes canvia-skeleton-shimmer {
+    to { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .canvia-skeleton .canvia-skeleton__block::after { animation: none; display: none; }
+}
+
 body {
     position: relative;
     font-family: 'Roboto', sans-serif;
@@ -34,4 +93,152 @@ body {
     .card-body {
         padding: 1rem 1.5rem; 
     }
+}
+
+/*
+ * CANVIA Aurora Soft Enterprise UI — DESIGN_SYSTEM.md v2.0.
+ * Aplicar esta clase solo a superficies autorizadas sin reportes descendientes.
+ * Las variables se heredan. Excluir html, body, app-root y el contenedor del router.
+ * La Fase 2.4.1 define el catálogo sin activar consumidores ni estilos visuales.
+ */
+.canvia-tokens {
+    /* Marca y ambiente Aurora. */
+    --canvia-brand-orange: #FF620F;
+    --canvia-brand-orange-soft: #FFB184;
+    --canvia-brand-orange-light: #FFF1E7;
+    --canvia-brand-green: #16835B;
+    --canvia-brand-green-soft: #63B891;
+    --canvia-brand-green-deep: #003421;
+    --canvia-aurora-emerald: #34D399;
+    --canvia-aurora-mint: #D1FAE5;
+    --canvia-aurora-sage: #A8DCC2;
+    --canvia-aurora-peach: #FFCFAB;
+    --canvia-aurora-amber: #FFD89C;
+    --canvia-aurora-cream: #FFF5EB;
+
+    /* Superficies, texto, bordes y foco. Validar el contraste al consumirlos. */
+    --canvia-surface-page: #F7F9FB;
+    --canvia-surface-card: #FFFFFF;
+    --canvia-surface-card-translucent: rgba(255, 255, 255, .94);
+    --canvia-surface-green: #F2FCF5;
+    --canvia-surface-orange: #FFF8F3;
+    --canvia-surface-muted: #F2F4F7;
+    --canvia-text-primary: #101828;
+    --canvia-text-secondary: #475467;
+    --canvia-text-muted: #667085;
+    --canvia-text-disabled: #98A2B3;
+    --canvia-text-brand: #12633F;
+    --canvia-border-default: #E5E9EE;
+    --canvia-border-control: #98A2B3;
+    --canvia-focus: #12633F;
+    --canvia-focus-width: 2px;
+
+    /* Estados semánticos. */
+    --canvia-state-success-text: #12633F;
+    --canvia-state-success-surface: #E7F5EC;
+    --canvia-state-warning-text: #9A3412;
+    --canvia-state-warning-surface: #FFF1E7;
+    --canvia-state-error-text: #B42318;
+    --canvia-state-error-surface: #FEF3F2;
+    --canvia-state-info-text: #175CD3;
+    --canvia-state-info-surface: #EFF8FF;
+    --canvia-state-neutral-text: #475467;
+    --canvia-state-neutral-surface: #F2F4F7;
+
+    /* Paleta documental de referencia. Conservar la configuración Chart.js vigente. */
+    --canvia-chart-amber: #D97706;
+    --canvia-chart-yellow: #F4C95D;
+    --canvia-chart-green-dark: #12633F;
+    --canvia-chart-green-light: #A8DCC2;
+
+    /* Composiciones del documento. Emerald y Sunset requieren validación en Home. */
+    --canvia-gradient-aurora-light:
+        radial-gradient(ellipse at 10% 0%, rgba(52, 211, 153, .30), transparent 65%),
+        radial-gradient(ellipse at 100% 0%, rgba(255, 98, 15, .25), transparent 65%),
+        radial-gradient(ellipse at 90% 100%, rgba(99, 184, 145, .20), transparent 70%),
+        var(--canvia-surface-page);
+    --canvia-gradient-aurora-emerald:
+        radial-gradient(ellipse at 10% 0%, rgba(52, 211, 153, .30), transparent 65%),
+        radial-gradient(ellipse at 100% 0%, rgba(99, 184, 145, .20), transparent 65%),
+        radial-gradient(ellipse at 90% 100%, rgba(209, 250, 229, .20), transparent 70%),
+        var(--canvia-surface-page);
+    --canvia-gradient-aurora-sunset:
+        radial-gradient(ellipse at 100% 0%, rgba(255, 98, 15, .25), transparent 65%),
+        radial-gradient(ellipse at 10% 0%, rgba(255, 207, 171, .25), transparent 65%),
+        radial-gradient(ellipse at 90% 100%, rgba(255, 216, 156, .25), transparent 70%),
+        var(--canvia-surface-page);
+    --canvia-gradient-aurora-deep:
+        radial-gradient(ellipse at 0% 0%, var(--canvia-brand-green), transparent 75%),
+        var(--canvia-brand-green-deep);
+
+    /* Tipografía por uso. Las fuentes internas de gráficos y reportes son independientes. */
+    --canvia-font-family: Roboto, Arial, sans-serif;
+    --canvia-font-numeric: tabular-nums;
+    --canvia-font-size-display: 40px;
+    --canvia-font-weight-display: 700;
+    --canvia-font-size-page-title: 34px;
+    --canvia-font-weight-page-title: 700;
+    --canvia-font-size-section-title: 24px;
+    --canvia-font-weight-section-title: 600;
+    --canvia-font-size-card-title: 18px;
+    --canvia-font-weight-card-title: 600;
+    --canvia-font-size-subtitle: 16px;
+    --canvia-font-weight-subtitle: 500;
+    --canvia-font-size-body: 14px;
+    --canvia-font-weight-body: 400;
+    --canvia-font-size-table: 13px;
+    --canvia-font-weight-table: 400;
+    --canvia-font-size-caption: 12px;
+    --canvia-font-weight-caption: 500;
+    --canvia-font-size-kpi: 34px;
+    --canvia-font-weight-kpi: 700;
+    --canvia-font-size-kpi-compact: 28px;
+    --canvia-font-weight-kpi-compact: 700;
+
+    /* Escala de espaciado y usos aprobados. */
+    --canvia-space-4: 4px;
+    --canvia-space-8: 8px;
+    --canvia-space-12: 12px;
+    --canvia-space-16: 16px;
+    --canvia-space-20: 20px;
+    --canvia-space-24: 24px;
+    --canvia-space-32: 32px;
+    --canvia-space-40: 40px;
+    --canvia-space-48: 48px;
+    --canvia-space-64: 64px;
+    --canvia-padding-dashboard: var(--canvia-space-24);
+    --canvia-padding-mobile: var(--canvia-space-16);
+    --canvia-gap-cards: var(--canvia-space-20);
+    --canvia-padding-card: var(--canvia-space-24);
+    --canvia-gap-sections: var(--canvia-space-32);
+
+    /* Radios generales y radio específico de diálogo. */
+    --canvia-radius-xs: 4px;
+    --canvia-radius-sm: 8px;
+    --canvia-radius-md: 12px;
+    --canvia-radius-lg: 16px;
+    --canvia-radius-xl: 24px;
+    --canvia-radius-full: 999px;
+    --canvia-radius-dialog: 20px;
+    --canvia-elevation-0: none;
+    --canvia-elevation-1: 0 2px 8px rgba(16, 24, 40, .06);
+    --canvia-elevation-2: 0 6px 18px rgba(16, 24, 40, .09);
+    --canvia-elevation-3: 0 16px 40px rgba(16, 24, 40, .14);
+
+    /* Duraciones CSS. Cada consumidor deberá respetar prefers-reduced-motion. */
+    --canvia-motion-feedback: 80ms;
+    --canvia-motion-hover: 120ms;
+    --canvia-motion-state: 150ms;
+    --canvia-motion-filter: 200ms;
+    --canvia-motion-sidenav: 250ms;
+    --canvia-motion-dialog: 250ms;
+    --canvia-motion-content: 300ms;
+    --canvia-motion-shimmer: 1600ms;
+    --canvia-motion-easing: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+    /* Valores documentados para la futura actividad de skeletons. */
+    --canvia-skeleton-base: #E5E9EE;
+    --canvia-skeleton-highlight: #F7F9FB;
+    --canvia-skeleton-radius-block: 6px;
+    --canvia-skeleton-radius-container: 16px;
 }

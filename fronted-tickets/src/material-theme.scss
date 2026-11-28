@@ -36,3 +36,166 @@ body {
   margin: 0;
   height: 100%;
 }
+
+// Consumidores de Fase 2.4.2. El tema base permanece en html y body.
+.canvia-material-login .canvia-material-field,
+.canvia-material-project {
+  @include mat.form-field-overrides((
+    outlined-container-shape: var(--canvia-radius-md),
+    outlined-outline-color: var(--canvia-text-muted),
+    outlined-hover-outline-color: var(--canvia-text-secondary),
+    outlined-focus-outline-color: var(--canvia-focus),
+    outlined-focus-outline-width: var(--canvia-focus-width),
+    outlined-input-text-color: var(--canvia-text-primary),
+    outlined-input-text-placeholder-color: var(--canvia-text-muted),
+    outlined-label-text-color: var(--canvia-text-secondary),
+    outlined-focus-label-text-color: var(--canvia-text-brand),
+    outlined-caret-color: var(--canvia-focus),
+    outlined-error-outline-color: var(--canvia-state-error-text),
+    outlined-error-focus-outline-color: var(--canvia-state-error-text),
+    outlined-error-hover-outline-color: var(--canvia-state-error-text),
+    outlined-error-label-text-color: var(--canvia-state-error-text),
+    outlined-error-focus-label-text-color: var(--canvia-state-error-text),
+    outlined-error-caret-color: var(--canvia-state-error-text),
+    error-text-color: var(--canvia-state-error-text),
+    leading-icon-color: var(--canvia-text-secondary),
+    trailing-icon-color: var(--canvia-text-secondary),
+    container-text-font: var(--canvia-font-family),
+    container-text-size: var(--canvia-font-size-body),
+    subscript-text-size: var(--canvia-font-size-caption),
+  ));
+}
+
+.canvia-material-login {
+  @include mat.form-field-overrides((
+    container-height: var(--canvia-space-48),
+    container-vertical-padding: var(--canvia-space-12),
+  ));
+
+  .login-button {
+    @include mat.button-overrides((
+      filled-container-color: var(--canvia-brand-green),
+      filled-label-text-color: var(--canvia-surface-card),
+      filled-container-shape: var(--canvia-radius-md),
+      filled-container-height: 44px, // Altura de botón aprobada en DESIGN_SYSTEM.md.
+      filled-disabled-container-color: var(--canvia-surface-muted),
+      filled-disabled-label-text-color: var(--canvia-text-disabled),
+      filled-label-text-font: var(--canvia-font-family),
+      filled-label-text-size: var(--canvia-font-size-body),
+      filled-label-text-weight: var(--canvia-font-weight-subtitle),
+    ));
+  }
+
+  .password-button {
+    @include mat.icon-button-overrides((icon-color: var(--canvia-text-secondary)));
+  }
+}
+
+.canvia-material-project {
+  @include mat.select-overrides((
+    enabled-trigger-text-color: var(--canvia-text-primary),
+    placeholder-text-color: var(--canvia-text-muted),
+    enabled-arrow-color: var(--canvia-text-secondary),
+    focused-arrow-color: var(--canvia-focus),
+    trigger-text-font: var(--canvia-font-family),
+    trigger-text-size: var(--canvia-font-size-body),
+  ));
+}
+
+// panelClass da ámbito propio a este panel, sin depender de su ascendencia.
+.daily-report-project-panel.canvia-tokens {
+  @include mat.select-overrides((
+    panel-background-color: var(--canvia-surface-card),
+    container-elevation-shadow: var(--canvia-elevation-2),
+  ));
+  @include mat.option-overrides((
+    label-text-color: var(--canvia-text-primary),
+    selected-state-label-text-color: var(--canvia-text-brand),
+    selected-state-layer-color: var(--canvia-surface-green),
+    hover-state-layer-color: var(--canvia-surface-muted),
+    focus-state-layer-color: var(--canvia-aurora-mint),
+    label-text-font: var(--canvia-font-family),
+    label-text-size: var(--canvia-font-size-body),
+  ));
+  @include mat.pseudo-checkbox-overrides((
+    minimal-selected-checkmark-color: var(--canvia-text-brand),
+  ));
+  border-radius: var(--canvia-radius-md);
+
+  .combo-search {
+    gap: var(--canvia-space-8);
+    background: var(--canvia-surface-card);
+    border-bottom-color: var(--canvia-border-default);
+  }
+
+  .combo-search > mat-icon {
+    color: var(--canvia-text-brand);
+  }
+
+  .combo-search input {
+    color: var(--canvia-text-primary);
+    font-family: var(--canvia-font-family);
+    font-size: var(--canvia-font-size-body);
+    border-radius: var(--canvia-radius-xs);
+  }
+
+  .combo-search input::placeholder {
+    color: var(--canvia-text-muted);
+  }
+
+  .combo-clear {
+    color: var(--canvia-text-secondary);
+    border-radius: var(--canvia-radius-xs);
+  }
+
+  .combo-clear:hover {
+    color: var(--canvia-text-brand);
+    background: var(--canvia-surface-green);
+  }
+
+  .combo-search input:focus-visible,
+  .combo-clear:focus-visible {
+    outline: var(--canvia-focus-width) solid var(--canvia-focus);
+    outline-offset: 2px;
+  }
+}
+
+// CANVIA — Aurora Emerald. Solo fechas de los formularios autorizados.
+// Los paneles Material se montan fuera del componente padre (CDK overlay).
+// panelClass se aplica al calendario; :has alcanza exclusivamente su contenedor.
+.canvia-datepicker-panel,
+mat-datepicker-content:has(.canvia-datepicker-panel) {
+  @include mat.datepicker-overrides((
+    calendar-container-background-color: var(--canvia-surface-card, #FFFFFF),
+    calendar-container-text-color: var(--canvia-text-primary, #101828),
+    calendar-container-shape: var(--canvia-radius-lg, 16px),
+    calendar-container-elevation-shadow: var(--canvia-elevation-2, 0 6px 18px rgba(16, 24, 40, .09)),
+    calendar-container-touch-shape: var(--canvia-radius-lg, 16px),
+    calendar-container-touch-elevation-shadow: var(--canvia-elevation-3, 0 16px 40px rgba(16, 24, 40, .14)),
+    calendar-date-text-color: var(--canvia-text-primary, #101828),
+    calendar-date-disabled-state-text-color: var(--canvia-text-disabled, #98A2B3),
+    calendar-date-selected-state-background-color: var(--canvia-brand-green, #16835B),
+    calendar-date-selected-state-text-color: var(--canvia-surface-card, #FFFFFF),
+    calendar-date-selected-disabled-state-background-color: var(--canvia-text-disabled, #98A2B3),
+    calendar-date-hover-state-background-color: var(--canvia-aurora-mint, #D1FAE5),
+    calendar-date-focus-state-background-color: var(--canvia-aurora-sage, #A8DCC2),
+    calendar-date-today-outline-color: var(--canvia-focus, #12633F),
+    calendar-date-today-selected-state-outline-color: var(--canvia-surface-card, #FFFFFF),
+    calendar-date-today-disabled-state-outline-color: var(--canvia-border-default, #E5E9EE),
+    calendar-body-label-text-color: var(--canvia-text-secondary, #475467),
+    calendar-period-button-text-color: var(--canvia-text-brand, #12633F),
+    calendar-period-button-icon-color: var(--canvia-text-brand, #12633F),
+    calendar-navigation-button-icon-color: var(--canvia-text-brand, #12633F),
+    calendar-header-text-color: var(--canvia-text-secondary, #475467),
+    calendar-header-divider-color: var(--canvia-border-default, #E5E9EE),
+    calendar-text-font: var(--canvia-font-family, Roboto, Arial, sans-serif),
+    calendar-text-size: var(--canvia-font-size-body, 14px)
+  ));
+}
+
+.canvia-datepicker-field {
+  @include mat.datepicker-overrides((
+    toggle-icon-color: var(--canvia-text-brand, #12633F),
+    toggle-active-state-icon-color: var(--canvia-focus, #12633F)
+  ));
+}

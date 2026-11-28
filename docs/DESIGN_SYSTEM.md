@@ -1,11 +1,11 @@
-# Sistema de diseño CANVIA — Aurora Enterprise UI
+# Sistema de diseño CANVIA — Aurora Soft Enterprise UI
 
 **Versión documental:** 2.0 · **Fecha:** 27/11/2026\
-**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6; implementación y QA pendientes.
+**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Tokens incorporados en 2.4.1, Material selectivo en 2.4.2, Sidenav/Layout en 2.4.3 y skeletons reutilizables con primera integración Home en 2.5.1. Limitaciones de geometría ejecutiva, móvil expandido y motion TS documentadas.
 
 ## Alcance y fuentes de verdad
 
-Este documento fija la identidad y especificaciones visuales de CANVIA. El [PRD de modernización](requirements/NN_modernizacion_frontend_ux_ui_PRD.md) fija alcance, requisitos, restricciones, orden y aceptación; la [skill canvia-design-system](../.agents/skills/canvia-design-system/SKILL.md) fija procedimientos operativos. El código vigente, diff y pruebas ejecutadas acreditan el estado real. No se presentan estos tokens como instalados ni se declara cumplimiento visual o funcional.
+Este documento fija la identidad y especificaciones visuales de CANVIA. El [PRD de modernización](requirements/NN_modernizacion_frontend_ux_ui_PRD.md) fija alcance, requisitos, restricciones, orden y aceptación; la [skill canvia-design-system](../.agents/skills/canvia-design-system/SKILL.md) fija procedimientos operativos. El código vigente, diff y pruebas ejecutadas acreditan el estado real. La disponibilidad del catálogo se distingue de su adopción visual y de las validaciones funcionales por componente.
 
 Durante esta modernización solo se autorizan cambios visuales HTML/CSS/SCSS y documentación en el alcance de cada tarea. TypeScript, backend, datos, reglas de negocio, rutas, servicios, funciones y todas las exportaciones quedan protegidos. La invocación de una skill no autoriza editar. Si hay contradicción, no ampliar alcance: registrar y resolver mediante autorización explícita.
 
@@ -13,11 +13,11 @@ Durante esta modernización solo se autorizan cambios visuales HTML/CSS/SCSS y d
 
 ### Objetivo aprobado
 
-CANVIA — Aurora Enterprise UI utiliza la variante Aurora Light: una interfaz empresarial, tecnológica y luminosa. Aurora / Mesh Gradients es el estilo protagonista, con presencia visible en fondos y encabezados; los datos conservan superficies claras.
+CANVIA — Aurora Soft Enterprise UI utiliza la composición Aurora Light con intensidad suave: una interfaz empresarial, moderna, predominantemente clara y poco saturada. Los gradientes ambientales permanecen visibles entre componentes; tarjetas, filtros, gráficos y tablas conservan superficies independientes y legibles.
 
 Usa verde, menta y naranja como ambiente, Roboto como familia principal, Sidenav Aurora Deep; evita glassmorfismo excesivo y no adoptes glassmorfismo como estilo independiente. Mantén densidad operativa, información legible, secciones, orden funcional y acciones existentes. La rejilla modular responde al contenido real; Bento no es una segunda dirección estética aprobada ni autoriza a inventar paneles o cambiar su alcance.
 
-No implementes modo oscuro completo. No uses fotografías decorativas en dashboards ni los conviertas en landing pages comerciales. Login y Landing admiten Aurora de alta presencia sin añadir contenido o comportamientos ajenos a lo autorizado.
+No implementes modo oscuro completo. No uses fotografías decorativas en dashboards ni los conviertas en landing pages comerciales. Login y Landing conservan la composición Aurora aprobada con las intensidades Soft, sin añadir contenido o comportamientos ajenos a lo autorizado.
 
 ### Relación con frontend-skill
 
@@ -37,13 +37,15 @@ angular-developer y playwright podrán utilizarse cuando estén instaladas, disp
 
 #### Intensidad y composición
 
-Aurora es protagonista en el fondo y encabezados; alta en Login y Landing, media-alta en navegación, moderada en KPI y baja en filtros, diálogos y contenedores analíticos. Las tablas son sólidas y los skeletons neutros. Aurora no alcanza reportes descargables. No hay animación ambiental permanente.
+Aurora Soft es visible en el fondo y entre componentes, con intensidades suaves uniformes. Sidenav mantiene Aurora Deep. KPI, filtros, diálogos y contenedores analíticos conservan sus decisiones aprobadas y superficies independientes; las tablas son sólidas y los skeletons neutros. Aurora no alcanza reportes descargables. No hay animación ambiental permanente.
 
 Jerarquía orientativa: encabezado → filtros → KPI → insights → gráficos → tablas → análisis, solo cuando esas secciones ya existan. Preservar orden funcional y estructura necesaria para los datos.
 
 ## Design Tokens
 
-Estos valores son el estándar objetivo aprobado; documentarlos aquí no los instala en el frontend. Al implementarlos con autorización, usa nombres semánticos consistentes con prefijo canvia dentro de un ámbito que excluya las exportaciones; no añadas automáticamente variables a :root o body.
+Estos valores son el estándar objetivo aprobado. Desde la Fase 2.4.1 están disponibles en [styles.css](../fronted-tickets/src/styles.css) mediante 106 propiedades con prefijo --canvia- bajo la clase explícita .canvia-tokens. El catálogo contiene colores, estados, paleta documental de gráficos, superficies, cuatro composiciones Aurora, tipografía, espaciado, radios, elevaciones, foco, motion y valores documentados de skeleton. Los nombres trasladan exclusivamente valores ya aprobados en este documento.
+
+La Fase 2.4.2 activa la clase en el formulario de Login, el campo de proyectos de Reporte Diario y su panel daily-report-project-panel. Las propiedades se heredan dentro de esos ámbitos, que excluyen reportes entre sus descendientes. Mantener la clase fuera de html, body, app-root y los contenedores del router o de exportaciones. Cada consumidor deberá respetar prefers-reduced-motion y validar el contraste efectivo. Emerald y Sunset conservan su validación visual pendiente en Home. La evidencia inicial está registrada en [Fase 2.4.1 del plan de pruebas](TEST_PLAN.md#fase-241--design-tokens-y-fundamentos-visuales).
 
 ### Color
 
@@ -100,14 +102,16 @@ Referencias históricas de la paleta de datos. No reasignar colores internos ni 
 
 ### Gradientes radiales multicapa
 
-Las siguientes composiciones son referencias documentales. Mantén Aurora visible sin animación permanente de fondo. Aurora Light utiliza intensidad esmeralda 70%, naranja 55% y verde suave/menta 45%. Las tarjetas pueden usar blanco al 94%; tablas, diálogos y superficies que lo necesiten serán sólidos.
+La dirección definitiva Aurora Soft actualiza únicamente intensidades y fondo base de los tokens existentes. Aurora Light utiliza verde 30%, naranja 25% y verde suave/menta 20%, sobre #F7F9FB. Conserva posiciones y extensiones radiales. Emerald aplica 30% al esmeralda y 20% a sus dos capas suaves; Sunset aplica 25% a sus tres capas cálidas y usa la misma base #F7F9FB. Aurora Deep permanece intacto.
+
+El blanco al 94% corresponde a superficies individuales mediante --canvia-surface-card-translucent, nunca a una lámina sobre toda la página. Las superficies sólidas existentes se conservan cuando su componente aún no está autorizado para modernización, especialmente gráficos, tablas, filtros y KPI. No apliques opacity global a elementos con texto ni transparencias indiscriminadas.
 
 #### Aurora Light — fondo principal
 
 ```css
-radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.70), transparent 65%),
-radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.55), transparent 65%),
-radial-gradient(ellipse at 90% 100%, rgba(99,184,145,.45), transparent 70%),
+radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.30), transparent 65%),
+radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.25), transparent 65%),
+radial-gradient(ellipse at 90% 100%, rgba(99,184,145,.20), transparent 70%),
 #F7F9FB
 ```
 
@@ -116,9 +120,9 @@ radial-gradient(ellipse at 90% 100%, rgba(99,184,145,.45), transparent 70%),
 Composición de referencia derivada de los tokens aprobados; pendiente de validación visual en Home, sin introducir nuevos colores:
 
 ```css
-radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.70), transparent 65%),
-radial-gradient(ellipse at 100% 0%, rgba(99,184,145,.45), transparent 65%),
-radial-gradient(ellipse at 90% 100%, rgba(209,250,229,.45), transparent 70%),
+radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.30), transparent 65%),
+radial-gradient(ellipse at 100% 0%, rgba(99,184,145,.20), transparent 65%),
+radial-gradient(ellipse at 90% 100%, rgba(209,250,229,.20), transparent 70%),
 #F7F9FB
 ```
 
@@ -127,10 +131,10 @@ radial-gradient(ellipse at 90% 100%, rgba(209,250,229,.45), transparent 70%),
 Composición de referencia derivada de los tokens aprobados; pendiente de validación visual en Home:
 
 ```css
-radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.55), transparent 65%),
-radial-gradient(ellipse at 10% 0%, rgba(255,207,171,.45), transparent 65%),
-radial-gradient(ellipse at 90% 100%, rgba(255,216,156,.45), transparent 70%),
-#FFF5EB
+radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.25), transparent 65%),
+radial-gradient(ellipse at 10% 0%, rgba(255,207,171,.25), transparent 65%),
+radial-gradient(ellipse at 90% 100%, rgba(255,216,156,.25), transparent 70%),
+#F7F9FB
 ```
 
 #### Aurora Deep — navegación y contraste puntual
@@ -212,10 +216,20 @@ Aplica estos patrones a los componentes existentes mediante HTML, CSS o SCSS aut
 | Componente | Patrón |
 | --- | --- |
 | Sidenav | Aurora Deep; texto blanco; acento activo #FFB184; iconos existentes 20–22px; texto 14px; opciones 44–48px; radio activo 12px. |
-| Layout | Aurora Light; padding 24px y móvil 16px; gap de tarjetas 20px; secciones 32px; tarjetas claras de radio 16px. |
+| Layout | Aurora Light con intensidades Soft; fondo de página transparente; padding 24px y móvil 16px; gap de tarjetas 20px; secciones 32px; tarjetas claras independientes de radio 16px. |
 | Encabezados | Título 34px/700, móvil 26–28px; descripción 14px; separación inferior 24px; conservar botones y acciones. |
 
 Preserva expansión, contracción, navegación y compensación de Body. No cambies las animaciones o breakpoints TS del sidenav para alcanzar una medida visual.
+
+La Fase 2.4.3 aplica Aurora Deep al Sidenav mediante canvia-tokens, conserva los anchos de 5rem y 16.5625rem, e identifica enlaces y botones con nombres accesibles. Las opciones usan altura mínima de 48px, iconos de 22px y foco de 2px. El estado activo combina naranja suave y texto verde profundo. Las transiciones CSS se limitan a color y fondo, y se eliminan con movimiento reducido. Las animaciones TS de 350ms y 1000ms conservan su comportamiento.
+
+Body mantiene su scroll y contexto de posicionamiento. Una superficie decorativa vacía, hermana del contenido, consume Aurora Light Soft sin heredar tokens a reportes. El layout administra un solo padding de 24px o 16px móvil y normaliza únicamente el padding y fondo del contenedor raíz inmediato del outlet desde body.css. El refinamiento elimina la lámina blanca al 94% que esa regla aplicaba sobre toda la página y deja su fondo transparente. Los párrafos de cabecera directamente expuestos al ambiente usan el valor aprobado text-secondary (#475467), con selectores que excluyen reportes y superficies analíticas.
+
+Los fondos propios responsables incluyen .home-page (home.css, #F7F9FB) y .daily-report-page (daily-report.css, var(--dr-bg)). body.css los neutraliza únicamente cuando son la raíz inmediata del outlet. Sus archivos conservan su contenido; la futura fase particular de cada módulo deberá conciliar ese fondo con el layout compartido. Las superficies internas conservan sus fondos sólidos y opacidad 1.
+
+En móvil expandido, la compensación corresponde al ancho real de 265px. A 390px deja 125px de Body y puede requerir scroll horizontal interno, con el documento acotado al viewport. Reducir padding o min-width no recupera los 185px ocupados por la expansión. Un overlay o una disposición apilada cambiarían el modelo visual y de interacción; forzar el aspecto compacto mediante CSS desincronizaría el estado accesible. La expansión inicial pertenece a TS. Este refinamiento mantiene navegación y geometría; una solución de comportamiento se documenta para autorización específica.
+
+R08 continúa deshabilitado en la interfaz del producto. Su descarga integrada se comprobó habilitando el botón original únicamente en una copia externa de pruebas. La plantilla principal conserva su hash. La evidencia de esta fase se mantiene en [Fase 2.4.3 del plan de pruebas](TEST_PLAN.md#fase-243--sidenav-y-layout).
 
 ### KPI Cards
 
@@ -230,11 +244,13 @@ El KpiCard actual acepta color orange o green y no contiene un input de carga. R
 | Filtros | Altura 44–48px; radio 12px; texto 14px; etiquetas 12–13px; gap 16px; foco visible de 2px. |
 | Botones | Altura 44px; radio 12px; primario verde; acento naranja con texto oscuro; secundarios claros; foco visible; hover 120ms. |
 | Formularios | Contenedor radio 24px; campos 44–48px; etiquetas 14px; gap 16–20px; errores 12–13px; botón primario verde. |
-| Login | Aurora Light de alta presencia, conservando formulario, eventos y validaciones actuales. |
+| Login | Aurora Light con intensidades Soft, conservando formulario, eventos y validaciones actuales. |
 
 Mantén Angular Material y Reactive Forms existentes, selección automática o manual vigente y alcance global/dinámico/local de cada filtro. No añadas botones de limpiar o reintentar, cambies disabled ni corrijas el envío del login como parte de un ajuste visual.
 
 El tema Material se trabaja en SCSS únicamente si está autorizado y su ámbito no afecta a reportes. No cambies providers o módulos TS ni selectores internos globales como atajo. Los overlays deben respetar los límites de [08 Componentes protegidos](../.agents/skills/canvia-design-system/references/08-protected-components.md); si aislarlos requiere una modificación TS, documenta ese punto sin realizarla.
+
+La primera aplicación utiliza las APIs públicas form-field-overrides, button-overrides, icon-button-overrides, select-overrides, option-overrides y pseudo-checkbox-overrides de Material 22.2.1 bajo clases explícitas en material-theme.scss. El tema Azure/Blue conserva sus declaraciones originales. El panel recibe canvia-tokens mediante panelClass, con ámbito propio tanto si cambia su ascendencia como si permanece en el popover descendiente observado en esta versión. El evento público closed restaura el foco del selector al cerrar desde la búsqueda. Los resultados y límites de validación se mantienen en [Fase 2.4.2 del plan de pruebas](TEST_PLAN.md#fase-242--angular-material-selectivo).
 
 ### Gráficos
 
@@ -374,6 +390,152 @@ Oculta las formas decorativas a tecnologías de asistencia y reutiliza un mensaj
 
 Con prefers-reduced-motion, elimina el shimmer y conserva las formas estáticas. Mantén contraste suficiente y evita destellos. La geometría debe verificarse en escritorio, móvil y fullscreen; su reserva por CSS no demuestra ausencia de saltos.
 
+### Implementación Fase 2.5.1 — patrones reutilizables
+
+Los patrones están implementados en `src/styles.css`, con activación explícita
+`canvia-tokens` y `canvia-skeleton`. Los selectores internos requieren
+`canvia-skeleton`; no hay reglas nuevas sobre tarjetas, canvas, SVG o tablas
+genéricos. No activar estas clases en reportes ni en sus ancestros. Se conservan
+los 106 tokens y los valores Aurora Soft aprobados.
+
+| Patrón | Contenedor | Geometría interior |
+| --- | --- | --- |
+| KPI | `canvia-skeleton canvia-skeleton--kpi` | `__icon`, `__copy`, `__label`, `__value` |
+| Barras | `canvia-skeleton canvia-skeleton--chart` | `__plot __bars` con bloques de altura ilustrativa |
+| Donut/circular | `canvia-skeleton canvia-skeleton--chart` | `__donut` y `__legend` |
+| Líneas | `canvia-skeleton canvia-skeleton--chart` | `__plot __line` con SVG decorativo sin etiquetas |
+| Tabla | `canvia-skeleton canvia-skeleton--table` | Una `__row` de cabecera y 3–5 de cuerpo |
+| Resumen/texto | `canvia-skeleton canvia-skeleton--text` | `__heading`, `__copy` y bloques de longitudes distintas |
+
+En la columna de geometría, todos los nombres abreviados llevan el prefijo
+`canvia-skeleton`. `canvia-skeleton__block` es la forma neutra animada;
+`__short` reduce su longitud. El anillo y el trazo son estáticos; el shimmer de
+sus cabeceras aporta feedback sin animar series. No son datos ni progreso.
+
+Ejemplos de markup decorativo (añadir el `*ngIf` del estado real en el padre;
+no copiar cifras ni controles al placeholder):
+
+```html
+<div class="canvia-tokens" aria-hidden="true">
+  <!-- KPI -->
+  <div class="canvia-skeleton canvia-skeleton--kpi">
+    <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+    <div class="canvia-skeleton__copy">
+      <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+      <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+    </div>
+  </div>
+
+  <!-- Barras -->
+  <div class="canvia-skeleton canvia-skeleton--chart">
+    <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+    <div class="canvia-skeleton__plot canvia-skeleton__bars">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+  </div>
+
+  <!-- Circular/donut -->
+  <div class="canvia-skeleton canvia-skeleton--chart">
+    <div class="canvia-skeleton__donut"></div>
+    <div class="canvia-skeleton__legend">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+  </div>
+
+  <!-- Líneas -->
+  <div class="canvia-skeleton canvia-skeleton--chart">
+    <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+    <div class="canvia-skeleton__plot canvia-skeleton__line">
+      <svg viewBox="0 0 400 290" preserveAspectRatio="none" focusable="false">
+        <path d="M12 220 L82 180 L152 200 L222 110 L292 140 L388 65"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Tabla: cabecera y tres filas decorativas, sin semántica de datos -->
+  <div class="canvia-skeleton canvia-skeleton--table">
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+  </div>
+
+  <!-- Resumen/texto -->
+  <div class="canvia-skeleton canvia-skeleton--text">
+    <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+    <span class="canvia-skeleton__block"></span>
+    <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+  </div>
+</div>
+```
+
+Los tokens consumidos son `--canvia-skeleton-base` (#E5E9EE),
+`--canvia-skeleton-highlight` (#F7F9FB), `--canvia-motion-shimmer` (1600ms),
+`--canvia-skeleton-radius-block` (6px) y
+`--canvia-skeleton-radius-container` (16px), además de superficie individual al
+94%, borde, radios y espaciados del catálogo. El pseudo-elemento desplaza el
+highlight mediante transform; con movimiento reducido se elimina. No hay
+temporizadores, duración mínima, filtros ni dependencias nuevas.
+
+**Integración de Home.** `cargandoResumen && !resumen` monta cinco KPI,
+cuatro indicadores, barras, líneas y tres bloques ejecutivos decorativos.
+`resumen` mantiene el contenido real montado durante actualizaciones; se
+conservan las invocaciones y bindings de los ocho hijos. El botón conserva su
+evento y condición disabled, y muestra «Actualizando…» al refrescar datos.
+`aria-busy` usa el booleano existente sobre Home; hay una única región de
+estado persistente y oculta visualmente. El error conserva su alerta y condición
+`errorResumen && !cargandoResumen`.
+
+```html
+<!-- Esquema del patrón; la plantilla productiva conserva todos sus bindings. -->
+<div class="home-page" [attr.aria-busy]="cargandoResumen">
+  <div *ngIf="cargandoResumen && !resumen"
+       class="canvia-tokens home-skeleton" aria-hidden="true">
+    <!-- Patrones de estructura -->
+  </div>
+  <ng-container *ngIf="resumen">
+    <!-- Hijos originales: permanecen montados al actualizar -->
+  </ng-container>
+</div>
+```
+
+Una respuesta válida con ceros y arrays vacíos muestra los estados actuales de
+los hijos. Una respuesta nula finaliza la carga y conserva la ausencia previa de
+contenido; no se inventa un mensaje de negocio. Un error limpia los datos según
+el TypeScript existente. No se puede separar la carga por bloque porque el
+contrato de Home es agregado.
+
+`home.css` ajusta exclusivamente placeholders. Las etiquetas estáticas de
+indicadores y cabeceras de gráficos se incluyen transparentes dentro del árbol
+decorativo para reservar su envoltura real; mantenerlas sincronizadas si se
+cambian esos textos en los hijos. No se modifica el CSS de KPI ni Chart.js.
+El resumen ejecutivo reserva alturas aproximadas por su estructura: sus
+mensajes, proyecto y pie opcional dependen del backend. No garantiza altura
+idéntica para cualquier respuesta. Donut y tabla se documentan para reutilizar,
+sin integrarlos en módulos adicionales.
+
+Resultados medidos, geometría residual y protección de reportes en
+[Fase 2.5.1 del plan de pruebas](TEST_PLAN.md#fase-251--skeletons-reutilizables).
+
 ### Mapa de aplicación y evidencia
 
 El mapa completo por página, incluyendo intensidad Aurora, estados observados y alternativas a skeleton, está en [07 Módulos](#aplicación-por-módulo). Consulta solo la fila del módulo afectado y verifica su código actual.
@@ -430,7 +592,9 @@ Lee [08 Protección](../.agents/skills/canvia-design-system/references/08-protec
 
 ### Lectura del mapa
 
-Aurora Light es la identidad común. La intensidad corresponde al fondo y encabezados, no a degradados dentro de tablas o gráficos. Home es la página piloto aprobada.
+Aurora Soft es la identidad común y usa la composición Aurora Light. La intensidad suave corresponde al fondo y encabezados, no a degradados dentro de tablas o gráficos. Home es la página piloto aprobada.
+
+Los niveles de presencia del mapa distinguen cobertura y ubicación; todos utilizan las intensidades Soft del catálogo, sin elevar la saturación por módulo.
 
 Las rutas parten de fronted-tickets/src/app/components/pages/. Los estados indicados son observaciones estáticas de Fase 0: compruébalos de nuevo al ejecutar una tarea. No afirman funcionamiento ni autorizan TS.
 

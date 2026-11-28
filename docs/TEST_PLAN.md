@@ -283,6 +283,157 @@ Resultado de ejecución del 18/11/2026: las cinco pruebas nuevas pasan. La suite
 
 Validación manual pendiente: aplicar y limpiar filtros, seleccionar/desmarcar una barra mensual, comprobar el estado vacío, tooltips y pantalla completa; confirmar que requerimientos, tareas y SLA conservan sus títulos y órdenes actuales. El gráfico de distribución por prioridad solo presenta cantidades en su contrato actual; el gráfico mensual apilado con porcentajes no se modifica.
 
+### Fase 2.4.1 — Design Tokens y fundamentos visuales
+
+Ejecución del 27/11/2026, hora de Lima, en style/ui-canvia-fase-2.3, sobre HEAD 8c44f3fc347a2952d6a635ee28f803b1db72de69 y árbol inicialmente limpio. El cambio de código añade únicamente el catálogo .canvia-tokens en styles.css. La clase carece de consumidores en las plantillas. El [Design System](DESIGN_SYSTEM.md#design-tokens) mantiene la definición normativa.
+
+| Comprobación | Control previo | Resultado posterior |
+| --- | --- | --- |
+| npm run build desde fronted-tickets | Código 0, advertencias de presupuestos del bundle y estilos | Código 0, mismas categorías de advertencia. Un intento falló por DNS al descargar Google Fonts y la repetición con acceso de red terminó correctamente. |
+| npm test -- --watch=false | 301 aprobadas y 5 fallidas, 306 pruebas en 26 archivos | 301 aprobadas y las mismas 5 fallidas. |
+| Reproductor determinista R01–R08 | Ocho PNG con dimensiones y SHA-256 idénticos al manifiesto maestro | Ocho PNG idénticos al control y al manifiesto. |
+| Dependencias protegidas | Manifiesto consolidado de Fase 2.2.3.4 | Los 51 archivos únicos inventariados conservan su SHA-256. |
+| Catálogo y cascada en Chrome | Hoja original conservada para comparación | 106 nombres únicos, valores cotejados con Design System v2.0, aliases resueltos y cuatro gradientes equivalentes a sus composiciones documentales. |
+| Prueba sintética de aislamiento | Hoja anterior y tema Material vigente | Estilos calculados, geometría y píxeles iguales fuera de la clase en anchos 390, 768 y 1440 px, con movimiento normal y reducido. Los tokens se resuelven en la clase y su hijo, y están ausentes en body y el hermano sin marcar. |
+
+Los cinco fallos ya presentes antes de editar corresponden al h1 esperado en App, mat-icon desconocido en el TestBed de Login, dos aserciones textuales sobre elementos ausentes en Resumen Ejecutivo y la nota de R02 que espera «máximo mensual». El bloque conserva los specs y los componentes afectados. La prueba de cascada utiliza contenido sintético y red bloqueada. Acredita el aislamiento del catálogo y sus valores, con adopción visual por componente pendiente.
+
+El reproductor se ejecutó sin alterar su código en dos carpetas nuevas, tokens-2.4.1-pre y tokens-2.4.1-post, hermanas de reportes-protegidos dentro de la raíz externa CANVIA-QA/fase-2.2.3. Su SHA-256 coincide con 05acc74478c9d577af53daf02c223463a51a3db7d9f1cd469d7efe33e53dc1c9. Conservó Chrome 158.0.8127.88, Node v24.20.0, fixtures, fuentes, locale es-PE, zona America/Lima, viewport 1440 × 900, DPR 1 y red bloqueada. Las referencias canónicas permanecen en su ubicación original.
+
+**Integración pendiente.** El control registró ausencia de listeners locales en 4200 y 8080. Los scripts históricos de descarga preparan solo correo y esa sesión resulta insuficiente para los guards actuales. El montaje desde los cuatro padres, creación dinámica de R06 y descarga desde la interfaz requieren un entorno local disponible, autenticación manual y respuestas sintéticas controladas. Este bloqueo se documentó antes de editar en control-previo.json. La continuidad del bloque se limitó a declaraciones sin consumidores, sin modificar páginas ni ancestros. Completar la integración antes de activar consumidores que puedan alcanzar exportaciones.
+
+**Capturas pendientes.** Los complementos superiores de Cambios y Tareas siguen programados a 1440 × 900, scroll superior y Sidenav expandido, antes del primer cambio visual que los afecte. La Fase 2.4.1 conserva sus plantillas y presentación. Las 31 referencias previas se reutilizaron.
+
+La evidencia local está en [output/playwright/fase-2.4.1](../output/playwright/fase-2.4.1/), con control-previo.json, inventario-tokens.json, validacion.json, verificar.cjs y logs posteriores de build y pruebas. El código de verificación está fuera del código fuente Angular y usa el Playwright ya disponible. El veredicto del bloque es completado con observaciones de integración pendientes. Al cierre de esa actividad, 2.4.2 y 2.4.3 tenían su aprobación pendiente.
+
+### Fase 2.4.2 — Angular Material selectivo
+
+Ejecución del 27/11/2026, hora de Lima, sobre HEAD 4696800652c53ab39dcc6ff3a6c786a1bdeba654, rama style/ui-canvia-fase-2.3. Se reutilizó el control de build y pruebas de 2.4.1 porque el nuevo HEAD incorpora exactamente sus tres archivos versionados y los otros archivos del producto conservaban su contenido. output/playwright/fase-2.4.1 permaneció sin seguimiento y el índice Git continuó vacío.
+
+El cambio se limita a material-theme.scss, Login HTML/CSS y Reporte Diario HTML. styles.css conserva los 106 tokens. Los ámbitos nuevos solo contienen el formulario de Login, el campo de proyectos de Diario y su panel. Los cuatro padres exportadores carecen de las clases nuevas, y se conservaron las declaraciones iniciales de html/body, los estilos de otros controles y el contenedor CDK. Esta revisión permitió continuar con pruebas aisladas de reportes sin activar dependencias visuales en sus padres.
+
+La prueba de navegador montó los componentes originales con AppModule y TestBed, compilación JIT de recursos en memoria y HttpClient sintético. Utilizó Chrome 158.0.8127.88, contexto aislado, es-PE, America/Lima y capturas con contenido ficticio. Las solicitudes de red se limitaron a fuentes de Google. Los servicios HTTP reales construyeron sus parámetros contra el sustituto de HttpClient. El router permaneció sin navegación y la respuesta de Login fue un rechazo 401 sintético. Esta prueba verifica interacción de componentes, con autenticación real pendiente de validación manual cuando se disponga del entorno.
+
+Adicionalmente, Playwright CLI abrió /login desde el build de producción servido temporalmente en localhost. Verificó los nombres accesibles y disabled inicial, y Enter produjo un único POST /api/auth/login con respuesta 401 del servidor sintético. La captura y entry-requests.log documentan esta comprobación del punto de entrada de la SPA. El navegador y servidor temporales se cerraron al terminar.
+
+| Comprobación | Resultado |
+| --- | --- |
+| Login por teclado | Orden de foco, error de longitud mínima, estado disabled, mostrar/ocultar contraseña y un único POST al pulsar Enter verificados. Etiquetas asociadas a sus inputs y nombre accesible del botón de contraseña. |
+| Búsqueda de proyectos | Filtrado por Beta, selección y estado sin coincidencias verificados. Buscar o seleccionar conserva el número de consultas hasta Aplicar. |
+| Escape y foco | El control previo cerraba el panel desde la búsqueda y perdía el foco. El evento público closed y una referencia de plantilla lo restauran al selector. |
+| Consultas al aplicar | Resumen y Top Proyectos reciben exactamente los mismos parámetros de fechas, grupo y proyecto antes y después. |
+| Overlay de control | Grupo Resolutor conserva estilos calculados y PNG idénticos antes y después. |
+| Ámbito de tokens | Variables disponibles en el panel autorizado y ausentes en body y el contenedor CDK. En Material instalado, el panel pertenece a un popover descendiente del selector. |
+| Contraste medido | Botón blanco/verde 4,74 a 1, borde y placeholder 4,97 a 1, foco 7,29 a 1, error 6,57 a 1 y texto de opción seleccionada 6,95 a 1. Foco de 2 px en los campos, botón y búsqueda. Comprobaciones acotadas a estas combinaciones. |
+| npm run build | Código 0. Persisten advertencias de presupuesto. El CSS global pasa de 37,29 kB a 42,01 kB y el bundle inicial registra 3,07 MB. |
+| npm test -- --watch=false | 301 aprobadas y los mismos cinco fallos de 2.4.1, en App, Login, R02 y dos casos de Resumen Ejecutivo. |
+| Regresión protegida | Ocho PNG con dimensiones y SHA-256 iguales antes/después y frente al manifiesto. Los 51 archivos protegidos conservan sus hashes. |
+
+Las nuevas evidencias están en la carpeta externa %LOCALAPPDATA%/CANVIA-QA/fase-2.4.2, con functional-before.json, functional-after.json, integrity.json, capturas por estado, scripts reproducibles y logs. reports/before y reports/after contienen los ocho documentos completos y la copia con hash verificado de reproducir.cjs. El reproductor se ejecutó en carpetas temporales hermanas de reportes-protegidos para conservar sus dependencias relativas, y los resultados se trasladaron a la carpeta aprobada de esta fase. Los originales de fases anteriores permanecen en su destino.
+
+El veredicto es completado con validación sintética de los dos consumidores. El montaje y descarga desde los cuatro padres, incluida la creación dinámica de R06, conservan su validación integrada pendiente. La autenticación real, las animaciones TS existentes y los complementos de Cambios/Tareas mantienen sus límites previos. El bloque conserva TypeScript, autenticación, rutas, Sidenav, Body y los reportes protegidos. La Fase 2.4.3 continúa pendiente de autorización.
+
+### Fase 2.5.1 — Skeletons reutilizables
+
+Implementación y validación sintética del **27/11/2026**, sobre
+`style/ui-canvia-fase-2.3`, HEAD inicial
+`a0cfb95a4a98b0d0c4cb83615de0cad1c1496eea`. El estado inicial solo contenía
+`output/` sin seguimiento; se conserva. Alcance: `styles.css`,
+`home.html`, `home.css` y documentación. Sin cambios TypeScript, backend,
+servicios, dependencias, Material, Sidenav, Body, KPI reales ni reportes.
+
+| Comprobación ejecutada | Resultado |
+| --- | --- |
+| `npm run build` final, desde `fronted-tickets/` | Código 0. Bundle inicial 3.08 MB; advertencias de presupuesto de bundle y estilos existentes. Home no añade una advertencia de presupuesto de componente. |
+| `npm test -- --watch=false`, antes y después | En ambas ejecuciones: **301 aprobadas y 5 fallidas**, 306 pruebas, 26 archivos. Mismos cinco casos fallidos; sin editar specs. |
+| Seis ejemplos del Design System | KPI, barras, donut, líneas, tabla y texto renderizados en galería externa. Base calculada #E5E9EE, radio 6px, shimmer 1.6s; tabla con cabecera y tres filas. |
+| Carga inicial y prolongada | Cinco KPI, cuatro indicadores, dos gráficos y tres bloques ejecutivos. Respuesta retenida exclusivamente por interceptación de red de QA; sin cifras ficticias en los placeholders. |
+| Respuesta rápida | Montaje y carga completa medidos en 109ms en el arnés, que incluye su espera de montaje de 100ms. Skeleton ausente al terminar; sin duración mínima en producto. No es una medición de latencia real. |
+| Actualizar | Datos visibles, botón deshabilitado y texto «Actualizando…», aria-busy=true. Identidad de los ocho hijos y ambos canvas conservada hasta recibir la respuesta. |
+| Ceros y arrays vacíos | Los cinco KPI muestran cero; los gráficos reciben arrays vacíos y el resumen conserva «Comparación no disponible». El skeleton desaparece. |
+| HTTP 500 | Alerta original visible, datos eliminados según el TS actual y Actualizar disponible. Sin skeleton infinito. Recuperación posterior comprobada. |
+| Respuesta JSON null | Termina la carga, desaparece el skeleton y conserva la ausencia de contenido existente. No se inventa un estado vacío de negocio. |
+| Accesibilidad del placeholder | Árbol decorativo aria-hidden, sin botones, enlaces, inputs ni tabulación. Región de estado persistente y aria-busy enlazado al estado real. No se ejecutó lector de pantalla manual. |
+| Movimiento reducido | Se elimina la animación y el pseudo-elemento del highlight en Home y los seis ejemplos; formas estáticas conservadas. Animaciones TS/Chart.js previas no modificadas. |
+| Responsive | 1440×900 expandido, 768×1024 compacto, 390×844 compacto y 390×844 con expansión inicial. Sin nuevo desbordamiento del documento. Comparación de geometrías finales contra la referencia Aurora Soft. |
+| PNG aislados | Ocho antes/después, con dimensiones y SHA-256 idénticos al control canónico. |
+| PNG integrados | Ocho descargas reales desde los padres originales bajo Body: SHA-256 y dimensiones idénticos antes/después. Incluye R06 dinámico y R08 habilitado exclusivamente en la plantilla externa de QA. |
+| Archivos protegidos | **51/51** hashes iguales al manifiesto maestro; plantilla productiva de R08 y sus condiciones intactas. |
+
+Los fallos previos reproducidos son App (h1 esperado), Login (mat-icon en el
+TestBed), dos aserciones de Resumen Ejecutivo (analysis-origin/adjustment-state)
+y la nota de R02 que espera «máximo mensual». La suite completa continúa con
+código 1 por estos fallos, sin regresiones nuevas detectadas.
+
+**Geometría medida.** En escritorio, tablet y móvil compacto, los cinco KPI,
+cuatro indicadores y dos gráficos coinciden en posición y altura entre carga y
+datos para la muestra controlada. El resumen ejecutivo tiene alturas
+aproximadas: diferencia máxima por tarjeta de 0.42px en escritorio, 34.02px en
+tablet y 33.62px en móvil; el desplazamiento acumulado de la tercera tarjeta es
+35.03px o menos. Sus mensajes y el pie opcional impiden garantizar igualdad
+para cualquier respuesta sin alterar los hijos. Se mantienen las limitaciones
+del móvil expandido: Body dispone de 125px y tiene scroll interno; en ese
+estado estrecho la geometría de gráficos y resumen difiere más. No se modifica
+Sidenav para corregirlo ni se declara ausencia universal de saltos.
+
+**Procedimiento y límites.** Playwright CLI disponible en caché, Chrome,
+locale es-PE, zona America/Lima, DPR 1. Home, HomeService, hijos y Body se leen
+intactos en un arnés JIT externo. El adaptador HttpClient exclusivo de QA usa
+fetch con solicitudes interceptadas por Playwright; las respuestas y errores
+son sintéticos, sin FastAPI, SQL Server, credenciales ni autenticación real.
+Se validan las plantillas productivas y el ciclo de carga, sin afirmar una
+prueba end-to-end del login o router. La matriz final usa trece solicitudes
+Home, con una por montaje o actualización. Los PNG integrados usan el
+procedimiento aislado aprobado y fecha fija. El reproductor determinista
+adapta únicamente rutas externas y la lectura del CSS anterior; las fuentes,
+fixtures, captura y datos canónicos permanecen iguales.
+
+**Evidencia externa:** `%LOCALAPPDATA%/CANVIA-QA/fase-2.5.1`.
+`home-before.cli.js`/`home-after.cli.js` y sus logs contienen la matriz;
+`patterns.cli.js` y su log verifican los ejemplos documentados;
+`before-*`/`after-*` son capturas de carga/datos en cada tamaño;
+`build-final.log`, `tests-before.log` y `tests-after.log` registran comandos;
+`protection.json`, `isolated-before/after` y `full-fixed-before/after`
+contienen la protección y PNG. El informe externo reúne archivos, arquitectura,
+evidencias y limitaciones.
+
+**Veredicto:** Fase 2.5.1 implementada y validada con las observaciones de
+geometría variable y móvil expandido indicadas. Se detiene aquí; Fase 2.5.2 no
+iniciada. Sin commits ni push.
+
+### Fase 2.4.3 — Sidenav y Layout
+
+Ejecución del 27/11/2026, hora de Lima, sobre HEAD dc014e0e9d44f6917aecc8bb5fdc0bbbd5d850b7, rama style/ui-canvia-fase-2.3. El alcance de código se limita a sidenav.html/css y layouts/body/body.html/css. Los archivos TypeScript, servicios, autenticación, rutas, Material selectivo y reportes conservan su contenido. Las evidencias de 2.4.1 continúan sin seguimiento y el índice Git permanece vacío.
+
+Antes de editar se obtuvieron los complementos de Cambios y Tareas a 1440 × 900, Sidenav expandido, scroll superior y KPI dentro del viewport, con respuestas sintéticas. Se registraron las cuatro configuraciones previas de Home. El usuario inició sesión manualmente en Chrome aislado. Solo el POST de Login llegó al backend. Las consultas de dashboards y las exportaciones usaron respuestas controladas, con narrativa ficticia de reglas y otras operaciones POST bloqueadas.
+
+El control previo completó siete descargas desde sus cuatro padres y encontró comentado el botón de R08. La implementación se detuvo. Una autorización posterior permitió habilitar temporalmente ese mismo botón en una copia externa de pruebas, conservando sus bindings y el hash de tickets-report-times.html del repositorio principal. R08 descargó 1400 × 7173 px, retiró su enlace temporal y confirmó la limpieza al desmontar el padre. Este procedimiento se repitió después de implementar. El botón permanece deshabilitado en la interfaz actual.
+
+| Comprobación | Resultado |
+| --- | --- |
+| Navegación y ancho | Estados compacto/expandido, enlaces, ruta activa con aria-current, scroll hasta logout y compensación de Body verificados. |
+| Responsive | Capturas finales a 1440 × 900, 768 × 1024 y 390 × 844. Seis combinaciones compacto/expandido a 767, 768 y 769px con offsets de 80/265px y sin desbordamiento del documento. |
+| Carga directa móvil | Ruta protegida cargada a 390px. Conserva expansión inicial de TS, con menú de 265px y Body desde x=265. Body dispone de 125px y registra scrollWidth=215 frente a clientWidth=110. Es una limitación del estado expandido, con scroll interno y documento acotado. |
+| Teclado y autenticación | Tab llega al enlace Home en modo compacto, nombre accesible y foco de 2px. Logout mediante Espacio vuelve a la portada y authGuard impide regresar directamente a Home. |
+| Contraste | Texto secundario sobre la superficie final entre 4,82 y 4,86 a 1 en la muestra de cabecera. Blanco sobre el verde más claro del Sidenav 4,74 a 1. Verde profundo sobre naranja activo 7,85 a 1. Comprobaciones acotadas a estas combinaciones. |
+| Movimiento reducido | Transiciones CSS nuevas computadas en 0s. Fade de 350ms y rotación de 1000ms definidos en TS conservan su limitación previa. |
+| Foco de Reporte Diario | El primer clic exterior lo recibe el backdrop y devuelve foco al selector. El segundo clic enfoca Desde correctamente. Implementación de Diario intacta. |
+| Build final | npm run build termina con código 0, con advertencias de presupuesto existentes. |
+| Suite de la fase | npm test -- --watch=false registra 301 aprobadas y los mismos cinco fallos preexistentes. El ajuste final de contraste solo cambió CSS y se recompiló. |
+| PNG aislados | Ocho documentos antes/después con dimensiones y SHA-256 iguales al manifiesto canónico. |
+| PNG integrados | Ocho descargas desde sus padres bajo Body, antes/después, con fecha de preparación fija y SHA-256 idénticos. Incluyen R06 dinámico y R08 habilitado solo en la copia externa. |
+| Protección | Los 51 archivos inventariados conservan su SHA-256. R08 principal conserva d8e9b0f45818e8ec9d9b07108d52713b041d10da7b4f572e15aaef9433d697fc. |
+
+Las primeras capturas integradas con fecha real mostraron diferencias en el pie Preparado. En R08 se localizaron 26 píxeles correspondientes al minuto. El control determinista fijó new Date() sin argumentos en 2026-11-24T12:00:00Z dentro del navegador de prueba y conservó Date.now y los temporizadores activos. La repetición con las copias anterior y posterior del layout eliminó esas diferencias en los ocho documentos. Las referencias aisladas originales mantienen sus propios fixtures.
+
+Se corrigió el contraste del gradiente directo, que daba aproximadamente 3 a 1 con texto secundario, aplicando la superficie blanca al 94% aprobada al área de trabajo. Los tokens residen solo en Sidenav y la superficie decorativa vacía. La regla del contenedor raíz del outlet modifica únicamente padding y fondo. Las fuentes, posiciones x=-20000/y=0, dimensiones y PNG integrados de los reportes permanecen equivalentes.
+
+Las evidencias se guardan en %LOCALAPPDATA%/CANVIA-QA/fase-2.4.3. live-before contiene los complementos y cuatro capturas previas de Home. live-final contiene sus comparaciones finales. isolated-before/after contienen el reproductor inalterado y sus PNG. full-fixed-before/after contienen las ocho descargas integradas deterministas. Los JSON de contraste, foco, funcionalidad e integridad describen alcance y limitaciones. El navegador aislado se cerró tras la validación y el logout.
+
+El veredicto es implementado con observaciones de móvil expandido y motion TS. R08 mantiene la condición funcional actual, con habilitación exclusivamente temporal de pruebas autorizada. Skeletons, KPI Cards y modernización particular de Home conservan su autorización pendiente.
+
+## Pruebas propuestas
+
 Estas pruebas son propuestas, no funcionalidades ya presentes:
 
 - Pruebas de contrato para todas las rutas FastAPI y comparación automática con los modelos TypeScript/consumidores Angular.

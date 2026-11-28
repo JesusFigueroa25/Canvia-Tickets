@@ -1,4 +1,6 @@
 <div class="requirement-sla-page">
+  <span class="canvia-extension-sr" role="status"><span *ngIf="cargandoFiltros">Cargando opciones y preparando el dashboard…</span></span>
+
 
     <!--  HEADER MASTER - STICKY-->
     <div class="header-master">
@@ -29,13 +31,15 @@
 
 
         <!--FILTROS GLOBALES - DESPLEGABLES-->
-        <details class="filters-card" open>
+        <details class="filters-card canvia-filter-card" open>
             <summary class="filters-toggle">
                 <mat-icon>tune</mat-icon>
                 <span>Filtros globales</span>
             </summary>
 
-            <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+            <form class="filters-form canvia-filter-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()"
+        [class.canvia-filter-loading]="cargandoFiltros" [attr.aria-busy]="cargandoFiltros"
+        [attr.inert]="cargandoFiltros ? '' : null">
 
                 <!-- FECHAS -->
                 <div class="date-range-fields">
@@ -43,16 +47,17 @@
                     <!-- DESDE -->
                     <div class="filter-field">
                         <label>Desde</label>
-                        <mat-form-field appearance="outline" class="full-width">
+                        <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
                             <input matInput [matDatepicker]="pickerDesde" formControlName="desde"
                                 placeholder="Seleccionar fecha">
                             <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
-                            <mat-datepicker #pickerDesde></mat-datepicker>
+                            <mat-datepicker #pickerDesde panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
                             <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
                                 Este campo es obligatorio.
                             </mat-error>
 
                         </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
 
                     </div>
 
@@ -60,14 +65,14 @@
                     <!-- HASTA -->
                     <div class="filter-field">
                         <label>Hasta</label>
-                        <mat-form-field appearance="outline" class="full-width">
+                        <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
 
                             <input matInput [matDatepicker]="pickerHasta" formControlName="hasta"
                                 placeholder="Seleccionar fecha">
                             <mat-datepicker-toggle matIconSuffix [for]="pickerHasta">
                             </mat-datepicker-toggle>
 
-                            <mat-datepicker #pickerHasta>
+                            <mat-datepicker #pickerHasta panelClass="canvia-datepicker-panel canvia-tokens">
                             </mat-datepicker>
 
                             <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
@@ -75,6 +80,7 @@
                             </mat-error>
 
                         </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
                     </div>
 
                 </div>
@@ -82,21 +88,22 @@
                 <!-- GRUPO RESOLUTOR -->
                 <div class="filter-field">
                     <label>Grupo Resolutor</label>
-                    <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="grupo_resolutor" placeholder="Todos los grupos">
+                    <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
+                        <mat-select formControlName="grupo_resolutor" placeholder="Todos los grupos" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
                             <mat-option [value]="null">Todos los grupos</mat-option>
                             <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
                                 {{ grupo }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
                 </div>
 
                 <!-- PRIORIDAD -->
                 <div class="filter-field">
                     <label>Prioridad</label>
-                    <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="prioridad" placeholder="Todas">
+                    <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
+                        <mat-select formControlName="prioridad" placeholder="Todas" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
                             <mat-option [value]="null">
                                 Todas las prioridades
                             </mat-option>
@@ -105,13 +112,14 @@
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
                 </div>
 
                 <!-- CATEGORÍA -->
                 <div class="filter-field">
                     <label>Categoría</label>
-                    <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="categoria" placeholder="Todas">
+                    <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
+                        <mat-select formControlName="categoria" placeholder="Todas" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
                             <mat-option [value]="null">
                                 Todas las categorías
                             </mat-option>
@@ -120,13 +128,14 @@
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
                 </div>
 
                 <!-- CONDICIÓN DÍA -->
                 <div class="filter-field">
                     <label>Condición Día</label>
-                    <mat-form-field appearance="outline" class="full-width">
-                        <mat-select formControlName="condicion_dia" placeholder="Todas las condiciones">
+                    <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
+                        <mat-select formControlName="condicion_dia" placeholder="Todas las condiciones" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
                             <mat-option [value]="null">
                                 Todas las condiciones
                             </mat-option>
@@ -135,10 +144,15 @@
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
                 </div>
 
                 <!-- ACCIONES -->
                 <div class="filter-actions">
+          <div *ngIf="cargandoFiltros" class="canvia-filter-actions-placeholder" aria-hidden="true">
+            <span class="canvia-filter-placeholder"></span>
+            <span class="canvia-filter-placeholder"></span>
+          </div>
                     <button type="button" mat-button class="clear-button" (click)="limpiarFiltros()">
                         <mat-icon>restart_alt</mat-icon>
                         Limpiar
@@ -213,31 +227,33 @@
     </div>
 
     <!-- KPIs GENERALES-->
-    <section class="kpis-section" *ngIf="kpis">
+    <span class="canvia-extension-sr" role="status"><span *ngIf="((cargandoFiltros) || (cargandoKpis)) && !kpis">Cargando indicadores…</span></span><section class="kpis-section canvia-tokens" *ngIf="((cargandoFiltros) || (cargandoKpis)) && !kpis" aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div></section>
 
-        <app-kpi-card titulo="Total Tickets" [valor]="kpis.total_tickets" icono="confirmation_number" color="orange">
+<section class="kpis-section" *ngIf="kpis">
+
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Total Tickets" [valor]="kpis.total_tickets" icono="confirmation_number" color="orange">
         </app-kpi-card>
 
-        <app-kpi-card titulo="SLA Respuesta" [valor]="kpis.sla_respuesta + '%'" icono="schedule" color="green">
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="SLA Respuesta" [valor]="kpis.sla_respuesta + '%'" icono="schedule" color="green">
         </app-kpi-card>
 
-        <app-kpi-card titulo="SLA Solución" [valor]="kpis.sla_solucion + '%'" icono="verified" color="green">
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="SLA Solución" [valor]="kpis.sla_solucion + '%'" icono="verified" color="green">
         </app-kpi-card>
 
-        <app-kpi-card titulo="OLA Respuesta" [valor]="kpis.ola_respuesta + '%'" icono="timer" color="orange">
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="OLA Respuesta" [valor]="kpis.ola_respuesta + '%'" icono="timer" color="orange">
         </app-kpi-card>
 
-        <app-kpi-card titulo="OLA Solución" [valor]="kpis.ola_solucion + '%'" icono="task_alt" color="green">
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="OLA Solución" [valor]="kpis.ola_solucion + '%'" icono="task_alt" color="green">
         </app-kpi-card>
 
-        <app-kpi-card titulo="Req. Cumplidos" [valor]="kpis.cant_req_cumplidos" icono="check_circle" color="green">
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Req. Cumplidos" [valor]="kpis.cant_req_cumplidos" icono="check_circle" color="green">
         </app-kpi-card>
 
-        <app-kpi-card titulo="Req. No Cumplidos" [valor]="kpis.cant_req_no_cumplidos" icono="error_outline"
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Req. No Cumplidos" [valor]="kpis.cant_req_no_cumplidos" icono="error_outline"
             color="orange">
         </app-kpi-card>
 
-        <app-kpi-card titulo="% Cumpl. Req." [valor]="kpis.porcentaje_cumpl_req + '%'" icono="verified_user"
+        <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="% Cumpl. Req." [valor]="kpis.porcentaje_cumpl_req + '%'" icono="verified_user"
             color="green"></app-kpi-card>
 
     </section>
@@ -257,7 +273,7 @@
         <div class="charts-grid">
 
             <!-- DISTRIBUCIÓN POR CONDICIÓN DÍA -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-condicion-dia" #condicionDiaFs>
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-condicion-dia" #condicionDiaFs>
 
                 <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(condicionDiaFs)"
                     title="Ver en pantalla completa" aria-label="Ampliar distribución por condición día">
@@ -268,16 +284,16 @@
                     </mat-icon>
                 </button>
 
-                <app-requirement-sla-compliance-donut modo="condicion-dia"
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['distribucionCondicionDia'] ?? false) && !(erroresNuevosGraficos['distribucionCondicionDia'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-compliance-donut modo="condicion-dia"
                     [datosCondicionDia]="distribucionCondicionDia"
                     [cargando]="cargandoNuevosGraficos['distribucionCondicionDia'] ?? false"
-                    [error]="erroresNuevosGraficos['distribucionCondicionDia'] ?? null">
+                    [error]="erroresNuevosGraficos['distribucionCondicionDia'] ?? null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['distribucionCondicionDia'] ?? false) && !(erroresNuevosGraficos['distribucionCondicionDia'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['distribucionCondicionDia'] ?? false) && !(erroresNuevosGraficos['distribucionCondicionDia'] ?? null))) ? '' : null">
                 </app-requirement-sla-compliance-donut>
 
             </div>
 
             <!-- PORCENTAJE DE CUMPLIMIENTO SLA -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-cumplimiento-sla" #cumplimientoSlaFs>
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-cumplimiento-sla" #cumplimientoSlaFs>
 
                 <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(cumplimientoSlaFs)"
                     title="Ver en pantalla completa" aria-label="Ampliar porcentaje de cumplimiento SLA">
@@ -288,10 +304,10 @@
                     </mat-icon>
                 </button>
 
-                <app-requirement-sla-compliance-donut [datos]="porcentajeCumplimientoSla"
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['porcentajeCumplimientoSla'] ?? false) && !(erroresNuevosGraficos['porcentajeCumplimientoSla'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-compliance-donut [datos]="porcentajeCumplimientoSla"
                     [cargando]="cargandoNuevosGraficos['porcentajeCumplimientoSla'] ?? false"
                     [error]="erroresNuevosGraficos['porcentajeCumplimientoSla'] ?? null"
-                    [seleccion]="slaSolucionSeleccionada" (seleccionChange)="seleccionarSlaSolucion($event)">
+                    [seleccion]="slaSolucionSeleccionada" (seleccionChange)="seleccionarSlaSolucion($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['porcentajeCumplimientoSla'] ?? false) && !(erroresNuevosGraficos['porcentajeCumplimientoSla'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['porcentajeCumplimientoSla'] ?? false) && !(erroresNuevosGraficos['porcentajeCumplimientoSla'] ?? null))) ? '' : null">
                 </app-requirement-sla-compliance-donut>
 
             </div>
@@ -302,26 +318,26 @@
         <div class="project-pareto-grid">
 
             <!-- EXPLORADOR POR PROYECTOS -->
-            <div class="projects-section table-expandable" id="fullscreen-tabla-proyectos-req-sla"
+            <div class="projects-section table-expandable canvia-extension-host" id="fullscreen-tabla-proyectos-req-sla"
                 #tablaProyectosReqSlaFs>
 
-                <div *ngIf="cargandoProyectos" class="projects-loading" role="status" aria-live="polite">
+                <div *ngIf="cargandoProyectos" class="projects-loading canvia-extension-sr" role="status" aria-live="polite">
                     Actualizando proyectos...
                 </div>
 
-                <app-project-explorer-table modo="sla" modoBusqueda="combo" [datos]="proyectos"
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoProyectos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-project-explorer-table modo="sla" modoBusqueda="combo" [datos]="proyectos"
                     [opcionesProyectos]="opcionesProyectos" [proyectoSeleccionado]="proyectoSeleccionado"
                     (proyectoChange)="cambiarProyecto($event)" [habilitarExclusionProyectos]="true"
                     [proyectosExcluidos]="proyectosExcluidos"
                     (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
                     [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-proyectos-req-sla'"
-                    (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosReqSlaFs)">
+                    (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosReqSlaFs)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoProyectos))" [attr.inert]="((cargandoFiltros) || ((cargandoProyectos))) ? '' : null">
                 </app-project-explorer-table>
 
             </div>
 
             <!-- PARETO DE TIPOS DE REQUERIMIENTO -->
-            <div class="pareto-section chart-expandable" id="fullscreen-pareto-requerimientos" #paretoReqFs>
+            <div class="pareto-section chart-expandable canvia-extension-host" id="fullscreen-pareto-requerimientos" #paretoReqFs>
 
                 <button *ngIf="paretoRequerimientos.length > 0" type="button" class="chart-expand-btn"
                     (click)="alternarPantallaCompleta(paretoReqFs)" title="Ver en pantalla completa"
@@ -333,11 +349,11 @@
                     </mat-icon>
                 </button>
 
-                <app-sla-pareto *ngIf="paretoRequerimientos.length > 0" [datos]="paretoRequerimientos"
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoParetoRequerimientos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-sla-pareto *ngIf="paretoRequerimientos.length > 0" [datos]="paretoRequerimientos"
                     entidad="requerimientos" titulo="Pareto de Tipos de Requerimiento"
                     descripcion="Tipos con mayor volumen de requerimientos." [seleccionMultiple]="true"
                     [tiposSeleccionados]="tiposRequerimientoSeleccionados"
-                    (tiposChange)="seleccionarTiposRequerimiento($event)">
+                    (tiposChange)="seleccionarTiposRequerimiento($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoParetoRequerimientos))" [attr.inert]="((cargandoFiltros) || ((cargandoParetoRequerimientos))) ? '' : null">
                 </app-sla-pareto>
 
             </div>
@@ -348,7 +364,7 @@
         <div class="charts-grid">
 
             <!-- VOLUMEN DE REQUERIMIENTOS -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-volumen-requerimientos-sla" #volumenReqFs>
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-volumen-requerimientos-sla" #volumenReqFs>
 
                 <button *ngIf="volumenRequerimientos.length > 0" type="button" class="chart-expand-btn"
                     (click)="alternarPantallaCompleta(volumenReqFs)" title="Ver en pantalla completa"
@@ -360,16 +376,16 @@
                     </mat-icon>
                 </button>
 
-                <app-volume-month *ngIf="volumenRequerimientos.length > 0" modo="sla" entidadSla="requerimientos"
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoVolumenRequerimientos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-volume-month *ngIf="volumenRequerimientos.length > 0" modo="sla" entidadSla="requerimientos"
                     [datos]="volumenRequerimientos" [habilitarFiltroMes]="true"
                     [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenRequerimientos"
-                    (periodoChange)="cambiarPeriodo($event)">
+                    (periodoChange)="cambiarPeriodo($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoVolumenRequerimientos))" [attr.inert]="((cargandoFiltros) || ((cargandoVolumenRequerimientos))) ? '' : null">
                 </app-volume-month>
 
             </div>
 
             <!-- PARTICIPACIÓN POR PROYECTO -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-participacion-proyectos" #participacionFs>
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-participacion-proyectos" #participacionFs>
 
                 <button *ngIf="participacionProyectos.length > 0" type="button" class="chart-expand-btn"
                     (click)="alternarPantallaCompleta(participacionFs)" title="Ver en pantalla completa"
@@ -381,7 +397,7 @@
                     </mat-icon>
                 </button>
 
-                <app-project-participation *ngIf="participacionProyectos.length > 0" [datos]="participacionProyectos">
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoParticipacionProyectos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-project-participation *ngIf="participacionProyectos.length > 0" [datos]="participacionProyectos" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoParticipacionProyectos))" [attr.inert]="((cargandoFiltros) || ((cargandoParticipacionProyectos))) ? '' : null">
                 </app-project-participation>
 
             </div>
@@ -403,12 +419,12 @@
         </header>
 
         <!-- EXPLORADOR DE TIPOS DE REQUERIMIENTOS -->
-        <div class="chart-full-width table-expandable" id="fullscreen-tabla-tipos-req-sla" #tablaTiposReqSlaFs>
+        <div class="chart-full-width table-expandable canvia-extension-host" id="fullscreen-tabla-tipos-req-sla" #tablaTiposReqSlaFs>
 
-            <app-requirement-sla-type-explorer [datos]="exploradorTipos"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['exploradorTipos'] ?? false) && !(erroresNuevosGraficos['exploradorTipos'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-type-explorer [datos]="exploradorTipos"
                 [cargando]="cargandoNuevosGraficos['exploradorTipos'] ?? false" [habilitarPantallaCompleta]="true"
                 [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tipos-req-sla'"
-                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTiposReqSlaFs)">
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTiposReqSlaFs)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['exploradorTipos'] ?? false) && !(erroresNuevosGraficos['exploradorTipos'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['exploradorTipos'] ?? false) && !(erroresNuevosGraficos['exploradorTipos'] ?? null))) ? '' : null">
             </app-requirement-sla-type-explorer>
 
             <p class="dashboard-load-error" *ngIf="erroresNuevosGraficos['exploradorTipos']">
@@ -420,7 +436,7 @@
         <div class="charts-grid">
 
             <!-- SLA SOLUCIÓN: CUMPLIDOS VS INCUMPLIDOS -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-sla-solucion-req" #slaSolucionReqFs>
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-sla-solucion-req" #slaSolucionReqFs>
 
                 <button *ngIf="slaSolucionTendencia.length > 0" type="button" class="chart-expand-btn"
                     (click)="alternarPantallaCompleta(slaSolucionReqFs)" title="Ver en pantalla completa"
@@ -432,14 +448,14 @@
                     </mat-icon>
                 </button>
 
-                <app-requirement-sla-solution-trend *ngIf="slaSolucionTendencia.length > 0"
-                    [datos]="slaSolucionTendencia">
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-line canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoSlaSolucionTendencia))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__line"><svg viewBox="0 0 400 290" preserveAspectRatio="none" focusable="false"><path d="M12 220 L82 180 L152 200 L222 110 L292 140 L388 65"/></svg></div></div></div></div><app-requirement-sla-solution-trend *ngIf="slaSolucionTendencia.length > 0"
+                    [datos]="slaSolucionTendencia" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoSlaSolucionTendencia))" [attr.inert]="((cargandoFiltros) || ((cargandoSlaSolucionTendencia))) ? '' : null">
                 </app-requirement-sla-solution-trend>
 
             </div>
 
             <!-- DESEMPEÑO POR RESOLUTOR -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-resolutores-req" #resolutoresReqFs>
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-resolutores-req" #resolutoresReqFs>
 
                 <button *ngIf="resolutores.length > 0" type="button" class="chart-expand-btn"
                     (click)="alternarPantallaCompleta(resolutoresReqFs)" title="Ver en pantalla completa"
@@ -451,8 +467,8 @@
                     </mat-icon>
                 </button>
 
-                <app-resolutor-performance *ngIf="resolutores.length > 0" [datos]="resolutores"
-                    entidad="requerimientos">
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoResolutores))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-resolutor-performance *ngIf="resolutores.length > 0" [datos]="resolutores"
+                    entidad="requerimientos" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoResolutores))" [attr.inert]="((cargandoFiltros) || ((cargandoResolutores))) ? '' : null">
                 </app-resolutor-performance>
 
             </div>
@@ -462,7 +478,7 @@
         <div class="charts-grid">
 
             <!-- CUMPLIMIENTO SLA POR HORARIO -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-cumplimiento-horario" #horarioFs>
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-cumplimiento-horario" #horarioFs>
 
                 <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(horarioFs)"
                     title="Ver en pantalla completa" aria-label="Ampliar cumplimiento SLA por horario">
@@ -473,15 +489,15 @@
                     </mat-icon>
                 </button>
 
-                <app-requirement-sla-hourly-compliance [datos]="cumplimientoSlaHorario"
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaHorario'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaHorario'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-hourly-compliance [datos]="cumplimientoSlaHorario"
                     [cargando]="cargandoNuevosGraficos['cumplimientoSlaHorario'] ?? false"
-                    [error]="erroresNuevosGraficos['cumplimientoSlaHorario'] ?? null">
+                    [error]="erroresNuevosGraficos['cumplimientoSlaHorario'] ?? null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaHorario'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaHorario'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaHorario'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaHorario'] ?? null))) ? '' : null">
                 </app-requirement-sla-hourly-compliance>
 
             </div>
 
             <!-- CUMPLIMIENTO SLA POR PRIORIDAD -->
-            <div class="chart-grid-item chart-expandable" id="fullscreen-cumplimiento-prioridad"
+            <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-cumplimiento-prioridad"
                 #cumplimientoPrioridadFs>
 
                 <button type="button" class="chart-expand-btn"
@@ -494,9 +510,9 @@
                     </mat-icon>
                 </button>
 
-                <app-requirement-sla-priority-compliance [datos]="cumplimientoSlaPrioridad"
+                <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaPrioridad'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaPrioridad'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-priority-compliance [datos]="cumplimientoSlaPrioridad"
                     [cargando]="cargandoNuevosGraficos['cumplimientoSlaPrioridad'] ?? false"
-                    [error]="erroresNuevosGraficos['cumplimientoSlaPrioridad'] ?? null">
+                    [error]="erroresNuevosGraficos['cumplimientoSlaPrioridad'] ?? null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaPrioridad'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaPrioridad'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaPrioridad'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaPrioridad'] ?? null))) ? '' : null">
                 </app-requirement-sla-priority-compliance>
 
             </div>
@@ -517,7 +533,7 @@
         </header>
 
         <!-- TOP 10 - CUMPLIMIENTO SLA POR CATEGORÍA -->
-        <div class="chart-full-width chart-expandable" id="fullscreen-top-categorias" #topCategoriasFs>
+        <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-top-categorias" #topCategoriasFs>
 
             <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(topCategoriasFs)"
                 title="Ver en pantalla completa" aria-label="Ampliar Top 10 cumplimiento por categoría">
@@ -528,15 +544,15 @@
                 </mat-icon>
             </button>
 
-            <app-requirement-sla-top-categories [datos]="top10CumplimientoSlaCategoria"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['top10CumplimientoSlaCategoria'] ?? false) && !(erroresNuevosGraficos['top10CumplimientoSlaCategoria'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-top-categories [datos]="top10CumplimientoSlaCategoria"
                 [cargando]="cargandoNuevosGraficos['top10CumplimientoSlaCategoria'] ?? false"
-                [error]="erroresNuevosGraficos['top10CumplimientoSlaCategoria'] ?? null">
+                [error]="erroresNuevosGraficos['top10CumplimientoSlaCategoria'] ?? null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['top10CumplimientoSlaCategoria'] ?? false) && !(erroresNuevosGraficos['top10CumplimientoSlaCategoria'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['top10CumplimientoSlaCategoria'] ?? false) && !(erroresNuevosGraficos['top10CumplimientoSlaCategoria'] ?? null))) ? '' : null">
             </app-requirement-sla-top-categories>
 
         </div>
 
         <!-- CUMPLIMIENTO SLA POR TIPO -->
-        <div class="chart-full-width chart-expandable" id="fullscreen-cumplimiento-tipo" #cumplimientoTipoFs>
+        <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-cumplimiento-tipo" #cumplimientoTipoFs>
 
             <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(cumplimientoTipoFs)"
                 title="Ver en pantalla completa" aria-label="Ampliar cumplimiento SLA por tipo">
@@ -547,15 +563,15 @@
                 </mat-icon>
             </button>
 
-            <app-requirement-sla-type-compliance [datos]="cumplimientoSlaTipo"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaTipo'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaTipo'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-type-compliance [datos]="cumplimientoSlaTipo"
                 [cargando]="cargandoNuevosGraficos['cumplimientoSlaTipo'] ?? false"
-                [error]="erroresNuevosGraficos['cumplimientoSlaTipo'] ?? null">
+                [error]="erroresNuevosGraficos['cumplimientoSlaTipo'] ?? null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaTipo'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaTipo'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['cumplimientoSlaTipo'] ?? false) && !(erroresNuevosGraficos['cumplimientoSlaTipo'] ?? null))) ? '' : null">
             </app-requirement-sla-type-compliance>
 
         </div>
 
         <!-- TENDENCIA DE REQUERIMIENTOS -->
-        <div class="chart-full-width chart-expandable" id="fullscreen-tendencia-req" #tendenciaReqFs>
+        <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-tendencia-req" #tendenciaReqFs>
 
             <button *ngIf="tendenciaRequerimientos.length > 0" type="button" class="chart-expand-btn"
                 (click)="alternarPantallaCompleta(tendenciaReqFs)" title="Ver en pantalla completa"
@@ -567,8 +583,8 @@
                 </mat-icon>
             </button>
 
-            <app-tendencia-type-trend *ngIf="tendenciaRequerimientos.length > 0" [datos]="tendenciaRequerimientos"
-                entidad="requerimientos" (rankingChange)="cambiarRankingTendencia($event)">
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-line canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTendenciaRequerimientos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__line"><svg viewBox="0 0 400 290" preserveAspectRatio="none" focusable="false"><path d="M12 220 L82 180 L152 200 L222 110 L292 140 L388 65"/></svg></div></div></div></div><app-tendencia-type-trend *ngIf="tendenciaRequerimientos.length > 0" [datos]="tendenciaRequerimientos"
+                entidad="requerimientos" (rankingChange)="cambiarRankingTendencia($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTendenciaRequerimientos))" [attr.inert]="((cargandoFiltros) || ((cargandoTendenciaRequerimientos))) ? '' : null">
             </app-tendencia-type-trend>
 
         </div>
@@ -588,17 +604,17 @@
         </header>
 
         <!-- TABLA ANALÍTICA PARETO -->
-        <div class="chart-full-width">
+        <div class="chart-full-width canvia-extension-host">
 
-            <app-requirement-sla-pareto-table [datos]="paretoSlaCategorias"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['paretoSlaCategorias'] ?? false) && !(erroresNuevosGraficos['paretoSlaCategorias'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-pareto-table [datos]="paretoSlaCategorias"
                 [cargando]="cargandoNuevosGraficos['paretoSlaCategorias'] ?? false"
-                [error]="erroresNuevosGraficos['paretoSlaCategorias'] ?? null">
+                [error]="erroresNuevosGraficos['paretoSlaCategorias'] ?? null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['paretoSlaCategorias'] ?? false) && !(erroresNuevosGraficos['paretoSlaCategorias'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['paretoSlaCategorias'] ?? false) && !(erroresNuevosGraficos['paretoSlaCategorias'] ?? null))) ? '' : null">
             </app-requirement-sla-pareto-table>
 
         </div>
 
         <!-- GRÁFICO PARETO DE INCUMPLIMIENTOS -->
-        <div class="chart-full-width chart-expandable" id="fullscreen-pareto-grafico" #paretoGraficoFs>
+        <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-pareto-grafico" #paretoGraficoFs>
 
             <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(paretoGraficoFs)"
                 title="Ver en pantalla completa" aria-label="Ampliar gráfico Pareto de incumplimientos">
@@ -609,9 +625,9 @@
                 </mat-icon>
             </button>
 
-            <app-requirement-sla-pareto-chart [datos]="paretoSlaCategoriasGrafico"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoNuevosGraficos['paretoSlaCategoriasGrafico'] ?? false) && !(erroresNuevosGraficos['paretoSlaCategoriasGrafico'] ?? null))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-sla-pareto-chart [datos]="paretoSlaCategoriasGrafico"
                 [cargando]="cargandoNuevosGraficos['paretoSlaCategoriasGrafico'] ?? false"
-                [error]="erroresNuevosGraficos['paretoSlaCategoriasGrafico'] ?? null">
+                [error]="erroresNuevosGraficos['paretoSlaCategoriasGrafico'] ?? null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoNuevosGraficos['paretoSlaCategoriasGrafico'] ?? false) && !(erroresNuevosGraficos['paretoSlaCategoriasGrafico'] ?? null))" [attr.inert]="((cargandoFiltros) || ((cargandoNuevosGraficos['paretoSlaCategoriasGrafico'] ?? false) && !(erroresNuevosGraficos['paretoSlaCategoriasGrafico'] ?? null))) ? '' : null">
             </app-requirement-sla-pareto-chart>
 
         </div>
@@ -625,9 +641,9 @@
       <p>Rendimiento mensual y distribución de tickets por resolutor en requerimientos SLA.</p>
     </header>
 
-    <div class="chart-full-width table-expandable" id="fullscreen-tabla-resolutores-requirement-sla"
+    <div class="chart-full-width table-expandable canvia-extension-host" id="fullscreen-tabla-resolutores-requirement-sla"
       #tablaResolutoresFs>
-      <app-resolutor-performance-table
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-resolutor-performance-table
         [datos]="rendimientoResolutores"
         [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
         [resolutorSeleccionado]="resolutorSeleccionado"
@@ -638,7 +654,7 @@
         [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-resolutores-requirement-sla'"
         (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaResolutoresFs)"
         (resolutorChange)="cambiarResolutor($event)"
-        (paginaChange)="cambiarPaginaResolutores($event)">
+        (paginaChange)="cambiarPaginaResolutores($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))" [attr.inert]="((cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))) ? '' : null">
       </app-resolutor-performance-table>
       <p *ngIf="errorRendimientoResolutores" role="alert">
         {{ errorRendimientoResolutores }}
@@ -646,7 +662,7 @@
       </p>
     </div>
 
-    <div class="chart-full-width chart-expandable" id="fullscreen-grafico-resolutores-requirement-sla"
+    <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-grafico-resolutores-requirement-sla"
       #graficoResolutoresFs>
       <button type="button" class="chart-expand-btn"
         (click)="alternarPantallaCompleta(graficoResolutoresFs)"
@@ -658,14 +674,14 @@
             ? 'fullscreen_exit' : 'fullscreen' }}
         </mat-icon>
       </button>
-      <app-resolver-monthly-tickets
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-resolver-monthly-tickets
         [datos]="ticketsPorResolutor"
         [cargando]="cargandoTicketsPorResolutor"
         [limite]="limiteTicketsPorResolutor"
         [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
         titulo="Número de Tickets por Resolutor"
         descripcion="Comparación mensual de requerimientos SLA por resolutor, según su fecha de creación."
-        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))" [attr.inert]="((cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))) ? '' : null">
       </app-resolver-monthly-tickets>
       <p *ngIf="errorTicketsPorResolutor" role="alert">
         {{ errorTicketsPorResolutor }}
@@ -687,14 +703,14 @@
         </header>
 
         <!-- EXPLORADOR DE TICKETS -->
-        <div class="chart-full-width table-expandable" id="fullscreen-tabla-tickets-req-sla" #tablaTicketsReqSlaFs>
+        <div class="chart-full-width table-expandable canvia-extension-host" id="fullscreen-tabla-tickets-req-sla" #tablaTicketsReqSlaFs>
 
-            <app-ticket-explorer-table [tipoDashboard]="'requirement-sla'" [datos]="ticketsDetalle"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTickets) && !(errorTickets))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-ticket-explorer-table [tipoDashboard]="'requirement-sla'" [datos]="ticketsDetalle"
                 [cargando]="cargandoTickets" [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
                 (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)"
                 [habilitarPantallaCompleta]="true"
                 [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tickets-req-sla'"
-                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsReqSlaFs)">
+                (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsReqSlaFs)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTickets) && !(errorTickets))" [attr.inert]="((cargandoFiltros) || ((cargandoTickets) && !(errorTickets))) ? '' : null">
             </app-ticket-explorer-table>
 
         </div>
@@ -703,3 +719,5 @@
 
 
 </div>
+
+

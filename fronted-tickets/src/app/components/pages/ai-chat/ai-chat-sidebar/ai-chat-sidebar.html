@@ -27,6 +27,8 @@
   <div class="sidebar-message" *ngIf="cargando">
     Cargando conversaciones...
   </div>
+<div class="canvia-tokens canvia-extension-chat" *ngIf="cargando" aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--text"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span></div><div class="canvia-skeleton canvia-skeleton--text"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span></div><div class="canvia-skeleton canvia-skeleton--text"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span></div></div>
+
 
   <div *ngIf="error && !cargando" class="sidebar-error" role="alert">
     {{ error }}

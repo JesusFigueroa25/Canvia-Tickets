@@ -7,7 +7,7 @@
 **Convención Git:** el usuario aprobó expresamente el prefijo `style/` para modificaciones visuales. H03 permanece como observación administrativa no bloqueante: la discrepancia con los prefijos de [AGENTS.md](../../AGENTS.md#flujo-de-desarrollo) se resolverá posteriormente. Se conserva la rama propuesta.
 
 ## 1. Contexto
-CANVIA es una plataforma empresarial de gestión y análisis de tickets. La estructura Angular existente contiene 16 páginas, navegación, layout y componentes especializados de KPI, gráficos, tablas, diálogos y reportes. La auditoría estática identificó colores repetidos, radios y alturas variables y tema Material Azure/Blue. El [Design System](../DESIGN_SYSTEM.md) consolida ahora el estándar objetivo Aurora Enterprise UI Light, todavía no implementado. La evidencia histórica se mantiene allí.
+CANVIA es una plataforma empresarial de gestión y análisis de tickets. La estructura Angular existente contiene 16 páginas, navegación, layout y componentes especializados de KPI, gráficos, tablas, diálogos y reportes. La auditoría estática identificó colores repetidos, radios y alturas variables y tema Material Azure/Blue. El [Design System](../DESIGN_SYSTEM.md) consolida el estándar objetivo Aurora Soft Enterprise UI. La evidencia histórica se mantiene allí.
 
 El paquete documental está incorporado: Design System v2.0, este PRD v1.0 y canvia-design-system v1.1.0. La skill está reconocida en el catálogo de la sesión de auditoría y fue utilizada durante la Fase 1.6.
 
@@ -72,7 +72,7 @@ Proteger también cualquier otro componente de exportación identificado. Consul
 - No cambiar umbrales SLA documentados como objetivos sin verificar su significado y obtener aprobación.
 
 ## 7. Dirección visual definitiva
-CANVIA — Aurora Enterprise UI, variante Aurora Light. Aurora / Mesh Gradients es el estilo protagonista; Roboto, verde y naranja corporativos, superficies analíticas claras y Sidenav Aurora Deep. Sin modo oscuro completo, fotografías decorativas en dashboards, glassmorfismo excesivo ni Framer Motion.
+CANVIA — Aurora Soft Enterprise UI, composición Aurora Light. Interfaz empresarial predominantemente clara, con gradientes ambientales suaves y poco saturados visibles entre componentes. Intensidades verde 30%, naranja 25% y menta 20%, base #F7F9FB y superficies individuales al 94% cuando corresponda; sin lámina blanca general ni opacity global sobre texto. Conserva posiciones y extensiones aprobadas, Roboto, superficies analíticas independientes y Sidenav Aurora Deep. Sin modo oscuro completo, animaciones ambientales, fotografías decorativas en dashboards, glassmorfismo excesivo ni Framer Motion.
 
 El [Design System](../DESIGN_SYSTEM.md) es la fuente de verdad para tokens, cuatro gradientes, patrones, los diez principios UX, Motion Design, skeletons y mapa de las 16 páginas. Emerald y Sunset son referencias derivadas pendientes de revisión visual en Home. No reinterpretar los ejemplos visuales como nuevas funcionalidades.
 

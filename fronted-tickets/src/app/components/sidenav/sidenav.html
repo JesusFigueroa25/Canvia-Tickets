@@ -1,23 +1,27 @@
-<div class="sidenav" [ngClass]="collapsed ? 'sidenav-collapsed' : ''">
+<div class="sidenav canvia-tokens" [ngClass]="collapsed ? 'sidenav-collapsed' : ''" role="navigation"
+    aria-label="Navegación principal CANVIA">
 
     <div class="logo-container">
-        <button class="logo" (click)="toggleCollapse()"> C </button>
+        <button type="button" class="logo" (click)="toggleCollapse()"
+            [attr.aria-label]="collapsed ? 'Contraer menú' : 'Expandir menú'"
+            [attr.aria-expanded]="collapsed" aria-controls="canvia-navigation"> C </button>
         <div class="logo-text" @fadeInOut *ngIf="collapsed"> Canvia </div>
-        <button class="btn-close" @rotate *ngIf="collapsed" (click)="closeSidenav()">
-            <span class="material-symbols-outlined close-icon">
+        <button type="button" class="btn-close" @rotate *ngIf="collapsed" (click)="closeSidenav()" aria-label="Contraer menú">
+            <span class="material-symbols-outlined close-icon" aria-hidden="true">
                 close
             </span>
         </button>
     </div>
 
-    <ul class="sidenav-nav">
+    <ul id="canvia-navigation" class="sidenav-nav">
         <li class="sidenav-nav-item" *ngFor="let data of navData">
 
             <!-- Opciones de navegación -->
             <a *ngIf="data.icon !== 'logout'" class="sidenav-nav-link" [routerLink]="['/', data.routeLink]"
-                routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page"
+                [attr.aria-label]="data.label" [title]="data.label">
 
-                <span class="material-symbols-outlined sidenav-link-icon">
+                <span class="material-symbols-outlined sidenav-link-icon" aria-hidden="true">
                     {{ data.icon }}
                 </span>
                 <span class="sidenav-link-text" @fadeInOut *ngIf="collapsed">
@@ -27,9 +31,10 @@
 
             <!-- Cerrar sesión -->
             <a *ngIf="data.icon === 'logout'" class="sidenav-nav-link" role="button" tabindex="0" (click)="logout()"
+                [attr.aria-label]="data.label" [title]="data.label"
                 (keydown.enter)="logout()" (keydown.space)="$event.preventDefault(); logout()">
 
-                <span class="material-symbols-outlined sidenav-link-icon">
+                <span class="material-symbols-outlined sidenav-link-icon" aria-hidden="true">
                     {{ data.icon }}
                 </span>
                 <span class="sidenav-link-text" @fadeInOut *ngIf="collapsed">

@@ -26,20 +26,20 @@
             </div>
 
 
-            <form class="login-form" [formGroup]="logeoForm" (ngSubmit)="logearUsuario()">
+            <form class="login-form canvia-tokens canvia-material-login" [formGroup]="logeoForm" (ngSubmit)="logearUsuario()">
 
                 <!-- USUARIO -->
                 <div class="form-group">
 
-                    <label>Usuario</label>
+                    <label for="canvia-login-user">Usuario</label>
 
-                    <mat-form-field appearance="outline" class="full-width">
+                    <mat-form-field appearance="outline" class="full-width canvia-material-field">
 
                         <mat-icon matPrefix class="field-icon">
                             person_outline
                         </mat-icon>
 
-                        <input matInput formControlName="correo" placeholder="Ingresa tu usuario"
+                        <input id="canvia-login-user" matInput formControlName="correo" placeholder="Ingresa tu usuario"
                             autocomplete="correo" />
 
                         <mat-error *ngIf="logeoForm.get('correo')?.hasError('minlength')">
@@ -54,18 +54,19 @@
                 <!-- CONTRASEÑA -->
                 <div class="form-group">
 
-                    <label>Contraseña</label>
+                    <label for="canvia-login-password">Contraseña</label>
 
-                    <mat-form-field appearance="outline" class="full-width">
+                    <mat-form-field appearance="outline" class="full-width canvia-material-field">
 
                         <mat-icon matPrefix class="field-icon">
                             lock_outline
                         </mat-icon>
 
-                        <input matInput formControlName="password" [type]="muestraPassword ? 'text' : 'password'"
+                        <input id="canvia-login-password" matInput formControlName="password" [type]="muestraPassword ? 'text' : 'password'"
                             placeholder="Ingresa tu contraseña" autocomplete="current-password" />
 
                         <button type="button" mat-icon-button matSuffix class="password-button"
+                            [attr.aria-label]="muestraPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                             (click)="muestraPassword = !muestraPassword">
 
                             <mat-icon>
@@ -82,9 +83,9 @@
                 </div>
 
                 <!-- INGRESAR -->
-                <button type="submit" class="login-button" [disabled]="logeoForm.invalid">
+                <button mat-flat-button type="submit" class="login-button" [disabled]="logeoForm.invalid">
                     <span>Ingresar</span>
-                    <mat-icon>
+                    <mat-icon iconPositionEnd>
                         arrow_forward
                     </mat-icon>
                 </button>

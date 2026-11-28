@@ -7,7 +7,7 @@
     </div>
   </header>
 
-  <section class="filters-card" aria-label="Filtros de Tareas Consolidadas">
+  <section class="filters-card canvia-filter-card" aria-label="Filtros de Tareas Consolidadas">
     <div class="filters-heading">
       <div>
         <h2>Filtros del dashboard</h2>
@@ -16,75 +16,82 @@
       <mat-icon aria-hidden="true">tune</mat-icon>
     </div>
 
-    <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+    <form class="filters-form canvia-filter-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()"
+        [class.canvia-filter-loading]="cargandoFiltros" [attr.aria-busy]="cargandoFiltros"
+        [attr.inert]="cargandoFiltros ? '' : null">
       <div class="date-range-fields">
         <div class="filter-field">
           <label for="task-desde">Desde</label>
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
             <input id="task-desde" matInput [matDatepicker]="pickerDesde" formControlName="desde" [min]="fechaMinima"
               [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
             <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
-            <mat-datepicker #pickerDesde></mat-datepicker>
+            <mat-datepicker #pickerDesde panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
             <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">Selecciona la fecha Desde.</mat-error>
             <mat-error
               *ngIf="filtrosForm.get('desde')?.hasError('matDatepickerMin') || filtrosForm.get('desde')?.hasError('matDatepickerMax')">Fecha
               fuera del rango disponible.</mat-error>
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
         </div>
 
         <div class="filter-field">
           <label for="task-hasta">Hasta</label>
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
             <input id="task-hasta" matInput [matDatepicker]="pickerHasta" formControlName="hasta" [min]="fechaMinima"
               [max]="fechaMaxima" placeholder="Seleccionar fecha" autocomplete="off">
             <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
-            <mat-datepicker #pickerHasta></mat-datepicker>
+            <mat-datepicker #pickerHasta panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
             <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">Selecciona la fecha Hasta.</mat-error>
             <mat-error
               *ngIf="filtrosForm.get('hasta')?.hasError('matDatepickerMin') || filtrosForm.get('hasta')?.hasError('matDatepickerMax')">Fecha
               fuera del rango disponible.</mat-error>
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
         </div>
       </div>
 
       <div class="filter-field">
         <label for="task-prioridad">Prioridad</label>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-select id="task-prioridad" formControlName="prioridad" placeholder="Todas">
+        <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
+          <mat-select id="task-prioridad" formControlName="prioridad" placeholder="Todas" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
             <mat-option [value]="null">Todas</mat-option>
             <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">{{ prioridad
               }}</mat-option>
           </mat-select>
         </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
       </div>
 
       <div class="filter-field">
         <label for="task-motivo-estado">Motivo de Estado</label>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-select id="task-motivo-estado" formControlName="motivo_estado" placeholder="Todos">
+        <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
+          <mat-select id="task-motivo-estado" formControlName="motivo_estado" placeholder="Todos" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
             <mat-option [value]="null">Todos</mat-option>
             <mat-option *ngFor="let motivo of opcionesFiltros.motivos_estado" [value]="motivo" [title]="motivo">{{
               motivo }}</mat-option>
           </mat-select>
         </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
       </div>
 
       <div class="filter-field">
         <label for="task-grupo-resolutor">Grupo Resolutor</label>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-select id="task-grupo-resolutor" formControlName="grupo_resolutor" placeholder="Todos">
+        <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
+          <mat-select id="task-grupo-resolutor" formControlName="grupo_resolutor" placeholder="Todos" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
             <mat-option [value]="null">Todos</mat-option>
             <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo" [title]="grupo">{{
               grupo }}</mat-option>
           </mat-select>
         </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
       </div>
 
       <div class="filter-field">
         <label for="task-proyecto">Proyecto</label>
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
           <mat-select id="task-proyecto" formControlName="proyecto" placeholder="Todos los proyectos"
-            panelClass="task-project-panel" (openedChange)="alAbrirComboProyecto($event)">
+            panelClass="task-project-panel daily-report-project-panel canvia-tokens canvia-filter-panel" (openedChange)="alAbrirComboProyecto($event)">
             <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
               <mat-icon aria-hidden="true">search</mat-icon>
               <input type="text" placeholder="Buscar proyecto..." aria-label="Buscar proyecto"
@@ -101,9 +108,14 @@
             <mat-option *ngIf="proyectosFiltrados.length === 0" disabled>No se encontraron proyectos</mat-option>
           </mat-select>
         </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
       </div>
 
       <div class="filter-actions">
+          <div *ngIf="cargandoFiltros" class="canvia-filter-actions-placeholder" aria-hidden="true">
+            <span class="canvia-filter-placeholder"></span>
+            <span class="canvia-filter-placeholder"></span>
+          </div>
         <button mat-stroked-button type="button" class="clear-button" (click)="limpiarFiltros()"
           [disabled]="!filtrosListos || cargandoFiltros">
           <mat-icon>restart_alt</mat-icon>
@@ -128,7 +140,7 @@
     </div>
   </section>
 
-  <section class="status-card loading-card" *ngIf="cargandoFiltros" role="status">
+  <section class="status-card loading-card canvia-extension-sr" *ngIf="cargandoFiltros" role="status">
     <span class="loading-indicator"></span>
     Cargando filtros de Tareas Consolidadas...
   </section>
@@ -144,7 +156,7 @@
     No se encontraron fechas disponibles para consultar tareas.
   </section>
 
-  <section class="status-card loading-card" *ngIf="cargandoDashboard" role="status" aria-live="polite">
+  <section class="status-card loading-card canvia-extension-sr" *ngIf="cargandoDashboard" role="status" aria-live="polite">
     <span class="loading-indicator"></span>
     Actualizando información del dashboard de Tareas...
   </section>
@@ -154,7 +166,9 @@
     <span>{{ mensaje }}</span>
   </section>
 
-  <section class="kpis-wrapper" *ngIf="kpis as indicadores" aria-label="Indicadores de Tareas Consolidadas">
+  <section class="kpis-wrapper canvia-tokens" *ngIf="((cargandoFiltros) || (cargandoKpis)) && !kpis" aria-hidden="true"><div class="section-heading"><h2>Indicadores generales</h2></div><div class="kpis-section"><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div></div></section>
+
+<section class="kpis-wrapper" *ngIf="kpis as indicadores" aria-label="Indicadores de Tareas Consolidadas">
     <div class="section-heading">
       <div>
         <h2>Indicadores generales</h2>
@@ -163,13 +177,13 @@
     </div>
 
     <div class="kpis-section">
-      <app-kpi-card titulo="Total de Tareas" [valor]="indicadores.total_tickets" icono="confirmation_number"
+      <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Total de Tareas" [valor]="indicadores.total_tickets" icono="confirmation_number"
         color="orange"></app-kpi-card>
-      <app-kpi-card titulo="Total de Proyectos" [valor]="indicadores.total_proyectos" icono="business"
+      <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Total de Proyectos" [valor]="indicadores.total_proyectos" icono="business"
         color="green"></app-kpi-card>
-      <app-kpi-card titulo="Alta Criticidad" [valor]="indicadores.alta_criticidad" icono="priority_high"
+      <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Alta Criticidad" [valor]="indicadores.alta_criticidad" icono="priority_high"
         color="orange"></app-kpi-card>
-      <app-kpi-card titulo="% Alta Criticidad" [valor]="indicadores.porcentaje_alta_criticidad + '%'" icono="percent"
+      <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="% Alta Criticidad" [valor]="indicadores.porcentaje_alta_criticidad + '%'" icono="percent"
         color="orange"></app-kpi-card>
     </div>
   </section>
@@ -181,22 +195,28 @@
 
 
 
-  <section class="charts-scroll" *ngIf="filtrosListos">
+  
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <section class="charts-scroll canvia-initial-skeleton-group" *ngIf="(cargandoFiltros) && !(filtrosListos)" aria-hidden="true">
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table" *ngIf="(cargandoFiltros) || ((cargas.proyectos) && !(errores.proyectos))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars" *ngIf="(cargandoFiltros) || ((cargandoVolumenMensual))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+</section>
+    <section class="charts-scroll" *ngIf="filtrosListos">
 
-    <div class="chart-scroll-item table-expandable" id="fullscreen-tabla-proyectos-task" #tablaProyectosTaskFs>
+    <div class="chart-scroll-item table-expandable canvia-extension-host" id="fullscreen-tabla-proyectos-task" #tablaProyectosTaskFs>
 
-      <app-project-explorer-table modo="consolidado" entidadConsolidado="tareas" modoBusqueda="combo"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargas.proyectos) && !(errores.proyectos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-project-explorer-table modo="consolidado" entidadConsolidado="tareas" modoBusqueda="combo"
         [datosConsolidados]="proyectos" [opcionesProyectos]="opcionesProyectos"
         [proyectoSeleccionado]="proyectoSeleccionado" (proyectoChange)="cambiarProyecto($event)"
         [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
         (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
         [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-proyectos-task'"
-        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosTaskFs)">
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosTaskFs)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargas.proyectos) && !(errores.proyectos))" [attr.inert]="((cargandoFiltros) || ((cargas.proyectos) && !(errores.proyectos))) ? '' : null">
       </app-project-explorer-table>
 
     </div>
 
-    <div class="chart-scroll-item chart-expandable" id="fullscreen-volumen-task" #volumenTaskFs>
+    <div class="chart-scroll-item chart-expandable canvia-extension-host" id="fullscreen-volumen-task" #volumenTaskFs>
 
       <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(volumenTaskFs)" [title]="graficoExpandido === 'fullscreen-volumen-task'
         ? 'Salir de pantalla completa'
@@ -210,18 +230,24 @@
 
       </button>
 
-      <app-volume-month modo="consolidado" entidadConsolidado="tareas" [datosConsolidados]="volumenMensual"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoVolumenMensual))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-volume-month modo="consolidado" entidadConsolidado="tareas" [datosConsolidados]="volumenMensual"
         [habilitarFiltroMes]="true" [periodoSeleccionado]="periodoSeleccionado" [cargando]="cargandoVolumenMensual"
-        (periodoChange)="cambiarPeriodo($event)">
+        (periodoChange)="cambiarPeriodo($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoVolumenMensual))" [attr.inert]="((cargandoFiltros) || ((cargandoVolumenMensual))) ? '' : null">
       </app-volume-month>
 
     </div>
 
   </section>
 
-  <section class="charts-scroll" *ngIf="filtrosListos">
+  
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <section class="charts-scroll canvia-initial-skeleton-group" *ngIf="(cargandoFiltros) && !(filtrosListos)" aria-hidden="true">
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars" *ngIf="(cargandoFiltros) || ((cargandoTipos))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars" *ngIf="(cargandoFiltros) || ((cargandoPrioridades))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+</section>
+    <section class="charts-scroll" *ngIf="filtrosListos">
 
-    <div class="chart-scroll-item chart-expandable" id="fullscreen-tipos-task" #tiposTaskFs>
+    <div class="chart-scroll-item chart-expandable canvia-extension-host" id="fullscreen-tipos-task" #tiposTaskFs>
 
       <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tiposTaskFs)" [title]="graficoExpandido === 'fullscreen-tipos-task'
         ? 'Salir de pantalla completa'
@@ -235,15 +261,15 @@
 
       </button>
 
-      <app-category-distribution titulo="Distribución por Tipo de Tareas"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTipos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-category-distribution titulo="Distribución por Tipo de Tareas"
         descripcion="Tipos de tareas según su categorización de nivel 3, ordenados por volumen." orientacion="vertical"
         [datos]="tiposGrafico" [seleccionMultiple]="true" [tiposSeleccionados]="tiposTareaSeleccionados"
-        [cargando]="cargandoTipos" textoSeleccionMultiple="tipos de tarea" (tiposChange)="cambiarTiposTarea($event)">
+        [cargando]="cargandoTipos" textoSeleccionMultiple="tipos de tarea" (tiposChange)="cambiarTiposTarea($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTipos))" [attr.inert]="((cargandoFiltros) || ((cargandoTipos))) ? '' : null">
       </app-category-distribution>
 
     </div>
 
-    <div class="chart-scroll-item chart-expandable" id="fullscreen-prioridades-task" #prioridadesTaskFs>
+    <div class="chart-scroll-item chart-expandable canvia-extension-host" id="fullscreen-prioridades-task" #prioridadesTaskFs>
 
       <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadesTaskFs)" [title]="graficoExpandido === 'fullscreen-prioridades-task'
         ? 'Salir de pantalla completa'
@@ -257,16 +283,19 @@
 
       </button>
 
-      <app-category-distribution titulo="Distribución por Prioridad"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoPrioridades))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-category-distribution titulo="Distribución por Prioridad"
         descripcion="Cantidad de tareas registradas según su nivel de criticidad." orientacion="vertical"
-        [coloresPorPrioridad]="true" [datos]="prioridadesGrafico" [cargando]="cargandoPrioridades">
+        [coloresPorPrioridad]="true" [datos]="prioridadesGrafico" [cargando]="cargandoPrioridades" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoPrioridades))" [attr.inert]="((cargandoFiltros) || ((cargandoPrioridades))) ? '' : null">
       </app-category-distribution>
 
     </div>
 
   </section>
 
-  <section class="chart-full-width chart-expandable" id="fullscreen-top-proyectos-task" #topProyectosTaskFs
+  
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars chart-full-width" *ngIf="(cargandoFiltros) && !(filtrosListos)" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+    <section class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-top-proyectos-task" #topProyectosTaskFs
     *ngIf="filtrosListos">
 
     <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(topProyectosTaskFs)" [title]="graficoExpandido === 'fullscreen-top-proyectos-task'
@@ -281,13 +310,16 @@
 
     </button>
 
-    <app-project-monthly-top entidadConsolidado="tareas" [datos]="topProyectos"
-      [proyectoSeleccionado]="proyectoSeleccionado" [periodoSeleccionado]="periodoSeleccionado">
+    <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargas.topProyectos) && !(errores.topProyectos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-project-monthly-top entidadConsolidado="tareas" [datos]="topProyectos"
+      [proyectoSeleccionado]="proyectoSeleccionado" [periodoSeleccionado]="periodoSeleccionado" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargas.topProyectos) && !(errores.topProyectos))" [attr.inert]="((cargandoFiltros) || ((cargas.topProyectos) && !(errores.topProyectos))) ? '' : null">
     </app-project-monthly-top>
 
   </section>
 
-  <section class="chart-full-width chart-expandable" id="fullscreen-prioridad-mensual-task" #prioridadMensualTaskFs
+  
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars chart-full-width" *ngIf="(cargandoFiltros) && !(filtrosListos)" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+    <section class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-prioridad-mensual-task" #prioridadMensualTaskFs
     *ngIf="filtrosListos">
 
     <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(prioridadMensualTaskFs)" [title]="graficoExpandido === 'fullscreen-prioridad-mensual-task'
@@ -302,7 +334,7 @@
 
     </button>
 
-    <app-priority-monthly-stack entidadConsolidado="tareas" [datos]="prioridadMensual">
+    <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargas.prioridadMensual) && !(errores.prioridadMensual))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-priority-monthly-stack entidadConsolidado="tareas" [datos]="prioridadMensual" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargas.prioridadMensual) && !(errores.prioridadMensual))" [attr.inert]="((cargandoFiltros) || ((cargas.prioridadMensual) && !(errores.prioridadMensual))) ? '' : null">
     </app-priority-monthly-stack>
 
   </section>
@@ -314,9 +346,9 @@
       <p>Rendimiento mensual y distribución de tickets por resolutor en tareas.</p>
     </header>
 
-    <div class="chart-full-width table-expandable" id="fullscreen-tabla-resolutores-task-consolidated"
+    <div class="chart-full-width table-expandable canvia-extension-host" id="fullscreen-tabla-resolutores-task-consolidated"
       #tablaResolutoresFs>
-      <app-resolutor-performance-table
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-resolutor-performance-table
         [datos]="rendimientoResolutores"
         [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
         [resolutorSeleccionado]="resolutorSeleccionado"
@@ -327,7 +359,7 @@
         [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-resolutores-task-consolidated'"
         (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaResolutoresFs)"
         (resolutorChange)="cambiarResolutor($event)"
-        (paginaChange)="cambiarPaginaResolutores($event)">
+        (paginaChange)="cambiarPaginaResolutores($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))" [attr.inert]="((cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))) ? '' : null">
       </app-resolutor-performance-table>
       <p *ngIf="errorRendimientoResolutores" role="alert">
         {{ errorRendimientoResolutores }}
@@ -335,7 +367,7 @@
       </p>
     </div>
 
-    <div class="chart-full-width chart-expandable" id="fullscreen-grafico-resolutores-task-consolidated"
+    <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-grafico-resolutores-task-consolidated"
       #graficoResolutoresFs>
       <button type="button" class="chart-expand-btn"
         (click)="alternarPantallaCompleta(graficoResolutoresFs)"
@@ -347,14 +379,14 @@
             ? 'fullscreen_exit' : 'fullscreen' }}
         </mat-icon>
       </button>
-      <app-resolver-monthly-tickets
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-resolver-monthly-tickets
         [datos]="ticketsPorResolutor"
         [cargando]="cargandoTicketsPorResolutor"
         [limite]="limiteTicketsPorResolutor"
         [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
         titulo="Número de Tickets por Resolutor"
         descripcion="Comparación mensual de tareas por resolutor, según su fecha de apertura."
-        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))" [attr.inert]="((cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))) ? '' : null">
       </app-resolver-monthly-tickets>
       <p *ngIf="errorTicketsPorResolutor" role="alert">
         {{ errorTicketsPorResolutor }}
@@ -363,7 +395,10 @@
     </div>
   </section>
 
-  <section class="chart-full-width ticket-explorer-section" *ngIf="filtrosListos">
+  
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table chart-full-width ticket-explorer-section" *ngIf="(cargandoFiltros) && !(filtrosListos)" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+    <section class="chart-full-width ticket-explorer-section" *ngIf="filtrosListos">
 
     <header class="ticket-explorer-header">
       <h2>Explorador de Tickets</h2>
@@ -373,14 +408,14 @@
       </p>
     </header>
 
-    <div class="table-expandable" id="fullscreen-tabla-tickets-task" #tablaTicketsTaskFs>
+    <div class="table-expandable canvia-extension-host" id="fullscreen-tabla-tickets-task" #tablaTicketsTaskFs>
 
-      <app-ticket-explorer-table tipoDashboard="task-consolidated" [datos]="ticketsDetalle" [cargando]="cargandoTickets"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTickets) && !(errorTickets))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-ticket-explorer-table tipoDashboard="task-consolidated" [datos]="ticketsDetalle" [cargando]="cargandoTickets"
         [error]="errorTickets" [ticketIdSeleccionado]="ticketIdSeleccionado"
         (paginaChange)="cambiarPaginaTickets($event)" (ticketIdChange)="cambiarTicketId($event)"
         [habilitarPantallaCompleta]="true"
         [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-tabla-tickets-task'"
-        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsTaskFs)">
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaTicketsTaskFs)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTickets) && !(errorTickets))" [attr.inert]="((cargandoFiltros) || ((cargandoTickets) && !(errorTickets))) ? '' : null">
       </app-ticket-explorer-table>
 
     </div>
@@ -391,3 +426,5 @@
 
 
 </div>
+
+

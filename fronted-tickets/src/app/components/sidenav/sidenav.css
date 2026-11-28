@@ -1,124 +1,138 @@
 .sidenav {
-    /* background: #263238; */
-    background: linear-gradient(#003421);
-    transition: all .5s ease;
     position: fixed;
     z-index: 1;
     top: 0;
+    left: 0;
     width: 5rem;
     height: 100vh;
-    box-shadow: 0.063rem 0 1.25rem 0 #8690a3;
     overflow: auto;
-
-    .logo-container {
-        display: flex;
-        align-items: center;
-        padding: 0.938rem 0.938rem 0 0.938rem;
-        width: 100%;
-        position: sticky;
-        top: 0;
-        background: #003421;
-
-        .logo {
-            /* background: #fff; */
-            background: url(https://res.cloudinary.com/dghyclecy/image/upload/v1791238001/logo_nfyws5.png);
-            background-size: cover;
-            background-position: center;
-            text-align: center;
-            width: 3rem;
-            min-width: 3rem;
-            border-radius: 0.313rem;
-            padding: 0.313rem;
-            font-size: 24px;
-            font-weight: 900;
-            cursor: pointer;
-            border: none;
-            color: transparent;
-        }
-
-        .logo-text {
-            margin-left: 1.5rem;
-            font-size: 24px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .btn-close {
-            margin-left: auto;
-            cursor: pointer;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            background-color: transparent;
-            border: none;
-
-            .fa-times {
-                color: #fff;
-                font-size: 24px;
-            }
-        }
-    }
+    background: var(--canvia-gradient-aurora-deep);
+    box-shadow: var(--canvia-elevation-2);
+    color: var(--canvia-surface-card);
+    font-family: var(--canvia-font-family);
+    scrollbar-width: thin;
+    scrollbar-color: var(--canvia-brand-green-soft) var(--canvia-brand-green-deep);
 }
 
 .sidenav-collapsed {
     width: 16.5625rem;
 }
 
+.logo-container {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--canvia-space-8);
+    width: 100%;
+    padding: var(--canvia-space-16);
+    background: var(--canvia-brand-green-deep);
+}
+
+.logo {
+    flex: 0 0 3rem;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--canvia-radius-sm);
+    background: url(https://res.cloudinary.com/dghyclecy/image/upload/v1791238001/logo_nfyws5.png) center / cover;
+    color: transparent;
+    cursor: pointer;
+}
+
+.logo-text {
+    min-width: 0;
+    font-size: var(--canvia-font-size-section-title);
+    font-weight: var(--canvia-font-weight-page-title);
+    color: var(--canvia-surface-card);
+}
+
+.btn-close {
+    display: grid;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    padding: 0;
+    border: none;
+    border-radius: var(--canvia-radius-sm);
+    background: transparent;
+    color: var(--canvia-surface-card);
+    cursor: pointer;
+    transition: background-color var(--canvia-motion-hover) var(--canvia-motion-easing);
+}
+
+.close-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
 .sidenav-nav {
-    list-style: none;
-    padding: 0.938rem;
-    margin: 0;
     display: flex;
     flex-direction: column;
+    gap: var(--canvia-space-4);
+    margin: 0;
+    padding: 0 var(--canvia-space-16) var(--canvia-space-16);
+    list-style: none;
+}
+
+.sidenav-nav-item {
+    width: 100%;
+}
+
+.sidenav-nav-link {
+    display: flex;
     align-items: center;
-    height: calc(100% - 3.65rem);
+    gap: var(--canvia-space-12);
+    min-height: 48px;
+    padding: var(--canvia-space-4) var(--canvia-space-8);
+    border-radius: var(--canvia-radius-md);
+    color: var(--canvia-surface-card);
+    font-size: var(--canvia-font-size-body);
+    font-weight: var(--canvia-font-weight-subtitle);
+    line-height: 20px;
+    text-decoration: none;
     cursor: pointer;
-
-    .sidenav-nav-item {
-        width: 100%;
-        margin-bottom: 0.625rem;
-
-        .sidenav-nav-link {
-            display: flex;
-            align-items: center;
-            height: 3rem;
-            color: #f3f3f3;
-            text-decoration: none;
-            border-radius: 0.625rem;
-            transition: all .3s ease;
-
-            .sidenav-link-icon {
-                font-size: 22px;
-                width: 2rem;
-                min-width: 2rem;
-                margin: 0 0.5rem;
-                text-align: center;
-            }
-
-            .sidenav-link-text {
-                margin-left: 1.5rem;
-            }
-        }
-    }
-
-    .sidenav-nav-item:hover {
-        .sidenav-nav-link {
-            /* background-color: #fff; */
-            background: linear-gradient(#ff5300);
-            color: #000;
-        }
-    }
+    transition:
+        background-color var(--canvia-motion-hover) var(--canvia-motion-easing),
+        color var(--canvia-motion-hover) var(--canvia-motion-easing);
 }
 
-.active {
-    background: linear-gradient(#ff5300);
-
-    .sidenav-link-icon,
-    .sidenav-link-text {
-        color: #fff;
-    }
+.sidenav-link-icon {
+    flex: 0 0 24px;
+    width: 24px;
+    font-size: 22px;
+    line-height: 24px;
+    text-align: center;
 }
 
-.sidenav::-webkit-scrollbar {
-    display: none;
+.sidenav-link-text {
+    min-width: 0;
+}
+
+.sidenav-nav-link.active {
+    background: var(--canvia-brand-orange-soft);
+    color: var(--canvia-brand-green-deep);
+}
+
+.sidenav-nav-link:hover:not(.active),
+.btn-close:hover {
+    background-color: var(--canvia-brand-green);
+}
+
+.logo:focus-visible,
+.btn-close:focus-visible,
+.sidenav-nav-link:focus-visible {
+    outline: var(--canvia-focus-width) solid var(--canvia-brand-orange-soft);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-close,
+    .sidenav-nav-link {
+        transition: none;
+    }
 }
