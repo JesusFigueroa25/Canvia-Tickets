@@ -333,6 +333,37 @@ Las nuevas evidencias están en la carpeta externa %LOCALAPPDATA%/CANVIA-QA/fase
 
 El veredicto es completado con validación sintética de los dos consumidores. El montaje y descarga desde los cuatro padres, incluida la creación dinámica de R06, conservan su validación integrada pendiente. La autenticación real, las animaciones TS existentes y los complementos de Cambios/Tareas mantienen sus límites previos. El bloque conserva TypeScript, autenticación, rutas, Sidenav, Body y los reportes protegidos. La Fase 2.4.3 continúa pendiente de autorización.
 
+### Fase 2.4.3 — Sidenav y Layout
+
+Ejecución del 27/11/2026, hora de Lima, sobre HEAD dc014e0e9d44f6917aecc8bb5fdc0bbbd5d850b7, rama style/ui-canvia-fase-2.3. El alcance de código se limita a sidenav.html/css y layouts/body/body.html/css. Los archivos TypeScript, servicios, autenticación, rutas, Material selectivo y reportes conservan su contenido. Las evidencias de 2.4.1 continúan sin seguimiento y el índice Git permanece vacío.
+
+Antes de editar se obtuvieron los complementos de Cambios y Tareas a 1440 × 900, Sidenav expandido, scroll superior y KPI dentro del viewport, con respuestas sintéticas. Se registraron las cuatro configuraciones previas de Home. El usuario inició sesión manualmente en Chrome aislado. Solo el POST de Login llegó al backend. Las consultas de dashboards y las exportaciones usaron respuestas controladas, con narrativa ficticia de reglas y otras operaciones POST bloqueadas.
+
+El control previo completó siete descargas desde sus cuatro padres y encontró comentado el botón de R08. La implementación se detuvo. Una autorización posterior permitió habilitar temporalmente ese mismo botón en una copia externa de pruebas, conservando sus bindings y el hash de tickets-report-times.html del repositorio principal. R08 descargó 1400 × 7173 px, retiró su enlace temporal y confirmó la limpieza al desmontar el padre. Este procedimiento se repitió después de implementar. El botón permanece deshabilitado en la interfaz actual.
+
+| Comprobación | Resultado |
+| --- | --- |
+| Navegación y ancho | Estados compacto/expandido, enlaces, ruta activa con aria-current, scroll hasta logout y compensación de Body verificados. |
+| Responsive | Capturas finales a 1440 × 900, 768 × 1024 y 390 × 844. Seis combinaciones compacto/expandido a 767, 768 y 769px con offsets de 80/265px y sin desbordamiento del documento. |
+| Carga directa móvil | Ruta protegida cargada a 390px. Conserva expansión inicial de TS, con menú de 265px y Body desde x=265. Body dispone de 125px y registra scrollWidth=215 frente a clientWidth=110. Es una limitación del estado expandido, con scroll interno y documento acotado. |
+| Teclado y autenticación | Tab llega al enlace Home en modo compacto, nombre accesible y foco de 2px. Logout mediante Espacio vuelve a la portada y authGuard impide regresar directamente a Home. |
+| Contraste | Texto secundario sobre la superficie final entre 4,82 y 4,86 a 1 en la muestra de cabecera. Blanco sobre el verde más claro del Sidenav 4,74 a 1. Verde profundo sobre naranja activo 7,85 a 1. Comprobaciones acotadas a estas combinaciones. |
+| Movimiento reducido | Transiciones CSS nuevas computadas en 0s. Fade de 350ms y rotación de 1000ms definidos en TS conservan su limitación previa. |
+| Foco de Reporte Diario | El primer clic exterior lo recibe el backdrop y devuelve foco al selector. El segundo clic enfoca Desde correctamente. Implementación de Diario intacta. |
+| Build final | npm run build termina con código 0, con advertencias de presupuesto existentes. |
+| Suite de la fase | npm test -- --watch=false registra 301 aprobadas y los mismos cinco fallos preexistentes. El ajuste final de contraste solo cambió CSS y se recompiló. |
+| PNG aislados | Ocho documentos antes/después con dimensiones y SHA-256 iguales al manifiesto canónico. |
+| PNG integrados | Ocho descargas desde sus padres bajo Body, antes/después, con fecha de preparación fija y SHA-256 idénticos. Incluyen R06 dinámico y R08 habilitado solo en la copia externa. |
+| Protección | Los 51 archivos inventariados conservan su SHA-256. R08 principal conserva d8e9b0f45818e8ec9d9b07108d52713b041d10da7b4f572e15aaef9433d697fc. |
+
+Las primeras capturas integradas con fecha real mostraron diferencias en el pie Preparado. En R08 se localizaron 26 píxeles correspondientes al minuto. El control determinista fijó new Date() sin argumentos en 2026-11-24T12:00:00Z dentro del navegador de prueba y conservó Date.now y los temporizadores activos. La repetición con las copias anterior y posterior del layout eliminó esas diferencias en los ocho documentos. Las referencias aisladas originales mantienen sus propios fixtures.
+
+Se corrigió el contraste del gradiente directo, que daba aproximadamente 3 a 1 con texto secundario, aplicando la superficie blanca al 94% aprobada al área de trabajo. Los tokens residen solo en Sidenav y la superficie decorativa vacía. La regla del contenedor raíz del outlet modifica únicamente padding y fondo. Las fuentes, posiciones x=-20000/y=0, dimensiones y PNG integrados de los reportes permanecen equivalentes.
+
+Las evidencias se guardan en %LOCALAPPDATA%/CANVIA-QA/fase-2.4.3. live-before contiene los complementos y cuatro capturas previas de Home. live-final contiene sus comparaciones finales. isolated-before/after contienen el reproductor inalterado y sus PNG. full-fixed-before/after contienen las ocho descargas integradas deterministas. Los JSON de contraste, foco, funcionalidad e integridad describen alcance y limitaciones. El navegador aislado se cerró tras la validación y el logout.
+
+El veredicto es implementado con observaciones de móvil expandido y motion TS. R08 mantiene la condición funcional actual, con habilitación exclusivamente temporal de pruebas autorizada. Skeletons, KPI Cards y modernización particular de Home conservan su autorización pendiente.
+
 ## Pruebas propuestas
 
 Estas pruebas son propuestas, no funcionalidades ya presentes:

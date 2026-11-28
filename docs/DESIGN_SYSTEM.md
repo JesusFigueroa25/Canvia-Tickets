@@ -1,7 +1,7 @@
-# Sistema de diseño CANVIA — Aurora Enterprise UI
+# Sistema de diseño CANVIA — Aurora Soft Enterprise UI
 
 **Versión documental:** 2.0 · **Fecha:** 27/11/2026\
-**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Catálogo incorporado en Fase 2.4.1 y primera aplicación Material selectiva en Login y selector de proyectos de Reporte Diario en Fase 2.4.2.
+**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Tokens incorporados en 2.4.1, Material selectivo en 2.4.2 y Sidenav/Layout en 2.4.3, con limitaciones de móvil expandido y motion TS documentadas.
 
 ## Alcance y fuentes de verdad
 
@@ -13,11 +13,11 @@ Durante esta modernización solo se autorizan cambios visuales HTML/CSS/SCSS y d
 
 ### Objetivo aprobado
 
-CANVIA — Aurora Enterprise UI utiliza la variante Aurora Light: una interfaz empresarial, tecnológica y luminosa. Aurora / Mesh Gradients es el estilo protagonista, con presencia visible en fondos y encabezados; los datos conservan superficies claras.
+CANVIA — Aurora Soft Enterprise UI utiliza la composición Aurora Light con intensidad suave: una interfaz empresarial, moderna, predominantemente clara y poco saturada. Los gradientes ambientales permanecen visibles entre componentes; tarjetas, filtros, gráficos y tablas conservan superficies independientes y legibles.
 
 Usa verde, menta y naranja como ambiente, Roboto como familia principal, Sidenav Aurora Deep; evita glassmorfismo excesivo y no adoptes glassmorfismo como estilo independiente. Mantén densidad operativa, información legible, secciones, orden funcional y acciones existentes. La rejilla modular responde al contenido real; Bento no es una segunda dirección estética aprobada ni autoriza a inventar paneles o cambiar su alcance.
 
-No implementes modo oscuro completo. No uses fotografías decorativas en dashboards ni los conviertas en landing pages comerciales. Login y Landing admiten Aurora de alta presencia sin añadir contenido o comportamientos ajenos a lo autorizado.
+No implementes modo oscuro completo. No uses fotografías decorativas en dashboards ni los conviertas en landing pages comerciales. Login y Landing conservan la composición Aurora aprobada con las intensidades Soft, sin añadir contenido o comportamientos ajenos a lo autorizado.
 
 ### Relación con frontend-skill
 
@@ -37,7 +37,7 @@ angular-developer y playwright podrán utilizarse cuando estén instaladas, disp
 
 #### Intensidad y composición
 
-Aurora es protagonista en el fondo y encabezados; alta en Login y Landing, media-alta en navegación, moderada en KPI y baja en filtros, diálogos y contenedores analíticos. Las tablas son sólidas y los skeletons neutros. Aurora no alcanza reportes descargables. No hay animación ambiental permanente.
+Aurora Soft es visible en el fondo y entre componentes, con intensidades suaves uniformes. Sidenav mantiene Aurora Deep. KPI, filtros, diálogos y contenedores analíticos conservan sus decisiones aprobadas y superficies independientes; las tablas son sólidas y los skeletons neutros. Aurora no alcanza reportes descargables. No hay animación ambiental permanente.
 
 Jerarquía orientativa: encabezado → filtros → KPI → insights → gráficos → tablas → análisis, solo cuando esas secciones ya existan. Preservar orden funcional y estructura necesaria para los datos.
 
@@ -102,14 +102,16 @@ Referencias históricas de la paleta de datos. No reasignar colores internos ni 
 
 ### Gradientes radiales multicapa
 
-Las siguientes composiciones son referencias documentales. Mantén Aurora visible sin animación permanente de fondo. Aurora Light utiliza intensidad esmeralda 70%, naranja 55% y verde suave/menta 45%. Las tarjetas pueden usar blanco al 94%; tablas, diálogos y superficies que lo necesiten serán sólidos.
+La dirección definitiva Aurora Soft actualiza únicamente intensidades y fondo base de los tokens existentes. Aurora Light utiliza verde 30%, naranja 25% y verde suave/menta 20%, sobre #F7F9FB. Conserva posiciones y extensiones radiales. Emerald aplica 30% al esmeralda y 20% a sus dos capas suaves; Sunset aplica 25% a sus tres capas cálidas y usa la misma base #F7F9FB. Aurora Deep permanece intacto.
+
+El blanco al 94% corresponde a superficies individuales mediante --canvia-surface-card-translucent, nunca a una lámina sobre toda la página. Las superficies sólidas existentes se conservan cuando su componente aún no está autorizado para modernización, especialmente gráficos, tablas, filtros y KPI. No apliques opacity global a elementos con texto ni transparencias indiscriminadas.
 
 #### Aurora Light — fondo principal
 
 ```css
-radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.70), transparent 65%),
-radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.55), transparent 65%),
-radial-gradient(ellipse at 90% 100%, rgba(99,184,145,.45), transparent 70%),
+radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.30), transparent 65%),
+radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.25), transparent 65%),
+radial-gradient(ellipse at 90% 100%, rgba(99,184,145,.20), transparent 70%),
 #F7F9FB
 ```
 
@@ -118,9 +120,9 @@ radial-gradient(ellipse at 90% 100%, rgba(99,184,145,.45), transparent 70%),
 Composición de referencia derivada de los tokens aprobados; pendiente de validación visual en Home, sin introducir nuevos colores:
 
 ```css
-radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.70), transparent 65%),
-radial-gradient(ellipse at 100% 0%, rgba(99,184,145,.45), transparent 65%),
-radial-gradient(ellipse at 90% 100%, rgba(209,250,229,.45), transparent 70%),
+radial-gradient(ellipse at 10% 0%, rgba(52,211,153,.30), transparent 65%),
+radial-gradient(ellipse at 100% 0%, rgba(99,184,145,.20), transparent 65%),
+radial-gradient(ellipse at 90% 100%, rgba(209,250,229,.20), transparent 70%),
 #F7F9FB
 ```
 
@@ -129,10 +131,10 @@ radial-gradient(ellipse at 90% 100%, rgba(209,250,229,.45), transparent 70%),
 Composición de referencia derivada de los tokens aprobados; pendiente de validación visual en Home:
 
 ```css
-radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.55), transparent 65%),
-radial-gradient(ellipse at 10% 0%, rgba(255,207,171,.45), transparent 65%),
-radial-gradient(ellipse at 90% 100%, rgba(255,216,156,.45), transparent 70%),
-#FFF5EB
+radial-gradient(ellipse at 100% 0%, rgba(255,98,15,.25), transparent 65%),
+radial-gradient(ellipse at 10% 0%, rgba(255,207,171,.25), transparent 65%),
+radial-gradient(ellipse at 90% 100%, rgba(255,216,156,.25), transparent 70%),
+#F7F9FB
 ```
 
 #### Aurora Deep — navegación y contraste puntual
@@ -214,10 +216,20 @@ Aplica estos patrones a los componentes existentes mediante HTML, CSS o SCSS aut
 | Componente | Patrón |
 | --- | --- |
 | Sidenav | Aurora Deep; texto blanco; acento activo #FFB184; iconos existentes 20–22px; texto 14px; opciones 44–48px; radio activo 12px. |
-| Layout | Aurora Light; padding 24px y móvil 16px; gap de tarjetas 20px; secciones 32px; tarjetas claras de radio 16px. |
+| Layout | Aurora Light con intensidades Soft; fondo de página transparente; padding 24px y móvil 16px; gap de tarjetas 20px; secciones 32px; tarjetas claras independientes de radio 16px. |
 | Encabezados | Título 34px/700, móvil 26–28px; descripción 14px; separación inferior 24px; conservar botones y acciones. |
 
 Preserva expansión, contracción, navegación y compensación de Body. No cambies las animaciones o breakpoints TS del sidenav para alcanzar una medida visual.
+
+La Fase 2.4.3 aplica Aurora Deep al Sidenav mediante canvia-tokens, conserva los anchos de 5rem y 16.5625rem, e identifica enlaces y botones con nombres accesibles. Las opciones usan altura mínima de 48px, iconos de 22px y foco de 2px. El estado activo combina naranja suave y texto verde profundo. Las transiciones CSS se limitan a color y fondo, y se eliminan con movimiento reducido. Las animaciones TS de 350ms y 1000ms conservan su comportamiento.
+
+Body mantiene su scroll y contexto de posicionamiento. Una superficie decorativa vacía, hermana del contenido, consume Aurora Light Soft sin heredar tokens a reportes. El layout administra un solo padding de 24px o 16px móvil y normaliza únicamente el padding y fondo del contenedor raíz inmediato del outlet desde body.css. El refinamiento elimina la lámina blanca al 94% que esa regla aplicaba sobre toda la página y deja su fondo transparente. Los párrafos de cabecera directamente expuestos al ambiente usan el valor aprobado text-secondary (#475467), con selectores que excluyen reportes y superficies analíticas.
+
+Los fondos propios responsables incluyen .home-page (home.css, #F7F9FB) y .daily-report-page (daily-report.css, var(--dr-bg)). body.css los neutraliza únicamente cuando son la raíz inmediata del outlet. Sus archivos conservan su contenido; la futura fase particular de cada módulo deberá conciliar ese fondo con el layout compartido. Las superficies internas conservan sus fondos sólidos y opacidad 1.
+
+En móvil expandido, la compensación corresponde al ancho real de 265px. A 390px deja 125px de Body y puede requerir scroll horizontal interno, con el documento acotado al viewport. Reducir padding o min-width no recupera los 185px ocupados por la expansión. Un overlay o una disposición apilada cambiarían el modelo visual y de interacción; forzar el aspecto compacto mediante CSS desincronizaría el estado accesible. La expansión inicial pertenece a TS. Este refinamiento mantiene navegación y geometría; una solución de comportamiento se documenta para autorización específica.
+
+R08 continúa deshabilitado en la interfaz del producto. Su descarga integrada se comprobó habilitando el botón original únicamente en una copia externa de pruebas. La plantilla principal conserva su hash. La evidencia de esta fase se mantiene en [Fase 2.4.3 del plan de pruebas](TEST_PLAN.md#fase-243--sidenav-y-layout).
 
 ### KPI Cards
 
@@ -232,7 +244,7 @@ El KpiCard actual acepta color orange o green y no contiene un input de carga. R
 | Filtros | Altura 44–48px; radio 12px; texto 14px; etiquetas 12–13px; gap 16px; foco visible de 2px. |
 | Botones | Altura 44px; radio 12px; primario verde; acento naranja con texto oscuro; secundarios claros; foco visible; hover 120ms. |
 | Formularios | Contenedor radio 24px; campos 44–48px; etiquetas 14px; gap 16–20px; errores 12–13px; botón primario verde. |
-| Login | Aurora Light de alta presencia, conservando formulario, eventos y validaciones actuales. |
+| Login | Aurora Light con intensidades Soft, conservando formulario, eventos y validaciones actuales. |
 
 Mantén Angular Material y Reactive Forms existentes, selección automática o manual vigente y alcance global/dinámico/local de cada filtro. No añadas botones de limpiar o reintentar, cambies disabled ni corrijas el envío del login como parte de un ajuste visual.
 
@@ -434,7 +446,9 @@ Lee [08 Protección](../.agents/skills/canvia-design-system/references/08-protec
 
 ### Lectura del mapa
 
-Aurora Light es la identidad común. La intensidad corresponde al fondo y encabezados, no a degradados dentro de tablas o gráficos. Home es la página piloto aprobada.
+Aurora Soft es la identidad común y usa la composición Aurora Light. La intensidad suave corresponde al fondo y encabezados, no a degradados dentro de tablas o gráficos. Home es la página piloto aprobada.
+
+Los niveles de presencia del mapa distinguen cobertura y ubicación; todos utilizan las intensidades Soft del catálogo, sin elevar la saturación por módulo.
 
 Las rutas parten de fronted-tickets/src/app/components/pages/. Los estados indicados son observaciones estáticas de Fase 0: compruébalos de nuevo al ejecutar una tarea. No afirman funcionamiento ni autorizan TS.
 

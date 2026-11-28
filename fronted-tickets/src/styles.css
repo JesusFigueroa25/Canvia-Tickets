@@ -37,7 +37,7 @@ body {
 }
 
 /*
- * CANVIA Aurora Enterprise UI — DESIGN_SYSTEM.md v2.0.
+ * CANVIA Aurora Soft Enterprise UI — DESIGN_SYSTEM.md v2.0.
  * Aplicar esta clase solo a superficies autorizadas sin reportes descendientes.
  * Las variables se heredan. Excluir html, body, app-root y el contenedor del router.
  * La Fase 2.4.1 define el catálogo sin activar consumidores ni estilos visuales.
@@ -94,20 +94,20 @@ body {
 
     /* Composiciones del documento. Emerald y Sunset requieren validación en Home. */
     --canvia-gradient-aurora-light:
-        radial-gradient(ellipse at 10% 0%, rgba(52, 211, 153, .70), transparent 65%),
-        radial-gradient(ellipse at 100% 0%, rgba(255, 98, 15, .55), transparent 65%),
-        radial-gradient(ellipse at 90% 100%, rgba(99, 184, 145, .45), transparent 70%),
+        radial-gradient(ellipse at 10% 0%, rgba(52, 211, 153, .30), transparent 65%),
+        radial-gradient(ellipse at 100% 0%, rgba(255, 98, 15, .25), transparent 65%),
+        radial-gradient(ellipse at 90% 100%, rgba(99, 184, 145, .20), transparent 70%),
         var(--canvia-surface-page);
     --canvia-gradient-aurora-emerald:
-        radial-gradient(ellipse at 10% 0%, rgba(52, 211, 153, .70), transparent 65%),
-        radial-gradient(ellipse at 100% 0%, rgba(99, 184, 145, .45), transparent 65%),
-        radial-gradient(ellipse at 90% 100%, rgba(209, 250, 229, .45), transparent 70%),
+        radial-gradient(ellipse at 10% 0%, rgba(52, 211, 153, .30), transparent 65%),
+        radial-gradient(ellipse at 100% 0%, rgba(99, 184, 145, .20), transparent 65%),
+        radial-gradient(ellipse at 90% 100%, rgba(209, 250, 229, .20), transparent 70%),
         var(--canvia-surface-page);
     --canvia-gradient-aurora-sunset:
-        radial-gradient(ellipse at 100% 0%, rgba(255, 98, 15, .55), transparent 65%),
-        radial-gradient(ellipse at 10% 0%, rgba(255, 207, 171, .45), transparent 65%),
-        radial-gradient(ellipse at 90% 100%, rgba(255, 216, 156, .45), transparent 70%),
-        var(--canvia-aurora-cream);
+        radial-gradient(ellipse at 100% 0%, rgba(255, 98, 15, .25), transparent 65%),
+        radial-gradient(ellipse at 10% 0%, rgba(255, 207, 171, .25), transparent 65%),
+        radial-gradient(ellipse at 90% 100%, rgba(255, 216, 156, .25), transparent 70%),
+        var(--canvia-surface-page);
     --canvia-gradient-aurora-deep:
         radial-gradient(ellipse at 0% 0%, var(--canvia-brand-green), transparent 75%),
         var(--canvia-brand-green-deep);
