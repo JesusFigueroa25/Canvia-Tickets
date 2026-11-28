@@ -5,11 +5,9 @@
     <div class="decoration decoration-bottom-right"></div>
 
     <!-- Regresar al Landing -->
-    <button type="button" class="back-button" mat-button (click)="irALandingPage()" routerLink="/">
-
+    <button type="button" class="back-button" mat-button routerLink="/">
         <mat-icon>arrow_back</mat-icon>
         <span>Regresar</span>
-
     </button>
 
 
@@ -81,27 +79,17 @@
                         </mat-error>
 
                     </mat-form-field>
-
                 </div>
 
-
-
                 <!-- INGRESAR -->
-                <button type="submit"  (click)="logearUsuario()"  class="login-button" [disabled]="logeoForm.invalid">
-
+                <button type="submit" class="login-button" [disabled]="logeoForm.invalid">
                     <span>Ingresar</span>
-
                     <mat-icon>
                         arrow_forward
                     </mat-icon>
-
                 </button>
 
             </form>
-
-
         </section>
-
     </main>
-
 </div>

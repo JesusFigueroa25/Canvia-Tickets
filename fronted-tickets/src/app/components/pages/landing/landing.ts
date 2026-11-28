@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-landing',
@@ -7,9 +7,5 @@ import { Component, EventEmitter, Output } from '@angular/core';
   templateUrl: './landing.html',
 })
 export class Landing {
-  @Output() logearse = new EventEmitter<void>();
 
-  irALogear() {
-    this.logearse.emit();
-  }
 }

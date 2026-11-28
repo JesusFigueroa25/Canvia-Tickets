@@ -13,9 +13,21 @@
     <ul class="sidenav-nav">
         <li class="sidenav-nav-item" *ngFor="let data of navData">
 
-            <a  (click)="logout(data.label)" class="sidenav-nav-link" 
-                [routerLink]="[data.routeLink]" routerLinkActive="active" 
-                [routerLinkActiveOptions]="{ exact: true }">
+            <!-- Opciones de navegación -->
+            <a *ngIf="data.icon !== 'logout'" class="sidenav-nav-link" [routerLink]="['/', data.routeLink]"
+                routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+
+                <span class="material-symbols-outlined sidenav-link-icon">
+                    {{ data.icon }}
+                </span>
+                <span class="sidenav-link-text" @fadeInOut *ngIf="collapsed">
+                    {{ data.label }}
+                </span>
+            </a>
+
+            <!-- Cerrar sesión -->
+            <a *ngIf="data.icon === 'logout'" class="sidenav-nav-link" role="button" tabindex="0" (click)="logout()"
+                (keydown.enter)="logout()" (keydown.space)="$event.preventDefault(); logout()">
 
                 <span class="material-symbols-outlined sidenav-link-icon">
                     {{ data.icon }}

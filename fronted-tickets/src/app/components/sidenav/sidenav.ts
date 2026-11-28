@@ -1,7 +1,7 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { navbarDataCanvia } from './nav-data-canvia';
-import { Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
 interface SideNavToggle {
@@ -43,8 +43,7 @@ interface SideNavToggle {
 })
 export class Sidenav implements OnInit {
   @Output() onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter();
-  
-  @Output() usuarioDeslogeado = new EventEmitter<void>();
+
   collapsed = false;
   screenWidth = 0;
   navData: any[] = [];
@@ -56,9 +55,9 @@ export class Sidenav implements OnInit {
     }
     if (this.screenWidth <= 768) {
       this.collapsed = false;
-      this.onToggleSideNav.emit({ 
-        collapsed: this.collapsed, 
-        screenWidth: this.screenWidth 
+      this.onToggleSideNav.emit({
+        collapsed: this.collapsed,
+        screenWidth: this.screenWidth
       });
     }
   }
@@ -83,10 +82,8 @@ export class Sidenav implements OnInit {
     this.onToggleSideNav.emit({ collapsed: this.collapsed, screenWidth: this.screenWidth });
   }
 
-  logout(opcion: string) {
-    if (opcion === "Cerrar sesion") {
-      this.userService.deslogearUsuario();
-      this.usuarioDeslogeado.emit();
-    }
+  logout(): void {
+    this.userService.deslogearUsuario();
+    this.router.navigate(['/'], { replaceUrl: true });
   }
 }
