@@ -283,6 +283,31 @@ Resultado de ejecución del 18/11/2026: las cinco pruebas nuevas pasan. La suite
 
 Validación manual pendiente: aplicar y limpiar filtros, seleccionar/desmarcar una barra mensual, comprobar el estado vacío, tooltips y pantalla completa; confirmar que requerimientos, tareas y SLA conservan sus títulos y órdenes actuales. El gráfico de distribución por prioridad solo presenta cantidades en su contrato actual; el gráfico mensual apilado con porcentajes no se modifica.
 
+### Fase 2.4.1 — Design Tokens y fundamentos visuales
+
+Ejecución del 27/11/2026, hora de Lima, en style/ui-canvia-fase-2.3, sobre HEAD 8c44f3fc347a2952d6a635ee28f803b1db72de69 y árbol inicialmente limpio. El cambio de código añade únicamente el catálogo .canvia-tokens en styles.css. La clase carece de consumidores en las plantillas. El [Design System](DESIGN_SYSTEM.md#design-tokens) mantiene la definición normativa.
+
+| Comprobación | Control previo | Resultado posterior |
+| --- | --- | --- |
+| npm run build desde fronted-tickets | Código 0, advertencias de presupuestos del bundle y estilos | Código 0, mismas categorías de advertencia. Un intento falló por DNS al descargar Google Fonts y la repetición con acceso de red terminó correctamente. |
+| npm test -- --watch=false | 301 aprobadas y 5 fallidas, 306 pruebas en 26 archivos | 301 aprobadas y las mismas 5 fallidas. |
+| Reproductor determinista R01–R08 | Ocho PNG con dimensiones y SHA-256 idénticos al manifiesto maestro | Ocho PNG idénticos al control y al manifiesto. |
+| Dependencias protegidas | Manifiesto consolidado de Fase 2.2.3.4 | Los 51 archivos únicos inventariados conservan su SHA-256. |
+| Catálogo y cascada en Chrome | Hoja original conservada para comparación | 106 nombres únicos, valores cotejados con Design System v2.0, aliases resueltos y cuatro gradientes equivalentes a sus composiciones documentales. |
+| Prueba sintética de aislamiento | Hoja anterior y tema Material vigente | Estilos calculados, geometría y píxeles iguales fuera de la clase en anchos 390, 768 y 1440 px, con movimiento normal y reducido. Los tokens se resuelven en la clase y su hijo, y están ausentes en body y el hermano sin marcar. |
+
+Los cinco fallos ya presentes antes de editar corresponden al h1 esperado en App, mat-icon desconocido en el TestBed de Login, dos aserciones textuales sobre elementos ausentes en Resumen Ejecutivo y la nota de R02 que espera «máximo mensual». El bloque conserva los specs y los componentes afectados. La prueba de cascada utiliza contenido sintético y red bloqueada. Acredita el aislamiento del catálogo y sus valores, con adopción visual por componente pendiente.
+
+El reproductor se ejecutó sin alterar su código en dos carpetas nuevas, tokens-2.4.1-pre y tokens-2.4.1-post, hermanas de reportes-protegidos dentro de la raíz externa CANVIA-QA/fase-2.2.3. Su SHA-256 coincide con 05acc74478c9d577af53daf02c223463a51a3db7d9f1cd469d7efe33e53dc1c9. Conservó Chrome 158.0.8127.88, Node v24.20.0, fixtures, fuentes, locale es-PE, zona America/Lima, viewport 1440 × 900, DPR 1 y red bloqueada. Las referencias canónicas permanecen en su ubicación original.
+
+**Integración pendiente.** El control registró ausencia de listeners locales en 4200 y 8080. Los scripts históricos de descarga preparan solo correo y esa sesión resulta insuficiente para los guards actuales. El montaje desde los cuatro padres, creación dinámica de R06 y descarga desde la interfaz requieren un entorno local disponible, autenticación manual y respuestas sintéticas controladas. Este bloqueo se documentó antes de editar en control-previo.json. La continuidad del bloque se limitó a declaraciones sin consumidores, sin modificar páginas ni ancestros. Completar la integración antes de activar consumidores que puedan alcanzar exportaciones.
+
+**Capturas pendientes.** Los complementos superiores de Cambios y Tareas siguen programados a 1440 × 900, scroll superior y Sidenav expandido, antes del primer cambio visual que los afecte. La Fase 2.4.1 conserva sus plantillas y presentación. Las 31 referencias previas se reutilizaron.
+
+La evidencia local está en [output/playwright/fase-2.4.1](../output/playwright/fase-2.4.1/), con control-previo.json, inventario-tokens.json, validacion.json, verificar.cjs y logs posteriores de build y pruebas. El código de verificación está fuera del código fuente Angular y usa el Playwright ya disponible. El veredicto del bloque es completado con observaciones de integración pendientes. Las actividades 2.4.2 y 2.4.3 conservan su aprobación pendiente.
+
+## Pruebas propuestas
+
 Estas pruebas son propuestas, no funcionalidades ya presentes:
 
 - Pruebas de contrato para todas las rutas FastAPI y comparación automática con los modelos TypeScript/consumidores Angular.

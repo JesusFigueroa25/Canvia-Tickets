@@ -1,11 +1,11 @@
 # Sistema de diseño CANVIA — Aurora Enterprise UI
 
 **Versión documental:** 2.0 · **Fecha:** 27/11/2026\
-**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6; implementación y QA pendientes.
+**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Catálogo de tokens incorporado en Fase 2.4.1, con adopción por componentes pendiente.
 
 ## Alcance y fuentes de verdad
 
-Este documento fija la identidad y especificaciones visuales de CANVIA. El [PRD de modernización](requirements/NN_modernizacion_frontend_ux_ui_PRD.md) fija alcance, requisitos, restricciones, orden y aceptación; la [skill canvia-design-system](../.agents/skills/canvia-design-system/SKILL.md) fija procedimientos operativos. El código vigente, diff y pruebas ejecutadas acreditan el estado real. No se presentan estos tokens como instalados ni se declara cumplimiento visual o funcional.
+Este documento fija la identidad y especificaciones visuales de CANVIA. El [PRD de modernización](requirements/NN_modernizacion_frontend_ux_ui_PRD.md) fija alcance, requisitos, restricciones, orden y aceptación; la [skill canvia-design-system](../.agents/skills/canvia-design-system/SKILL.md) fija procedimientos operativos. El código vigente, diff y pruebas ejecutadas acreditan el estado real. La disponibilidad del catálogo se distingue de su adopción visual y de las validaciones funcionales por componente.
 
 Durante esta modernización solo se autorizan cambios visuales HTML/CSS/SCSS y documentación en el alcance de cada tarea. TypeScript, backend, datos, reglas de negocio, rutas, servicios, funciones y todas las exportaciones quedan protegidos. La invocación de una skill no autoriza editar. Si hay contradicción, no ampliar alcance: registrar y resolver mediante autorización explícita.
 
@@ -43,7 +43,9 @@ Jerarquía orientativa: encabezado → filtros → KPI → insights → gráfico
 
 ## Design Tokens
 
-Estos valores son el estándar objetivo aprobado; documentarlos aquí no los instala en el frontend. Al implementarlos con autorización, usa nombres semánticos consistentes con prefijo canvia dentro de un ámbito que excluya las exportaciones; no añadas automáticamente variables a :root o body.
+Estos valores son el estándar objetivo aprobado. Desde la Fase 2.4.1 están disponibles en [styles.css](../fronted-tickets/src/styles.css) mediante 106 propiedades con prefijo --canvia- bajo la clase explícita .canvia-tokens. El catálogo contiene colores, estados, paleta documental de gráficos, superficies, cuatro composiciones Aurora, tipografía, espaciado, radios, elevaciones, foco, motion y valores documentados de skeleton. Los nombres trasladan exclusivamente valores ya aprobados en este documento.
+
+La clase todavía carece de consumidores en las plantillas. Su aplicación futura corresponde a superficies autorizadas que excluyan reportes entre sus descendientes, porque las propiedades se heredan. Mantenerla fuera de html, body, app-root y los contenedores del router o de exportaciones. Cada consumidor deberá respetar prefers-reduced-motion y validar el contraste efectivo. Emerald y Sunset conservan su validación visual pendiente en Home. La evidencia ejecutada y los bloqueos de integración están registrados en [Fase 2.4.1 del plan de pruebas](TEST_PLAN.md#fase-241--design-tokens-y-fundamentos-visuales).
 
 ### Color
 
