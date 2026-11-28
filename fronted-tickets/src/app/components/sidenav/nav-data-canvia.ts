@@ -73,7 +73,7 @@ export const navbarDataCanvia = [
     label: 'Importaciones'
   },
   {
-    routeLink: 'login',
+    routeLink: '/',
     icon: 'logout',
     label: 'Cerrar sesion'
   }

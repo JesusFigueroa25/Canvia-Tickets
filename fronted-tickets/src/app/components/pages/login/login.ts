@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from '../../../models/user';
 import { Token } from '../../../models/token';
@@ -13,15 +13,10 @@ import { UserService } from '../../../services/user.service';
   templateUrl: './login.html',
 })
 export class Login {
-
-  @Output() usuarioLogeado = new EventEmitter<void>();
-  @Output() registrarse = new EventEmitter<void>();
-  @Output() landingPage = new EventEmitter<void>();
-
   logeoForm!: FormGroup;
   muestraPassword: boolean = false;
 
-  constructor(private ruta: ActivatedRoute,
+  constructor(
     private userService: UserService,
     private formBuilder: FormBuilder,
     private enrutador: Router,
@@ -38,32 +33,33 @@ export class Login {
   }
 
   logearUsuario() {
+    if (this.logeoForm.invalid) {
+      return;
+    }
+
     const user: User = {
       correo: this.logeoForm.get("correo")!.value,
       password: this.logeoForm.get("password")!.value,
     };
 
     this.userService.logearUsuario(user).subscribe({
-      next: (data: Token) => {
-        console.log(data);
-        this.enrutador.navigate(["/home"]);
-        this.usuarioLogeado.emit();
+      next: (_data: Token) => {
+
+        if (!this.userService.sesionValida()) {
+          this._snackBar.open("No se pudo establecer una sesión válida.", "OK", { duration: 3000 });
+          return;
+        }
+
+        this.enrutador.navigate(["/home"], { replaceUrl: true });
       },
       error: (err) => {
-        console.log(err);
-        this._snackBar.open("Error en el ingreso: " + err.error.message, "OK", { duration: 3000 });
+        this._snackBar.open(
+          "Error en el ingreso: " + (err.error?.message || err.error?.detail || "No se pudo iniciar sesión"),
+          "OK",
+          { duration: 3000 }
+        );
       }
-    })
+    });
   }
-
-  irARegistrar() {
-    this.registrarse.emit();
-  }
-  irALandingPage() {
-    this.landingPage.emit();
-  }
-
-
-
 
 }
