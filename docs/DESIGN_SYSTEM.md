@@ -1,7 +1,7 @@
 # Sistema de diseño CANVIA — Aurora Enterprise UI
 
 **Versión documental:** 2.0 · **Fecha:** 27/11/2026\
-**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Catálogo de tokens incorporado en Fase 2.4.1, con adopción por componentes pendiente.
+**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Catálogo incorporado en Fase 2.4.1 y primera aplicación Material selectiva en Login y selector de proyectos de Reporte Diario en Fase 2.4.2.
 
 ## Alcance y fuentes de verdad
 
@@ -45,7 +45,7 @@ Jerarquía orientativa: encabezado → filtros → KPI → insights → gráfico
 
 Estos valores son el estándar objetivo aprobado. Desde la Fase 2.4.1 están disponibles en [styles.css](../fronted-tickets/src/styles.css) mediante 106 propiedades con prefijo --canvia- bajo la clase explícita .canvia-tokens. El catálogo contiene colores, estados, paleta documental de gráficos, superficies, cuatro composiciones Aurora, tipografía, espaciado, radios, elevaciones, foco, motion y valores documentados de skeleton. Los nombres trasladan exclusivamente valores ya aprobados en este documento.
 
-La clase todavía carece de consumidores en las plantillas. Su aplicación futura corresponde a superficies autorizadas que excluyan reportes entre sus descendientes, porque las propiedades se heredan. Mantenerla fuera de html, body, app-root y los contenedores del router o de exportaciones. Cada consumidor deberá respetar prefers-reduced-motion y validar el contraste efectivo. Emerald y Sunset conservan su validación visual pendiente en Home. La evidencia ejecutada y los bloqueos de integración están registrados en [Fase 2.4.1 del plan de pruebas](TEST_PLAN.md#fase-241--design-tokens-y-fundamentos-visuales).
+La Fase 2.4.2 activa la clase en el formulario de Login, el campo de proyectos de Reporte Diario y su panel daily-report-project-panel. Las propiedades se heredan dentro de esos ámbitos, que excluyen reportes entre sus descendientes. Mantener la clase fuera de html, body, app-root y los contenedores del router o de exportaciones. Cada consumidor deberá respetar prefers-reduced-motion y validar el contraste efectivo. Emerald y Sunset conservan su validación visual pendiente en Home. La evidencia inicial está registrada en [Fase 2.4.1 del plan de pruebas](TEST_PLAN.md#fase-241--design-tokens-y-fundamentos-visuales).
 
 ### Color
 
@@ -237,6 +237,8 @@ El KpiCard actual acepta color orange o green y no contiene un input de carga. R
 Mantén Angular Material y Reactive Forms existentes, selección automática o manual vigente y alcance global/dinámico/local de cada filtro. No añadas botones de limpiar o reintentar, cambies disabled ni corrijas el envío del login como parte de un ajuste visual.
 
 El tema Material se trabaja en SCSS únicamente si está autorizado y su ámbito no afecta a reportes. No cambies providers o módulos TS ni selectores internos globales como atajo. Los overlays deben respetar los límites de [08 Componentes protegidos](../.agents/skills/canvia-design-system/references/08-protected-components.md); si aislarlos requiere una modificación TS, documenta ese punto sin realizarla.
+
+La primera aplicación utiliza las APIs públicas form-field-overrides, button-overrides, icon-button-overrides, select-overrides, option-overrides y pseudo-checkbox-overrides de Material 22.2.1 bajo clases explícitas en material-theme.scss. El tema Azure/Blue conserva sus declaraciones originales. El panel recibe canvia-tokens mediante panelClass, con ámbito propio tanto si cambia su ascendencia como si permanece en el popover descendiente observado en esta versión. El evento público closed restaura el foco del selector al cerrar desde la búsqueda. Los resultados y límites de validación se mantienen en [Fase 2.4.2 del plan de pruebas](TEST_PLAN.md#fase-242--angular-material-selectivo).
 
 ### Gráficos
 

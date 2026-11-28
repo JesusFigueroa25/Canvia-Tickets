@@ -304,7 +304,34 @@ El reproductor se ejecutó sin alterar su código en dos carpetas nuevas, tokens
 
 **Capturas pendientes.** Los complementos superiores de Cambios y Tareas siguen programados a 1440 × 900, scroll superior y Sidenav expandido, antes del primer cambio visual que los afecte. La Fase 2.4.1 conserva sus plantillas y presentación. Las 31 referencias previas se reutilizaron.
 
-La evidencia local está en [output/playwright/fase-2.4.1](../output/playwright/fase-2.4.1/), con control-previo.json, inventario-tokens.json, validacion.json, verificar.cjs y logs posteriores de build y pruebas. El código de verificación está fuera del código fuente Angular y usa el Playwright ya disponible. El veredicto del bloque es completado con observaciones de integración pendientes. Las actividades 2.4.2 y 2.4.3 conservan su aprobación pendiente.
+La evidencia local está en [output/playwright/fase-2.4.1](../output/playwright/fase-2.4.1/), con control-previo.json, inventario-tokens.json, validacion.json, verificar.cjs y logs posteriores de build y pruebas. El código de verificación está fuera del código fuente Angular y usa el Playwright ya disponible. El veredicto del bloque es completado con observaciones de integración pendientes. Al cierre de esa actividad, 2.4.2 y 2.4.3 tenían su aprobación pendiente.
+
+### Fase 2.4.2 — Angular Material selectivo
+
+Ejecución del 27/11/2026, hora de Lima, sobre HEAD 4696800652c53ab39dcc6ff3a6c786a1bdeba654, rama style/ui-canvia-fase-2.3. Se reutilizó el control de build y pruebas de 2.4.1 porque el nuevo HEAD incorpora exactamente sus tres archivos versionados y los otros archivos del producto conservaban su contenido. output/playwright/fase-2.4.1 permaneció sin seguimiento y el índice Git continuó vacío.
+
+El cambio se limita a material-theme.scss, Login HTML/CSS y Reporte Diario HTML. styles.css conserva los 106 tokens. Los ámbitos nuevos solo contienen el formulario de Login, el campo de proyectos de Diario y su panel. Los cuatro padres exportadores carecen de las clases nuevas, y se conservaron las declaraciones iniciales de html/body, los estilos de otros controles y el contenedor CDK. Esta revisión permitió continuar con pruebas aisladas de reportes sin activar dependencias visuales en sus padres.
+
+La prueba de navegador montó los componentes originales con AppModule y TestBed, compilación JIT de recursos en memoria y HttpClient sintético. Utilizó Chrome 158.0.8127.88, contexto aislado, es-PE, America/Lima y capturas con contenido ficticio. Las solicitudes de red se limitaron a fuentes de Google. Los servicios HTTP reales construyeron sus parámetros contra el sustituto de HttpClient. El router permaneció sin navegación y la respuesta de Login fue un rechazo 401 sintético. Esta prueba verifica interacción de componentes, con autenticación real pendiente de validación manual cuando se disponga del entorno.
+
+Adicionalmente, Playwright CLI abrió /login desde el build de producción servido temporalmente en localhost. Verificó los nombres accesibles y disabled inicial, y Enter produjo un único POST /api/auth/login con respuesta 401 del servidor sintético. La captura y entry-requests.log documentan esta comprobación del punto de entrada de la SPA. El navegador y servidor temporales se cerraron al terminar.
+
+| Comprobación | Resultado |
+| --- | --- |
+| Login por teclado | Orden de foco, error de longitud mínima, estado disabled, mostrar/ocultar contraseña y un único POST al pulsar Enter verificados. Etiquetas asociadas a sus inputs y nombre accesible del botón de contraseña. |
+| Búsqueda de proyectos | Filtrado por Beta, selección y estado sin coincidencias verificados. Buscar o seleccionar conserva el número de consultas hasta Aplicar. |
+| Escape y foco | El control previo cerraba el panel desde la búsqueda y perdía el foco. El evento público closed y una referencia de plantilla lo restauran al selector. |
+| Consultas al aplicar | Resumen y Top Proyectos reciben exactamente los mismos parámetros de fechas, grupo y proyecto antes y después. |
+| Overlay de control | Grupo Resolutor conserva estilos calculados y PNG idénticos antes y después. |
+| Ámbito de tokens | Variables disponibles en el panel autorizado y ausentes en body y el contenedor CDK. En Material instalado, el panel pertenece a un popover descendiente del selector. |
+| Contraste medido | Botón blanco/verde 4,74 a 1, borde y placeholder 4,97 a 1, foco 7,29 a 1, error 6,57 a 1 y texto de opción seleccionada 6,95 a 1. Foco de 2 px en los campos, botón y búsqueda. Comprobaciones acotadas a estas combinaciones. |
+| npm run build | Código 0. Persisten advertencias de presupuesto. El CSS global pasa de 37,29 kB a 42,01 kB y el bundle inicial registra 3,07 MB. |
+| npm test -- --watch=false | 301 aprobadas y los mismos cinco fallos de 2.4.1, en App, Login, R02 y dos casos de Resumen Ejecutivo. |
+| Regresión protegida | Ocho PNG con dimensiones y SHA-256 iguales antes/después y frente al manifiesto. Los 51 archivos protegidos conservan sus hashes. |
+
+Las nuevas evidencias están en la carpeta externa %LOCALAPPDATA%/CANVIA-QA/fase-2.4.2, con functional-before.json, functional-after.json, integrity.json, capturas por estado, scripts reproducibles y logs. reports/before y reports/after contienen los ocho documentos completos y la copia con hash verificado de reproducir.cjs. El reproductor se ejecutó en carpetas temporales hermanas de reportes-protegidos para conservar sus dependencias relativas, y los resultados se trasladaron a la carpeta aprobada de esta fase. Los originales de fases anteriores permanecen en su destino.
+
+El veredicto es completado con validación sintética de los dos consumidores. El montaje y descarga desde los cuatro padres, incluida la creación dinámica de R06, conservan su validación integrada pendiente. La autenticación real, las animaciones TS existentes y los complementos de Cambios/Tareas mantienen sus límites previos. El bloque conserva TypeScript, autenticación, rutas, Sidenav, Body y los reportes protegidos. La Fase 2.4.3 continúa pendiente de autorización.
 
 ## Pruebas propuestas
 

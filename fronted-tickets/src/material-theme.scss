@@ -36,3 +36,126 @@ body {
   margin: 0;
   height: 100%;
 }
+
+// Consumidores de Fase 2.4.2. El tema base permanece en html y body.
+.canvia-material-login .canvia-material-field,
+.canvia-material-project {
+  @include mat.form-field-overrides((
+    outlined-container-shape: var(--canvia-radius-md),
+    outlined-outline-color: var(--canvia-text-muted),
+    outlined-hover-outline-color: var(--canvia-text-secondary),
+    outlined-focus-outline-color: var(--canvia-focus),
+    outlined-focus-outline-width: var(--canvia-focus-width),
+    outlined-input-text-color: var(--canvia-text-primary),
+    outlined-input-text-placeholder-color: var(--canvia-text-muted),
+    outlined-label-text-color: var(--canvia-text-secondary),
+    outlined-focus-label-text-color: var(--canvia-text-brand),
+    outlined-caret-color: var(--canvia-focus),
+    outlined-error-outline-color: var(--canvia-state-error-text),
+    outlined-error-focus-outline-color: var(--canvia-state-error-text),
+    outlined-error-hover-outline-color: var(--canvia-state-error-text),
+    outlined-error-label-text-color: var(--canvia-state-error-text),
+    outlined-error-focus-label-text-color: var(--canvia-state-error-text),
+    outlined-error-caret-color: var(--canvia-state-error-text),
+    error-text-color: var(--canvia-state-error-text),
+    leading-icon-color: var(--canvia-text-secondary),
+    trailing-icon-color: var(--canvia-text-secondary),
+    container-text-font: var(--canvia-font-family),
+    container-text-size: var(--canvia-font-size-body),
+    subscript-text-size: var(--canvia-font-size-caption),
+  ));
+}
+
+.canvia-material-login {
+  @include mat.form-field-overrides((
+    container-height: var(--canvia-space-48),
+    container-vertical-padding: var(--canvia-space-12),
+  ));
+
+  .login-button {
+    @include mat.button-overrides((
+      filled-container-color: var(--canvia-brand-green),
+      filled-label-text-color: var(--canvia-surface-card),
+      filled-container-shape: var(--canvia-radius-md),
+      filled-container-height: 44px, // Altura de botón aprobada en DESIGN_SYSTEM.md.
+      filled-disabled-container-color: var(--canvia-surface-muted),
+      filled-disabled-label-text-color: var(--canvia-text-disabled),
+      filled-label-text-font: var(--canvia-font-family),
+      filled-label-text-size: var(--canvia-font-size-body),
+      filled-label-text-weight: var(--canvia-font-weight-subtitle),
+    ));
+  }
+
+  .password-button {
+    @include mat.icon-button-overrides((icon-color: var(--canvia-text-secondary)));
+  }
+}
+
+.canvia-material-project {
+  @include mat.select-overrides((
+    enabled-trigger-text-color: var(--canvia-text-primary),
+    placeholder-text-color: var(--canvia-text-muted),
+    enabled-arrow-color: var(--canvia-text-secondary),
+    focused-arrow-color: var(--canvia-focus),
+    trigger-text-font: var(--canvia-font-family),
+    trigger-text-size: var(--canvia-font-size-body),
+  ));
+}
+
+// panelClass da ámbito propio a este panel, sin depender de su ascendencia.
+.daily-report-project-panel.canvia-tokens {
+  @include mat.select-overrides((
+    panel-background-color: var(--canvia-surface-card),
+    container-elevation-shadow: var(--canvia-elevation-2),
+  ));
+  @include mat.option-overrides((
+    label-text-color: var(--canvia-text-primary),
+    selected-state-label-text-color: var(--canvia-text-brand),
+    selected-state-layer-color: var(--canvia-surface-green),
+    hover-state-layer-color: var(--canvia-surface-muted),
+    focus-state-layer-color: var(--canvia-aurora-mint),
+    label-text-font: var(--canvia-font-family),
+    label-text-size: var(--canvia-font-size-body),
+  ));
+  @include mat.pseudo-checkbox-overrides((
+    minimal-selected-checkmark-color: var(--canvia-text-brand),
+  ));
+  border-radius: var(--canvia-radius-md);
+
+  .combo-search {
+    gap: var(--canvia-space-8);
+    background: var(--canvia-surface-card);
+    border-bottom-color: var(--canvia-border-default);
+  }
+
+  .combo-search > mat-icon {
+    color: var(--canvia-text-brand);
+  }
+
+  .combo-search input {
+    color: var(--canvia-text-primary);
+    font-family: var(--canvia-font-family);
+    font-size: var(--canvia-font-size-body);
+    border-radius: var(--canvia-radius-xs);
+  }
+
+  .combo-search input::placeholder {
+    color: var(--canvia-text-muted);
+  }
+
+  .combo-clear {
+    color: var(--canvia-text-secondary);
+    border-radius: var(--canvia-radius-xs);
+  }
+
+  .combo-clear:hover {
+    color: var(--canvia-text-brand);
+    background: var(--canvia-surface-green);
+  }
+
+  .combo-search input:focus-visible,
+  .combo-clear:focus-visible {
+    outline: var(--canvia-focus-width) solid var(--canvia-focus);
+    outline-offset: 2px;
+  }
+}

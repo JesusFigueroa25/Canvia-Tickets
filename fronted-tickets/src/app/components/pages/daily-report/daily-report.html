@@ -73,10 +73,11 @@
 
         <label for="daily-report-proyecto">Proyecto</label>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
-          <mat-select id="daily-report-proyecto" formControlName="proyecto" placeholder="Todos los proyectos"
-            panelClass="daily-report-project-panel" (openedChange)="alAbrirComboProyecto($event)">
+          <mat-select #dailyProjectSelect id="daily-report-proyecto" formControlName="proyecto" placeholder="Todos los proyectos"
+            panelClass="daily-report-project-panel canvia-tokens" (openedChange)="alAbrirComboProyecto($event)"
+            (closed)="dailyProjectSelect.focus()">
 
             <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
 

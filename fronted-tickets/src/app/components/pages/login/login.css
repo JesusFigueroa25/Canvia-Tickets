@@ -144,7 +144,7 @@
 
   margin: 0 0 7px 2px;
 
-  color: #253047;
+  color: var(--canvia-text-secondary);
 
   font-size: 14px;
   font-weight: 600;
@@ -159,15 +159,10 @@
 
 
 .field-icon {
-  margin-right: 8px;
-
-  color: #68758b;
+  margin-right: var(--canvia-space-8);
 }
 
 
-.password-button {
-  color: #68758b;
-}
 
 
 /* =========================================================
@@ -204,66 +199,29 @@
    BOTÓN INGRESAR
    ========================================================= */
 
-.login-button {
+.canvia-material-login .login-button {
   width: 100%;
-  height: 54px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 12px;
-
-  border: none;
-  border-radius: 12px;
-
-  background: linear-gradient(
-    90deg,
-    #ff620f 0%,
-    #ff5607 100%
-  );
-
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 10px 24px rgba(255, 98, 15, 0.22);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
+  gap: var(--canvia-space-12);
 }
 
 
-.login-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 14px 28px rgba(255, 98, 15, 0.28);
-
-  filter: brightness(1.03);
-}
 
 
-.login-button:active:not(:disabled) {
-  transform: translateY(0);
-}
 
 
-.login-button:disabled {
-  background: #d5d8dc;
-
-  color: #8b9098;
-
-  box-shadow: none;
-
+.canvia-material-login .login-button:disabled {
   cursor: not-allowed;
+}
+
+.canvia-material-login .login-button:focus-visible,
+.canvia-material-login .password-button:focus-visible {
+  outline: var(--canvia-focus-width) solid var(--canvia-focus);
+  outline-offset: 2px;
 }
 
 
@@ -389,37 +347,6 @@
   box-shadow:
     0 0 0 58px rgba(255, 98, 15, 0.055),
     0 0 0 120px rgba(255, 98, 15, 0.02);
-}
-
-
-/* =========================================================
-   ANGULAR MATERIAL
-   ========================================================= */
-
-:host ::ng-deep .mat-mdc-text-field-wrapper {
-  background: #ffffff;
-}
-
-
-:host ::ng-deep .mdc-notched-outline__leading,
-:host ::ng-deep .mdc-notched-outline__notch,
-:host ::ng-deep .mdc-notched-outline__trailing {
-  border-color: #d9dfe6 !important;
-}
-
-
-:host ::ng-deep
-.mat-mdc-form-field.mat-focused
-.mdc-notched-outline__leading,
-
-:host ::ng-deep
-.mat-mdc-form-field.mat-focused
-.mdc-notched-outline__notch,
-
-:host ::ng-deep
-.mat-mdc-form-field.mat-focused
-.mdc-notched-outline__trailing {
-  border-color: #63b891 !important;
 }
 
 
