@@ -31,21 +31,24 @@
 
 
     <!-- FILTROS GLOBALES DEL DASHBOARD -->
-    <details class="filters-card" open>
+    <details class="filters-card canvia-filter-card" open>
 
         <summary class="filters-toggle">
             <mat-icon>tune</mat-icon>
             <span>Filtros Globales</span>
         </summary>
 
-        <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+        <span class="canvia-extension-sr" role="status"><span *ngIf="cargandoFiltros">Cargando opciones de filtros…</span></span>
+        <form class="filters-form canvia-filter-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()"
+        [class.canvia-filter-loading]="cargandoFiltros" [attr.aria-busy]="cargandoFiltros"
+        [attr.inert]="cargandoFiltros ? '' : null">
 
             <!-- FECHA DESDE -->
             <div class="filter-field">
 
                 <label>Desde</label>
 
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
 
                     <input matInput [matDatepicker]="filtroPickerDesde" formControlName="desde"
                         placeholder="Seleccionar fecha">
@@ -53,13 +56,14 @@
                     <mat-datepicker-toggle matIconSuffix [for]="filtroPickerDesde">
                     </mat-datepicker-toggle>
 
-                    <mat-datepicker #filtroPickerDesde></mat-datepicker>
+                    <mat-datepicker #filtroPickerDesde panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
 
                     <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
                         La fecha inicial es obligatoria.
                     </mat-error>
 
                 </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
 
             </div>
 
@@ -68,7 +72,7 @@
 
                 <label>Hasta</label>
 
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
 
                     <input matInput [matDatepicker]="filtroPickerHasta" formControlName="hasta"
                         placeholder="Seleccionar fecha">
@@ -76,13 +80,14 @@
                     <mat-datepicker-toggle matIconSuffix [for]="filtroPickerHasta">
                     </mat-datepicker-toggle>
 
-                    <mat-datepicker #filtroPickerHasta></mat-datepicker>
+                    <mat-datepicker #filtroPickerHasta panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
 
                     <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
                         La fecha final es obligatoria.
                     </mat-error>
 
                 </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
 
             </div>
 
@@ -92,9 +97,9 @@
 
                 <label>Grupo Resolutor</label>
 
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
-                    <mat-select formControlName="grupo_resolutor" placeholder="Seleccionar grupo resolutor">
+                    <mat-select formControlName="grupo_resolutor" placeholder="Seleccionar grupo resolutor" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
 
                         <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
 
@@ -109,6 +114,7 @@
                     </mat-error>
 
                 </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
 
             </div>
 
@@ -122,7 +128,7 @@
 
                 <label>Proyecto</label>
 
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
                     <input matInput type="text" formControlName="proyecto" list="auditoria-proyectos"
                         placeholder="Todos los proyectos" autocomplete="off">
@@ -130,6 +136,7 @@
                     <mat-icon matSuffix>search</mat-icon>
 
                 </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
 
                 <datalist id="auditoria-proyectos">
                     <option *ngFor="let proyecto of opcionesFiltros.proyectos" [value]="proyecto">
@@ -169,6 +176,10 @@
 
             <!-- ACCIONES -->
             <div class="filter-actions">
+          <div *ngIf="cargandoFiltros" class="canvia-filter-actions-placeholder" aria-hidden="true">
+            <span class="canvia-filter-placeholder"></span>
+            <span class="canvia-filter-placeholder"></span>
+          </div>
 
                 <button mat-button type="button" class="clear-button" (click)="limpiarFiltrosDashboard()">
 
@@ -204,7 +215,7 @@
 
         </div>
 
-        <div class="filters-note" *ngIf="cargandoFiltros">
+        <div class="filters-note canvia-extension-sr" *ngIf="cargandoFiltros">
             <mat-icon>hourglass_top</mat-icon>
             <span>Cargando opciones de filtros...</span>
         </div>
@@ -264,14 +275,14 @@
                     <div class="date-range-fields">
 
                         <div class="execution-field">
-                            <mat-form-field appearance="outline" class="full-width">
+                            <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
                                 <input matInput [matDatepicker]="pickerDesde" formControlName="desde"
                                     placeholder="Desde">
 
                                 <mat-datepicker-toggle matIconSuffix [for]="pickerDesde">
                                 </mat-datepicker-toggle>
 
-                                <mat-datepicker #pickerDesde></mat-datepicker>
+                                <mat-datepicker #pickerDesde panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
 
                                 <mat-error *ngIf="formEjecucion.get('desde')?.hasError('required')">
                                     La fecha inicial es obligatoria.
@@ -280,14 +291,14 @@
                         </div>
 
                         <div class="execution-field">
-                            <mat-form-field appearance="outline" class="full-width">
+                            <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
 
                                 <input matInput [matDatepicker]="pickerHasta" formControlName="hasta"
                                     placeholder="Hasta">
                                 <mat-datepicker-toggle matIconSuffix [for]="pickerHasta">
                                 </mat-datepicker-toggle>
 
-                                <mat-datepicker #pickerHasta></mat-datepicker>
+                                <mat-datepicker #pickerHasta panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
 
                                 <mat-error *ngIf="formEjecucion.get('hasta')?.hasError('required')">
                                     La fecha final es obligatoria.
@@ -336,6 +347,11 @@
 
         </div>
 
+        <div class="canvia-tokens canvia-skeleton canvia-skeleton--text" *ngIf="cargandoEstado && !ejecucionActual" aria-hidden="true">
+  <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+  <span class="canvia-skeleton__block"></span>
+  <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+</div>
         <ng-container *ngIf="ejecucionActual as ejecucion">
 
             <div class="execution-divider"></div>
@@ -416,7 +432,7 @@
 
     </details>
 
-    <section class="status-card" *ngIf="cargandoEstado" role="status">
+    <section class="status-card canvia-extension-sr" *ngIf="cargandoEstado" role="status">
         <mat-icon>hourglass_top</mat-icon>
         Consultando el estado de la auditoría...
     </section>
@@ -446,17 +462,19 @@
         {{ errorResolutores }}
     </section>
 
-    <section class="status-card" *ngIf="sinResultados && !cargandoResumen && !cargandoEstado">
+    <section class="status-card" *ngIf="!(cargandoFiltros && !filtrosListos) && (sinResultados && !cargandoResumen && !cargandoEstado)">
         <mat-icon>info_outline</mat-icon>
         Todavía no existen tickets evaluados en la agrupación anual.
     </section>
 
-    <section class="status-card" *ngIf="cargandoResumen" role="status">
+    <section class="status-card canvia-extension-sr" *ngIf="cargandoResumen" role="status">
         <mat-icon>hourglass_top</mat-icon>
         Cargando indicadores de categorización...
     </section>
 
-    <section class="kpi-area" *ngIf="resumen">
+    <section class="kpi-area canvia-tokens" *ngIf="((cargandoFiltros && !filtrosListos) || (cargandoResumen)) && !resumen && !errorResumen" aria-hidden="true"><div class="section-heading"><h2>Indicadores generales</h2></div><div class="kpis-section"><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div><div class="canvia-skeleton canvia-skeleton--kpi canvia-extension-kpi"><span class="canvia-skeleton__block canvia-skeleton__icon"></span><div class="canvia-skeleton__copy"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__value"></span></div></div></div></section>
+
+<section class="kpi-area" *ngIf="resumen">
 
         <div class="section-heading">
             <div>
@@ -472,23 +490,23 @@
 
         <div class="kpis-section">
 
-            <app-kpi-card titulo="Tickets Evaluados" [valor]="resumen.processed_tickets" icono="confirmation_number"
+            <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Tickets Evaluados" [valor]="resumen.processed_tickets" icono="confirmation_number"
                 color="orange">
             </app-kpi-card>
 
-            <app-kpi-card titulo="Categorizaciones Correctas" [valor]="resumen.correct_count" icono="check_circle"
+            <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Categorizaciones Correctas" [valor]="resumen.correct_count" icono="check_circle"
                 color="green">
             </app-kpi-card>
 
-            <app-kpi-card titulo="Categorizaciones Incorrectas" [valor]="resumen.incorrect_count" icono="error_outline"
+            <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="Categorizaciones Incorrectas" [valor]="resumen.incorrect_count" icono="error_outline"
                 color="orange">
             </app-kpi-card>
 
-            <app-kpi-card titulo="% Correctas" [valor]="resumen.correct_percentage.toFixed(1) + '%'" icono="verified"
+            <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="% Correctas" [valor]="resumen.correct_percentage.toFixed(1) + '%'" icono="verified"
                 color="green">
             </app-kpi-card>
 
-            <app-kpi-card titulo="% Incorrectas" [valor]="resumen.incorrect_percentage.toFixed(1) + '%'" icono="percent"
+            <app-kpi-card class="canvia-kpi-soft canvia-tokens" titulo="% Incorrectas" [valor]="resumen.incorrect_percentage.toFixed(1) + '%'" icono="percent"
                 color="orange">
             </app-kpi-card>
 
@@ -500,6 +518,12 @@
 
 
     <!-- FILA 1: GRÁFICOS DE DONA -->
+    
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <section class="charts-section canvia-initial-skeleton-group" *ngIf="(cargandoFiltros && !filtrosListos) && !(resumen || motivosResolucion || cargandoResumen || cargandoMotivosResolucion || errorResumen || errorMotivosResolucion)" aria-hidden="true">
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoResumen) && !(errorResumen))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoMotivosResolucion) && !(errorMotivosResolucion))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+</section>
     <section class="charts-section" *ngIf="resumen ||
            motivosResolucion ||
            cargandoResumen ||
@@ -507,25 +531,25 @@
            errorResumen ||
            errorMotivosResolucion">
 
-        <div class="chart-item">
+        <div class="chart-item canvia-extension-host">
             <!-- Distribución de Categorizaciones -->
 
             <!-- Distribución de Categorizaciones -->
-            <app-requirement-categorization-distribution [modo]="'categorizacion'" [datos]="resumen"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut canvia-extension-overlay" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoResumen) && !(errorResumen))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-categorization-distribution [modo]="'categorizacion'" [datos]="resumen"
                 [cargando]="cargandoResumen" [error]="errorResumen"
                 [resultadoSeleccionado]="filtrosActuales.resultado ?? null"
-                (resultadoChange)="seleccionarResultado($event)">
+                (resultadoChange)="seleccionarResultado($event)" [class.canvia-extension-pending]="(cargandoFiltros && !filtrosListos) || ((cargandoResumen) && !(errorResumen))" [attr.inert]="((cargandoFiltros && !filtrosListos) || ((cargandoResumen) && !(errorResumen))) ? '' : null">
             </app-requirement-categorization-distribution>
 
         </div>
 
-        <div class="chart-item">
+        <div class="chart-item canvia-extension-host">
             <!-- Distribución por Motivo Resolución -->
 
-            <app-requirement-categorization-distribution [modo]="'motivo_resolucion'" [datosMotivos]="motivosResolucion"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut canvia-extension-overlay" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoMotivosResolucion) && !(errorMotivosResolucion))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-categorization-distribution [modo]="'motivo_resolucion'" [datosMotivos]="motivosResolucion"
                 [cargando]="cargandoMotivosResolucion" [error]="errorMotivosResolucion"
                 [motivoSeleccionado]="filtrosActuales.motivo_resolucion ?? null"
-                (motivoChange)="seleccionarMotivoResolucion($event)">
+                (motivoChange)="seleccionarMotivoResolucion($event)" [class.canvia-extension-pending]="(cargandoFiltros && !filtrosListos) || ((cargandoMotivosResolucion) && !(errorMotivosResolucion))" [attr.inert]="((cargandoFiltros && !filtrosListos) || ((cargandoMotivosResolucion) && !(errorMotivosResolucion))) ? '' : null">
             </app-requirement-categorization-distribution>
 
         </div>
@@ -534,6 +558,12 @@
 
 
     <!-- FILA 2: GRÁFICOS POR COLABORADOR Y POR MES -->
+    
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <section class="charts-section canvia-initial-skeleton-group" *ngIf="(cargandoFiltros && !filtrosListos) && !(resolutores.length > 0 || estadisticasMensuales.length > 0 || cargandoResolutores || cargandoEstadisticasMensuales || errorResolutores || errorEstadisticasMensuales)" aria-hidden="true">
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+</section>
     <section class="charts-section" *ngIf="resolutores.length > 0 ||
            estadisticasMensuales.length > 0 ||
            cargandoResolutores ||
@@ -541,17 +571,17 @@
            errorResolutores ||
            errorEstadisticasMensuales">
 
-        <div class="chart-item">
+        <div class="chart-item canvia-extension-host">
             <!-- Top 10: Categorizaciones Incorrectas por Colaborador -->
-            <app-requirement-categorization-resolvers [datos]="resolutores" [cargando]="cargandoResolutores"
-                [error]="errorResolutores">
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-categorization-resolvers [datos]="resolutores" [cargando]="cargandoResolutores"
+                [error]="errorResolutores" [class.canvia-extension-pending]="(cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))" [attr.inert]="((cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))) ? '' : null">
             </app-requirement-categorization-resolvers>
         </div>
 
-        <div class="chart-item">
+        <div class="chart-item canvia-extension-host">
             <!-- Categorizaciones Correctas e Incorrectas por Mes -->
-            <app-requirement-categorization-monthly-chart [datos]="estadisticasMensuales"
-                [cargando]="cargandoEstadisticasMensuales" [error]="errorEstadisticasMensuales">
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-categorization-monthly-chart [datos]="estadisticasMensuales"
+                [cargando]="cargandoEstadisticasMensuales" [error]="errorEstadisticasMensuales" [class.canvia-extension-pending]="(cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))" [attr.inert]="((cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))) ? '' : null">
             </app-requirement-categorization-monthly-chart>
         </div>
 
@@ -559,6 +589,12 @@
 
 
     <!-- FILA 3: CUADROS ESTADÍSTICOS -->
+    
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <section class="monthly-report-section canvia-initial-skeleton-group" *ngIf="(cargandoFiltros && !filtrosListos) && !(opcionesFiltros.meses.length > 0 || estadisticasMensuales.length > 0 || resolutores.length > 0 || cargandoEstadisticasMensuales || cargandoResolutores || errorEstadisticasMensuales || errorResolutores)" aria-hidden="true">
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+  <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+</section>
     <section class="monthly-report-section" *ngIf="
        opcionesFiltros.meses.length > 0 ||
        estadisticasMensuales.length > 0 ||
@@ -568,22 +604,22 @@
        errorEstadisticasMensuales ||
        errorResolutores">
 
-        <div class="monthly-report-item">
+        <div class="monthly-report-item canvia-extension-host">
             <!-- Cuadro Estadístico Mensual -->
-            <app-requirement-categorization-monthly-table [datos]="estadisticasMensuales"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-categorization-monthly-table [datos]="estadisticasMensuales"
                 [cargando]="cargandoEstadisticasMensuales" [error]="errorEstadisticasMensuales"
                 [opcionesMeses]="opcionesFiltros.meses" [mesSeleccionado]="filtrosActuales.mes ?? null"
-                (mesChange)="seleccionarMes($event)">
+                (mesChange)="seleccionarMes($event)" [class.canvia-extension-pending]="(cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))" [attr.inert]="((cargandoFiltros && !filtrosListos) || ((cargandoEstadisticasMensuales) && !(errorEstadisticasMensuales))) ? '' : null">
             </app-requirement-categorization-monthly-table>
 
         </div>
 
-        <div class="monthly-report-item">
+        <div class="monthly-report-item canvia-extension-host">
             <!-- Cuadro Estadístico por Colaborador -->
-            <app-requirement-categorization-resolvers-table [datos]="resolutores" [cargando]="cargandoResolutores"
+            <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-categorization-resolvers-table [datos]="resolutores" [cargando]="cargandoResolutores"
                 [error]="errorResolutores" [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
                 [resolutorSeleccionado]="filtrosActuales.nombre_resolutor ?? null"
-                (resolutorChange)="seleccionarResolutor($event)">
+                (resolutorChange)="seleccionarResolutor($event)" [class.canvia-extension-pending]="(cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))" [attr.inert]="((cargandoFiltros && !filtrosListos) || ((cargandoResolutores) && !(errorResolutores))) ? '' : null">
             </app-requirement-categorization-resolvers-table>
 
         </div>
@@ -592,13 +628,16 @@
 
 
     <!-- FILA 4: EXPLORADOR DE TICKETS AUDITADOS -->
-    <section class="results-card"
+    
+    <!-- Skeleton previo: sin montar componentes ni exportaciones. -->
+    <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table results-card" *ngIf="(cargandoFiltros && !filtrosListos) && !(opcionesFiltros.ticket_ids.length > 0 || resumen || tickets || cargandoTickets || errorTickets)" aria-hidden="true"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div>
+    <section class="results-card canvia-extension-host"
         *ngIf="opcionesFiltros.ticket_ids.length > 0 || resumen || tickets || cargandoTickets || errorTickets">
 
-        <app-requirement-categorization-tickets-table [datos]="tickets" [cargando]="cargandoTickets"
+        <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros && !filtrosListos) || ((cargandoTickets) && !(errorTickets))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-requirement-categorization-tickets-table [datos]="tickets" [cargando]="cargandoTickets"
             [error]="errorTickets" [opcionesTicketIds]="opcionesFiltros.ticket_ids"
             [ticketIdSeleccionado]="filtrosActuales.ticket_id ?? null" (ticketIdChange)="seleccionarTicket($event)"
-            (paginaChange)="cambiarPagina($event.pagina, $event.tamano)">
+            (paginaChange)="cambiarPagina($event.pagina, $event.tamano)" [class.canvia-extension-pending]="(cargandoFiltros && !filtrosListos) || ((cargandoTickets) && !(errorTickets))" [attr.inert]="((cargandoFiltros && !filtrosListos) || ((cargandoTickets) && !(errorTickets))) ? '' : null">
         </app-requirement-categorization-tickets-table>
 
     </section>
@@ -607,3 +646,5 @@
 
 
 </div>
+
+

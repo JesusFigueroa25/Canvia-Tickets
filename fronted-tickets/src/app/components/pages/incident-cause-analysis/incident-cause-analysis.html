@@ -1,4 +1,6 @@
 <div class="incident-cause-analysis-page">
+  <span class="canvia-extension-sr" role="status"><span *ngIf="cargandoFiltros">Cargando opciones y preparando el dashboard…</span></span>
+
 
   <!--HEADER MASTER - STICKY-->
 
@@ -102,14 +104,16 @@
          FILTROS GLOBALES
          ================================================== -->
 
-    <details class="filters-card" open>
+    <details class="filters-card canvia-filter-card" open>
 
       <summary class="filters-toggle">
         <mat-icon>tune</mat-icon>
         <span>Filtros globales</span>
       </summary>
 
-      <form class="filters-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
+      <form class="filters-form canvia-filter-form" [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()"
+        [class.canvia-filter-loading]="cargandoFiltros" [attr.aria-busy]="cargandoFiltros"
+        [attr.inert]="cargandoFiltros ? '' : null">
 
         <!-- FECHAS -->
         <div class="date-range-fields">
@@ -117,39 +121,41 @@
           <div class="filter-field">
             <label>Desde</label>
 
-            <mat-form-field appearance="outline" class="full-width">
+            <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
 
               <input matInput [matDatepicker]="pickerDesde" formControlName="desde" placeholder="Seleccionar fecha">
 
               <mat-datepicker-toggle matIconSuffix [for]="pickerDesde">
               </mat-datepicker-toggle>
 
-              <mat-datepicker #pickerDesde></mat-datepicker>
+              <mat-datepicker #pickerDesde panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
 
               <mat-error *ngIf="filtrosForm.get('desde')?.hasError('required')">
                 Este campo es obligatorio.
               </mat-error>
 
             </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
           </div>
 
           <div class="filter-field">
             <label>Hasta</label>
 
-            <mat-form-field appearance="outline" class="full-width">
+            <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project canvia-datepicker-field">
 
               <input matInput [matDatepicker]="pickerHasta" formControlName="hasta" placeholder="Seleccionar fecha">
 
               <mat-datepicker-toggle matIconSuffix [for]="pickerHasta">
               </mat-datepicker-toggle>
 
-              <mat-datepicker #pickerHasta></mat-datepicker>
+              <mat-datepicker #pickerHasta panelClass="canvia-datepicker-panel canvia-tokens"></mat-datepicker>
 
               <mat-error *ngIf="filtrosForm.get('hasta')?.hasError('required')">
                 Este campo es obligatorio.
               </mat-error>
 
             </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
           </div>
 
         </div>
@@ -159,9 +165,9 @@
         <div class="filter-field">
           <label>Prioridad</label>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
-            <mat-select formControlName="prioridad" placeholder="Todas">
+            <mat-select formControlName="prioridad" placeholder="Todas" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
               <mat-option [value]="null">Todas</mat-option>
 
               <mat-option *ngFor="let prioridad of opcionesFiltros.prioridades" [value]="prioridad">
@@ -170,6 +176,7 @@
             </mat-select>
 
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
         </div>
 
 
@@ -178,9 +185,9 @@
         <div class="filter-field">
           <label>Motivo de Estado</label>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
-            <mat-select formControlName="motivo_estado" placeholder="Todos">
+            <mat-select formControlName="motivo_estado" placeholder="Todos" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
               <mat-option [value]="null">Todos</mat-option>
 
               <mat-option *ngFor="let motivo of opcionesFiltros.motivos_estado" [value]="motivo">
@@ -189,6 +196,7 @@
             </mat-select>
 
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
         </div>
 
 
@@ -197,9 +205,9 @@
         <div class="filter-field">
           <label>Motivo de Resolución</label>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
-            <mat-select formControlName="motivo_resolucion" placeholder="Todos">
+            <mat-select formControlName="motivo_resolucion" placeholder="Todos" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
               <mat-option [value]="null">Todos</mat-option>
 
               <mat-option *ngFor="let motivo of opcionesFiltros.motivos_resolucion" [value]="motivo">
@@ -208,6 +216,7 @@
             </mat-select>
 
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
         </div>
 
 
@@ -216,9 +225,9 @@
         <div class="filter-field">
           <label>Grupo Resolutor</label>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
-            <mat-select formControlName="grupo_resolutor" placeholder="Todos">
+            <mat-select formControlName="grupo_resolutor" placeholder="Todos" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
               <mat-option [value]="null">Todos</mat-option>
 
               <mat-option *ngFor="let grupo of opcionesFiltros.grupos_resolutores" [value]="grupo">
@@ -227,6 +236,7 @@
             </mat-select>
 
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
         </div>
 
 
@@ -237,10 +247,10 @@
 
           <label>Proyecto</label>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
             <mat-select formControlName="proyecto" placeholder="Todos"
-              (openedChange)="alAbrirCombo('proyecto', $event)">
+              (openedChange)="alAbrirCombo('proyecto', $event)" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
 
               <!-- BUSCADOR INTERNO -->
               <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
@@ -285,6 +295,7 @@
             </mat-select>
 
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
 
         </div>
 
@@ -316,10 +327,10 @@
 
           <label>Tipo de Incidente</label>
 
-          <mat-form-field appearance="outline" class="full-width">
+          <mat-form-field appearance="outline" class="full-width canvia-tokens canvia-material-project">
 
             <mat-select formControlName="tipo_incidente" multiple placeholder="Todos"
-              (openedChange)="alAbrirCombo('tipo_incidente', $event)">
+              (openedChange)="alAbrirCombo('tipo_incidente', $event)" panelClass="daily-report-project-panel canvia-tokens canvia-filter-panel">
 
               <!-- BUSCADOR INTERNO -->
               <div class="combo-search" (click)="$event.stopPropagation()" (keydown)="detenerTeclasBusqueda($event)">
@@ -359,6 +370,7 @@
             </mat-select>
 
           </mat-form-field>
+          <span *ngIf="cargandoFiltros" class="canvia-filter-placeholder" aria-hidden="true"></span>
 
         </div>
 
@@ -379,6 +391,10 @@
 
         <!-- ACCIONES -->
         <div class="filter-actions">
+          <div *ngIf="cargandoFiltros" class="canvia-filter-actions-placeholder" aria-hidden="true">
+            <span class="canvia-filter-placeholder"></span>
+            <span class="canvia-filter-placeholder"></span>
+          </div>
 
           <button mat-button type="button" class="clear-button" (click)="limpiarFiltros()">
 
@@ -480,8 +496,11 @@
 
 
     <p class="summary-status" role="status" *ngIf="exportandoResumen">Preparando el Resumen Ejecutivo de Incidentes…</p>
-    <p class="summary-status" role="status" *ngIf="!exportandoResumen && estadoResumen === 'esperando'">Reporte 1 espera
-      los datos y el análisis vigente de los filtros aplicados.</p>
+      <!--  <p class="summary-status" role="status" *ngIf="!exportandoResumen && estadoResumen === 'esperando'">
+      Reporte 1 espera
+      los datos y el análisis vigente de los filtros aplicados.
+    </p>-->
+   
     <p class="summary-status" role="status" *ngIf="estadoResumen === 'sin_datos'">Sin incidentes para generar Reporte 1.
     </p>
     <div class="summary-export-error" role="alert" *ngIf="errorResumen">{{ errorResumen }} <button type="button"
@@ -491,20 +510,20 @@
     <div class="charts-grid">
 
       <!-- GRAFICO 1: DISTRIBUCION ORIGINAL -->
-      <div class="chart-grid-item">
+      <div class="chart-grid-item canvia-extension-host">
 
-        <app-incident-attribution-donut [datos]="atribucionIncidentes" [cargando]="cargandoAtribucion"
-          [error]="errorAtribucion" [seleccion]="atribucionSeleccionada" (atribucionChange)="cambiarAtribucion($event)">
+        <div class="canvia-tokens canvia-extension-placeholder canvia-extension-donut canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoAtribucion) && !(errorAtribucion))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__donut"></div><div class="canvia-skeleton__legend"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-incident-attribution-donut [datos]="atribucionIncidentes" [cargando]="cargandoAtribucion"
+          [error]="errorAtribucion" [seleccion]="atribucionSeleccionada" (atribucionChange)="cambiarAtribucion($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoAtribucion) && !(errorAtribucion))" [attr.inert]="((cargandoFiltros) || ((cargandoAtribucion) && !(errorAtribucion))) ? '' : null">
         </app-incident-attribution-donut>
 
       </div>
 
 
       <!-- GRAFICO 2: DISTRIBUCION AJUSTADA -->
-      <div class="chart-grid-item">
+      <div class="chart-grid-item canvia-extension-host">
 
-        <app-incident-attribution-comparison [datos]="distribucionAjustada" [cargando]="cargandoAtribucion"
-          [error]="errorAtribucion">
+        <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoAtribucion) && !(errorAtribucion))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-incident-attribution-comparison [datos]="distribucionAjustada" [cargando]="cargandoAtribucion"
+          [error]="errorAtribucion" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoAtribucion) && !(errorAtribucion))" [attr.inert]="((cargandoFiltros) || ((cargandoAtribucion) && !(errorAtribucion))) ? '' : null">
         </app-incident-attribution-comparison>
 
       </div>
@@ -535,9 +554,9 @@
 
 
     <!-- TABLA: CAUSAS, RECOMENDACIONES Y EVIDENCIAS -->
-    <div class="chart-full-width">
-      <app-incident-cause-evidence-table [datos]="analisisCausasVisual" [cargando]="cargandoAnalisisCausas"
-        [error]="errorAnalisisCausas">
+    <div class="chart-full-width canvia-extension-host">
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoAnalisisCausas) && !(errorAnalisisCausas))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-incident-cause-evidence-table [datos]="analisisCausasVisual" [cargando]="cargandoAnalisisCausas"
+        [error]="errorAnalisisCausas" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoAnalisisCausas) && !(errorAnalisisCausas))" [attr.inert]="((cargandoFiltros) || ((cargandoAnalisisCausas) && !(errorAnalisisCausas))) ? '' : null">
       </app-incident-cause-evidence-table>
     </div>
 
@@ -558,7 +577,7 @@
 
     </header>
 
-    <div class="chart-full-width chart-expandable" id="fullscreen-tipos-analisis" #tiposAnalisisFs>
+    <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-tipos-analisis" #tiposAnalisisFs>
 
       <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(tiposAnalisisFs)" [title]="graficoExpandido === 'fullscreen-tipos-analisis'
         ? 'Salir de pantalla completa'
@@ -572,9 +591,9 @@
 
       </button>
 
-      <app-category-distribution titulo="Distribución por Tipo de Incidente"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTipos) && !(errorTipos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-category-distribution titulo="Distribución por Tipo de Incidente"
         descripcion="Tipos de incidentes ordenados por volumen de tickets." orientacion="vertical"
-        [datos]="tiposGrafico" [cargando]="cargandoTipos" [seleccionMultiple]="false">
+        [datos]="tiposGrafico" [cargando]="cargandoTipos" [seleccionMultiple]="false" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTipos) && !(errorTipos))" [attr.inert]="((cargandoFiltros) || ((cargandoTipos) && !(errorTipos))) ? '' : null">
       </app-category-distribution>
 
     </div>
@@ -599,9 +618,9 @@
       </p>
     </header>
 
-    <div class="chart-full-width">
-      <app-incident-top-servers-chart [datos]="topServidores" [cargando]="cargandoTopServidores"
-        [error]="errorTopServidores" [limite]="limiteTopServidores" (limiteChange)="cambiarLimiteTopServidores($event)">
+    <div class="chart-full-width canvia-extension-host">
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTopServidores) && !(errorTopServidores))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-incident-top-servers-chart [datos]="topServidores" [cargando]="cargandoTopServidores"
+        [error]="errorTopServidores" [limite]="limiteTopServidores" (limiteChange)="cambiarLimiteTopServidores($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTopServidores) && !(errorTopServidores))" [attr.inert]="((cargandoFiltros) || ((cargandoTopServidores) && !(errorTopServidores))) ? '' : null">
       </app-incident-top-servers-chart>
     </div>
 
@@ -624,21 +643,21 @@
     <div class="charts-grid">
 
       <!-- EXPLORADOR POR PROYECTOS -->
-      <div class="chart-grid-item table-expandable" id="fullscreen-cliente-proyectos" #tablaProyectosFs>
+      <div class="chart-grid-item table-expandable canvia-extension-host" id="fullscreen-cliente-proyectos" #tablaProyectosFs>
 
-        <app-project-explorer-table modo="consolidado" entidadConsolidado="incidentes" modoBusqueda="combo"
+        <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoProyectos) && !(errorProyectos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-project-explorer-table modo="consolidado" entidadConsolidado="incidentes" modoBusqueda="combo"
           [datosConsolidados]="proyectos" [opcionesProyectos]="opcionesProyectos"
           [proyectoSeleccionado]="filtrosActuales.proyecto ?? null" (proyectoChange)="cambiarProyecto($event)"
           [habilitarExclusionProyectos]="true" [proyectosExcluidos]="proyectosExcluidos"
           (proyectosExcluidosChange)="cambiarProyectosExcluidos($event)" [habilitarPantallaCompleta]="true"
           [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-cliente-proyectos'"
-          (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosFs)">
+          (pantallaCompletaSolicitada)="alternarPantallaCompleta(tablaProyectosFs)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoProyectos) && !(errorProyectos))" [attr.inert]="((cargandoFiltros) || ((cargandoProyectos) && !(errorProyectos))) ? '' : null">
         </app-project-explorer-table>
 
       </div>
 
       <!-- TOP 10: TICKETS POR PROYECTO Y MES -->
-      <div class="chart-grid-item chart-expandable" id="fullscreen-cliente-top-proyectos" #topProyectosFs>
+      <div class="chart-grid-item chart-expandable canvia-extension-host" id="fullscreen-cliente-top-proyectos" #topProyectosFs>
 
         <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(topProyectosFs)" [title]="graficoExpandido === 'fullscreen-cliente-top-proyectos'
           ? 'Salir de pantalla completa'
@@ -652,16 +671,16 @@
 
         </button>
 
-        <app-project-monthly-top entidadConsolidado="incidentes" [datos]="topProyectos"
+        <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTopProyectos) && !(errorTopProyectos))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-project-monthly-top entidadConsolidado="incidentes" [datos]="topProyectos"
           [tituloPersonalizado]="tituloGraficoClientes" [proyectoSeleccionado]="filtrosActuales.proyecto ?? null"
-          [periodoSeleccionado]="null">
+          [periodoSeleccionado]="null" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTopProyectos) && !(errorTopProyectos))" [attr.inert]="((cargandoFiltros) || ((cargandoTopProyectos) && !(errorTopProyectos))) ? '' : null">
         </app-project-monthly-top>
 
       </div>
 
     </div>
 
-    <div class="status-card" *ngIf="cargandoProyectos || cargandoTopProyectos" role="status">
+    <div class="status-card canvia-extension-sr" *ngIf="cargandoProyectos || cargandoTopProyectos" role="status">
       <mat-icon>hourglass_top</mat-icon>
       Actualizando datos de clientes y proyectos...
     </div>
@@ -691,21 +710,21 @@
     </header>
 
     <!-- TABLA: RENDIMIENTO POR RESOLUTOR -->
-    <div class="chart-full-width table-expandable" id="fullscreen-rendimiento-resolutores" #rendimientoFs>
+    <div class="chart-full-width table-expandable canvia-extension-host" id="fullscreen-rendimiento-resolutores" #rendimientoFs>
 
-      <app-resolutor-performance-table [datos]="rendimientoResolutores"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-table canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--table"><span class="canvia-skeleton__block canvia-skeleton__label"></span><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div><div class="canvia-skeleton__row"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-resolutor-performance-table [datos]="rendimientoResolutores"
         [opcionesResolutores]="opcionesFiltros.nombres_resolutores"
         [resolutorSeleccionado]="filtrosActuales.nombre_resolutor ?? null" [cargando]="cargandoRendimientoResolutores"
         (resolutorChange)="cambiarResolutor($event)" (paginaChange)="cambiarPaginaResolutores($event)"
         [habilitarPantallaCompleta]="true"
         [pantallaCompletaActiva]="graficoExpandido === 'fullscreen-rendimiento-resolutores'"
-        (pantallaCompletaSolicitada)="alternarPantallaCompleta(rendimientoFs)">
+        (pantallaCompletaSolicitada)="alternarPantallaCompleta(rendimientoFs)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))" [attr.inert]="((cargandoFiltros) || ((cargandoRendimientoResolutores) && !(errorRendimientoResolutores))) ? '' : null">
       </app-resolutor-performance-table>
 
     </div>
 
     <!-- GRÁFICO: NÚMERO DE TICKETS POR RESOLUTOR -->
-    <div class="chart-full-width chart-expandable" id="fullscreen-tickets-resolutor" #ticketsResolutorFs>
+    <div class="chart-full-width chart-expandable canvia-extension-host" id="fullscreen-tickets-resolutor" #ticketsResolutorFs>
 
       <button type="button" class="chart-expand-btn" (click)="alternarPantallaCompleta(ticketsResolutorFs)" [title]="graficoExpandido === 'fullscreen-tickets-resolutor'
         ? 'Salir de pantalla completa'
@@ -719,9 +738,9 @@
 
       </button>
 
-      <app-resolver-monthly-tickets [datos]="ticketsPorResolutor" [cargando]="cargandoTicketsPorResolutor"
+      <div class="canvia-tokens canvia-extension-placeholder canvia-extension-bars canvia-extension-overlay" *ngIf="(cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--chart"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span><div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div></div></div></div><app-resolver-monthly-tickets [datos]="ticketsPorResolutor" [cargando]="cargandoTicketsPorResolutor"
         [limite]="limiteTicketsPorResolutor" [mostrarMesesEnEjeX]="mostrarMesesEnEjeXResolutores"
-        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)">
+        (limiteChange)="cambiarLimiteTicketsPorResolutor($event)" [class.canvia-extension-pending]="(cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))" [attr.inert]="((cargandoFiltros) || ((cargandoTicketsPorResolutor) && !(errorTicketsPorResolutor))) ? '' : null">
       </app-resolver-monthly-tickets>
 
     </div>
@@ -797,10 +816,11 @@
     </div>
 
 
-    <div class="status-card" *ngIf="cargandoHallazgos" role="status">
+    <div class="status-card canvia-extension-sr" *ngIf="cargandoHallazgos" role="status">
       <mat-icon>hourglass_top</mat-icon>
       Analizando los principales hallazgos...
     </div>
+<div class="canvia-tokens canvia-extension-placeholder canvia-extension-text" *ngIf="(cargandoFiltros) || (cargandoHallazgos && !errorHallazgos)"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--text"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span></div></div></div>
 
 
     <div class="status-card error-card" *ngIf="!cargandoHallazgos && errorHallazgos" role="alert">
@@ -811,7 +831,7 @@
     </div>
 
 
-    <ng-container *ngIf="!cargandoHallazgos && !errorHallazgos">
+    <ng-container *ngIf="!cargandoFiltros && (!cargandoHallazgos && !errorHallazgos)">
       <div class="insights-grid" *ngIf="principalesHallazgos && principalesHallazgos.hallazgos.length > 0">
 
         <article class="insight-card" *ngFor="let hallazgo of principalesHallazgos.hallazgos">
@@ -862,10 +882,11 @@
     </header>
 
 
-    <div class="status-card" *ngIf="cargandoConclusiones" role="status">
+    <div class="status-card canvia-extension-sr" *ngIf="cargandoConclusiones" role="status">
       <mat-icon>hourglass_top</mat-icon>
       Generando conclusiones...
     </div>
+<div class="canvia-tokens canvia-extension-placeholder canvia-extension-text" *ngIf="(cargandoFiltros) || (cargandoConclusiones && !errorConclusiones)"><div aria-hidden="true"><div class="canvia-skeleton canvia-skeleton--text"><span class="canvia-skeleton__block canvia-skeleton__label"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block canvia-skeleton__short"></span></div></div></div>
 
 
     <div class="status-card error-card" *ngIf="!cargandoConclusiones && errorConclusiones" role="alert">
@@ -876,7 +897,7 @@
     </div>
 
 
-    <ng-container *ngIf="!cargandoConclusiones && !errorConclusiones">
+    <ng-container *ngIf="!cargandoFiltros && (!cargandoConclusiones && !errorConclusiones)">
       <div class="conclusions-list" *ngIf="conclusiones && conclusiones.conclusiones.length > 0">
         <article class="conclusion-card" *ngFor="let item of conclusiones.conclusiones">
 
@@ -941,3 +962,4 @@
 
 
 </div>
+

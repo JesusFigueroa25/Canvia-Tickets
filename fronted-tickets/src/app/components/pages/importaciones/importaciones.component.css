@@ -1,13 +1,15 @@
 :host {
     display: block;
     min-height: 100%;
-    background: #F7F9FB;
+    background: transparent;
 }
 
 .importaciones-page {
-    padding: 30px 34px 42px;
-    max-width: 1600px;
-    margin: 0 auto;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
     font-family: inherit;
     color: #101828;
 }
@@ -44,7 +46,7 @@
     margin: 12px 0 0;
     font-size: 13px;
     line-height: 1.7;
-    color: #667085;
+    color: #475467;
 }
 
 .header-info {
@@ -90,7 +92,7 @@
 
 .section-heading p {
     margin: 7px 0 0;
-    color: #667085;
+    color: #475467;
     font-size: 12px;
     line-height: 1.6;
 }
@@ -143,7 +145,7 @@
 
 @media (max-width: 700px) {
     .importaciones-page {
-        padding: 22px 16px 30px;
+        padding: 0;
     }
     .importaciones-header,
     .section-heading {

@@ -1,0 +1,31 @@
+{
+  "head": "8c44f3fc347a2952d6a635ee28f803b1db72de69",
+  "branch": "style/ui-canvia-fase-2.3",
+  "clean": true,
+  "build": {
+    "exit": 0,
+    "warnings": "Presupuestos de bundle y estilos preexistentes"
+  },
+  "tests": {
+    "passed": 301,
+    "failed": 5,
+    "total": 306,
+    "files": 26,
+    "failures": [
+      "App.should render title: h1 ausente",
+      "Login.should create: mat-icon desconocido",
+      "Resumen Ejecutivo: dos aserciones textuales sobre elementos ausentes",
+      "R02: texto máximo mensual esperado frente a nota vigente"
+    ]
+  },
+  "integrated": {
+    "status": "bloqueado",
+    "reason": "Sin listeners locales en 4200/8080. Scripts históricos solo preparan correo, incompatible con authGuard actual. La ruta completa requiere iniciar entorno y autenticación manual. No se sustituyen guards ni se crean tokens de sesión.",
+    "scope": "Montaje desde los cuatro padres, creación dinámica de R06 y clic de descarga pendientes.",
+    "decision": "Continuar solo con declaraciones custom property bajo clase nueva sin consumidores. Esta edición no cambia apariencia ni ancestros. Requisito pendiente antes de activar consumidores o intervenir layout/Material."
+  },
+  "supplementaryCaptures": {
+    "status": "pendientes",
+    "reason": "Tomar Cambios y Tareas antes de su primer cambio visual. Este bloque no activa ningún consumidor."
+  }
+}

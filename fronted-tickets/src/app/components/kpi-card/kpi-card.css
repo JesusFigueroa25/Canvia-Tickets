@@ -82,3 +82,103 @@
   color: #16835b;
   background: #dff3e6;
 }
+
+/* Aurora Soft: activación explícita en los dashboards, no en reportes. */
+:host(.canvia-kpi-soft) {
+  min-width: 0;
+}
+
+:host(.canvia-kpi-soft) .kpi-card {
+  --kpi-tint: var(--canvia-surface-green, #F2FCF5);
+  --kpi-edge: #D9EEE1;
+  --kpi-icon-bg: var(--canvia-state-success-surface, #E7F5EC);
+  --kpi-accent: var(--canvia-text-brand, #12633F);
+  height: 100%;
+  min-height: 115px;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--kpi-edge);
+  border-radius: var(--canvia-radius-lg, 16px);
+  background: linear-gradient(135deg, #FFFFFF 0%, var(--kpi-tint) 100%);
+  box-shadow: var(--canvia-elevation-1, 0 2px 8px rgba(16, 24, 40, .06));
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+:host(.canvia-kpi-soft) .kpi-card.orange {
+  --kpi-tint: var(--canvia-surface-orange, #FFF8F3);
+  --kpi-edge: #FFE1CC;
+  --kpi-icon-bg: var(--canvia-brand-orange-light, #FFF1E7);
+  --kpi-accent: var(--canvia-state-warning-text, #9A3412);
+}
+
+:host(.canvia-kpi-soft) .kpi-card .kpi-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  flex-shrink: 0;
+  border-radius: var(--canvia-radius-md, 12px);
+  color: var(--kpi-accent);
+  background: var(--kpi-icon-bg);
+}
+
+:host(.canvia-kpi-soft) .kpi-icon mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+:host(.canvia-kpi-soft) .kpi-content { flex: 1; }
+
+:host(.canvia-kpi-soft) .kpi-title {
+  margin-bottom: 6px;
+  color: var(--canvia-text-secondary, #475467);
+  font-size: var(--canvia-font-size-body, 14px);
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+:host(.canvia-kpi-soft) .kpi-value {
+  color: var(--canvia-text-primary, #101828);
+  font-size: var(--canvia-font-size-kpi-compact, 28px);
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* Home: variante vertical, con un skeleton de la misma geometría. */
+:host(.canvia-kpi-home) .kpi-card {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 158px;
+  gap: 12px;
+  padding: 20px;
+}
+
+:host(.canvia-kpi-home) .kpi-content { width: 100%; flex: 1; }
+:host(.canvia-kpi-home) .kpi-card .kpi-icon { width: 44px; height: 44px; min-width: 44px; }
+:host(.canvia-kpi-home) .kpi-value { font-size: var(--canvia-font-size-kpi, 34px); }
+
+:host(.canvia-kpi-soft) .kpi-card:hover {
+  transform: none;
+  box-shadow: var(--canvia-elevation-1, 0 2px 8px rgba(16, 24, 40, .06));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :host(.canvia-kpi-soft) .kpi-card:hover {
+    border-color: #B9D7C8;
+    box-shadow: var(--canvia-elevation-2, 0 6px 18px rgba(16, 24, 40, .09));
+  }
+  :host(.canvia-kpi-soft) .kpi-card.orange:hover { border-color: #F2C5A8; }
+}
+
+@media (max-width: 520px) {
+  :host(.canvia-kpi-home) .kpi-card { padding: 16px; }
+  :host(.canvia-kpi-home) .kpi-value { font-size: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.canvia-kpi-soft) .kpi-card { transition: none; }
+}

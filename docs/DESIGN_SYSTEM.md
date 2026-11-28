@@ -1,7 +1,7 @@
 # Sistema de diseño CANVIA — Aurora Soft Enterprise UI
 
 **Versión documental:** 2.0 · **Fecha:** 27/11/2026\
-**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Tokens incorporados en 2.4.1, Material selectivo en 2.4.2 y Sidenav/Layout en 2.4.3, con limitaciones de móvil expandido y motion TS documentadas.
+**Estado:** estándar objetivo aprobado, consolidado en Fase 1.6. Tokens incorporados en 2.4.1, Material selectivo en 2.4.2, Sidenav/Layout en 2.4.3 y skeletons reutilizables con primera integración Home en 2.5.1. Limitaciones de geometría ejecutiva, móvil expandido y motion TS documentadas.
 
 ## Alcance y fuentes de verdad
 
@@ -389,6 +389,152 @@ No uses CSS para fingir que terminó una consulta ni temporizadores para retrasa
 Oculta las formas decorativas a tecnologías de asistencia y reutiliza un mensaje de estado accesible por sección. aria-busy puede vincularse a un booleano existente cuando corresponda; no bloquees toda la página por una carga local.
 
 Con prefers-reduced-motion, elimina el shimmer y conserva las formas estáticas. Mantén contraste suficiente y evita destellos. La geometría debe verificarse en escritorio, móvil y fullscreen; su reserva por CSS no demuestra ausencia de saltos.
+
+### Implementación Fase 2.5.1 — patrones reutilizables
+
+Los patrones están implementados en `src/styles.css`, con activación explícita
+`canvia-tokens` y `canvia-skeleton`. Los selectores internos requieren
+`canvia-skeleton`; no hay reglas nuevas sobre tarjetas, canvas, SVG o tablas
+genéricos. No activar estas clases en reportes ni en sus ancestros. Se conservan
+los 106 tokens y los valores Aurora Soft aprobados.
+
+| Patrón | Contenedor | Geometría interior |
+| --- | --- | --- |
+| KPI | `canvia-skeleton canvia-skeleton--kpi` | `__icon`, `__copy`, `__label`, `__value` |
+| Barras | `canvia-skeleton canvia-skeleton--chart` | `__plot __bars` con bloques de altura ilustrativa |
+| Donut/circular | `canvia-skeleton canvia-skeleton--chart` | `__donut` y `__legend` |
+| Líneas | `canvia-skeleton canvia-skeleton--chart` | `__plot __line` con SVG decorativo sin etiquetas |
+| Tabla | `canvia-skeleton canvia-skeleton--table` | Una `__row` de cabecera y 3–5 de cuerpo |
+| Resumen/texto | `canvia-skeleton canvia-skeleton--text` | `__heading`, `__copy` y bloques de longitudes distintas |
+
+En la columna de geometría, todos los nombres abreviados llevan el prefijo
+`canvia-skeleton`. `canvia-skeleton__block` es la forma neutra animada;
+`__short` reduce su longitud. El anillo y el trazo son estáticos; el shimmer de
+sus cabeceras aporta feedback sin animar series. No son datos ni progreso.
+
+Ejemplos de markup decorativo (añadir el `*ngIf` del estado real en el padre;
+no copiar cifras ni controles al placeholder):
+
+```html
+<div class="canvia-tokens" aria-hidden="true">
+  <!-- KPI -->
+  <div class="canvia-skeleton canvia-skeleton--kpi">
+    <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+    <div class="canvia-skeleton__copy">
+      <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+      <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+    </div>
+  </div>
+
+  <!-- Barras -->
+  <div class="canvia-skeleton canvia-skeleton--chart">
+    <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+    <div class="canvia-skeleton__plot canvia-skeleton__bars">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+  </div>
+
+  <!-- Circular/donut -->
+  <div class="canvia-skeleton canvia-skeleton--chart">
+    <div class="canvia-skeleton__donut"></div>
+    <div class="canvia-skeleton__legend">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+  </div>
+
+  <!-- Líneas -->
+  <div class="canvia-skeleton canvia-skeleton--chart">
+    <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+    <div class="canvia-skeleton__plot canvia-skeleton__line">
+      <svg viewBox="0 0 400 290" preserveAspectRatio="none" focusable="false">
+        <path d="M12 220 L82 180 L152 200 L222 110 L292 140 L388 65"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Tabla: cabecera y tres filas decorativas, sin semántica de datos -->
+  <div class="canvia-skeleton canvia-skeleton--table">
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+    <div class="canvia-skeleton__row">
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+      <span class="canvia-skeleton__block"></span>
+    </div>
+  </div>
+
+  <!-- Resumen/texto -->
+  <div class="canvia-skeleton canvia-skeleton--text">
+    <span class="canvia-skeleton__block canvia-skeleton__label"></span>
+    <span class="canvia-skeleton__block"></span>
+    <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+  </div>
+</div>
+```
+
+Los tokens consumidos son `--canvia-skeleton-base` (#E5E9EE),
+`--canvia-skeleton-highlight` (#F7F9FB), `--canvia-motion-shimmer` (1600ms),
+`--canvia-skeleton-radius-block` (6px) y
+`--canvia-skeleton-radius-container` (16px), además de superficie individual al
+94%, borde, radios y espaciados del catálogo. El pseudo-elemento desplaza el
+highlight mediante transform; con movimiento reducido se elimina. No hay
+temporizadores, duración mínima, filtros ni dependencias nuevas.
+
+**Integración de Home.** `cargandoResumen && !resumen` monta cinco KPI,
+cuatro indicadores, barras, líneas y tres bloques ejecutivos decorativos.
+`resumen` mantiene el contenido real montado durante actualizaciones; se
+conservan las invocaciones y bindings de los ocho hijos. El botón conserva su
+evento y condición disabled, y muestra «Actualizando…» al refrescar datos.
+`aria-busy` usa el booleano existente sobre Home; hay una única región de
+estado persistente y oculta visualmente. El error conserva su alerta y condición
+`errorResumen && !cargandoResumen`.
+
+```html
+<!-- Esquema del patrón; la plantilla productiva conserva todos sus bindings. -->
+<div class="home-page" [attr.aria-busy]="cargandoResumen">
+  <div *ngIf="cargandoResumen && !resumen"
+       class="canvia-tokens home-skeleton" aria-hidden="true">
+    <!-- Patrones de estructura -->
+  </div>
+  <ng-container *ngIf="resumen">
+    <!-- Hijos originales: permanecen montados al actualizar -->
+  </ng-container>
+</div>
+```
+
+Una respuesta válida con ceros y arrays vacíos muestra los estados actuales de
+los hijos. Una respuesta nula finaliza la carga y conserva la ausencia previa de
+contenido; no se inventa un mensaje de negocio. Un error limpia los datos según
+el TypeScript existente. No se puede separar la carga por bloque porque el
+contrato de Home es agregado.
+
+`home.css` ajusta exclusivamente placeholders. Las etiquetas estáticas de
+indicadores y cabeceras de gráficos se incluyen transparentes dentro del árbol
+decorativo para reservar su envoltura real; mantenerlas sincronizadas si se
+cambian esos textos en los hijos. No se modifica el CSS de KPI ni Chart.js.
+El resumen ejecutivo reserva alturas aproximadas por su estructura: sus
+mensajes, proyecto y pie opcional dependen del backend. No garantiza altura
+idéntica para cualquier respuesta. Donut y tabla se documentan para reutilizar,
+sin integrarlos en módulos adicionales.
+
+Resultados medidos, geometría residual y protección de reportes en
+[Fase 2.5.1 del plan de pruebas](TEST_PLAN.md#fase-251--skeletons-reutilizables).
 
 ### Mapa de aplicación y evidencia
 

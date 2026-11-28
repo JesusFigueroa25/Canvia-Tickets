@@ -791,3 +791,237 @@
   }
 
 }
+
+
+/* Fase 2.5.1 - skeletons iniciales; sin alterar hijos ni exportaciones. */
+.canvia-extension-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.canvia-extension-placeholder { min-width: 0; box-sizing: border-box; }
+.canvia-extension-kpi { min-height: 110px; }
+.canvia-extension-placeholder.canvia-extension-table { min-height: 260px; }
+.canvia-extension-placeholder.canvia-extension-bars, .canvia-extension-placeholder.canvia-extension-line, .canvia-extension-placeholder.canvia-extension-donut { min-height: 360px; }
+.canvia-extension-host:has(> .canvia-extension-overlay) { position: relative; min-height: var(--canvia-extension-min, 360px); }
+.canvia-extension-host:has(> .canvia-extension-overlay.canvia-extension-table) { --canvia-extension-min: 260px; }
+.canvia-extension-host > .canvia-extension-overlay { position: absolute; inset: 0; z-index: 30; background: #fff; border-radius: 16px; }
+.canvia-extension-placeholder:not(.canvia-extension-overlay) > div[aria-hidden="true"], .canvia-extension-placeholder:not(.canvia-extension-overlay) .canvia-skeleton { min-height: inherit; }
+.canvia-extension-overlay > div[aria-hidden="true"], .canvia-extension-overlay .canvia-skeleton { height: 100%; box-sizing: border-box; }
+.canvia-extension-host:has(> .canvia-extension-overlay) > button { visibility: hidden; }
+.canvia-extension-pending { visibility: hidden; }
+
+
+/* Fase 2.5.1 - prioridad de skeleton durante carga real, sin temporizadores. */
+.canvia-extension-sr {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 1px !important;
+  max-height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+.canvia-extension-host:has(> .canvia-extension-overlay) > .canvia-extension-pending {
+  visibility: hidden;
+  pointer-events: none;
+}
+.canvia-extension-host > .canvia-extension-overlay {
+  /* Skeleton cubre la superficie del recurso, no la página ni un reporte. */
+  z-index: 50;
+  background: #FFFFFF;
+}
+.canvia-extension-host:has(> .canvia-extension-overlay) > button {
+  visibility: hidden;
+  pointer-events: none;
+}
+.canvia-initial-skeleton-group { min-width: 0; }
+
+
+/* Prioridad visual del skeleton sin desmontar los hijos existentes. */
+.canvia-extension-host:has(> .canvia-extension-overlay) > .canvia-extension-pending {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+/* Aurora Soft — filtros globales (referencia: Proyecto de Reporte Diario).
+   Alcance explícito: no modifica filtros de hijos ni superficies de exportación. */
+.filters-card.canvia-filter-card {
+  box-sizing: border-box;
+  padding: 20px;
+  border: 1px solid #E5E9EE;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 2px 8px rgba(16, 24, 40, .06);
+}
+.filters-form.canvia-filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  align-items: start;
+  gap: 12px 16px;
+  width: 100%;
+  min-width: 0;
+}
+/* Las fechas conservan sus controles y referencias, pero comparten la grilla. */
+.canvia-filter-form > .date-range-fields { display: contents; }
+.canvia-filter-form > .project-filter { grid-column: auto; }
+.canvia-filter-form .filter-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: start;
+  min-width: 0;
+}
+.canvia-filter-form .filter-field > label {
+  grid-area: 1 / 1;
+  margin: 0 0 6px;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.canvia-filter-form .filter-field > mat-form-field {
+  grid-area: 2 / 1;
+  width: 100%;
+  min-width: 0;
+}
+/* Mantener el subscript de Material: errores y ayudas no se recortan. */
+:host ::ng-deep .canvia-filter-form .mat-mdc-form-field-infix {
+  min-height: 44px;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  box-sizing: border-box;
+}
+.canvia-filter-form .filter-actions {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-end;
+  align-self: start;
+  grid-column: auto;
+  width: 100%;
+  min-width: 0;
+  gap: 8px;
+  padding: 24px 0 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.canvia-filter-form .filter-actions > button {
+  flex: 1 1 88px;
+  min-width: 0;
+  width: auto;
+  min-height: 44px;
+  padding: 0 8px;
+  border-radius: 12px !important;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.canvia-filter-form .filter-actions > button mat-icon {
+  width: 18px; height: 18px; font-size: 18px; margin-right: 4px;
+}
+.canvia-filter-form .filter-actions > .clear-button:not(:disabled) {
+  color: #12633F !important;
+  background: #F2FCF5 !important;
+  border: 1px solid #CBE7DB !important;
+}
+.canvia-filter-form .filter-actions > .clear-button:not(:disabled):hover {
+  background: #E7F5EC !important;
+}
+.canvia-filter-form .filter-actions > .apply-button:not(:disabled) {
+  color: #101828 !important;
+  background: #FF620F !important;
+  border: 1px solid #FF620F !important;
+}
+.canvia-filter-form .filter-actions > .apply-button:not(:disabled):hover {
+  background: #FFB184 !important;
+  border-color: #FFB184 !important;
+}
+.canvia-filter-form .filter-actions > button:disabled {
+  color: #98A2B3 !important;
+  background: #F2F4F7 !important;
+  border: 1px solid #E5E9EE !important;
+  opacity: 1 !important;
+}
+.canvia-filter-form .filter-actions > button:focus-visible {
+  outline: 2px solid #12633F;
+  outline-offset: 2px;
+}
+/* Se reutilizan las clases del tema Material de Reporte Diario en cada control
+   y panel explícito. El estilo del buscador no cambia su comportamiento. */
+::ng-deep .daily-report-project-panel.canvia-filter-panel .combo-search {
+  background: #FFFFFF;
+  border-bottom-color: #E5E9EE;
+}
+::ng-deep .daily-report-project-panel.canvia-filter-panel .combo-search > mat-icon {
+  color: #12633F;
+}
+::ng-deep .daily-report-project-panel.canvia-filter-panel .combo-search input::placeholder {
+  color: #667085;
+}
+::ng-deep .daily-report-project-panel.canvia-filter-panel .combo-clear:hover {
+  color: #12633F;
+  background: #E7F5EC;
+}
+::ng-deep .daily-report-project-panel.canvia-filter-panel .combo-search input:focus-visible,
+::ng-deep .daily-report-project-panel.canvia-filter-panel .combo-clear:focus-visible {
+  outline: 2px solid #12633F;
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+/* Skeleton: misma celda que el control; el formulario conserva su montaje.
+   Solo se activa mediante el estado real de carga de opciones del padre. */
+.canvia-filter-form.canvia-filter-loading .filter-field > mat-form-field,
+.canvia-filter-form.canvia-filter-loading .filter-actions > button {
+  visibility: hidden;
+  pointer-events: none;
+}
+.canvia-filter-form .canvia-filter-placeholder {
+  display: block;
+  grid-area: 2 / 1;
+  align-self: start;
+  min-width: 0;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(100deg, #E5E9EE 25%, #F7F9FB 50%, #E5E9EE 75%);
+  background-size: 200% 100%;
+  animation: canvia-filter-shimmer 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.canvia-filter-form .canvia-filter-actions-placeholder {
+  position: absolute;
+  inset: 24px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  pointer-events: none;
+}
+.canvia-filter-form .canvia-filter-actions-placeholder > .canvia-filter-placeholder {
+  flex: 1 1 88px;
+}
+@keyframes canvia-filter-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: 0% 0; }
+}
+@media (max-width: 768px) {
+  .filters-card.canvia-filter-card { padding: 16px; }
+  .filters-form.canvia-filter-form { grid-template-columns: minmax(0, 1fr); }
+  .canvia-filter-form .filter-actions { padding-top: 0; }
+  .canvia-filter-form .canvia-filter-actions-placeholder { top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvia-filter-form .canvia-filter-placeholder {
+    animation: none;
+    background: #E5E9EE;
+  }
+}

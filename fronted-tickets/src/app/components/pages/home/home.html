@@ -1,4 +1,4 @@
-<div class="home-page">
+<div class="home-page canvia-tokens" [attr.aria-busy]="cargandoResumen">
 
     <!--  HEADER-->
     <header class="page-header">
@@ -16,15 +16,170 @@
         <button mat-stroked-button type="button" class="refresh-button" [disabled]="cargandoResumen"
             (click)="cargarResumen()">
             <mat-icon>refresh</mat-icon>
-            Actualizar
+            {{ cargandoResumen && resumen ? 'Actualizando…' : 'Actualizar' }}
         </button>
 
     </header>
 
     <!--  ESTADOS-->
-    <section class="status-card" *ngIf="cargandoResumen" role="status">
-        Cargando información del Dashboard Home...
-    </section>
+    <!-- Patrones decorativos: la única fuente del estado sigue siendo cargandoResumen. -->
+    <div class="home-loading-status" role="status" aria-live="polite" aria-atomic="true">
+        <span *ngIf="cargandoResumen">{{ resumen ? 'Actualizando información del Dashboard Home...' : 'Cargando información del Dashboard Home...' }}</span>
+    </div>
+
+    <div *ngIf="cargandoResumen && !resumen" class="canvia-tokens home-skeleton" aria-hidden="true">
+        <section class="dashboard-section">
+            <div class="section-header"><div><h2>Volumen de Operación</h2><p>Total de tickets registrados en los diferentes conjuntos de datos.</p></div></div>
+            <div class="kpis-grid">
+            <div class="canvia-skeleton canvia-skeleton--kpi home-skeleton-kpi">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block canvia-skeleton__label home-skeleton-kpi-label">Incidentes Consolidados</span>
+                    <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                </div>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--kpi home-skeleton-kpi">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block canvia-skeleton__label home-skeleton-kpi-label">Incidentes SLA</span>
+                    <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                </div>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--kpi home-skeleton-kpi">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block canvia-skeleton__label home-skeleton-kpi-label">Requerimientos Consolidados</span>
+                    <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                </div>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--kpi home-skeleton-kpi">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block canvia-skeleton__label home-skeleton-kpi-label">Requerimientos SLA</span>
+                    <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                </div>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--kpi home-skeleton-kpi">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block canvia-skeleton__label home-skeleton-kpi-label">Tareas Consolidadas</span>
+                    <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                </div>
+            </div>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <div class="section-header"><div><h2>Indicadores Clave</h2><p>Cumplimiento del SLA de solución e incumplimientos registrados.</p></div></div>
+            <div class="indicators-grid">
+            <div class="canvia-skeleton canvia-skeleton--text home-skeleton-indicator">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <span class="canvia-skeleton__block home-skeleton-label">SLA Solución Incidentes</span>
+                <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                <p class="canvia-skeleton__block home-skeleton-description">Cumplimiento de resolución de incidentes.</p>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--text home-skeleton-indicator">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <span class="canvia-skeleton__block home-skeleton-label">SLA Solución Requerimientos</span>
+                <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                <p class="canvia-skeleton__block home-skeleton-description">Cumplimiento de atención de requerimientos.</p>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--text home-skeleton-indicator">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <span class="canvia-skeleton__block home-skeleton-label">Incumplimientos Incidentes</span>
+                <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                <p class="canvia-skeleton__block home-skeleton-description">Incidentes que no cumplieron el SLA de solución.</p>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--text home-skeleton-indicator">
+                <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                <span class="canvia-skeleton__block home-skeleton-label">Incumplimientos Requerimientos</span>
+                <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                <p class="canvia-skeleton__block home-skeleton-description">Requerimientos que no cumplieron el SLA de solución.</p>
+            </div>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <div class="section-header"><div><h2>Análisis de Operación</h2><p>Comportamiento mensual del volumen operativo y evolución del cumplimiento SLA.</p></div></div>
+            <div class="charts-grid">
+            <div class="canvia-skeleton canvia-skeleton--chart home-skeleton-chart">
+            <div class="home-skeleton-chart-heading">
+                <h3 class="canvia-skeleton__block">Volumen Mensual de Operación</h3>
+                <p class="canvia-skeleton__block">Comparación mensual de incidentes, requerimientos y tareas registrados en las tablas consolidadas.</p>
+            </div>
+            <div class="canvia-skeleton__plot canvia-skeleton__bars"><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span><span class="canvia-skeleton__block"></span></div>
+        </div>
+            <div class="canvia-skeleton canvia-skeleton--chart home-skeleton-chart">
+            <div class="home-skeleton-chart-heading">
+                <h3 class="canvia-skeleton__block">Evolución del SLA de Solución - 2026</h3>
+                <p class="canvia-skeleton__block">Comparación mensual del cumplimiento SLA de incidentes y requerimientos.</p>
+            </div>
+            <div class="canvia-skeleton__plot canvia-skeleton__line"><svg viewBox="0 0 400 290" preserveAspectRatio="none" focusable="false"><path d="M12 220 L82 180 L152 200 L222 110 L292 140 L388 65"/></svg></div>
+        </div>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <div class="section-header"><div><h2>Resumen Ejecutivo</h2><p>Principales hallazgos sobre la evolución operativa, el cumplimiento SLA y los proyectos que requieren atención.</p></div></div>
+            <div class="home-skeleton-executive-grid">
+            <div class="canvia-skeleton canvia-skeleton--text home-skeleton-executive">
+                <div class="canvia-skeleton__heading">
+                    <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                    <div class="canvia-skeleton__copy">
+                        <span class="canvia-skeleton__block"></span>
+                        <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+                    </div>
+                </div>
+                <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+                </div>
+                <div class="canvia-skeleton__legend">
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block"></span>
+                </div>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--text home-skeleton-executive">
+                <div class="canvia-skeleton__heading">
+                    <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                    <div class="canvia-skeleton__copy">
+                        <span class="canvia-skeleton__block"></span>
+                        <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+                    </div>
+                </div>
+                <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+                </div>
+                <div class="canvia-skeleton__legend">
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block"></span>
+                </div>
+            </div>
+            <div class="canvia-skeleton canvia-skeleton--text home-skeleton-executive">
+                <div class="canvia-skeleton__heading">
+                    <span class="canvia-skeleton__block canvia-skeleton__icon"></span>
+                    <div class="canvia-skeleton__copy">
+                        <span class="canvia-skeleton__block"></span>
+                        <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+                    </div>
+                </div>
+                <span class="canvia-skeleton__block canvia-skeleton__value"></span>
+                <div class="canvia-skeleton__copy">
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block canvia-skeleton__short"></span>
+                </div>
+                <div class="canvia-skeleton__legend">
+                    <span class="canvia-skeleton__block"></span>
+                    <span class="canvia-skeleton__block"></span>
+                </div>
+            </div>
+            </div>
+        </section>
+    </div>
+
 
     <section class="status-card error-card" *ngIf="errorResumen && !cargandoResumen" role="alert">
         <mat-icon>error_outline</mat-icon>
@@ -33,7 +188,7 @@
 
 
     <!--  CONTENIDO HOME-->
-    <ng-container *ngIf="resumen && !cargandoResumen">
+    <ng-container *ngIf="resumen">
 
         <!-- KPIs PRINCIPALES -->
         <section class="dashboard-section">
@@ -48,23 +203,23 @@
             </div>
 
             <div class="kpis-grid">
-                <app-kpi-card titulo="Incidentes Consolidados" [valor]="resumen.kpis.incidentes_consolidados"
+                <app-kpi-card class="canvia-kpi-soft canvia-tokens canvia-kpi-home" titulo="Incidentes Consolidados" [valor]="resumen.kpis.incidentes_consolidados"
                     icono="assignment" color="orange">
                 </app-kpi-card>
 
-                <app-kpi-card titulo="Incidentes SLA" [valor]="resumen.kpis.incidentes_sla" icono="verified"
+                <app-kpi-card class="canvia-kpi-soft canvia-tokens canvia-kpi-home" titulo="Incidentes SLA" [valor]="resumen.kpis.incidentes_sla" icono="verified"
                     color="green">
                 </app-kpi-card>
 
-                <app-kpi-card titulo="Requerimientos Consolidados" [valor]="resumen.kpis.requerimientos_consolidados"
+                <app-kpi-card class="canvia-kpi-soft canvia-tokens canvia-kpi-home" titulo="Requerimientos Consolidados" [valor]="resumen.kpis.requerimientos_consolidados"
                     icono="description" color="orange">
                 </app-kpi-card>
 
-                <app-kpi-card titulo="Requerimientos SLA" [valor]="resumen.kpis.requerimientos_sla" icono="task_alt"
+                <app-kpi-card class="canvia-kpi-soft canvia-tokens canvia-kpi-home" titulo="Requerimientos SLA" [valor]="resumen.kpis.requerimientos_sla" icono="task_alt"
                     color="green">
                 </app-kpi-card>
 
-                <app-kpi-card titulo="Tareas Consolidadas" [valor]="resumen.kpis.tareas_consolidadas"
+                <app-kpi-card class="canvia-kpi-soft canvia-tokens canvia-kpi-home" titulo="Tareas Consolidadas" [valor]="resumen.kpis.tareas_consolidadas"
                     icono="assignment_turned_in" color="orange">
                 </app-kpi-card>
 
@@ -252,3 +407,4 @@
 
     </ng-container>
 </div>
+

@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "tokens": 106,
+  "normativeSource": "docs/DESIGN_SYSTEM.md v2.0",
+  "protectedFiles": 51,
+  "reports": [
+    {
+      "stage": "pre",
+      "matched": 8,
+      "browser": "158.0.8127.88"
+    },
+    {
+      "stage": "post",
+      "matched": 8,
+      "browser": "158.0.8127.88"
+    }
+  ],
+  "cascade": [
+    {
+      "width": 390,
+      "reducedMotion": "no-preference",
+      "computedStylesEqual": true,
+      "pixelsEqual": true
+    },
+    {
+      "width": 390,
+      "reducedMotion": "reduce",
+      "computedStylesEqual": true,
+      "pixelsEqual": true
+    },
+    {
+      "width": 768,
+      "reducedMotion": "no-preference",
+      "computedStylesEqual": true,
+      "pixelsEqual": true
+    },
+    {
+      "width": 768,
+      "reducedMotion": "reduce",
+      "computedStylesEqual": true,
+      "pixelsEqual": true
+    },
+    {
+      "width": 1440,
+      "reducedMotion": "no-preference",
+      "computedStylesEqual": true,
+      "pixelsEqual": true
+    },
+    {
+      "width": 1440,
+      "reducedMotion": "reduce",
+      "computedStylesEqual": true,
+      "pixelsEqual": true
+    }
+  ],
+  "browser": "158.0.8127.88",
+  "consumersAdded": 0,
+  "integrated": "Bloqueado según control-previo.json. Sin cambios de plantillas ni consumidores."
+}
